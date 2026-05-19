@@ -1,10 +1,9 @@
 package ProyectoUniversidad1;
 
 import java.util.Scanner;
-
 import static ProyectoUniversidad1.MetodosTienda.*;
 
-public class UsoTienda {
+public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
 
     public static void main(String[] args) {
 
@@ -27,27 +26,27 @@ public class UsoTienda {
         miTienda.agregarInventario("Principal",400);
 
         miTienda.agregarProductoAUnInv(0,"Camisa",50000,80);
-        miTienda.actValVenPreInvPro(0,1,75000);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(0,1,75000);
 
         miTienda.agregarProductoAUnInv(0,"Pantalon",75000,75);
-        miTienda.actValVenPreInvPro(0,2,105000);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(0,2,105000);
 
         miTienda.agregarProductoAUnInv(0,"Medias",8000,100);
-        miTienda.actValVenPorInvPro(0,3,100);
+        miTienda.actualizarValorVentaPorcentajeInventarioProducto(0,3,100);
 
         miTienda.agregarProductoAUnInv(0,"Chaqueta",120000,50);
-        miTienda.actValVenPreInvPro(0,4,165000);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(0,4,165000);
 
         miTienda.agregarProductoAUnInv(0,"Vestido",65000,50);
-        miTienda.actValVenPreInvPro(0,5,100000);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(0,5,100000);
 
         miTienda.agregarInventario("Secundario",250);
 
         miTienda.agregarProductoAUnInv(1,"Pantaloneta",35000,50);
-        miTienda.actValVenPreInvPro(1,6,55000);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(1,6,55000);
 
         miTienda.agregarProductoAUnInv(1,"Boxer",25000,50);
-        miTienda.actValVenPorInvPro(1,7,100);
+        miTienda.actualizarValorVentaPorcentajeInventarioProducto(1,7,100);
 
         //*/
 
@@ -302,7 +301,7 @@ public class UsoTienda {
                                                                     System.out.print("Escribe el nombre nuevo que le pondras:\n" +
                                                                             "---> ");
                                                                     String nombreNuevoProd = sc.nextLine();
-                                                                    miTienda.actNomProdInv(numeroId,codigo,nombreNuevoProd);
+                                                                    miTienda.actualizarNombreInventarioProducto(numeroId,codigo,nombreNuevoProd);
                                                                     break;
 
 
@@ -330,13 +329,13 @@ public class UsoTienda {
                                                                             \nEscribe el precio nuevo que le pondras:
                                                                             """ + "---> ");
                                                                         double precio = leerDecimal(sc);
-                                                                        miTienda.actValVenPreInvPro(numeroId,codigo,precio);
+                                                                        miTienda.actualizarValorVentaPrecioInventarioProducto(numeroId,codigo,precio);
                                                                     } else {
                                                                         System.out.print("""
                                                                             \nEscribe el porcentaje de ganancia nuevo que le pondras:
                                                                             """ + "---> ");
                                                                         double porcentaje = leerDecimal(sc);
-                                                                        miTienda.actValVenPorInvPro(numeroId,codigo,porcentaje);
+                                                                        miTienda.actualizarValorVentaPorcentajeInventarioProducto(numeroId,codigo,porcentaje);
                                                                     }
                                                                     break;
 
@@ -353,7 +352,7 @@ public class UsoTienda {
                                                                         \nEscribe el valor nuevo que le pondras al producto:
                                                                         """ + "---> ");
                                                                     double valorNuevo = leerDecimal(sc);
-                                                                    miTienda.actValComProdInv(numeroId,codigo,valorNuevo);
+                                                                    miTienda.actualizarValorCompraInventarioProducto(numeroId,codigo,valorNuevo);
                                                                     break;
 
 
@@ -369,7 +368,7 @@ public class UsoTienda {
                                                                         \nEscribe las unidades nuevas que llegaron:
                                                                         """ + "---> ");
                                                                     cantidad = leerEntero(sc);
-                                                                    miTienda.actStockProdInv(numeroId,codigo,cantidad);
+                                                                    miTienda.actualizarStockInventarioProducto(numeroId,codigo,cantidad);
                                                                     break;
 
 
@@ -384,7 +383,7 @@ public class UsoTienda {
                                                                         \nEscribe las unidades eliminadas:
                                                                         """ + "---> ");
                                                                     int cantidadQuitada = leerEntero(sc);
-                                                                    miTienda.redStockProdInv(numeroId,codigo,cantidadQuitada);
+                                                                    miTienda.reducirStockInventarioProd(numeroId,codigo,cantidadQuitada);
                                                                     break;
 
 
@@ -617,7 +616,6 @@ public class UsoTienda {
                                             pagoProducto=0;
                                             pagoCliente=0;
                                             contVentas=0;
-                                            contadorClientes++;
 
                                             while (otroProducto == 1){
 
@@ -672,6 +670,10 @@ public class UsoTienda {
                                                         "---> $" + pagoCliente + "\n" +
                                                         "--------------------------------------");
                                                 totalClientes+=pagoCliente;
+                                            }
+
+                                            if (pagoCliente>0){
+                                                contadorClientes++;
                                             }
 
                                             System.out.print("""

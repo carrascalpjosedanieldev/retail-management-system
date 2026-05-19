@@ -2,7 +2,7 @@ package ProyectoUniversidad1;
 
 import java.util.ArrayList;
 
-public class Tienda {
+public class Tienda { //213 LINEAS NETAS DE 263 LINEAS TOTALES
 
     //ATRIBUTOS:
 
@@ -133,8 +133,6 @@ public class Tienda {
         }
     }
 
-
-
     //METODOS UTILIZAR TIENDA:
 
     public void mostrarInventarioGeneral(){
@@ -148,6 +146,7 @@ public class Tienda {
     public double venderProducto(int codigo,int cantidad){
         boolean productoEsta;
         double pagoProducto = 0;
+
         for (Inventario miInventario:this.misInventarios){
             productoEsta = miInventario.buscarProductoParaVender(codigo);
             if (productoEsta){
@@ -212,7 +211,7 @@ public class Tienda {
 
     //METODOS MODIFICAR PRODUCTO:
 
-    public void actNomProdInv(int indice,int codigo,String nombre){
+    public void actualizarNombreInventarioProducto(int indice, int codigo, String nombre){
         if (indice<0 || indice>=this.misInventarios.size()){
             System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
         } else {
@@ -220,7 +219,7 @@ public class Tienda {
         }
     }
 
-    public void actValVenPorInvPro(int indice, int codigo, double porcentaje){
+    public void actualizarValorVentaPorcentajeInventarioProducto(int indice, int codigo, double porcentaje){
         if (indice<0 || indice>=this.misInventarios.size()){
             System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
         } else {
@@ -228,7 +227,7 @@ public class Tienda {
         }
     }
 
-    public void actValVenPreInvPro(int indice, int codigo,double precio){
+    public void actualizarValorVentaPrecioInventarioProducto(int indice, int codigo, double precio){
         if (indice<0 || indice>=this.misInventarios.size()){
             System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
         } else {
@@ -236,7 +235,7 @@ public class Tienda {
         }
     }
 
-    public void actValComProdInv(int indice, int codigo,double valorNuevo){
+    public void actualizarValorCompraInventarioProducto(int indice, int codigo, double valorNuevo){
         if (indice<0 || indice>=this.misInventarios.size()){
             System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
         } else {
@@ -244,7 +243,7 @@ public class Tienda {
         }
     }
 
-    public void actStockProdInv(int indice, int codigo,int cantidad){
+    public void actualizarStockInventarioProducto(int indice, int codigo, int cantidad){
         if (indice<0 || indice>=this.misInventarios.size()){
             System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
         } else {
@@ -252,7 +251,7 @@ public class Tienda {
         }
     }
 
-    public void redStockProdInv(int indice, int codigo,int cantidad){
+    public void reducirStockInventarioProd(int indice, int codigo, int cantidad){
         if (indice<0 || indice>=this.misInventarios.size()){
             System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
         } else {

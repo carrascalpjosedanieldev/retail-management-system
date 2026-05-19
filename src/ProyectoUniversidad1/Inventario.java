@@ -2,7 +2,7 @@ package ProyectoUniversidad1;
 
 import java.util.ArrayList;
 
-public class Inventario {
+public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
 
     //ATRIBUTOS:
 
@@ -190,8 +190,14 @@ public class Inventario {
         for (Producto miProducto : this.misProductos) {
             buscaCodigo=miProducto.getCODIGO();
             if (buscaCodigo == codigo) {
+                if (cantidad > miProducto.getStock()) {
+                    System.out.println("ACCION RECHAZADA:\n" +
+                            "Stock insuficiente, solo hay " + miProducto.getStock() + " unidades");
+                    return pagoProducto;
+                }
                 pagoProducto = (miProducto.getValorVenta())*cantidad;
                 miProducto.reducirStock(cantidad);
+                this.capacidadOcupada -= cantidad;
                 System.out.println("\nHas Vendido " + cantidad + " Unidades de " + miProducto.getNombre());
                 miProducto.describirProducto();
                 break;
