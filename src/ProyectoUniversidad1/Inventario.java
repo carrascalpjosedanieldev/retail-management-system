@@ -1,22 +1,23 @@
 package ProyectoUniversidad1;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
+public class Inventario { //x LINEAS NETAS DE 304 LINEAS TOTALES
 
     //ATRIBUTOS:
 
     private String nombre;
 
-    private final int NUMERO_IDENTIFICADOR;
+    private final int numeroId;
 
-    private static int numeroIdentificadorSiguiente = 1;
+    private static int numeroIdSiguiente = 1;
 
-    private final int CAPACIDAD_MAXIMA;
+    private final int capacidadMaxima;
 
     private int capacidadOcupada;
 
-    private final ArrayList<Producto> misProductos;
+    private final Map<Integer,Producto> misProductos;
 
     //GETTERS Y SETTERS:
 
@@ -28,12 +29,12 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
         this.nombre = nombre;
     }
 
-    public int getNUMERO_IDENTIFICADOR() {
-        return NUMERO_IDENTIFICADOR;
+    public int getNumeroId() {
+        return numeroId;
     }
 
-    public int getCAPACIDAD_MAXIMA() {
-        return CAPACIDAD_MAXIMA;
+    public int getCapacidadMaxima() {
+        return capacidadMaxima;
     }
 
     public int getCapacidadOcupada() {
@@ -42,18 +43,19 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
 
     //CONSTRUCTORES:
 
-    public Inventario(String nombre, int CAPACIDAD_MAXIMA) {
+    public Inventario(String nombre, int capacidadMaxima) throws IllegalArgumentException{
         if (nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Inventario Invalido");
         }
-        if (CAPACIDAD_MAXIMA<=0){
+        if (capacidadMaxima<=0){
             throw new IllegalArgumentException("Capacidad Maxima del Inventario Invalida");
         }
         this.nombre = nombre;
-        this.NUMERO_IDENTIFICADOR = numeroIdentificadorSiguiente++;
-        this.CAPACIDAD_MAXIMA = CAPACIDAD_MAXIMA;
-        this.misProductos = new ArrayList<>();
+        this.numeroId = numeroIdSiguiente;
+        this.capacidadMaxima = capacidadMaxima;
+        this.misProductos = new HashMap<>();
         this.capacidadOcupada=0;
+        numeroIdSiguiente++;
     }
 
     //METODOS:
@@ -65,21 +67,20 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------");
         } else {
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------\n" +
-                    "---> INVENTARIO:  -" + getNombre() + "-\n---> PRODUCTOS:");
-            for (Producto miProducto:this.misProductos) {
-                miProducto.describirProducto();
-            }
+                    "---> INVENTARIO:  -" + getNombre() + "- NUMERO ID:  - " + getNumeroId() + " -\n---> PRODUCTOS:");
+            this.misProductos.values().forEach(Producto::describirProducto);
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------");
         }
     }
 
     public void informacionMinimaInventario(){
-        System.out.printf("NOMBRE: %-10s NUMERO IDENTIFICADOR: %-5d CAPACIDAD MAXIMA: %-10d CAPACIDAD OCUPADA: %-10d%n",this.getNombre(),this.getNUMERO_IDENTIFICADOR(),this.getCAPACIDAD_MAXIMA(),this.getCapacidadOcupada());
+        System.out.printf("NOMBRE: %-10s NUMERO IDENTIFICADOR: %-5d CAPACIDAD MAXIMA: %-10d CAPACIDAD OCUPADA: %-10d%n",
+                this.getNombre(),this.getNumeroId(),this.getCapacidadMaxima(),this.getCapacidadOcupada());
     }
 
     public void mostrarStockInventario(){
-        int capacidadLibre = (this.CAPACIDAD_MAXIMA-this.capacidadOcupada);
-        System.out.println("Inventario: " + getNombre() + "\nCapacidad Maxima:  " + this.CAPACIDAD_MAXIMA +
+        int capacidadLibre = (this.capacidadMaxima-this.capacidadOcupada);
+        System.out.println("Inventario: " + getNombre() + "\nCapacidad Maxima:  " + this.capacidadMaxima +
                 "  Capacidad Libre:  " + capacidadLibre + "  Capacidad Ocupada:  " + this.capacidadOcupada);
     }
 
@@ -99,17 +100,17 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
         }
     }
 
-    public void agregarUnProducto(String nombreProducto,double valorCompra,int stock){
-        int capacidadLibre = (this.CAPACIDAD_MAXIMA-this.capacidadOcupada);
+    public void agregarUnProducto(String nombreProducto,double valorCompra,int stock) {
+        int capacidadLibre = (this.capacidadMaxima-this.capacidadOcupada);
         if (stock>capacidadLibre){
             System.out.println("NO Podemos agregar el Producto -" + nombreProducto + "- porque Exede la Capacidad " +
-                    "Maxima del Inventario\nRecuerda que la Capacidad Maxima es de:  " + this.getCAPACIDAD_MAXIMA()
+                    "Maxima del Inventario\nRecuerda que la Capacidad Maxima es de:  " + this.getCapacidadMaxima()
                     +"\nY la Capacidad Disponible Actualmente es de:  " + capacidadLibre);
             return;
         }
         try {
             Producto auxiliar = new Producto(nombreProducto, valorCompra, stock);
-            this.misProductos.add(auxiliar);
+            this.misProductos.put(auxiliar.getCodigo(),auxiliar);
             System.out.println("Nuevo Producto Agregado Exitosamente:");
             auxiliar.describirProducto();
             this.capacidadOcupada+=auxiliar.getStock();
@@ -119,10 +120,10 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
         }
     }
 
-    public void agregarUnProducto(String nombreProducto,double valorCompra){
+    public void agregarUnProducto(String nombreProducto,double valorCompra) {
         try {
             Producto auxiliar = new Producto(nombreProducto, valorCompra);
-            this.misProductos.add(auxiliar);
+            this.misProductos.put(auxiliar.getCodigo(),auxiliar);
             System.out.println("Nuevo Producto Agregado Exitosamente:");
             auxiliar.describirProducto();
             this.capacidadOcupada+=auxiliar.getStock();
@@ -133,38 +134,36 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
     }
 
     public void eliminarUnProducto(int codigo){
-        int buscaCodigo;
-        boolean codigoValido=false;
-        for (int i = 0; i < this.misProductos.size(); i++) {
-            buscaCodigo=this.misProductos.get(i).getCODIGO();
-            if (buscaCodigo==codigo){
-                System.out.println("El Producto: -" + this.misProductos.get(i).getNombre() + "-  De Codigo: -"
-                        + this.misProductos.get(i).getCODIGO() + "-  Ha Sido Eliminado Exitosamente");
-                this.capacidadOcupada-=this.misProductos.get(i).getStock();
-                this.misProductos.remove(i);
-                codigoValido=true;
-                break;
-            }
-        }
-        if (!codigoValido){
+        boolean productoEsta;
+        productoEsta =this.misProductos.containsKey(codigo);
+        if (productoEsta){
+            System.out.println("El Producto: -" + this.misProductos.get(codigo).getNombre() + "-  De Codigo: -"
+                    + this.misProductos.get(codigo).getCodigo() + "-  Ha Sido Eliminado Exitosamente");
+            this.capacidadOcupada-=this.misProductos.get(codigo).getStock();
+            this.misProductos.remove(codigo);
+        } else {
             System.out.println("El Producto de Codigo: -" + codigo + "- NO esta en el Inventario\n" +
                     "Verifica el Codigo, Ningun Producto ha sido Eliminado");
         }
     }
 
-    public void buscarProducto(int codigo){
-        int buscaCodigo;
-        boolean productoEsta =false;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                System.out.println("El Producto: -" + miProducto.getNombre() + "-  De Codigo: -" + miProducto.getCODIGO()
-                        + "- SI esta en el Inventario");
-                productoEsta =true;
-                break;
-            }
+    public boolean eliminarProductoYSaber(int codigo){
+        boolean productoEsta;
+        productoEsta =this.misProductos.containsKey(codigo);
+        if (productoEsta){
+            this.capacidadOcupada-=this.misProductos.get(codigo).getStock();
+            this.misProductos.remove(codigo);
         }
-        if (!productoEsta){
+        return productoEsta;
+    }
+
+    public void buscarProducto(int codigo){
+        boolean productoEsta;
+        productoEsta=this.misProductos.containsKey(codigo);
+        if (productoEsta) {
+            System.out.println("El Producto: -" + this.misProductos.get(codigo).getNombre() + "-  De Codigo: -" +
+                    this.misProductos.get(codigo).getCodigo() + "- SI esta en el Inventario");
+        } else {
             System.out.println("El Producto de Codigo: -" + codigo + "- NO esta en el Inventario");
         }
     }
@@ -172,36 +171,26 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
     //METODOS VENDER PRODUCTO:
 
     public boolean buscarProductoParaVender(int codigo){
-        int buscaCodigo;
-        boolean productoEsta =false;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                productoEsta =true;
-                break;
-            }
-        }
+        boolean productoEsta;
+        productoEsta = this.misProductos.containsKey(codigo);
         return productoEsta;
     }
 
     public double venderProducto(int codigo,int cantidad){
-        int buscaCodigo;
+        boolean productoEsta;
         double pagoProducto=0;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                if (cantidad > miProducto.getStock()) {
-                    System.out.println("ACCION RECHAZADA:\n" +
-                            "Stock insuficiente, solo hay " + miProducto.getStock() + " unidades");
-                    return pagoProducto;
-                }
-                pagoProducto = (miProducto.getValorVenta())*cantidad;
-                miProducto.reducirStock(cantidad);
-                this.capacidadOcupada -= cantidad;
-                System.out.println("\nHas Vendido " + cantidad + " Unidades de " + miProducto.getNombre());
-                miProducto.describirProducto();
-                break;
+        productoEsta=this.misProductos.containsKey(codigo);
+        if (productoEsta) {
+            if (cantidad > this.misProductos.get(codigo).getStock()) {
+                System.out.println("ACCION RECHAZADA:\n" +
+                        "Stock insuficiente, solo hay " + this.misProductos.get(codigo).getStock() + " unidades");
+                return pagoProducto;
             }
+            pagoProducto = (this.misProductos.get(codigo).getValorVenta())*cantidad;
+            this.misProductos.get(codigo).reducirStock(cantidad);
+            this.capacidadOcupada -= cantidad;
+            System.out.println("\nHas Vendido " + cantidad + " Unidades de " + this.misProductos.get(codigo).getNombre());
+            this.misProductos.get(codigo).describirProducto();
         }
         return pagoProducto;
     }
@@ -209,119 +198,83 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
     //METODOS MOVER PRODUCTO A OTRO INVENTARIO:
 
     public Producto asignarProductoParaCambiarInventario(int codigo){
-        int buscaCodigo;
-        boolean productoEsta =false;
+        boolean productoEsta;
+        productoEsta = this.misProductos.containsKey(codigo);
         Producto auxiliar = null;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                productoEsta =true;
-                auxiliar = miProducto;
-                break;
-            }
-        }
-        if (!productoEsta){
+        if (productoEsta){
+            auxiliar = this.misProductos.get(codigo);
+        } else {
             System.out.println("El Producto de Codigo: -" + codigo + "- NO esta en el Inventario");
         }
         return auxiliar;
     }
 
     public void agregarProductoHecho(Producto producto){
-        this.misProductos.add(producto);
+        this.misProductos.put(producto.getCodigo(),producto);
         this.capacidadOcupada += producto.getStock();
     }
 
     //METODOS MODIFICAR PRODUCTO:
 
     public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje){
-        int buscaCodigo;
-        boolean productoEsta =false;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                miProducto.cambiarValorVentaPorPorcentaje(porcentaje);
-                productoEsta =true;
-                break;
-            }
-        }
-        if (!productoEsta){
+        boolean productoEsta;
+        productoEsta = this.misProductos.containsKey(codigo);
+        if (productoEsta) {
+            this.misProductos.get(codigo).cambiarValorVentaPorPorcentaje(porcentaje);
+        } else {
             System.out.println("El Producto de Codigo:  " + codigo + " NO esta en el Inventario");
         }
     }
 
     public void actualizarValorVentaPorPrecio(int codigo,double precio){
-        int buscaCodigo;
-        boolean productoEsta =false;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                miProducto.cambiarValorVentaPorPrecio(precio);
-                productoEsta =true;
-                break;
-            }
-        }
-        if (!productoEsta){
+        boolean productoEsta;
+        productoEsta = this.misProductos.containsKey(codigo);
+        if (productoEsta) {
+            this.misProductos.get(codigo).cambiarValorVentaPorPrecio(precio);
+        } else {
             System.out.println("El Producto de Codigo:  " + codigo + " NO esta en el Inventario");
         }
     }
 
     public void actualizarNombreProducto(int codigo,String nombre){
-        int buscaCodigo;
-        boolean productoEsta =false;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                miProducto.cambiarNombreProducto(nombre);
-                productoEsta =true;
-                break;
-            }
-        }
-        if (!productoEsta){
+        boolean productoEsta;
+        productoEsta = this.misProductos.containsKey(codigo);
+        if (productoEsta) {
+            this.misProductos.get(codigo).cambiarNombreProducto(nombre);
+        } else {
             System.out.println("El Producto de Codigo:  " + codigo + " NO esta en el Inventario");
         }
     }
 
     public void actualizarValorCompra(int codigo,double valorNuevo){
-        int buscaCodigo;
-        boolean productoEsta =false;
-        for (Producto miProducto : this.misProductos) {
-            buscaCodigo=miProducto.getCODIGO();
-            if (buscaCodigo == codigo) {
-                miProducto.cambiarValorCompra(valorNuevo);
-                productoEsta =true;
-                break;
-            }
-        }
-        if (!productoEsta){
+        boolean productoEsta;
+        productoEsta = this.misProductos.containsKey(codigo);
+        if (productoEsta) {
+            this.misProductos.get(codigo).cambiarValorCompra(valorNuevo);
+        } else {
             System.out.println("El Producto de Codigo:  " + codigo + " NO esta en el Inventario");
         }
     }
 
-    public void actualizarStockProducto(int codigo,int cantidad){
+    public void agregarStockProducto(int codigo, int cantidad){
         if (cantidad<=0){
             System.out.println("ACCION RECHAZADA:\nLa Cantidad que deseas ingresar NO es valida");
         } else {
-            int buscaCodigo;
-            boolean productoEsta =false;
-            for (Producto miProducto : this.misProductos) {
-                buscaCodigo=miProducto.getCODIGO();
-                if (buscaCodigo == codigo) {
-                    int capacidadLibre = (this.CAPACIDAD_MAXIMA-this.capacidadOcupada);
-                    if (cantidad>capacidadLibre){
-                        System.out.println("ACCION RECHAZADA:\nLa Cantidad que deseas ingresar Excede la Capacidad " +
-                                "Disponible del Inventario:  " + capacidadLibre + " Espacios Disponibles");
-                    } else {
-                        miProducto.actualizarStock(cantidad);
-                        this.capacidadOcupada += cantidad;
-                        System.out.println("Stock del Producto -" + miProducto.getNombre() + "- Actualizado Con Exito:\n" +
-                                "Ahora hay " + miProducto.getStock() + " Unidades del Producto " + miProducto.getNombre() +
-                                " en el Inventario: -" + getNombre() + "-");
-                    }
-                    productoEsta =true;
-                    break;
+            boolean productoEsta;
+            productoEsta = this.misProductos.containsKey(codigo);
+            if (productoEsta) {
+                int capacidadLibre = (this.capacidadMaxima-this.capacidadOcupada);
+                if (cantidad>capacidadLibre){
+                    System.out.println("ACCION RECHAZADA:\nLa Cantidad que deseas ingresar Excede la Capacidad " +
+                            "Disponible del Inventario:  " + capacidadLibre + " Espacios Disponibles");
+                } else {
+                    this.misProductos.get(codigo).actualizarStock(cantidad);
+                    this.capacidadOcupada += cantidad;
+                    System.out.println("Stock del Producto -" + this.misProductos.get(codigo).getNombre() + "- Actualizado Con Exito:\n" +
+                            "Ahora hay " + this.misProductos.get(codigo).getStock() + " Unidades del Producto " +
+                            this.misProductos.get(codigo).getNombre() + " en el Inventario: -" + getNombre() + "-");
                 }
-            }
-            if (!productoEsta){
+            } else {
                 System.out.println("El Producto de Codigo:  " + codigo + " NO esta en el Inventario");
             }
         }
@@ -331,25 +284,19 @@ public class Inventario { //302 LINEAS NETAS DE 352 LINEAS TOTALES
         if (cantidad<=0){
             System.out.println("ACCION RECHAZADA:\nLa Cantidad que deseas ingresar NO es valida");
         } else {
-            int buscaCodigo;
-            boolean productoEsta =false;
-            for (Producto miProducto : this.misProductos) {
-                buscaCodigo=miProducto.getCODIGO();
-                if (buscaCodigo == codigo) {
-                    if (cantidad>miProducto.getStock()){
-                        System.out.println("ACCION RECHAZADA:\nLa Cantidad que deseas ingresar es mayor a la cantidad existente");
-                    } else {
-                        miProducto.reducirStock(cantidad);
-                        this.capacidadOcupada -= cantidad;
-                        System.out.println("Stock del Producto -" + miProducto.getNombre() + "- Actualizado Con Exito:\n" +
-                                "Ahora hay " + miProducto.getStock() + " Unidades del Producto " + miProducto.getNombre() +
-                                " en el Inventario: -" + getNombre() + "-");
-                    }
-                    productoEsta =true;
-                    break;
+            boolean productoEsta;
+            productoEsta = this.misProductos.containsKey(codigo);
+            if (productoEsta) {
+                if (cantidad>this.misProductos.get(codigo).getStock()){
+                    System.out.println("ACCION RECHAZADA:\nLa Cantidad que deseas reducir es mayor a la cantidad existente");
+                } else {
+                    this.misProductos.get(codigo).reducirStock(cantidad);
+                    this.capacidadOcupada -= cantidad;
+                    System.out.println("Stock del Producto -" + this.misProductos.get(codigo).getNombre() + "- Actualizado Con Exito:\n" +
+                            "Ahora hay " + this.misProductos.get(codigo).getStock() + " Unidades del Producto " + this.misProductos.get(codigo).getNombre() +
+                            " en el Inventario: -" + getNombre() + "-");
                 }
-            }
-            if (!productoEsta){
+            } else {
                 System.out.println("El Producto de Codigo:  " + codigo + " NO esta en el Inventario");
             }
         }

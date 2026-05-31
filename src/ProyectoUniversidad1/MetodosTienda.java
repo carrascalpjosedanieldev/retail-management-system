@@ -103,7 +103,7 @@ public class MetodosTienda { //99 LINEAS NETAS DE 113 LINEAS TOTALES
                 numero = sc.nextDouble();
                 sc.nextLine();
                 return numero;
-            } catch (InputMismatchException enteroInvalido){
+            } catch (InputMismatchException decimalInvalido){
                 System.out.print("\nDebes Ingresar un Numero Valido\n---> ");
                 sc.nextLine();
             }

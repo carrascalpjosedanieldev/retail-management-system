@@ -3,7 +3,7 @@ package ProyectoUniversidad1;
 import java.util.Scanner;
 import static ProyectoUniversidad1.MetodosTienda.*;
 
-public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
+public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
 
     public static void main(String[] args) {
 
@@ -25,28 +25,28 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
 
         miTienda.agregarInventario("Principal",400);
 
-        miTienda.agregarProductoAUnInv(0,"Camisa",50000,80);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(0,1,75000);
+        miTienda.agregarProductoAUnInv(1,"Camisa",50000,80);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(1,1,75000);
 
-        miTienda.agregarProductoAUnInv(0,"Pantalon",75000,75);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(0,2,105000);
+        miTienda.agregarProductoAUnInv(1,"Pantalon",75000,75);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(1,2,105000);
 
-        miTienda.agregarProductoAUnInv(0,"Medias",8000,100);
-        miTienda.actualizarValorVentaPorcentajeInventarioProducto(0,3,100);
+        miTienda.agregarProductoAUnInv(1,"Medias",8000,100);
+        miTienda.actualizarValorVentaPorcentajeInventarioProducto(1,3,100);
 
-        miTienda.agregarProductoAUnInv(0,"Chaqueta",120000,50);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(0,4,165000);
+        miTienda.agregarProductoAUnInv(1,"Chaqueta",120000,50);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(1,4,165000);
 
-        miTienda.agregarProductoAUnInv(0,"Vestido",65000,50);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(0,5,100000);
+        miTienda.agregarProductoAUnInv(1,"Vestido",65000,50);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(1,5,100000);
 
         miTienda.agregarInventario("Secundario",250);
 
-        miTienda.agregarProductoAUnInv(1,"Pantaloneta",35000,50);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(1,6,55000);
+        miTienda.agregarProductoAUnInv(2,"Pantaloneta",35000,50);
+        miTienda.actualizarValorVentaPrecioInventarioProducto(2,6,55000);
 
-        miTienda.agregarProductoAUnInv(1,"Boxer",25000,50);
-        miTienda.actualizarValorVentaPorcentajeInventarioProducto(1,7,100);
+        miTienda.agregarProductoAUnInv(2,"Boxer",25000,50);
+        miTienda.actualizarValorVentaPorcentajeInventarioProducto(2,7,100);
 
         //*/
 
@@ -100,7 +100,7 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                 case 2:
 
 
-                    if (miTienda!=null){
+                    if (contadorTiendas!=0){
                         System.out.println("\nHAS SELECCIONADO: -MODIFICAR TIENDA-");
                         int leerModificarTienda;
                         boolean opcionesModificarTienda;
@@ -170,7 +170,6 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                                             Elige el Inventario por su numero identificador:
                                             """ + "---> ");
                                         numeroId = leerEntero(sc);
-                                        numeroId--;
                                         miTienda.mostrarUnInventario(numeroId);
                                     }
                                     break;
@@ -200,7 +199,6 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                                                 Elige el Inventario por su numero identificador:
                                                 """ + "---> ");
                                         numeroId = leerEntero(sc);
-                                        numeroId--;
 
                                         do {
 
@@ -455,7 +453,6 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                                                         codigo = leerEntero(sc);
                                                         System.out.println("\nA que Inventario lo vas a mover, escribe su numero identificador:\n---> ");
                                                         int numeroId2 = leerEntero(sc);
-                                                        numeroId2--;
                                                         miTienda.moverProductoAOtroInventario(numeroId,numeroId2,codigo);
                                                     } else {
                                                         System.out.println("""
@@ -492,7 +489,6 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                                             Elige el Inventario por su numero identificador:
                                             """ + "---> ");
                                         numeroId = leerEntero(sc);
-                                        numeroId--;
                                         if (miTienda.inventarioTieneProductos(numeroId)){
                                             miTienda.mostrarStockUnInventario(numeroId);
                                         } else {
@@ -530,7 +526,6 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                                                 Elige el Inventario que vas a Eliminar por su numero identificador:
                                                 """ + "---> ");
                                         numeroId = leerEntero(sc);
-                                        numeroId--;
                                         miTienda.eliminarInventarioVacio(numeroId);
                                     }
                                     break;
@@ -554,7 +549,7 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                 case 3:
 
 
-                    if (miTienda==null || !miTienda.tieneInventarios()){
+                    if (contadorTiendas==0 || !miTienda.tieneInventarios()){
                         System.out.println("""
                                         \nACCION DENEGADA
                                         NO PUEDES REALIZAR ESTA ACCION
@@ -620,6 +615,12 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                                             while (otroProducto == 1){
 
                                                 miTienda.mostrarInventarioGeneral();
+
+                                                System.out.print("""
+                                                    \nSegun el Producto que vas a Vender, escribe el numero identificador del Inventario:
+                                                    """ + "---> ");
+                                                numeroId = leerEntero(sc);
+
                                                 System.out.print("""
                                                     \nQue Producto vas a Vender, Codigo:
                                                     """ + "---> ");
@@ -634,7 +635,7 @@ public class UsoTienda { //564 LINEAS NETAS DE CODIGO DE 732 LINEAS TOTALES
                                                 } while (cantidad<0);
 
                                                 if (cantidad > 0) {
-                                                    pagoProducto = miTienda.venderProducto(codigo,cantidad);
+                                                    pagoProducto = miTienda.venderProducto(numeroId,codigo,cantidad);
                                                     pagoCliente+=pagoProducto;
                                                     subtotalCliente=pagoCliente;
                                                     contVentas++;

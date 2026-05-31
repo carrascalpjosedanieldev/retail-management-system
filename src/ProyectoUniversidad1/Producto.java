@@ -1,10 +1,10 @@
 package ProyectoUniversidad1;
 
-public class Producto {//125 LINEAS NETAS DE 160 LINEAS TOTALES
+public class Producto {//x LINEAS NETAS DE 160 LINEAS TOTALES
 
     //ATRIBUTOS:
 
-    private final int CODIGO;
+    private final int codigo;
 
     private static int codigoSiguiente = 1;
 
@@ -20,8 +20,8 @@ public class Producto {//125 LINEAS NETAS DE 160 LINEAS TOTALES
 
     //GETTERS Y SETTERS:
 
-    public int getCODIGO() {
-        return CODIGO;
+    public int getCodigo() {
+        return codigo;
     }
 
     public String getNombre() {
@@ -59,7 +59,7 @@ public class Producto {//125 LINEAS NETAS DE 160 LINEAS TOTALES
 
     //CONSTRUCTORES:
 
-    public Producto(String nombre, double valorCompra, int stock) {
+    public Producto(String nombre, double valorCompra, int stock) throws IllegalArgumentException{
         if (nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
         }
@@ -69,7 +69,7 @@ public class Producto {//125 LINEAS NETAS DE 160 LINEAS TOTALES
         if (stock<0){
             throw new IllegalArgumentException("Stock del Producto Invalido");
         }
-        this.CODIGO = codigoSiguiente++;
+        this.codigo = codigoSiguiente++;
         this.nombre = nombre;
         this.valorCompra = valorCompra;
         this.porcentajeGanancia = 20;
@@ -77,14 +77,14 @@ public class Producto {//125 LINEAS NETAS DE 160 LINEAS TOTALES
         this.stock = stock;
     }
 
-    public Producto(String nombre, double valorCompra) {
+    public Producto(String nombre, double valorCompra) throws IllegalArgumentException{
         if (nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
         }
         if (valorCompra<=0) {
             throw new IllegalArgumentException("Valor de Compra del Producto Invalido");
         }
-        this.CODIGO = codigoSiguiente++;
+        this.codigo = codigoSiguiente++;
         this.nombre = nombre;
         this.valorCompra = valorCompra;
         this.porcentajeGanancia = 20;
@@ -94,36 +94,30 @@ public class Producto {//125 LINEAS NETAS DE 160 LINEAS TOTALES
 
     //METODOS:
 
-    public void describirProducto(){
-        System.out.printf("%s %-10s %s %-4d %s %-12.2f %s %3.0f%s %s %-12.2f %s %-4d%n","Nombre del Producto: ",
-                getNombre(),"Codigo: ",getCODIGO(), "Valor Compra: ",getValorCompra(), "Ganancia: ",
-                getPorcentajeGanancia(),"%","   Valor Venta: ", getValorVenta(),"Stock: ",getStock());
+    public String describirProducto(){
+        String descripcion;
+        descripcion = String.format("Nombre del Producto:  %-10s Codigo:  %-4d Valor Compra:  %-12.2f Ganancia:  %3.0f%s Valor Venta:  %-12.2f Stock:  %-4d%n",
+                getNombre(),getCodigo(),getValorCompra(),getPorcentajeGanancia(),"%   ", getValorVenta(),getStock());
+        return descripcion;
     }
 
     //METODOS MODIFICAR PRODUCTO:
 
-    public void cambiarValorVentaPorPorcentaje(double porcentajeGanancia){
+    public void cambiarValorVentaPorPorcentaje(double porcentajeGanancia) throws IllegalArgumentException{
         if (porcentajeGanancia<20 || porcentajeGanancia>100){
-            System.out.println("ACCION RECHAZADA:\nEl porcentaje de ganacia debe estar entre 20 y 100");
-        } else {
-            setPorcentajeGanancia(porcentajeGanancia);
-            this.valorVenta = this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
-            System.out.println("Precio Cambiado Con Exito:\nEl Precio del Producto " + getNombre() + " ahora es de:  $" + getValorVenta());
+            throw new IllegalArgumentException("Porcentaje De Ganancia Invalido");
         }
+        setPorcentajeGanancia(porcentajeGanancia);
+        this.valorVenta = this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
     }
 
-    public void cambiarValorVentaPorPrecio(double precioDeseado) {
+    public void cambiarValorVentaPorPrecio(double precioDeseado) throws IllegalArgumentException{
         double porcentajeImplicito = ((precioDeseado - this.valorCompra) / this.valorCompra) * 100;
         if (porcentajeImplicito < 20 || porcentajeImplicito > 100) {
-            System.out.println("ACCION RECHAZADA:");
-            System.out.println("El precio deseado implica un margen de " + String.format("%.2f", porcentajeImplicito)
-                    + "% fuera del rango permitido (20-100%). Por tanto, Accion Denegada");
-        } else {
-            setPorcentajeGanancia(porcentajeImplicito);
-            this.valorVenta = precioDeseado;
-            System.out.println("Precio Cambiado Con Exito:\nEl Precio del Producto " + getNombre() + " ahora es " +
-                    "de:  $" + getValorVenta());
+            throw new IllegalArgumentException("Precio De Venta No Cumple Las Reglas Necesarias");
         }
+        setPorcentajeGanancia(porcentajeImplicito);
+        this.valorVenta = precioDeseado;
     }
 
     public void cambiarNombreProducto(String nombre){
