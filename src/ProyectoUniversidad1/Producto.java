@@ -1,6 +1,6 @@
 package ProyectoUniversidad1;
 
-public class Producto {//x LINEAS NETAS DE 160 LINEAS TOTALES
+public class Producto {//x LINEAS NETAS DE 154 LINEAS TOTALES
 
     //ATRIBUTOS:
 
@@ -60,7 +60,7 @@ public class Producto {//x LINEAS NETAS DE 160 LINEAS TOTALES
     //CONSTRUCTORES:
 
     public Producto(String nombre, double valorCompra, int stock) throws IllegalArgumentException{
-        if (nombre.isBlank()){
+        if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
         }
         if (valorCompra<=0) {
@@ -69,36 +69,28 @@ public class Producto {//x LINEAS NETAS DE 160 LINEAS TOTALES
         if (stock<0){
             throw new IllegalArgumentException("Stock del Producto Invalido");
         }
-        this.codigo = codigoSiguiente++;
+        this.codigo = codigoSiguiente;
         this.nombre = nombre;
         this.valorCompra = valorCompra;
         this.porcentajeGanancia = 20;
-        this.valorVenta = this.valorCompra + (this.valorCompra*(this.porcentajeGanancia/100));
+        this.valorVenta = calcularValorVenta();
         this.stock = stock;
+        codigoSiguiente++;
     }
 
-    public Producto(String nombre, double valorCompra) throws IllegalArgumentException{
-        if (nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Producto Invalido");
-        }
-        if (valorCompra<=0) {
-            throw new IllegalArgumentException("Valor de Compra del Producto Invalido");
-        }
-        this.codigo = codigoSiguiente++;
-        this.nombre = nombre;
-        this.valorCompra = valorCompra;
-        this.porcentajeGanancia = 20;
-        this.valorVenta = this.valorCompra + (this.valorCompra*(this.porcentajeGanancia/100));
-        this.stock = 0;
-    }
-
-    //METODOS:
+    //METODOS DE PRODUCTO:
 
     public String describirProducto(){
         String descripcion;
         descripcion = String.format("Nombre del Producto:  %-10s Codigo:  %-4d Valor Compra:  %-12.2f Ganancia:  %3.0f%s Valor Venta:  %-12.2f Stock:  %-4d%n",
                 getNombre(),getCodigo(),getValorCompra(),getPorcentajeGanancia(),"%   ", getValorVenta(),getStock());
         return descripcion;
+    }
+
+    //METODOS PRIVADOS:
+
+    private double calcularValorVenta(){
+        return this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
     }
 
     //METODOS MODIFICAR PRODUCTO:
@@ -108,7 +100,7 @@ public class Producto {//x LINEAS NETAS DE 160 LINEAS TOTALES
             throw new IllegalArgumentException("Porcentaje De Ganancia Invalido");
         }
         setPorcentajeGanancia(porcentajeGanancia);
-        this.valorVenta = this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
+        this.valorVenta = calcularValorVenta();
     }
 
     public void cambiarValorVentaPorPrecio(double precioDeseado) throws IllegalArgumentException{
@@ -120,35 +112,39 @@ public class Producto {//x LINEAS NETAS DE 160 LINEAS TOTALES
         this.valorVenta = precioDeseado;
     }
 
-    public void cambiarNombreProducto(String nombre){
-        if (nombre.isBlank()){
-            System.out.println("ACCION RECHAZADA:\nNO se puede cambiar el Nombre del Producto " + getNombre());
-        } else {
-            System.out.print("Nombre Cambiado Con Exito:\nEl Producto:  " + getNombre());
-            setNombre(nombre);
-            System.out.println("   Ahora se llamara:  " + getNombre());
+    public void cambiarNombreProducto(String nombre) throws IllegalArgumentException{
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("Nombre Vacio");
         }
+        setNombre(nombre);
     }
 
-    public void cambiarValorCompra(double valorNuevo){
+    public void cambiarValorCompra(double valorNuevo) throws IllegalArgumentException{
         if (valorNuevo<=0){
-            System.out.println("ACCION RECHAZADA:\nNO se puede cambiar el precio del Producto " + getNombre());
-        } else {
-            setValorCompra(valorNuevo);
-            this.valorVenta = this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
-            System.out.println("Valor de Compra Cambiado Con Exito:\nEl valor de compra del producto " + getNombre() +
-                    " ahora es de:  $" + getValorCompra());
+            throw new IllegalArgumentException("Valor Negativo");
         }
+        setValorCompra(valorNuevo);
+        this.valorVenta = calcularValorVenta();
     }
 
-    public void actualizarStock(int cantidad){
+    public void aumentarStock(int cantidad) throws IllegalArgumentException{
+        if (cantidad<0){
+            throw new IllegalArgumentException("Cantidad Negativa");
+        }
         int stockTotal = (getStock()) + cantidad;
         setStock(stockTotal);
     }
 
-    public void reducirStock(int cantidad){
+    public void reducirStock(int cantidad) throws IllegalArgumentException{
+        if (cantidad<0){
+            throw new IllegalArgumentException("Cantidad Negativa");
+        }
         int stockTotal = (getStock()) - cantidad;
+        if (stockTotal<0){
+            throw new IllegalArgumentException("La Cantidad A Reducir Es Mayor A La Cantidad Existente");
+        }
         setStock(stockTotal);
     }
 
 }
+

@@ -3,7 +3,7 @@ package ProyectoUniversidad1;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Tienda { //x LINEAS NETAS DE 263 LINEAS TOTALES
+public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
 
     //ATRIBUTOS:
 
@@ -24,8 +24,8 @@ public class Tienda { //x LINEAS NETAS DE 263 LINEAS TOTALES
     //CONSTRUCTOR:
 
     public Tienda(String nombreTienda) throws IllegalArgumentException{
-        if (nombreTienda.isBlank()){
-            throw new IllegalArgumentException("Asignacion de Nombre de la Tienda Invalido");
+        if (nombreTienda==null || nombreTienda.isBlank()){
+            throw new IllegalArgumentException("Nombre Vacio");
         }
         this.nombreTienda = nombreTienda;
         this.misInventarios = new HashMap<>();
@@ -33,232 +33,166 @@ public class Tienda { //x LINEAS NETAS DE 263 LINEAS TOTALES
 
     //METODOS:
 
-    public boolean tieneInventarios(){
+    public boolean tiendaTieneInventarios(){
         return !this.misInventarios.isEmpty();
     }
 
-    public boolean inventarioTieneProductos(int indice){
-        return this.misInventarios.get(indice).tieneProductos();
+    public boolean inventarioTieneProductos(int id){
+        Inventario inventario = obtenerInventarioValido(id);
+        return inventario.tieneProductos();
     }
 
-    public void mostrarInventarios(){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-            return;
+    private Inventario obtenerInventarioValido(int id) throws IllegalArgumentException{
+        Inventario inventario = this.misInventarios.get(id);
+        if (inventario==null){
+            throw new IllegalArgumentException("Ese Inventario No existe");
         }
-        this.misInventarios.values().forEach(Inventario::informacionMinimaInventario);
+        return inventario;
     }
 
-    public void mostrarUnInventario(int indice){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-        } else if (indice<0 || indice>=this.misInventarios.size()){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(indice).mostrarInventario();
+    private void validarQueExistanInventarios(){
+        if (!tiendaTieneInventarios()){
+            throw new IllegalArgumentException("No Hay Inventarios");
         }
     }
 
-    public void mostrarStockUnInventario(int indice){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-        } else if (indice<0 || indice>=this.misInventarios.size()){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(indice).mostrarStockInventario();
+    public String mostrarInfoInventarios() throws IllegalArgumentException{
+        validarQueExistanInventarios();
+        StringBuilder informacion = new StringBuilder();
+        informacion.append("----------------------------------------------------------------------------------------------------------------------------------");
+        informacion.append(System.lineSeparator());
+        for (Inventario inventario :this.misInventarios.values()){
+            informacion.append(inventario.informacionMinima());
         }
+        informacion.append(System.lineSeparator());
+        informacion.append("----------------------------------------------------------------------------------------------------------------------------------");
+        return informacion.toString();
+    }
+
+    public String obtenerDetalleUnInventario(int id) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        return inventario.obtenerDetalle();
+    }
+
+    public String mostrarInfoStockUnInventario(int id) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        return inventario.mostrarInformacionStock();
     }
 
     //METODOS MODIFICAR TIENDA:
 
-    public void cambiarNombreTienda(String nuevoNombre){
-        if (nuevoNombre.isBlank()){
-            System.out.println("\nACCION RECHAZADA:\nNombre para el Inventario invalido");
-        } else {
-            System.out.print("\nCAMBIO EXITOSO\nLa Tienda:  -" + getNombreTienda() + "- ");
-            setNombreTienda(nuevoNombre);
-            System.out.println(" Ahora tendra el nombre:  -" + getNombreTienda() + "-");
+    public void cambiarNombreTienda(String nuevoNombre) throws IllegalArgumentException{
+        if (nuevoNombre==null || nuevoNombre.isBlank()){
+            throw new IllegalArgumentException("Nombre Vacio");
         }
+        setNombreTienda(nuevoNombre);
     }
 
-    public void agregarInventario(String nombre,int capacidadMaxima) {
-        try {
-            Inventario inventario = new Inventario(nombre, capacidadMaxima);
-            System.out.println("\nNUEVO INVENTARIO GENERADO CON EXITO:\n" +
-                    "Ahora la Tienda: -" + getNombreTienda() + "- Tiene el Inventario: -" + nombre + "- Con una Capacidad de: " +
-                    capacidadMaxima + " Unidades");
-            this.misInventarios.put(inventario.getNumeroId(),inventario);
-        } catch (IllegalArgumentException asignacionInvalida) {
-            System.out.println("\nNO se puede generar este Inventario por un error de asignacion de datos:");
-            System.out.println("ERROR: " + asignacionInvalida.getMessage());
-        }
+    public void agregarInventario(String nombre,int capacidadMaxima) throws IllegalArgumentException{
+        Inventario inventario = new Inventario(nombre, capacidadMaxima);
+        this.misInventarios.put(inventario.getNumeroId(),inventario);
     }
 
-    public void eliminarInventarioVacio(int id){
-        boolean inventarioEsta;
-        inventarioEsta = this.misInventarios.containsKey(id);
-        if (!inventarioEsta){
-            System.out.println("""
-                    \nACCION DENEGADA
-                    INVENTARIO INEXISTENTE
-                    """);
-        } else {
-            if (!this.misInventarios.get(id).tieneProductos()){
-                this.misInventarios.remove(id);
-            } else {
-                System.out.println("""
-                    \nACCION DENEGADA
-                    EL INVENTARIO NO ESTA VACIO
-                    """);
-            }
+    public boolean eliminarInventarioVacio(int id) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        if (!inventario.tieneProductos()){
+            this.misInventarios.remove(id);
+            return true;
         }
+        return false;
     }
 
     //METODOS MOVER PRODUCTO A OTRO INVENTARIO:
 
-    public void moverProductoAOtroInventario(int idSalida, int idLlegada, int codigo){
-        if (!this.misInventarios.containsKey(idSalida) || !this.misInventarios.containsKey(idLlegada)){
-            System.out.println("""
-                    \nACCION DENEGADA
-                    INVENTARIO INEXISTENTE
-                    """);
-        } else if (idSalida == idLlegada) {
-            System.out.println("""
-                    \nACCION DENEGADA:
-                    EL INVENTARIO DE ORIGEN Y DESTINO SON EL MISMO
-                    """);
-        } else {
-            Producto auxiliar = this.misInventarios.get(idSalida).asignarProductoParaCambiarInventario(codigo);
-            boolean eliminado = this.misInventarios.get(idSalida).eliminarProductoYSaber(codigo);
-            if (eliminado) {
-                this.misInventarios.get(idLlegada).agregarProductoHecho(auxiliar);
-            } else {
-                System.out.println("""
-                        \nACCION DENEGADA
-                        ESE PRODUCTO NO SE ENCUENTRA
-                        """);
-            }
+    public void moverProductoAOtroInventario(int idSalida, int idLlegada, int codigo) throws IllegalArgumentException{
+        Inventario inventarioSalida = obtenerInventarioValido(idSalida);
+        Inventario inventarioLlegada = obtenerInventarioValido(idLlegada);
+        if (idSalida == idLlegada) {
+            throw new IllegalArgumentException("Inventario De Salida Y De Llegada Iguales");
         }
+        if (inventarioLlegada.buscarProducto(codigo)) {
+            throw new IllegalArgumentException("El producto ya existe en el inventario de destino");
+        }
+        Producto producto = inventarioSalida.obtenerProducto(codigo);
+        inventarioLlegada.agregarProductoHecho(producto);
+        inventarioSalida.eliminarUnProducto(codigo);
     }
 
     //METODOS UTILIZAR TIENDA:
 
-    public void mostrarInventarioGeneral(){
-        this.misInventarios.values().forEach(Inventario::mostrarInventario);
+    public String mostrarInventarioGeneral() throws IllegalArgumentException{
+        validarQueExistanInventarios();
+        StringBuilder inventarioGeneral = new StringBuilder();
+        for (Inventario inventario: this.misInventarios.values()){
+            inventarioGeneral.append(inventario.obtenerDetalle());
+        }
+        return inventarioGeneral.toString();
     }
 
     //METODOS VENDER PRODUCTO:
 
-    public double venderProducto(int id, int codigo,int cantidad){
-        boolean productoEsta;
-        double pagoProducto = 0;
-        productoEsta = this.misInventarios.get(id).buscarProductoParaVender(codigo);
-        if (productoEsta){
-            pagoProducto = this.misInventarios.get(id).venderProducto(codigo,cantidad);
-        }
-        return pagoProducto;
+    public double venderProducto(int id, int codigo,int cantidad) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        return inventario.venderProducto(codigo,cantidad);
     }
 
     //METODOS MODIFICAR INVENTARIO:
 
-    public void cambiarNombreAUnInventario(int id , String nombreNuevoInv){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-        }else if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).cambiarNombreInventario(nombreNuevoInv);
-        }
+    public void cambiarNombreAUnInventario(int id , String nombreNuevoInv) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.cambiarNombreInventario(nombreNuevoInv);
     }
 
-    public void agregarProductoAUnInv(int id,String nombreProducto,double valorCompra,int stock){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-        }else if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).agregarUnProducto(nombreProducto,valorCompra,stock);
-        }
+    public Producto agregarProductoAUnInv(int id, String nombreProducto, double valorCompra) throws IllegalArgumentException{
+        return agregarProductoAUnInv(id, nombreProducto, valorCompra, 0);
     }
 
-    public void agregarProductoAUnInv(int id, String nombreProducto, double valorCompra){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-        }else if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).agregarUnProducto(nombreProducto,valorCompra);
-        }
+    public Producto agregarProductoAUnInv(int id,String nombreProducto,double valorCompra,int stock) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        return inventario.agregarUnProducto(nombreProducto,valorCompra,stock);
     }
 
-    public void eliminarProductoAUnInv(int id, int codigo){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-        }else if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).eliminarUnProducto(codigo);
-        }
+    public void eliminarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.eliminarUnProducto(codigo);
     }
 
-    public void buscarProductoAUnInv(int id, int codigo){
-        if (this.misInventarios.isEmpty()){
-            System.out.println("\nACCION DENEGADA\nNO HAY INVENTARIOS");
-        }else if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).buscarProducto(codigo);
-        }
+    public void buscarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.buscarProducto(codigo);
     }
 
     //METODOS MODIFICAR PRODUCTO:
 
-    public void actualizarNombreInventarioProducto(int id, int codigo, String nombre){
-        if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).actualizarNombreProducto(codigo, nombre);
-        }
+    public void actualizarNombreInventarioProducto(int id, int codigo, String nombre) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.actualizarNombreProducto(codigo, nombre);
     }
 
     public void actualizarValorVentaPorcentajeInventarioProducto(int id, int codigo, double porcentaje){
-        if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).actualizarValorVentaPorPorcentaje(codigo, porcentaje);
-        }
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.actualizarValorVentaPorPorcentaje(codigo, porcentaje);
     }
 
     public void actualizarValorVentaPrecioInventarioProducto(int id, int codigo, double precio){
-        if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).actualizarValorVentaPorPrecio(codigo, precio);
-        }
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.actualizarValorVentaPorPrecio(codigo, precio);
     }
 
     public void actualizarValorCompraInventarioProducto(int id, int codigo, double valorNuevo){
-        if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).actualizarValorCompra(codigo, valorNuevo);
-        }
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.actualizarValorCompra(codigo, valorNuevo);
     }
 
     public void actualizarStockInventarioProducto(int id, int codigo, int cantidad){
-        if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).agregarStockProducto(codigo, cantidad);
-        }
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.agregarStockProducto(codigo, cantidad);
     }
 
-    public void reducirStockInventarioProd(int id, int codigo, int cantidad){
-        if (!this.misInventarios.containsKey(id)){
-            System.out.println("\nACCION DENEGADA\nESE INVENTARIO NO EXISTE");
-        } else {
-            this.misInventarios.get(id).reducirStockProducto(codigo, cantidad);
-        }
+    public void reducirStockInventarioProducto(int id, int codigo, int cantidad){
+        Inventario inventario = obtenerInventarioValido(id);
+        inventario.reducirStockProducto(codigo, cantidad);
     }
 
 }
+

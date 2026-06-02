@@ -153,7 +153,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
                                 case 3:
 
 
-                                    if (!miTienda.tieneInventarios()){
+                                    if (!miTienda.tiendaTieneInventarios()){
                                         System.out.println("""
                                             \nHAS SELECCIONADO: -VER INVENTARIO-
                                             ---> NO HAY INVENTARIOS AUN
@@ -170,7 +170,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
                                             Elige el Inventario por su numero identificador:
                                             """ + "---> ");
                                         numeroId = leerEntero(sc);
-                                        miTienda.mostrarUnInventario(numeroId);
+                                        miTienda.obtenerDetalleUnInventario(numeroId);
                                     }
                                     break;
 
@@ -180,7 +180,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
 
                                     System.out.println("\nHAS SELECCIONADO: -MODIFICAR INVENTARIO-");
 
-                                    if (!miTienda.tieneInventarios()){
+                                    if (!miTienda.tiendaTieneInventarios()){
                                         System.out.println("""
                                                 \nACCION DENEGADA
                                                 TODAVIA NO HAY INVENTARIO
@@ -381,7 +381,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
                                                                         \nEscribe las unidades eliminadas:
                                                                         """ + "---> ");
                                                                     int cantidadQuitada = leerEntero(sc);
-                                                                    miTienda.reducirStockInventarioProd(numeroId,codigo,cantidadQuitada);
+                                                                    miTienda.reducirStockInventarioProducto(numeroId,codigo,cantidadQuitada);
                                                                     break;
 
 
@@ -477,7 +477,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
                                 case 5:
 
 
-                                    if (miTienda.tieneInventarios()){
+                                    if (miTienda.tiendaTieneInventarios()){
                                         System.out.println("""
                                             \nHAS SELECCIONADO: -VER STOCK INVENTARIO-
                                             ---> INVENTARIOS:
@@ -509,7 +509,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
                                 case 6:
 
 
-                                    if (!miTienda.tieneInventarios()){
+                                    if (!miTienda.tiendaTieneInventarios()){
                                         System.out.println("""
                                             \nHAS SELECCIONADO: -ELIMINAR INVENTARIO VACIO-
                                             ---> NO HAY INVENTARIOS AUN
@@ -549,7 +549,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
                 case 3:
 
 
-                    if (contadorTiendas==0 || !miTienda.tieneInventarios()){
+                    if (contadorTiendas==0 || !miTienda.tiendaTieneInventarios()){
                         System.out.println("""
                                         \nACCION DENEGADA
                                         NO PUEDES REALIZAR ESTA ACCION
