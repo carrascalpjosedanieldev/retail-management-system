@@ -121,7 +121,7 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         return producto;
     }
 
-    public void eliminarUnProducto(int codigo){
+    public void eliminarUnProducto(int codigo) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto ==null){
             throw new IllegalArgumentException("El Producto No Se Encuentra");
@@ -134,25 +134,9 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         return this.misProductos.containsKey(codigo);
     }
 
-    //METODOS VENDER PRODUCTO:
-
-    public double venderProducto(int codigo,int cantidad){
-        Producto producto = this.misProductos.get(codigo);
-        if (producto==null){
-            throw new IllegalArgumentException("El Producto No Esta");
-        }
-        if (cantidad > producto.getStock()) {
-            throw new IllegalArgumentException("La Cantidad Excede el Stock Disponible");
-        }
-        double pagoProducto = producto.getValorVenta()*cantidad;
-        producto.reducirStock(cantidad);
-        this.capacidadOcupada -= cantidad;
-        return pagoProducto;
-    }
-
     //METODOS MOVER PRODUCTO A OTRO INVENTARIO:
 
-    public Producto obtenerProducto(int codigo){
+    public Producto obtenerProducto(int codigo) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto==null){
             throw new IllegalArgumentException("El Producto No Se Encuentra");
@@ -160,7 +144,7 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         return producto;
     }
 
-    public void agregarProductoHecho(Producto producto){
+    public void agregarProductoHecho(Producto producto) throws IllegalArgumentException{
         int capacidadLibre = calcularCapacidadLibre();
         if (producto.getStock()>capacidadLibre){
             throw new IllegalArgumentException("El Stock Excede La Capacidad");
@@ -171,7 +155,7 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
 
     //METODOS MODIFICAR PRODUCTO:
 
-    public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje){
+    public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto==null){
             throw new IllegalArgumentException("El Producto No Esta");
@@ -179,7 +163,7 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         producto.cambiarValorVentaPorPorcentaje(porcentaje);
     }
 
-    public void actualizarValorVentaPorPrecio(int codigo,double precio){
+    public void actualizarValorVentaPorPrecio(int codigo,double precio) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto ==null){
             throw new IllegalArgumentException("No Se Encuentra Ese Producto");
@@ -187,7 +171,7 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         producto.cambiarValorVentaPorPrecio(precio);
     }
 
-    public void actualizarNombreProducto(int codigo,String nombre){
+    public void actualizarNombreProducto(int codigo,String nombre) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto ==null){
             throw new IllegalArgumentException("No Se Encuentra Ese Producto");
@@ -195,7 +179,7 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         producto.cambiarNombreProducto(nombre);
     }
 
-    public void actualizarValorCompra(int codigo,double valorNuevo){
+    public void actualizarValorCompra(int codigo,double valorNuevo) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto==null){
             throw new IllegalArgumentException("No Se Encuentra Ese Producto");
@@ -203,7 +187,7 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         producto.cambiarValorCompra(valorNuevo);
     }
 
-    public void agregarStockProducto(int codigo, int cantidad){
+    public void agregarStockProducto(int codigo, int cantidad) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto ==null){
             throw new IllegalArgumentException("No Se Encuentra Ese Producto");
@@ -216,13 +200,30 @@ public class Inventario { //x LINEAS NETAS DE 244 LINEAS TOTALES
         this.capacidadOcupada += cantidad;
     }
 
-    public void reducirStockProducto(int codigo,int cantidad){
+    public void reducirStockProducto(int codigo, int cantidad) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
         if (producto ==null){
             throw new IllegalArgumentException("No Se Encuentra Ese Producto");
         }
         producto.reducirStock(cantidad);
         this.capacidadOcupada -= cantidad;
+    }
+
+    public Venta reducirStockProductoPorVenta(int codigo, int cantidad) throws IllegalArgumentException{
+        reducirStockProducto(codigo, cantidad);
+        Producto producto = obtenerProducto(codigo);
+        double valorCobrado = producto.getValorVenta()*cantidad;
+        return new Venta(producto.getNombre(), cantidad, valorCobrado);
+    }
+
+    public void verificarStockProductoDisponible(int codigo, int cantidad) throws IllegalArgumentException{
+        Producto producto = this.misProductos.get(codigo);
+        if (producto ==null){
+            throw new IllegalArgumentException("No Se Encuentra Ese Producto");
+        }
+        if (cantidad > producto.getStock()){
+            throw new IllegalArgumentException("La Cantidad A Reducir Es Mayor A La Cantidad Existente");
+        }
     }
 
 }

@@ -5,10 +5,15 @@ import static ProyectoUniversidad1.MetodosTienda.*;
 
 public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
 
+
+
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
+
         Tienda miTienda = null;
+        GestorVentas miGestorVentas = null;
+
         int leerOpcionPrincipal;
         boolean opcionPrincipalValida , opcionPrincipal=true;
         int contadorTiendas=0;
@@ -21,32 +26,33 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
         ///*
 
         miTienda = new Tienda("SLIM");
+        miGestorVentas = new GestorVentas(miTienda);
         contadorTiendas++;
 
         miTienda.agregarInventario("Principal",400);
 
         miTienda.agregarProductoAUnInv(1,"Camisa",50000,80);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(1,1,75000);
+        miTienda.obtenerInventario(1).actualizarValorVentaPorPrecio(1,75000);
 
         miTienda.agregarProductoAUnInv(1,"Pantalon",75000,75);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(1,2,105000);
+        miTienda.obtenerInventario(1).actualizarValorVentaPorPrecio(2,105000);
 
         miTienda.agregarProductoAUnInv(1,"Medias",8000,100);
-        miTienda.actualizarValorVentaPorcentajeInventarioProducto(1,3,100);
+        miTienda.obtenerInventario(1).actualizarValorVentaPorPorcentaje(3,100);
 
         miTienda.agregarProductoAUnInv(1,"Chaqueta",120000,50);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(1,4,165000);
+        miTienda.obtenerInventario(1).actualizarValorVentaPorPrecio(4,165000);
 
         miTienda.agregarProductoAUnInv(1,"Vestido",65000,50);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(1,5,100000);
+        miTienda.obtenerInventario(1).actualizarValorVentaPorPrecio(5,100000);
 
         miTienda.agregarInventario("Secundario",250);
 
         miTienda.agregarProductoAUnInv(2,"Pantaloneta",35000,50);
-        miTienda.actualizarValorVentaPrecioInventarioProducto(2,6,55000);
+        miTienda.obtenerInventario(2).actualizarValorVentaPorPrecio(6,55000);
 
         miTienda.agregarProductoAUnInv(2,"Boxer",25000,50);
-        miTienda.actualizarValorVentaPorcentajeInventarioProducto(2,7,100);
+        miTienda.obtenerInventario(2).actualizarValorVentaPorPorcentaje(7,100);
 
         //*/
 
@@ -170,7 +176,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
                                             Elige el Inventario por su numero identificador:
                                             """ + "---> ");
                                         numeroId = leerEntero(sc);
-                                        miTienda.obtenerDetalleUnInventario(numeroId);
+                                        miTienda.obtenerDetalleInventario(numeroId);
                                     }
                                     break;
 
@@ -729,5 +735,7 @@ public class UsoTienda { //x LINEAS NETAS DE CODIGO DE 733 LINEAS TOTALES
         } while (opcionPrincipal);
 
     }
+
+
 
 }

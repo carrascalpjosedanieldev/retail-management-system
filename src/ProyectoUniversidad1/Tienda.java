@@ -38,11 +38,11 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
     }
 
     public boolean inventarioTieneProductos(int id){
-        Inventario inventario = obtenerInventarioValido(id);
+        Inventario inventario = obtenerInventario(id);
         return inventario.tieneProductos();
     }
 
-    private Inventario obtenerInventarioValido(int id) throws IllegalArgumentException{
+    public Inventario obtenerInventario(int id) throws IllegalArgumentException{
         Inventario inventario = this.misInventarios.get(id);
         if (inventario==null){
             throw new IllegalArgumentException("Ese Inventario No existe");
@@ -69,13 +69,13 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
         return informacion.toString();
     }
 
-    public String obtenerDetalleUnInventario(int id) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
+    public String obtenerDetalleInventario(int id) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventario(id);
         return inventario.obtenerDetalle();
     }
 
-    public String mostrarInfoStockUnInventario(int id) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
+    public String mostrarInfoStockInventario(int id) throws IllegalArgumentException{
+        Inventario inventario = obtenerInventario(id);
         return inventario.mostrarInformacionStock();
     }
 
@@ -94,7 +94,7 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
     }
 
     public boolean eliminarInventarioVacio(int id) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
+        Inventario inventario = obtenerInventario(id);
         if (!inventario.tieneProductos()){
             this.misInventarios.remove(id);
             return true;
@@ -105,8 +105,8 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
     //METODOS MOVER PRODUCTO A OTRO INVENTARIO:
 
     public void moverProductoAOtroInventario(int idSalida, int idLlegada, int codigo) throws IllegalArgumentException{
-        Inventario inventarioSalida = obtenerInventarioValido(idSalida);
-        Inventario inventarioLlegada = obtenerInventarioValido(idLlegada);
+        Inventario inventarioSalida = obtenerInventario(idSalida);
+        Inventario inventarioLlegada = obtenerInventario(idLlegada);
         if (idSalida == idLlegada) {
             throw new IllegalArgumentException("Inventario De Salida Y De Llegada Iguales");
         }
@@ -129,17 +129,10 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
         return inventarioGeneral.toString();
     }
 
-    //METODOS VENDER PRODUCTO:
-
-    public double venderProducto(int id, int codigo,int cantidad) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
-        return inventario.venderProducto(codigo,cantidad);
-    }
-
     //METODOS MODIFICAR INVENTARIO:
 
     public void cambiarNombreAUnInventario(int id , String nombreNuevoInv) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
+        Inventario inventario = obtenerInventario(id);
         inventario.cambiarNombreInventario(nombreNuevoInv);
     }
 
@@ -148,50 +141,18 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
     }
 
     public Producto agregarProductoAUnInv(int id,String nombreProducto,double valorCompra,int stock) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
+        Inventario inventario = obtenerInventario(id);
         return inventario.agregarUnProducto(nombreProducto,valorCompra,stock);
     }
 
     public void eliminarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
+        Inventario inventario = obtenerInventario(id);
         inventario.eliminarUnProducto(codigo);
     }
 
     public void buscarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
+        Inventario inventario = obtenerInventario(id);
         inventario.buscarProducto(codigo);
-    }
-
-    //METODOS MODIFICAR PRODUCTO:
-
-    public void actualizarNombreInventarioProducto(int id, int codigo, String nombre) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventarioValido(id);
-        inventario.actualizarNombreProducto(codigo, nombre);
-    }
-
-    public void actualizarValorVentaPorcentajeInventarioProducto(int id, int codigo, double porcentaje){
-        Inventario inventario = obtenerInventarioValido(id);
-        inventario.actualizarValorVentaPorPorcentaje(codigo, porcentaje);
-    }
-
-    public void actualizarValorVentaPrecioInventarioProducto(int id, int codigo, double precio){
-        Inventario inventario = obtenerInventarioValido(id);
-        inventario.actualizarValorVentaPorPrecio(codigo, precio);
-    }
-
-    public void actualizarValorCompraInventarioProducto(int id, int codigo, double valorNuevo){
-        Inventario inventario = obtenerInventarioValido(id);
-        inventario.actualizarValorCompra(codigo, valorNuevo);
-    }
-
-    public void actualizarStockInventarioProducto(int id, int codigo, int cantidad){
-        Inventario inventario = obtenerInventarioValido(id);
-        inventario.agregarStockProducto(codigo, cantidad);
-    }
-
-    public void reducirStockInventarioProducto(int id, int codigo, int cantidad){
-        Inventario inventario = obtenerInventarioValido(id);
-        inventario.reducirStockProducto(codigo, cantidad);
     }
 
 }
