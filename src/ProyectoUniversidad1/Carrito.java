@@ -28,5 +28,20 @@ public class Carrito {
         this.carritoFinal.put(key, solicitudItem);
     }
 
+    public String mostrarCarrito(){
+        StringBuilder carrito = new StringBuilder();
+        carrito.append("----------------------------------------------------------");
+        carrito.append(System.lineSeparator());
+        carrito.append("                   CARRITO ACTUAL:");
+        carrito.append(System.lineSeparator());
+        for (SolicitudItem item:getItems()){
+            carrito.append(item.mostrarItem());
+            carrito.append("............................");
+            carrito.append(System.lineSeparator());
+        }
+        carrito.append("----------------------------------------------------------");
+        return carrito.toString();
+    }
+
 }
 

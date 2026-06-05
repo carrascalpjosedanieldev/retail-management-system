@@ -50,7 +50,7 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
         return inventario;
     }
 
-    private void validarQueExistanInventarios(){
+    private void validarQueExistanInventarios() throws IllegalArgumentException{
         if (!tiendaTieneInventarios()){
             throw new IllegalArgumentException("No Hay Inventarios");
         }
@@ -59,13 +59,15 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
     public String mostrarInfoInventarios() throws IllegalArgumentException{
         validarQueExistanInventarios();
         StringBuilder informacion = new StringBuilder();
-        informacion.append("----------------------------------------------------------------------------------------------------------------------------------");
+        informacion.append("---> INVENTARIOS:");
+        informacion.append(System.lineSeparator());
+        informacion.append("------------------------------------------------------------------------------------------------------------");
         informacion.append(System.lineSeparator());
         for (Inventario inventario :this.misInventarios.values()){
             informacion.append(inventario.informacionMinima());
         }
         informacion.append(System.lineSeparator());
-        informacion.append("----------------------------------------------------------------------------------------------------------------------------------");
+        informacion.append("-------------------------------------------------------------------------------------------------------------");
         return informacion.toString();
     }
 
@@ -93,13 +95,12 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
         this.misInventarios.put(inventario.getNumeroId(),inventario);
     }
 
-    public boolean eliminarInventarioVacio(int id) throws IllegalArgumentException{
+    public void eliminarInventarioVacio(int id) throws IllegalArgumentException{
         Inventario inventario = obtenerInventario(id);
-        if (!inventario.tieneProductos()){
-            this.misInventarios.remove(id);
-            return true;
+        if (inventario.tieneProductos()){
+            throw new IllegalArgumentException("El Inventario No Esta Vacio");
         }
-        return false;
+        this.misInventarios.remove(id);
     }
 
     //METODOS MOVER PRODUCTO A OTRO INVENTARIO:
@@ -136,10 +137,6 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
         inventario.cambiarNombreInventario(nombreNuevoInv);
     }
 
-    public Producto agregarProductoAUnInv(int id, String nombreProducto, double valorCompra) throws IllegalArgumentException{
-        return agregarProductoAUnInv(id, nombreProducto, valorCompra, 0);
-    }
-
     public Producto agregarProductoAUnInv(int id,String nombreProducto,double valorCompra,int stock) throws IllegalArgumentException{
         Inventario inventario = obtenerInventario(id);
         return inventario.agregarUnProducto(nombreProducto,valorCompra,stock);
@@ -150,9 +147,9 @@ public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
         inventario.eliminarUnProducto(codigo);
     }
 
-    public void buscarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
+    public boolean buscarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
         Inventario inventario = obtenerInventario(id);
-        inventario.buscarProducto(codigo);
+        return inventario.buscarProducto(codigo);
     }
 
 }

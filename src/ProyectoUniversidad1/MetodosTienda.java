@@ -3,9 +3,7 @@ package ProyectoUniversidad1;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class MetodosTienda { //99 LINEAS NETAS DE 113 LINEAS TOTALES
-
-    //MENUS:
+public class MetodosTienda { //82 LINEAS NETAS DE 90 LINEAS TOTALES
 
     public static void menuPrincipal(){
         System.out.print("""
@@ -19,68 +17,6 @@ public class MetodosTienda { //99 LINEAS NETAS DE 113 LINEAS TOTALES
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
-
-    public static void menuUtilizarTienda(){
-        System.out.print("""
-                \n                        BIENVENIDO -MENU UTILIZAR TIENDA-
-                ---> SELECCIONA QUE QUIERES HACER:
-                               * OPCION                              * ACCION
-                                   1                          VER TODOS LOS PRODUCTOS
-                                   2                              VENDER PRODUCTOS
-                                   3                           VER RECAUDO A CLIENTES
-                                   4                                   SALIR
-                ---> Ingresa el numero segun tu eleccion:
-                """ + "---> ");
-    }
-
-    public static void menuModificarTienda(){
-        System.out.print("""
-                \n                             -MODIFICAR TIENDA-
-                ---> SELECCIONA QUE QUIERES HACER:
-                               * OPCION                              * ACCION
-                                   1                           CAMBIAR NOMBRE TIENDA
-                                   2                           AGREGAR INVENTARIO (1)
-                                   3                               VER INVENTARIO
-                                   4                            MODIFICAR INVENTARIO
-                                   5                            VER STOCK INVENTARIO
-                                   6                         ELIMINAR INVENTARIO VACIO
-                                   7                                   SALIR
-                ---> Ingresa el numero segun tu eleccion:
-                """ + "---> ");
-    }
-
-    public static void menuModificarInventario(){
-        System.out.print("""
-                \n                           -MODIFICAR INVENTARIO-
-                ---> SELECCIONA QUE QUIERES HACER:
-                               * OPCION                              * ACCION
-                                   1                         CAMBIAR NOMBRE INVENTARIO
-                                   2                              AGREGAR PRODUCTO
-                                   3                             MODIFICAR PRODUCTO
-                                   4                              ELIMINAR PRODUCTO
-                                   5                               BUSCAR PRODUCTO
-                                   6                      MOVER PRODUCTO A OTRO INVENTARIO
-                                   7                                   SALIR
-                ---> Ingresa el numero segun tu eleccion:
-                """ + "---> ");
-    }
-
-    public static void menuModificarProducto(){
-        System.out.print("""
-                \n                           -MODIFICAR PRODUCTO-
-                ---> SELECCIONA QUE QUIERES HACER:
-                               * OPCION                              * ACCION
-                                   1                          CAMBIAR NOMBRE PRODUCTO
-                                   2                           ACTUALIZAR VALOR VENTA
-                                   3                           ACTUALIZAR VALOR COMPRA
-                                   4                              ACTUALIZAR STOCK
-                                   5                                REDUCIR STOCK
-                                   6                                   SALIR
-                ---> Ingresa el numero segun tu eleccion:
-                """ + "---> ");
-    }
-
-    //METODOS SUELTOS:
 
     public static int leerEntero(Scanner sc){
         int numero;
@@ -107,6 +43,47 @@ public class MetodosTienda { //99 LINEAS NETAS DE 113 LINEAS TOTALES
                 System.out.print("\nDebes Ingresar un Numero Valido\n---> ");
                 sc.nextLine();
             }
+        }
+    }
+
+    public static int pedirOpcion(Scanner sc, int opcionMin, int opcionMax){
+        boolean opcionValida;
+        int opcion;
+        do {
+            opcionValida =true;
+            opcion = leerEntero(sc);
+            if (opcion <opcionMin || opcion >opcionMax){
+                System.out.print("""
+                            \n---> ACCION DENEGADA:
+                            Recuerda seleccionar una de las opciones disponibles
+                            """ + "---> ");
+                opcionValida =false;
+            }
+        } while (!opcionValida);
+        return opcion;
+    }
+
+    public static void crearTienda(Scanner sc, ControladorTienda controladorTienda){
+        if (!controladorTienda.puedeCrearTienda()){
+            System.out.print("""
+                                \nACCION DENEGADA:
+                                YA HAS CREADO UNA TIENDA Y EL PROGRAMA SOLO ADMITE EL MANEJO DE UNA SOLA
+                                """);
+            return;
+        }
+        System.out.println("\nHAS SELECCIONADO: -CREAR TIENDA-");
+        System.out.print("""
+                                Escribe el nombre que le pondras a tu tienda:
+                                """ + "---> ");
+        String nombreTienda;
+        nombreTienda=sc.nextLine();
+        try {
+            controladorTienda.crearTienda(nombreTienda);
+            System.out.println("\nGENERACION DE TIENDA EXITOSA:\n" +
+                    "La Tienda: -" + controladorTienda.getMiTienda().getNombreTienda() + "- esta lista para generar su Inventario");
+        } catch (IllegalArgumentException e) {
+            System.out.println("\nNO se puede generar esta Tienda por un error de asignacion de datos:\n" +
+                    "ERROR: " + e.getMessage());
         }
     }
 
