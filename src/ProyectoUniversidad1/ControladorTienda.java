@@ -8,21 +8,12 @@ public class ControladorTienda {
 
     private int contadorDeTiendas;
 
-    public Tienda getMiTienda() {
-        return miTienda;
-    }
-
-    public GestorVentas getMiGestorDeVentas() {
-        return miGestorDeVentas;
-    }
-
-    public int getContadorDeTiendas() {
-        return contadorDeTiendas;
-    }
+    private Carrito miCarrito;
 
     public ControladorTienda() {
         this.miTienda = null;
         this.miGestorDeVentas = null;
+        this.miCarrito = null;
         this.contadorDeTiendas = 0;
     }
 
@@ -30,20 +21,24 @@ public class ControladorTienda {
         return this.contadorDeTiendas == 0;
     }
 
-    public boolean tieneTienda(){
-        return this.contadorDeTiendas == 1;
+    public boolean noTieneTienda(){
+        return this.contadorDeTiendas != 1;
     }
 
-    public boolean tiendaTieneInventarios(){
-        return this.miTienda.tiendaTieneInventarios();
+    public boolean tiendaNoTieneInventarios(){
+        return !this.miTienda.tiendaTieneInventarios();
     }
 
     public boolean inventarioTieneProductos(int idInventario){
         return this.miTienda.inventarioTieneProductos(idInventario);
     }
 
-    public boolean existeProductoEnInventario(int idInventario, int codigoProducto) {
-        return this.miTienda.obtenerInventario(idInventario).buscarProducto(codigoProducto);
+    public String obtenerNombreTienda() {
+        return this.miTienda.getNombreTienda();
+    }
+
+    public boolean noExisteProductoEnInventario(int idInventario, int codigoProducto) {
+        return !this.miTienda.obtenerInventario(idInventario).buscarProducto(codigoProducto);
     }
 
     public void crearTienda(String nombreTienda) throws IllegalArgumentException{
@@ -128,4 +123,33 @@ public class ControladorTienda {
         return this.miTienda.mostrarInventarioGeneral();
     }
 
+    public void abrirCarritoSesion(){
+       this.miCarrito = new Carrito();
+    }
+
+    public void agregarItemASesion(int idInv, int codigoProd, int cantidad) throws IllegalArgumentException{
+        SolicitudItem solicitudItem = new SolicitudItem(idInv, codigoProd, cantidad);
+        this.miCarrito.agregarItem(solicitudItem);
+    }
+
+    public String obtenerVistaPreviaDelCarrito() throws IllegalArgumentException{
+        return this.miCarrito.mostrarCarrito();
+    }
+
+    public String obtenerTotalRecaudoVentas() throws IllegalArgumentException{
+        double totalFacturas = this.miGestorDeVentas.totalFacturas();
+        return " $" + totalFacturas ;
+    }
+
+    public Factura confirmarYProcesarVentaActual() throws IllegalArgumentException{
+        Factura factura = this.miGestorDeVentas.procesarVentaMultiproducto(this.miCarrito);
+        this.miCarrito=null;
+        return factura;
+    }
+
+    public String obtenerHistoralGestor() throws IllegalArgumentException{
+        return this.miGestorDeVentas.obtenerHistorial();
+    }
+
 }
+

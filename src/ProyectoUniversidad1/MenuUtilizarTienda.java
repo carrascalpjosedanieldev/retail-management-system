@@ -21,7 +21,7 @@ public class MenuUtilizarTienda {
     }
 
     public static void utilizarTienda(Scanner sc, ControladorTienda controladorTienda){
-        if (!controladorTienda.tieneTienda()){
+        if (controladorTienda.noTieneTienda()){
             System.out.println("""
                                 \nACCION DENEGADA
                                 TODAVIA NO HAY TIENDA
@@ -51,7 +51,7 @@ public class MenuUtilizarTienda {
     }
 
     private static void verTodosLosProductos(Scanner sc, ControladorTienda controladorTienda){
-        if (!controladorTienda.tiendaTieneInventarios()){
+        if (controladorTienda.tiendaNoTieneInventarios()){
             System.out.println("""
                     \nACCION DENEGADA
                     TODAVIA NO HAY INVENTARIOS
@@ -73,46 +73,55 @@ public class MenuUtilizarTienda {
                 \nHAS SELECCIONADO -VENDER PRODUCTOS-
                 """);
         String atenderCliente , pedirProducto;
-        System.out.println("\nVAS A ATENDER UN CLIENTE (SI/NO):");
-        atenderCliente = sc.nextLine();
+        System.out.println("\nVAS A ATENDER UN CLIENTE");
+        atenderCliente = peticionSiNo(sc);
         while (atenderCliente.equalsIgnoreCase("Si")){
-            System.out.println("\nVAS A PEDIR UN PRODUCTO (SI/NO):");
-            pedirProducto = sc.nextLine();
-            controladorTienda.getMiGestorDeVentas().iniciarVenta();
-            Carrito carrito = new Carrito();
+            controladorTienda.abrirCarritoSesion();
+            System.out.println("\nVAS A PEDIR UN PRODUCTO");
+            pedirProducto = peticionSiNo(sc);
             while (pedirProducto.equalsIgnoreCase("SI")){
                 try{
                     System.out.println(controladorTienda.mostrarInventarioGeneralDeTienda());
-                    System.out.println("ID del Inventario:");
-                    int idInv = leerEntero(sc);
-                    System.out.println("Codigo del Producto:");
-                    int codigoProd = leerEntero(sc);
-                    System.out.println("Cantidad:");
-                    int cantidadVender = leerEntero(sc);
-                    SolicitudItem solicitudItem = new SolicitudItem(idInv, codigoProd, cantidadVender);
-                    carrito.agregarItem(solicitudItem);
-                    System.out.println(carrito.mostrarCarrito());
+                    SolicitudItem solicitudItem = capturarDatosDeCompra(sc);
+                    controladorTienda.agregarItemASesion(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
+                    System.out.println(controladorTienda.obtenerVistaPreviaDelCarrito());
                     System.out.println("Producto Agregado Con Exito Al Carrito");
                 } catch (IllegalArgumentException e){
                     System.out.println("ERROR: " + e.getMessage());
                     System.out.println("No Se Agrego Este Producto, Pero El Carrito Sigue Intacto");
                 }
-                do {
-                    System.out.println("VAS A PEDIR OTRO PRODUCTO (SI / NO):");
-                    pedirProducto = sc.nextLine();
-                } while (!pedirProducto.equalsIgnoreCase("SI") && !pedirProducto.equalsIgnoreCase("NO"));
+                System.out.println("VAS A PEDIR OTRO PRODUCTO");
+                pedirProducto = peticionSiNo(sc);
             }
             try {
-                controladorTienda.getMiGestorDeVentas().procesarVentaMultiproducto(carrito);
-                controladorTienda.getMiGestorDeVentas().finalizarVenta();
+                Factura factura = controladorTienda.confirmarYProcesarVentaActual();
+                String facturaGenerada = factura.generarFactura();
+                System.out.println(facturaGenerada);
             } catch (IllegalArgumentException e){
                 System.out.println("ERROR:  " + e.getMessage());
             }
-            do {
-                System.out.println("\nVAS A ATENDER OTRO CLIENTE (SI/NO):");
-                atenderCliente = sc.nextLine();
-            } while (!atenderCliente.equalsIgnoreCase("si") && !atenderCliente.equalsIgnoreCase("no"));
+            System.out.println("\nVAS A ATENDER OTRO CLIENTE");
+            atenderCliente = peticionSiNo(sc);
         }
+    }
+
+    private static String peticionSiNo(Scanner sc){
+        String peticion;
+        do {
+            System.out.println("(SI / NO):");
+            peticion = sc.nextLine();
+        } while (!peticion.equalsIgnoreCase("SI") && !peticion.equalsIgnoreCase("NO"));
+        return peticion;
+    }
+
+    private static SolicitudItem capturarDatosDeCompra(Scanner sc) throws IllegalArgumentException{
+        System.out.println("ID del Inventario:");
+        int idInv = leerEntero(sc);
+        System.out.println("Codigo del Producto:");
+        int codigoProd = leerEntero(sc);
+        System.out.println("Cantidad:");
+        int cantidadVender = leerEntero(sc);
+        return new SolicitudItem(idInv, codigoProd, cantidadVender);
     }
 
     private static void verRecaudoClientes(Scanner sc, ControladorTienda controladorTienda){
@@ -120,10 +129,14 @@ public class MenuUtilizarTienda {
                 \nHAS SELECCIONADO -VER RECAUDO CLIENTES-
                 """);
         try {
-            System.out.println(controladorTienda.getMiGestorDeVentas().obtenerHistorial());
+            System.out.println(controladorTienda.obtenerHistoralGestor());
         } catch (IllegalArgumentException e){
             System.out.println("ERROR:  " +e.getMessage());
         }
+
+        System.out.println("\nTOTAL DE DINERO RECAUDADO A LOS CLIENTES:\n");
+        System.out.println(controladorTienda.obtenerTotalRecaudoVentas());
     }
 
 }
+

@@ -24,7 +24,7 @@ public class MenuModificarTienda {
     }
 
     public static void modificarTienda(Scanner sc, ControladorTienda controladorTienda){
-        if (!controladorTienda.tieneTienda()){
+        if (controladorTienda.noTieneTienda()){
             System.out.println("""
                                 \nACCION DENEGADA
                                 TODAVIA NO HAY TIENDA
@@ -65,7 +65,7 @@ public class MenuModificarTienda {
     private static void cambiarNombreTienda(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -CAMBIAR NOMBRE TIENDA-");
         try {
-            System.out.print("La Tienda actualmente se llama -" + controladorTienda.getMiTienda().getNombreTienda() + "\n" +
+            System.out.print("La Tienda actualmente se llama -" + controladorTienda.obtenerNombreTienda() + "\n" +
                     "Escribe el nombre nuevo que le quieres colocar:\n" +
                     "---> ");
             String nuevoNombreTienda = sc.nextLine();
@@ -107,7 +107,7 @@ public class MenuModificarTienda {
     }
 
     private static void verStockInventario(Scanner sc, ControladorTienda controladorTienda){
-        if (!controladorTienda.tiendaTieneInventarios()){
+        if (controladorTienda.tiendaNoTieneInventarios()){
             System.out.println("""
                     \nACCION DENEGADA
                     TODAVIA NO HAY INVENTARIO
@@ -136,7 +136,7 @@ public class MenuModificarTienda {
     }
 
     private static void eliminarInventarioVacio(Scanner sc, ControladorTienda controladorTienda){
-        if (!controladorTienda.tiendaTieneInventarios()){
+        if (controladorTienda.tiendaNoTieneInventarios()){
             System.out.println("""
                     \nACCION DENEGADA
                     TODAVIA NO HAY INVENTARIO
@@ -163,3 +163,4 @@ public class MenuModificarTienda {
     }
 
 }
+

@@ -16,6 +16,10 @@ public class Venta {
         return numeroDeVenta;
     }
 
+    public double getValorCobrado() {
+        return valorCobrado;
+    }
+
     public Venta(String nombreProducto, int cantidadVendida, double valorCobrado) {
         this.nombreProducto = nombreProducto;
         this.cantidadVendida = cantidadVendida;

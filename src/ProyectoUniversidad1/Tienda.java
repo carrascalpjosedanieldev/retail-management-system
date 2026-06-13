@@ -3,7 +3,7 @@ package ProyectoUniversidad1;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Tienda { //x LINEAS NETAS DE 202 LINEAS TOTALES
+public class Tienda {
 
     //ATRIBUTOS:
 

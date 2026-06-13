@@ -24,7 +24,7 @@ public class MenuModificarInventario {
     }
 
     public static void modificarInventario(Scanner sc, ControladorTienda controladorTienda){
-        if (!controladorTienda.tiendaTieneInventarios()){
+        if (controladorTienda.tiendaNoTieneInventarios()){
             System.out.println("""
                     \nACCION DENEGADA
                     TODAVIA NO HAY INVENTARIO
@@ -177,3 +177,4 @@ public class MenuModificarInventario {
     }
 
 }
+

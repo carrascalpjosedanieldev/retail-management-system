@@ -9,6 +9,5 @@ public record SolicitudItem(int idInventario, int codigoProducto, int cantidad) 
         return item;
     }
 
-
 }
 

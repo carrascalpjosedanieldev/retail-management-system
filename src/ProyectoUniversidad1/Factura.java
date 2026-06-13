@@ -37,5 +37,13 @@ public class Factura {
         return factura.toString();
     }
 
+    public double calcularTotalFactura() {
+        double totalFactura = 0;
+        for (Venta venta:this.lineaDeVentas){
+            totalFactura+=venta.getValorCobrado();
+        }
+        return totalFactura;
+    }
+
 }
 

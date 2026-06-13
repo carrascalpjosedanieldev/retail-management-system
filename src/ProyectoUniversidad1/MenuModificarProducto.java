@@ -64,7 +64,7 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Nombre, escribe el codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (!controladorTienda.existeProductoEnInventario(idInventario, codigoProducto)) {
+        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
             System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
@@ -88,7 +88,7 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Valor de Venta, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (!controladorTienda.existeProductoEnInventario(idInventario, codigoProducto)) {
+        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
             System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
@@ -133,7 +133,7 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Valor de Compra, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (!controladorTienda.existeProductoEnInventario(idInventario, codigoProducto)) {
+        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
             System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
@@ -158,7 +158,7 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Stock, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (!controladorTienda.existeProductoEnInventario(idInventario, codigoProducto)) {
+        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
             System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
@@ -183,7 +183,7 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Stock, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (!controladorTienda.existeProductoEnInventario(idInventario, codigoProducto)) {
+        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
             System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
@@ -203,3 +203,4 @@ public class MenuModificarProducto {
     }
 
 }
+

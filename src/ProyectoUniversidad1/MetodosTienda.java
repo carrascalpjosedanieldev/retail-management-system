@@ -3,7 +3,7 @@ package ProyectoUniversidad1;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class MetodosTienda { //82 LINEAS NETAS DE 90 LINEAS TOTALES
+public class MetodosTienda {
 
     public static void menuPrincipal(){
         System.out.print("""
@@ -80,7 +80,7 @@ public class MetodosTienda { //82 LINEAS NETAS DE 90 LINEAS TOTALES
         try {
             controladorTienda.crearTienda(nombreTienda);
             System.out.println("\nGENERACION DE TIENDA EXITOSA:\n" +
-                    "La Tienda: -" + controladorTienda.getMiTienda().getNombreTienda() + "- esta lista para generar su Inventario");
+                    "La Tienda: -" + controladorTienda.obtenerNombreTienda() + "- esta lista para generar su Inventario");
         } catch (IllegalArgumentException e) {
             System.out.println("\nNO se puede generar esta Tienda por un error de asignacion de datos:\n" +
                     "ERROR: " + e.getMessage());
@@ -88,3 +88,4 @@ public class MetodosTienda { //82 LINEAS NETAS DE 90 LINEAS TOTALES
     }
 
 }
+

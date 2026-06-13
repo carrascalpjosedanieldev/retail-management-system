@@ -7,8 +7,6 @@ public class GestorVentas {
 
     private final Tienda miTienda;
 
-    private Factura facturaActiva;
-
     private final Map<Integer, Factura> registroVentas;
 
 
@@ -17,32 +15,29 @@ public class GestorVentas {
         this.registroVentas = new LinkedHashMap<>();
     }
 
-    public void iniciarVenta(){
-        this.facturaActiva = new Factura();
-    }
-
-    public void procesarVentaMultiproducto(Carrito carrito) throws IllegalArgumentException{
+    public Factura procesarVentaMultiproducto(Carrito carrito) throws IllegalArgumentException{
+        if (carrito.getItems().isEmpty()){
+            throw new IllegalArgumentException("No se puede procesar una venta sin productos");
+        }
         for (SolicitudItem solicitudItem: carrito.getItems()){
             Inventario inventario = this.miTienda.obtenerInventario(solicitudItem.idInventario());
             inventario.verificarStockProductoDisponible(solicitudItem.codigoProducto(),solicitudItem.cantidad());
         }
+        Factura facturaNueva = new Factura();
         for (SolicitudItem solicitudItem: carrito.getItems()){
-            pedirProducto(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
+            Venta venta = pedirProducto(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
+            facturaNueva.agregarVenta(venta);
         }
+        this.registroVentas.put(facturaNueva.getIdFactura(), facturaNueva);
+        return facturaNueva;
     }
 
-    public void pedirProducto(int idInv, int codigoProd, int cantidad){
+    public Venta pedirProducto(int idInv, int codigoProd, int cantidad){
         Inventario inventario = this.miTienda.obtenerInventario(idInv);
-        Venta venta = inventario.reducirStockProductoPorVenta(codigoProd,cantidad);
-        this.facturaActiva.agregarVenta(venta);
+        return inventario.reducirStockProductoPorVenta(codigoProd,cantidad);
     }
 
-    public void finalizarVenta(){
-        this.registroVentas.put(this.facturaActiva.getIdFactura(),this.facturaActiva);
-        this.facturaActiva = null;
-    }
-
-    public String obtenerHistorial(){
+    public String obtenerHistorial() throws IllegalArgumentException{
         if (this.registroVentas.isEmpty()){
             throw new IllegalArgumentException("No Hay Registros");
         }
@@ -58,6 +53,14 @@ public class GestorVentas {
         historial.append("-------------------------------------------------------------");
 
         return historial.toString();
+    }
+
+    public double totalFacturas() {
+        double totalFacturas=0;
+        for (Factura factura:this.registroVentas.values()){
+            totalFacturas+=factura.calcularTotalFactura();
+        }
+        return totalFacturas;
     }
 
 }

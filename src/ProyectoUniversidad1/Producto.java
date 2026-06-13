@@ -1,6 +1,6 @@
 package ProyectoUniversidad1;
 
-public class Producto {//x LINEAS NETAS DE 154 LINEAS TOTALES
+public class Producto {
 
     //ATRIBUTOS:
 
