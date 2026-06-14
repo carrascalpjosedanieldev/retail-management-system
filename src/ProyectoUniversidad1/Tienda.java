@@ -33,8 +33,8 @@ public class Tienda {
 
     //METODOS:
 
-    public boolean tiendaTieneInventarios(){
-        return !this.misInventarios.isEmpty();
+    public boolean tiendaNoTieneInventarios(){
+        return this.misInventarios.isEmpty();
     }
 
     public boolean inventarioTieneProductos(int id){
@@ -51,7 +51,7 @@ public class Tienda {
     }
 
     private void validarQueExistanInventarios() throws IllegalArgumentException{
-        if (!tiendaTieneInventarios()){
+        if (tiendaNoTieneInventarios()){
             throw new IllegalArgumentException("No Hay Inventarios");
         }
     }
@@ -115,7 +115,7 @@ public class Tienda {
             throw new IllegalArgumentException("El producto ya existe en el inventario de destino");
         }
         Producto producto = inventarioSalida.obtenerProducto(codigo);
-        inventarioLlegada.agregarProductoHecho(producto);
+        inventarioLlegada.agregarUnProducto(producto);
         inventarioSalida.eliminarUnProducto(codigo);
     }
 
@@ -137,9 +137,9 @@ public class Tienda {
         inventario.cambiarNombreInventario(nombreNuevoInv);
     }
 
-    public Producto agregarProductoAUnInv(int id,String nombreProducto,double valorCompra,int stock) throws IllegalArgumentException{
+    public Producto agregarProductoAUnInv(int id, Producto producto) throws IllegalArgumentException{
         Inventario inventario = obtenerInventario(id);
-        return inventario.agregarUnProducto(nombreProducto,valorCompra,stock);
+        return inventario.agregarUnProducto(producto);
     }
 
     public void eliminarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{

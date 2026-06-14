@@ -110,12 +110,14 @@ public class Inventario {
         setNombre(nuevoNombre);
     }
 
-    public Producto agregarUnProducto(String nombreProducto,double valorCompra,int stock) throws IllegalArgumentException{
+    public Producto agregarUnProducto(Producto producto) throws IllegalArgumentException{
+        if (producto==null){
+            throw new IllegalArgumentException("No puedes agregar un Producto Nulo");
+        }
         int capacidadLibre = calcularCapacidadLibre();
-        if (stock>capacidadLibre){
+        if (producto.getStock()>capacidadLibre){
             throw new IllegalArgumentException("El Stock Excede La Capacidad");
         }
-        Producto producto = new Producto(nombreProducto, valorCompra, stock);
         this.misProductos.put(producto.getCodigo(),producto);
         this.capacidadOcupada+=producto.getStock();
         return producto;
@@ -144,15 +146,6 @@ public class Inventario {
         return producto;
     }
 
-    public void agregarProductoHecho(Producto producto) throws IllegalArgumentException{
-        int capacidadLibre = calcularCapacidadLibre();
-        if (producto.getStock()>capacidadLibre){
-            throw new IllegalArgumentException("El Stock Excede La Capacidad");
-        }
-        this.misProductos.put(producto.getCodigo(),producto);
-        this.capacidadOcupada+=producto.getStock();
-    }
-
     //METODOS MODIFICAR PRODUCTO:
 
     public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje) throws IllegalArgumentException{
@@ -161,14 +154,6 @@ public class Inventario {
             throw new IllegalArgumentException("El Producto No Esta");
         }
         producto.cambiarValorVentaPorPorcentaje(porcentaje);
-    }
-
-    public void actualizarValorVentaPorPrecio(int codigo,double precio) throws IllegalArgumentException{
-        Producto producto = this.misProductos.get(codigo);
-        if (producto ==null){
-            throw new IllegalArgumentException("No Se Encuentra Ese Producto");
-        }
-        producto.cambiarValorVentaPorPrecio(precio);
     }
 
     public void actualizarNombreProducto(int codigo,String nombre) throws IllegalArgumentException{

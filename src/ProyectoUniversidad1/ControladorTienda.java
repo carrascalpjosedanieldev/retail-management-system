@@ -1,5 +1,7 @@
 package ProyectoUniversidad1;
 
+import java.time.LocalDate;
+
 public class ControladorTienda {
 
     private Tienda miTienda;
@@ -26,7 +28,7 @@ public class ControladorTienda {
     }
 
     public boolean tiendaNoTieneInventarios(){
-        return !this.miTienda.tiendaTieneInventarios();
+        return this.miTienda.tiendaNoTieneInventarios();
     }
 
     public boolean inventarioTieneProductos(int idInventario){
@@ -71,16 +73,30 @@ public class ControladorTienda {
         this.miTienda.cambiarNombreAUnInventario(id, nombreNuevo);
     }
 
-    public Producto agregarPorductoAInventario(int id, String nombre, double valorCompra, int stock) throws IllegalArgumentException{
-        return this.miTienda.agregarProductoAUnInv(id, nombre, valorCompra, stock);
+    public Producto registrarProductoRopa(int id, String nombre, double valorCompra, int stock, String tallaString) throws IllegalArgumentException{
+        Talla talla;
+        try {
+            talla = Talla.valueOf(tallaString);
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException("La talla ingresada no esta entre las opciones (Usa S, M, L o XL).");
+        }
+        Producto producto = new ProductoRopa(nombre, valorCompra, stock, talla);
+        return this.miTienda.agregarProductoAUnInv(id, producto);
+    }
+
+    public Producto registrarProductoPerecedero(int id, String nombre, double valorCompra, int stock, String fechaString) throws IllegalArgumentException{
+        LocalDate fechaVencimiento;
+        try {
+            fechaVencimiento = LocalDate.parse(fechaString);
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException("El formato de fecha es inválido. Debe ser AAAA-MM-DD.");
+        }
+        Producto producto = new ProductoPerecedero(nombre, valorCompra, stock, fechaVencimiento);
+        return this.miTienda.agregarProductoAUnInv(id, producto);
     }
 
     public void cambiarNombreDeProductoDeInventario(int id, int codigo, String nombreNuevo) throws IllegalArgumentException{
         this.miTienda.obtenerInventario(id).actualizarNombreProducto(codigo, nombreNuevo);
-    }
-
-    public void actualizarValorVentaPorPrecioDeProductoDeInventario(int id, int codigo, double valorNuevo) throws IllegalArgumentException{
-        this.miTienda.obtenerInventario(id).actualizarValorVentaPorPrecio(codigo, valorNuevo);
     }
 
     public void actualizarValorVentaPorPorcentajeDeProductoDeInventario(int id, int codigo, double porcentaje) throws IllegalArgumentException{

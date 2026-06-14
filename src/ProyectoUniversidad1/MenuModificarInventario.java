@@ -1,5 +1,6 @@
 package ProyectoUniversidad1;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 import static ProyectoUniversidad1.MenuModificarProducto.modificarProductoAInventario;
@@ -96,35 +97,40 @@ public class MenuModificarInventario {
                 \nEscribe el valor de compra del producto nuevo:
                 """ + "---> ");
         double valorC = leerDecimal(sc);
-        String tieneStock;
-        do {
-            System.out.print("""
-                    \nTiene Stock? (SI / NO):
-                    """ + "---> ");
-            tieneStock = sc.nextLine();
-        } while (!tieneStock.equalsIgnoreCase("si") && !tieneStock.equalsIgnoreCase("no"));
-        if (tieneStock.equalsIgnoreCase("si")){
-            System.out.print("""
+        System.out.print("""
                     \nEscribe el stock del producto nuevo:
                     """ + "--->");
-            int stock = leerEntero(sc);
-            try {
-                Producto producto = controladorTienda.agregarPorductoAInventario(idInventario, nombre, valorC, stock);
-                System.out.println("Nuevo Producto:\n" + producto.describirProducto());
-                System.out.println();
-            } catch (IllegalArgumentException e){
-                System.out.println("ERROR:  " + e.getMessage());
-            }
-            return;
-        }
+        int stock = leerEntero(sc);
+        System.out.print("""
+                \nEscribe el Tipo del producto nuevo:
+                """ + "---> ");
+        String tipoLeido = sc.nextLine().trim().toUpperCase();
+        TipoProducto tipoProducto;
+        Producto producto;
         try {
-            Producto producto = controladorTienda.agregarPorductoAInventario(idInventario, nombre, valorC, 0);
-            System.out.println("Nuevo Producto:\n" + producto.describirProducto());
-            System.out.println();
+            try {
+                tipoProducto = TipoProducto.valueOf(tipoLeido);
+            } catch (IllegalArgumentException e){
+                System.out.println("Tipo de Producto Invalido");
+                return;
+            }
+            switch (tipoProducto){
+                case ROPA:
+                    System.out.println("Ingrese la talla (S, M, L, XL):");
+                    String tallaString = sc.nextLine();
+                    producto = controladorTienda.registrarProductoRopa(idInventario, nombre, valorC, stock, tallaString);
+                    System.out.println("Nuevo Producto:\n" + producto.describirProducto());
+                    break;
+                case PERECEDERO:
+                    System.out.println("Ingrese la fecha de vencimiento (Formato AAAA-MM-DD):");
+                    String fechaString = sc.nextLine();
+                        producto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC, stock, fechaString);
+                    System.out.println("Nuevo Producto:\n" + producto.describirProducto());
+                    break;
+            }
         } catch (IllegalArgumentException e){
             System.out.println("ERROR:  " + e.getMessage());
         }
-
     }
 
     private static void eliminarProductoAInventario(Scanner sc, ControladorTienda controladorTienda, int idInventario) {

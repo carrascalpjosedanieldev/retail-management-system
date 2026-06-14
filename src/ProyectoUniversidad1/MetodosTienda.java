@@ -87,5 +87,12 @@ public class MetodosTienda {
         }
     }
 
+    public static void salirPrograma(){
+        System.out.println("""
+                        \nGUARDANDO ...
+                        HAS SALIDO DEL SISTEMA CON EXITO
+                        """);
+    }
+
 }
 

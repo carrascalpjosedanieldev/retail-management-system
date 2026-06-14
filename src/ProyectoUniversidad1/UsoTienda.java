@@ -42,10 +42,7 @@ public class UsoTienda {
                     break;
 
                 case 4:
-                    System.out.println("""
-                        \nGUARDANDO ...
-                        HAS SALIDO DEL SISTEMA CON EXITO
-                        """);
+                    salirPrograma();
                     break;
             }
 
@@ -58,30 +55,60 @@ public class UsoTienda {
 
         miControladorTienda.crearTienda("SLIM");
 
-        miControladorTienda.agregarInventarioATienda("Principal", 400);
+        miControladorTienda.agregarInventarioATienda("Principal", 450);
 
-        miControladorTienda.agregarPorductoAInventario(1, "Camisa", 50000, 80);
-        miControladorTienda.actualizarValorVentaPorPrecioDeProductoDeInventario(1, 1, 75000);
 
-        miControladorTienda.agregarPorductoAInventario(1, "Pantalon", 75000, 75);
-        miControladorTienda.actualizarValorVentaPorPrecioDeProductoDeInventario(1, 2, 105000);
+        miControladorTienda.registrarProductoRopa(1, "Camisa", 50000, 30, "S");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 1, 40);
 
-        miControladorTienda.agregarPorductoAInventario(1, "Medias", 8000, 100);
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 3, 100);
+        miControladorTienda.registrarProductoRopa(1, "Camisa", 50000, 30, "M");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 2, 40);
 
+        miControladorTienda.registrarProductoRopa(1, "Camisa", 50000, 20, "L");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 3, 45);
+
+        miControladorTienda.registrarProductoRopa(1, "Camisa", 50000, 20, "XL");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 4, 45);
+
+
+        miControladorTienda.registrarProductoRopa(1, "Pantalon", 75000, 40, "M");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 5, 30);
+
+        miControladorTienda.registrarProductoRopa(1, "Pantalon", 75000, 40, "L");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 6, 30);
+
+
+        miControladorTienda.registrarProductoRopa(1, "Medias", 8000, 50, "M");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 7, 100);
+
+        miControladorTienda.registrarProductoRopa(1, "Medias", 8000, 50, "L");
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 7, 100);
+
+
+        /*
         miControladorTienda.agregarPorductoAInventario(1, "Chaqueta", 120000, 50);
         miControladorTienda.actualizarValorVentaPorPrecioDeProductoDeInventario(1, 4, 165000);
+
+
 
         miControladorTienda.agregarPorductoAInventario(1, "Vestido", 65000, 50);
         miControladorTienda.actualizarValorVentaPorPrecioDeProductoDeInventario(1, 5, 100000);
 
+
+
         miControladorTienda.agregarInventarioATienda("Secundario", 250);
+
+
 
         miControladorTienda.agregarPorductoAInventario(2, "Pantaloneta", 35000, 50);
         miControladorTienda.actualizarValorVentaPorPrecioDeProductoDeInventario(2, 6, 55000);
 
+
+
         miControladorTienda.agregarPorductoAInventario(2, "Boxer", 25000, 100);
         miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 7, 100);
+
+         */
 
         return miControladorTienda;
     }
