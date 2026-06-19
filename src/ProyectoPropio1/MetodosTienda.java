@@ -1,5 +1,8 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -42,6 +45,22 @@ public class MetodosTienda {
             } catch (InputMismatchException decimalInvalido){
                 System.out.print("\nDebes Ingresar un Numero Valido\n---> ");
                 sc.nextLine();
+            }
+        }
+    }
+
+    public static LocalDate leerFecha(Scanner sc) {
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        while (true) {
+            String entrada = sc.nextLine().trim();
+            if (entrada.isEmpty()) {
+                continue;
+            }
+            try {
+                return LocalDate.parse(entrada, formato);
+            } catch (DateTimeParseException e) {
+                System.out.println("ERROR: Formato de fecha incorrecto.");
+                System.out.print("Por favor, use el formato DD/MM/AAAA (Ejemplo: 25/12/2024): ---> ");
             }
         }
     }

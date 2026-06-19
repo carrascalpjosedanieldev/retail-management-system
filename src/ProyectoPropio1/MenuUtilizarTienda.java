@@ -1,9 +1,9 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 import java.util.Scanner;
 
-import static ProyectoUniversidad1.MetodosTienda.leerEntero;
-import static ProyectoUniversidad1.MetodosTienda.pedirOpcion;
+import static ProyectoPropio1.MetodosTienda.leerEntero;
+import static ProyectoPropio1.MetodosTienda.pedirOpcion;
 
 public class MenuUtilizarTienda {
 
@@ -41,7 +41,7 @@ public class MenuUtilizarTienda {
                     venderProductoDeInventario(sc, controladorTienda);
                     break;
                 case 3:
-                    verRecaudoClientes(sc, controladorTienda);
+                    verRecaudoClientes(controladorTienda);
                     break;
                 case 4:
                     System.out.println("\nSALIENDO . . .");
@@ -64,7 +64,7 @@ public class MenuUtilizarTienda {
         try {
             System.out.println(controladorTienda.mostrarInventarioGeneralDeTienda());
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " +e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -72,7 +72,7 @@ public class MenuUtilizarTienda {
         System.out.print("""
                 \nHAS SELECCIONADO -VENDER PRODUCTOS-
                 """);
-        String atenderCliente , pedirProducto;
+        String atenderCliente , pedirProducto, pedirServicio;
         System.out.println("\nVAS A ATENDER UN CLIENTE");
         atenderCliente = peticionSiNo(sc);
         while (atenderCliente.equalsIgnoreCase("Si")){
@@ -88,17 +88,40 @@ public class MenuUtilizarTienda {
                     System.out.println("Producto Agregado Con Exito Al Carrito");
                 } catch (IllegalArgumentException e){
                     System.out.println("ERROR: " + e.getMessage());
-                    System.out.println("No Se Agrego Este Producto, Pero El Carrito Sigue Intacto");
+                    System.out.println("No se agrego este Producto, Pero el Carrito Sigue Intacto");
                 }
                 System.out.println("VAS A PEDIR OTRO PRODUCTO");
                 pedirProducto = peticionSiNo(sc);
+            }
+            if (controladorTienda.tiendaNoTieneServicios()){
+                System.out.println("\nNO HAY SERVICIOS DISPONIBLES EN LA TIENDA. GENERAREMOS TU FACTURA");
+            } else {
+                System.out.println("\nVAS A PEDIR UN SERVICIO");
+                pedirServicio = peticionSiNo(sc);
+                while (pedirServicio.equalsIgnoreCase("SI")){
+                    try {
+                        System.out.println(controladorTienda.mostrarServiciosDeLaTienda());
+                        System.out.print("Codigo del Servicio:\n" +
+                                "---> ");
+                        int codigoServicio = leerEntero(sc);
+                        Servicio servicio = controladorTienda.obtenerServicio(codigoServicio);
+                        controladorTienda.agregarServicioAlCarrito(servicio);
+                        System.out.println("Servicio agregado con exito, estos son los servicios que tienes:");
+                        System.out.println(controladorTienda.mostrarDatosServiciosDelCarrito());
+                    } catch (IllegalArgumentException e){
+                        System.out.println("ERROR: " + e.getMessage());
+                        System.out.println("No se agrego este Servicio, Pero el Carrito Sigue Intacto");
+                    }
+                    System.out.println("VAS A PEDIR OTRO SERVICIO");
+                    pedirServicio = peticionSiNo(sc);
+                }
             }
             try {
                 Factura factura = controladorTienda.confirmarYProcesarVentaActual();
                 String facturaGenerada = factura.generarFactura();
                 System.out.println(facturaGenerada);
             } catch (IllegalArgumentException e){
-                System.out.println("ERROR:  " + e.getMessage());
+                System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
             }
             System.out.println("\nVAS A ATENDER OTRO CLIENTE");
             atenderCliente = peticionSiNo(sc);
@@ -115,25 +138,27 @@ public class MenuUtilizarTienda {
     }
 
     private static SolicitudItem capturarDatosDeCompra(Scanner sc) throws IllegalArgumentException{
-        System.out.println("ID del Inventario:");
+        System.out.print("ID del Inventario:\n" +
+                "---> ");
         int idInv = leerEntero(sc);
-        System.out.println("Codigo del Producto:");
+        System.out.print("Codigo del Producto:\n" +
+                "---> ");
         int codigoProd = leerEntero(sc);
-        System.out.println("Cantidad:");
+        System.out.print("Cantidad:\n" +
+                "---> ");
         int cantidadVender = leerEntero(sc);
         return new SolicitudItem(idInv, codigoProd, cantidadVender);
     }
 
-    private static void verRecaudoClientes(Scanner sc, ControladorTienda controladorTienda){
+    private static void verRecaudoClientes(ControladorTienda controladorTienda){
         System.out.print("""
                 \nHAS SELECCIONADO -VER RECAUDO CLIENTES-
                 """);
         try {
             System.out.println(controladorTienda.obtenerHistoralGestor());
         } catch (IllegalArgumentException e){
-            System.out.println("ERROR:  " +e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
-
         System.out.println("\nTOTAL DE DINERO RECAUDADO A LOS CLIENTES:\n");
         System.out.println(controladorTienda.obtenerTotalRecaudoVentas());
     }

@@ -1,8 +1,10 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 import java.time.LocalDate;
 
 public class ControladorTienda {
+
+    //ATRIBUTOS:
 
     private Tienda miTienda;
 
@@ -11,6 +13,8 @@ public class ControladorTienda {
     private int contadorDeTiendas;
 
     private Carrito miCarrito;
+
+    //CONSTRUCTOR:
 
     public ControladorTienda() {
         this.miTienda = null;
@@ -35,12 +39,14 @@ public class ControladorTienda {
         return this.miTienda.inventarioTieneProductos(idInventario);
     }
 
-    public String obtenerNombreTienda() {
-        return this.miTienda.getNombreTienda();
+    public boolean tiendaNoTieneServicios(){
+        return this.miTienda.tiendaNoTieneServicios();
     }
 
-    public boolean noExisteProductoEnInventario(int idInventario, int codigoProducto) {
-        return !this.miTienda.obtenerInventario(idInventario).buscarProducto(codigoProducto);
+    //------------> METODOS DE CONTROL DE TIENDA:
+
+    public String obtenerNombreTienda() {
+        return this.miTienda.getNombreTienda();
     }
 
     public void crearTienda(String nombreTienda) throws IllegalArgumentException{
@@ -59,6 +65,10 @@ public class ControladorTienda {
 
     public String mostrarInfoInventariosDeTienda() throws IllegalArgumentException{
         return this.miTienda.mostrarInfoInventarios();
+    }
+
+    public boolean noExisteProductoEnInventario(int idInventario, int codigoProducto) {
+        return !this.miTienda.obtenerInventario(idInventario).buscarProducto(codigoProducto);
     }
 
     public String obtenerDetalleInventarioDeTienda(int id) throws IllegalArgumentException{
@@ -84,13 +94,7 @@ public class ControladorTienda {
         return this.miTienda.agregarProductoAUnInv(id, producto);
     }
 
-    public Producto registrarProductoPerecedero(int id, String nombre, double valorCompra, int stock, String fechaString) throws IllegalArgumentException{
-        LocalDate fechaVencimiento;
-        try {
-            fechaVencimiento = LocalDate.parse(fechaString);
-        } catch (IllegalArgumentException e){
-            throw new IllegalArgumentException("El formato de fecha es inválido. Debe ser AAAA-MM-DD.");
-        }
+    public Producto registrarProductoPerecedero(int id, String nombre, double valorCompra, int stock, LocalDate fechaVencimiento) throws IllegalArgumentException{
         Producto producto = new ProductoPerecedero(nombre, valorCompra, stock, fechaVencimiento);
         return this.miTienda.agregarProductoAUnInv(id, producto);
     }
@@ -139,8 +143,41 @@ public class ControladorTienda {
         return this.miTienda.mostrarInventarioGeneral();
     }
 
+    public void registrarServicioNuevo(String nombreServicio, double precioBase) throws IllegalArgumentException{
+        Servicio servicio = new Servicio(nombreServicio, precioBase);
+        this.miTienda.registrarServicioAlCatalogo(servicio);
+    }
+
+    public void eliminarServicioDeTienda(int codigoServicio) throws IllegalArgumentException{
+        this.miTienda.eliminarServicioDelCatalogo(codigoServicio);
+    }
+
+    public void cambiarNombreServicio(int codigoServicio, String nombreNuevo) throws IllegalArgumentException{
+        this.miTienda.cambiarNombreServicio(codigoServicio, nombreNuevo);
+    }
+
+    public void cambiarPrecioServicio(int codigoServicio, double precioNuevo) throws IllegalArgumentException{
+        this.miTienda.cambiarPrecioServicio(codigoServicio, precioNuevo);
+    }
+
+    public String mostrarServiciosDeLaTienda() throws IllegalArgumentException{
+        return this.miTienda.mostrarServiciosDeLaTienda();
+    }
+
+    public Servicio obtenerServicio(int codigoServicio) throws IllegalArgumentException{
+        return this.miTienda.obtenerServicio(codigoServicio);
+    }
+
+    public void agregarServicioAlCarrito(Servicio servicio) throws IllegalArgumentException{
+        this.miCarrito.agregarServicio(servicio);
+    }
+
+
+
+    //METODOS CONTROL CARRITO:
+
     public void abrirCarritoSesion(){
-       this.miCarrito = new Carrito();
+        this.miCarrito = new Carrito();
     }
 
     public void agregarItemASesion(int idInv, int codigoProd, int cantidad) throws IllegalArgumentException{
@@ -148,9 +185,17 @@ public class ControladorTienda {
         this.miCarrito.agregarItem(solicitudItem);
     }
 
+    public String mostrarDatosServiciosDelCarrito() throws IllegalArgumentException{
+        return this.miCarrito.mostrarDatosServiciosDeCarrito();
+    }
+
     public String obtenerVistaPreviaDelCarrito() throws IllegalArgumentException{
         return this.miCarrito.mostrarCarrito();
     }
+
+
+
+    //METODOS CONTROL DE GESTOR DE VENTAS:
 
     public String obtenerTotalRecaudoVentas() throws IllegalArgumentException{
         double totalFacturas = this.miGestorDeVentas.totalFacturas();

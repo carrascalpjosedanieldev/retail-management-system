@@ -1,9 +1,10 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 import java.util.Scanner;
 
-import static ProyectoUniversidad1.MenuModificarInventario.modificarInventario;
-import static ProyectoUniversidad1.MetodosTienda.*;
+import static ProyectoPropio1.MenuModificarInventario.modificarInventario;
+import static ProyectoPropio1.MetodosTienda.*;
+import static ProyectoPropio1.MenuGestionarServicios.gestionarServicios;
 
 public class MenuModificarTienda {
 
@@ -18,7 +19,8 @@ public class MenuModificarTienda {
                                    4                            MODIFICAR INVENTARIO
                                    5                            VER STOCK INVENTARIO
                                    6                         ELIMINAR INVENTARIO VACIO
-                                   7                                   SALIR
+                                   7                            GESTIONAR SERVICIOS
+                                   8                                   SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
@@ -35,7 +37,7 @@ public class MenuModificarTienda {
         int opcionModificarTienda;
         do {
             menuModificarTienda();
-            opcionModificarTienda = pedirOpcion(sc,1,7);
+            opcionModificarTienda = pedirOpcion(sc,1,8);
             switch (opcionModificarTienda){
                 case 1:
                     cambiarNombreTienda(sc,controladorTienda);
@@ -56,10 +58,13 @@ public class MenuModificarTienda {
                     eliminarInventarioVacio(sc, controladorTienda);
                     break;
                 case 7:
+                    gestionarServicios(sc, controladorTienda);
+                    break;
+                case 8:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
-        } while (opcionModificarTienda!=7);
+        } while (opcionModificarTienda!=8);
     }
 
     private static void cambiarNombreTienda(Scanner sc, ControladorTienda controladorTienda){
@@ -70,8 +75,10 @@ public class MenuModificarTienda {
                     "---> ");
             String nuevoNombreTienda = sc.nextLine();
             controladorTienda.cambiarNombreTienda(nuevoNombreTienda);
+            System.out.println("Nombre cambiado con Exito\n" +
+                    "La Tienda ahora se llama -" + nuevoNombreTienda + "-");
         } catch (IllegalArgumentException e){
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -87,8 +94,9 @@ public class MenuModificarTienda {
                     """ + "---> ");
             int capacidadInventario = leerEntero(sc);
             controladorTienda.agregarInventarioATienda(nombreInventario,capacidadInventario);
+            System.out.println("Nuevo Inventario generado con Exito");
         } catch (IllegalArgumentException e){
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -102,7 +110,7 @@ public class MenuModificarTienda {
             int id = leerEntero(sc);
             System.out.println(controladorTienda.obtenerDetalleInventarioDeTienda(id));
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -158,7 +166,7 @@ public class MenuModificarTienda {
             controladorTienda.eliminarInventarioVacio(numeroId);
             System.out.println("Inventario eliminado con exito");
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 

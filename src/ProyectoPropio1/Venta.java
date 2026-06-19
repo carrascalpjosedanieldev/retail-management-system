@@ -1,6 +1,8 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
-public class Venta {
+public class Venta implements ItemFacturable{
+
+    //ATRIBUTOS:
 
     private final String nombreProducto;
 
@@ -12,13 +14,13 @@ public class Venta {
 
     private static int idVentaSiguiente=0;
 
+    //GETTERS Y SETTERS:
+
     public int getNumeroDeVenta() {
         return numeroDeVenta;
     }
 
-    public double getValorCobrado() {
-        return valorCobrado;
-    }
+    //CONSTRUCTOR:
 
     public Venta(String nombreProducto, int cantidadVendida, double valorCobrado) {
         this.nombreProducto = nombreProducto;
@@ -28,7 +30,15 @@ public class Venta {
         this.numeroDeVenta =idVentaSiguiente;
     }
 
-    public String obtenerVenta(){
+    //METODOS:
+
+    @Override
+    public double getValorCobrado() {
+        return valorCobrado;
+    }
+
+    @Override
+    public String obtenerDetalleFacturacion(){
         return  "Numero De Venta:  " + this.numeroDeVenta + System.lineSeparator() +
                 "Producto Vendido:  " + this.nombreProducto + System.lineSeparator() +
                 "Cantidad Vendida:  " + this.cantidadVendida + System.lineSeparator() +

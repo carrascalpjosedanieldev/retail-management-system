@@ -1,6 +1,6 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Tienda {
@@ -10,6 +10,8 @@ public class Tienda {
     private String nombreTienda;
 
     private final Map<Integer,Inventario> misInventarios;
+
+    private final Map<Integer, Servicio> serviciosOfrecidos;
 
     //GETTERS Y SETTERS:
 
@@ -28,10 +30,11 @@ public class Tienda {
             throw new IllegalArgumentException("Nombre Vacio");
         }
         this.nombreTienda = nombreTienda;
-        this.misInventarios = new HashMap<>();
+        this.misInventarios = new LinkedHashMap<>();
+        this.serviciosOfrecidos = new LinkedHashMap<>();
     }
 
-    //METODOS:
+    //METODOS DE VALIDACION PARA INVENTARIO Y PRODUCTOS:
 
     public boolean tiendaNoTieneInventarios(){
         return this.misInventarios.isEmpty();
@@ -55,6 +58,8 @@ public class Tienda {
             throw new IllegalArgumentException("No Hay Inventarios");
         }
     }
+
+    //METODOS PARA MOSTRAR INFORMACION:
 
     public String mostrarInfoInventarios() throws IllegalArgumentException{
         validarQueExistanInventarios();
@@ -81,7 +86,16 @@ public class Tienda {
         return inventario.mostrarInformacionStock();
     }
 
-    //METODOS MODIFICAR TIENDA:
+    public String mostrarInventarioGeneral() throws IllegalArgumentException{
+        validarQueExistanInventarios();
+        StringBuilder inventarioGeneral = new StringBuilder();
+        for (Inventario inventario: this.misInventarios.values()){
+            inventarioGeneral.append(inventario.obtenerDetalle());
+        }
+        return inventarioGeneral.toString();
+    }
+
+    //METODOS PARA MODIFICAR TIENDA:
 
     public void cambiarNombreTienda(String nuevoNombre) throws IllegalArgumentException{
         if (nuevoNombre==null || nuevoNombre.isBlank()){
@@ -103,34 +117,7 @@ public class Tienda {
         this.misInventarios.remove(id);
     }
 
-    //METODOS MOVER PRODUCTO A OTRO INVENTARIO:
-
-    public void moverProductoAOtroInventario(int idSalida, int idLlegada, int codigo) throws IllegalArgumentException{
-        Inventario inventarioSalida = obtenerInventario(idSalida);
-        Inventario inventarioLlegada = obtenerInventario(idLlegada);
-        if (idSalida == idLlegada) {
-            throw new IllegalArgumentException("Inventario De Salida Y De Llegada Iguales");
-        }
-        if (inventarioLlegada.buscarProducto(codigo)) {
-            throw new IllegalArgumentException("El producto ya existe en el inventario de destino");
-        }
-        Producto producto = inventarioSalida.obtenerProducto(codigo);
-        inventarioLlegada.agregarUnProducto(producto);
-        inventarioSalida.eliminarUnProducto(codigo);
-    }
-
-    //METODOS UTILIZAR TIENDA:
-
-    public String mostrarInventarioGeneral() throws IllegalArgumentException{
-        validarQueExistanInventarios();
-        StringBuilder inventarioGeneral = new StringBuilder();
-        for (Inventario inventario: this.misInventarios.values()){
-            inventarioGeneral.append(inventario.obtenerDetalle());
-        }
-        return inventarioGeneral.toString();
-    }
-
-    //METODOS MODIFICAR INVENTARIO:
+    //METODOS PARA MODIFICAR INVENTARIO:
 
     public void cambiarNombreAUnInventario(int id , String nombreNuevoInv) throws IllegalArgumentException{
         Inventario inventario = obtenerInventario(id);
@@ -150,6 +137,70 @@ public class Tienda {
     public boolean buscarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
         Inventario inventario = obtenerInventario(id);
         return inventario.buscarProducto(codigo);
+    }
+
+    public void moverProductoAOtroInventario(int idSalida, int idLlegada, int codigo) throws IllegalArgumentException{
+        Inventario inventarioSalida = obtenerInventario(idSalida);
+        Inventario inventarioLlegada = obtenerInventario(idLlegada);
+        if (idSalida == idLlegada) {
+            throw new IllegalArgumentException("Inventario De Salida Y De Llegada Iguales");
+        }
+        if (inventarioLlegada.buscarProducto(codigo)) {
+            throw new IllegalArgumentException("El producto ya existe en el inventario de destino");
+        }
+        Producto producto = inventarioSalida.obtenerProducto(codigo);
+        inventarioLlegada.agregarUnProducto(producto);
+        inventarioSalida.eliminarUnProducto(codigo);
+    }
+
+    //METODOS SERVICIOS:
+
+    public boolean tiendaNoTieneServicios() throws IllegalArgumentException{
+        return this.serviciosOfrecidos.isEmpty();
+    }
+
+    public Servicio obtenerServicio(int codigo) throws IllegalArgumentException{
+        Servicio servicio = this.serviciosOfrecidos.get(codigo);
+        if (servicio==null){
+            throw new IllegalArgumentException("Ese Servicio No existe");
+        }
+        return servicio;
+    }
+
+    public void registrarServicioAlCatalogo(Servicio servicio) throws IllegalArgumentException{
+        this.serviciosOfrecidos.put(servicio.getCodigoServicio(), servicio);
+    }
+
+    public void eliminarServicioDelCatalogo(int codigoServicio) throws IllegalArgumentException{
+        Servicio servicio = obtenerServicio(codigoServicio);
+        this.serviciosOfrecidos.remove(servicio.getCodigoServicio());
+    }
+
+    public void cambiarNombreServicio(int codigoServicio, String nombreServicio) throws IllegalArgumentException{
+        Servicio servicio = obtenerServicio(codigoServicio);
+        servicio.cambiarNombreServicio(nombreServicio);
+    }
+
+    public void cambiarPrecioServicio(int codigoServicio, double precioNuevo) throws IllegalArgumentException{
+        Servicio servicio = obtenerServicio(codigoServicio);
+        servicio.cambiarPrecioBase(precioNuevo);
+    }
+
+    public String mostrarServiciosDeLaTienda() throws IllegalArgumentException{
+        if (tiendaNoTieneServicios()){
+            throw new IllegalArgumentException("No hay Servicios disponibles");
+        }
+        StringBuilder infoServicios = new StringBuilder();
+        infoServicios.append("---------------------------------------------------------------");
+        infoServicios.append(System.lineSeparator());
+        infoServicios.append("SERVICIOS:");
+        infoServicios.append(System.lineSeparator());
+        for (Servicio servicio:this.serviciosOfrecidos.values()){
+            infoServicios.append(servicio.obtenerInfoServicio());
+            infoServicios.append(System.lineSeparator());
+        }
+        infoServicios.append("---------------------------------------------------------------");
+        return infoServicios.toString();
     }
 
 }

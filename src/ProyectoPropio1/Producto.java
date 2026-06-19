@@ -1,4 +1,4 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 public abstract class Producto {
 
@@ -55,6 +55,8 @@ public abstract class Producto {
         return calcularValorVenta();
     }
 
+    //CONSTRUCTOR:
+
     protected Producto(String nombre, double valorCompra, int stock) throws IllegalArgumentException{
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
@@ -73,36 +75,42 @@ public abstract class Producto {
         codigoSiguiente++;
     }
 
+    //METODOS:
+
     public abstract String describirProducto();
 
     protected double calcularValorVenta(){
         return this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
     }
 
+    public void validarEstadoParaVenta(){
+
+    }
+
     //METODOS MODIFICAR PRODUCTO:
 
-    public void cambiarValorVentaPorPorcentaje(double porcentajeGanancia) throws IllegalArgumentException{
+    protected void cambiarValorVentaPorPorcentaje(double porcentajeGanancia) throws IllegalArgumentException{
         if (porcentajeGanancia<20 || porcentajeGanancia>100){
             throw new IllegalArgumentException("Porcentaje De Ganancia Invalido");
         }
         setPorcentajeGanancia(porcentajeGanancia);
     }
 
-    public void cambiarNombreProducto(String nombre) throws IllegalArgumentException{
+    protected void cambiarNombreProducto(String nombre) throws IllegalArgumentException{
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre Vacio");
         }
         setNombre(nombre);
     }
 
-    public void cambiarValorCompra(double valorNuevo) throws IllegalArgumentException{
+    protected void cambiarValorCompra(double valorNuevo) throws IllegalArgumentException{
         if (valorNuevo<=0){
             throw new IllegalArgumentException("Valor Negativo");
         }
         setValorCompra(valorNuevo);
     }
 
-    public void aumentarStock(int cantidad) throws IllegalArgumentException{
+    protected void aumentarStock(int cantidad) throws IllegalArgumentException{
         if (cantidad<0){
             throw new IllegalArgumentException("Cantidad Negativa");
         }
@@ -110,7 +118,7 @@ public abstract class Producto {
         setStock(stockTotal);
     }
 
-    public void reducirStock(int cantidad) throws IllegalArgumentException{
+    protected void reducirStock(int cantidad) throws IllegalArgumentException{
         if (cantidad<0){
             throw new IllegalArgumentException("Cantidad Negativa");
         }

@@ -1,6 +1,8 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 public record SolicitudItem(int idInventario, int codigoProducto, int cantidad) {
+
+    //METODOS:
 
     public String mostrarItem(){
         return  "Inventario:  " + this.idInventario + System.lineSeparator() +

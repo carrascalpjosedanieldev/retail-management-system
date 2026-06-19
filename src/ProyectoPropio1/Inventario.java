@@ -1,4 +1,4 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ public class Inventario {
         numeroIdSiguiente++;
     }
 
-    //METODOS:
+    //METODOS DE VALIDACION:
 
     public boolean tieneProductos(){
         return !this.misProductos.isEmpty();
@@ -67,6 +67,8 @@ public class Inventario {
     private int calcularCapacidadLibre(){
         return this.capacidadMaxima - this.capacidadOcupada;
     }
+
+    //METODOS PARA MOSTRAR INFORMACION:
 
     public String obtenerDetalle(){
         StringBuilder detalle = new StringBuilder();
@@ -101,7 +103,7 @@ public class Inventario {
         return informacion;
     }
 
-    //METODOS MODIFICAR INVENTARIO:
+    //METODOS PARA MODIFICAR INVENTARIO:
 
     public void cambiarNombreInventario(String nuevoNombre) throws IllegalArgumentException{
         if (nuevoNombre==null || nuevoNombre.isBlank()){
@@ -146,7 +148,7 @@ public class Inventario {
         return producto;
     }
 
-    //METODOS MODIFICAR PRODUCTO:
+    //METODOS PARA MODIFICAR PRODUCTO:
 
     public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje) throws IllegalArgumentException{
         Producto producto = this.misProductos.get(codigo);
@@ -206,6 +208,7 @@ public class Inventario {
         if (producto ==null){
             throw new IllegalArgumentException("No Se Encuentra Ese Producto");
         }
+        producto.validarEstadoParaVenta();
         if (cantidad > producto.getStock()){
             throw new IllegalArgumentException("La Cantidad A Reducir Es Mayor A La Cantidad Existente");
         }

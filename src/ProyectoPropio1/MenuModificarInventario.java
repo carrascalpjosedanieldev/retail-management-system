@@ -1,10 +1,10 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 import java.time.LocalDate;
 import java.util.Scanner;
 
-import static ProyectoUniversidad1.MenuModificarProducto.modificarProductoAInventario;
-import static ProyectoUniversidad1.MetodosTienda.*;
+import static ProyectoPropio1.MenuModificarProducto.modificarProductoAInventario;
+import static ProyectoPropio1.MetodosTienda.*;
 
 public class MenuModificarInventario {
 
@@ -83,7 +83,7 @@ public class MenuModificarInventario {
             controladorTienda.cambiarNombreAUnInventario(idInventario, nombreNuevoInv);
             System.out.println("El Inventario de ID -" + idInventario + "- ahora se llama: " + nombreNuevoInv);
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -122,14 +122,14 @@ public class MenuModificarInventario {
                     System.out.println("Nuevo Producto:\n" + producto.describirProducto());
                     break;
                 case PERECEDERO:
-                    System.out.println("Ingrese la fecha de vencimiento (Formato AAAA-MM-DD):");
-                    String fechaString = sc.nextLine();
-                        producto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC, stock, fechaString);
+                    System.out.println("Ingrese la fecha de vencimiento (Formato DD/MM/AAAA):");
+                    LocalDate fecha = leerFecha(sc);
+                        producto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC, stock, fecha);
                     System.out.println("Nuevo Producto:\n" + producto.describirProducto());
                     break;
             }
         } catch (IllegalArgumentException e){
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -143,9 +143,8 @@ public class MenuModificarInventario {
             controladorTienda.eliminarProductoAInventario(idInventario, codigoProducto);
             System.out.println("El Producto de codigo -" + codigoProducto + "- ha sido eliminado con exito");
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
-
     }
 
     private static void buscarProductoAInventario(Scanner sc, ControladorTienda controladorTienda, int idInventario) {
@@ -156,13 +155,13 @@ public class MenuModificarInventario {
         int codigoProducto = leerEntero(sc);
         try {
             boolean esta = controladorTienda.buscarProductoAInventario(idInventario, codigoProducto);
-            if (esta){
+            if (!esta){
                 System.out.println("El Producto de codigo -" + codigoProducto + "- NO esta en ese inventario");
                 return;
             }
             System.out.println("El Producto de codigo -" + codigoProducto + "- SI esta en ese inventario");
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " +e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -178,7 +177,7 @@ public class MenuModificarInventario {
             controladorTienda.moverProductoAInventario(idInventario, numeroId2 , codigoProducto);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ha sido movido al Inventario de ID -" + numeroId2 + "- con exito");
         } catch (IllegalArgumentException e){
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 

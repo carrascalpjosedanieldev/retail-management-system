@@ -1,20 +1,33 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Carrito {
 
+    //ATRIBUTOS:
+
     private final Map<String,SolicitudItem> carritoFinal;
+
+    private final List<Servicio> serviciosAdicionales;
+
+    //GETTERS Y SETTERS:
 
     public Collection<SolicitudItem> getItems(){
         return this.carritoFinal.values();
     }
 
-    public Carrito() {
-        this.carritoFinal = new HashMap<>();
+    public List<Servicio> getServiciosAdicionales(){
+        return Collections.unmodifiableList(this.serviciosAdicionales);
     }
+
+    //CONSTRUCTOR:
+
+    public Carrito() {
+        this.carritoFinal = new LinkedHashMap<>();
+        this.serviciosAdicionales = new ArrayList<>();
+    }
+
+    //METODOS:
 
     public void agregarItem(SolicitudItem solicitudItem){
         String key = solicitudItem.idInventario() + "-" + solicitudItem.codigoProducto();
@@ -26,6 +39,24 @@ public class Carrito {
             return;
         }
         this.carritoFinal.put(key, solicitudItem);
+    }
+
+    public void agregarServicio(Servicio servicio){
+        this.serviciosAdicionales.add(servicio);
+    }
+
+    //METODOS DE MOSTRAR INFORMACION:
+
+    public String mostrarDatosServiciosDeCarrito(){
+        StringBuilder datosServicios = new StringBuilder();
+        datosServicios.append("----------------------------------------------------------");
+        datosServicios.append(System.lineSeparator());
+        for (Servicio servicio:this.serviciosAdicionales){
+            datosServicios.append(servicio.obtenerInfoServicio());
+            datosServicios.append(System.lineSeparator());
+        }
+        datosServicios.append("----------------------------------------------------------");
+        return datosServicios.toString();
     }
 
     public String mostrarCarrito(){

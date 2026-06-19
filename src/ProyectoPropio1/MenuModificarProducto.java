@@ -1,8 +1,8 @@
-package ProyectoUniversidad1;
+package ProyectoPropio1;
 
 import java.util.Scanner;
 
-import static ProyectoUniversidad1.MetodosTienda.*;
+import static ProyectoPropio1.MetodosTienda.*;
 
 public class MenuModificarProducto {
 
@@ -78,7 +78,7 @@ public class MenuModificarProducto {
             controladorTienda.cambiarNombreDeProductoDeInventario(idInventario, codigoProducto, nombreNuevoProd);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora se llama:  " + nombreNuevoProd);
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class MenuModificarProducto {
             controladorTienda.actualizarValorCompraDeProductoDeInventario(idInventario, codigoProducto, valorNuevo);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora tendra el valor de compra:  $" + valorNuevo);
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -128,7 +128,7 @@ public class MenuModificarProducto {
             controladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(idInventario, codigoProducto, porcentajeNuevo);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora tendra el porcentaje de ganancia:  " + porcentajeNuevo + "%");
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -153,7 +153,7 @@ public class MenuModificarProducto {
             controladorTienda.aumentarStockDeProductoDeInventario(idInventario, codigoProducto, cantidad);
             System.out.println("Al Producto de Codigo -" + codigoProducto + "- se le agregaran " + cantidad + " unidades al stock");
         } catch (IllegalArgumentException e){
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
@@ -178,7 +178,7 @@ public class MenuModificarProducto {
             controladorTienda.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidadQuitada);
             System.out.println("Al Producto de Codigo -" + codigoProducto + "- se le reduciran " + cantidadQuitada + " unidades al stock");
         } catch (IllegalArgumentException e) {
-            System.out.println("ERROR:  " + e.getMessage());
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
