@@ -4,7 +4,7 @@ public interface ItemFacturable {
 
     double getValorCobrado();
 
-    String obtenerDetalleFacturacion();
+    DatosLineaFacturaDTO obtenerDatosLinea();
 
 }
 

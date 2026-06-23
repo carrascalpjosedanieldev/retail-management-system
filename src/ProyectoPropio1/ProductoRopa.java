@@ -16,7 +16,7 @@ public class ProductoRopa extends Producto implements Impuestable{
 
     //CONSTRUCTOR:
 
-    public ProductoRopa(String nombre, double valorCompra, int stock, Talla talla) throws IllegalArgumentException {
+    public ProductoRopa(String nombre, double valorCompra, int stock, Talla talla){
         super(nombre, valorCompra, stock);
         this.talla=talla;
     }
@@ -24,9 +24,13 @@ public class ProductoRopa extends Producto implements Impuestable{
     //METODOS:
 
     @Override
-    public String describirProducto() {
-        return String.format("Tipo de Producto:  Ropa    Nombre del Producto:  %-12s Talla:  %-4s Codigo:  %-4d Valor Compra:  %-12.2f Ganancia:  %3.0f%s Valor Venta:  %-12.2f Stock:  %-4d%n",
-                getNombre(),getTalla(),getCodigo(),getValorCompra(),getPorcentajeGanancia(),"%   ", getValorVenta(),getStock());
+    public DatosTotalesProductoDTO exportarDatosTotales() {
+        return new DatosTotalesProductoRopaDTO(this.getCodigo(), this.getNombre(), this.getValorCompra(), this.getPorcentajeGanancia(), this.getValorVenta(), this.getStock(), this.getTalla());
+    }
+
+    @Override
+    public DatosVentaProductoDTO exportarDatosVenta() {
+        return new DatosVentaProductoRopaDTO(this.getNombre(), this.getValorVenta(), this.getTalla());
     }
 
     @Override

@@ -38,7 +38,7 @@ public class Servicio implements Impuestable, ItemFacturable{
 
     //CONSTRUCTOR:
 
-    public Servicio(String nombre, double precioBase) throws IllegalArgumentException{
+    public Servicio(String nombre, double precioBase){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre Vacio");
         }
@@ -67,24 +67,24 @@ public class Servicio implements Impuestable, ItemFacturable{
     }
 
     @Override
-    public String obtenerDetalleFacturacion() {
-        return  "Servicio:  " + this.nombre + "   Precio:  $" + this.getValorCobrado();
+    public DatosLineaFacturaDTO obtenerDatosLinea() {
+        return new DatosLineaFacturaDTO("Servicio", this.nombre, 1, this.getValorCobrado());
     }
 
-    public String obtenerInfoServicio(){
-        return  "Codigo:  " + this.codigoServicio + "   Servicio:  " + this.nombre + "   Precio:  $" + this.getValorCobrado();
+    public DatosServicioDTO exportarDatosServicio(){
+        return new DatosServicioDTO(this.codigoServicio, this.getNombre(), this.getValorCobrado());
     }
 
     //METODOS MODIFICAR SERVICIO:
 
-    public void cambiarNombreServicio(String nombreServicio) throws IllegalArgumentException{
+    public void cambiarNombreServicio(String nombreServicio){
         if (nombreServicio==null || nombreServicio.isBlank()){
             throw new IllegalArgumentException("Nombre Vacio");
         }
         setNombre(nombreServicio);
     }
 
-    public void cambiarPrecioBase(double precioNuevo) throws IllegalArgumentException{
+    public void cambiarPrecioBase(double precioNuevo){
         if (precioNuevo<=0){
             throw new IllegalArgumentException("Precio Invalido");
         }

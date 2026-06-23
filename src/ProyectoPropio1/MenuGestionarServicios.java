@@ -1,5 +1,7 @@
 package ProyectoPropio1;
 
+import Excepciones.ServicioNoEncontradoException;
+
 import java.util.Scanner;
 
 import static ProyectoPropio1.MetodosTienda.*;
@@ -63,7 +65,7 @@ public class MenuGestionarServicios {
         try {
             controladorTienda.registrarServicioNuevo(nombreServicio, precioServicio);
             System.out.println("Servicio registrado con exito");
-        } catch (IllegalArgumentException e){
+        } catch (RuntimeException e){
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
@@ -76,7 +78,13 @@ public class MenuGestionarServicios {
                     """);
             return;
         }
-        System.out.println(controladorTienda.mostrarServiciosDeLaTienda());
+        DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.exportarCatalogoServicios();
+        System.out.println("--------------------------------------------------------------------------------------------");
+        System.out.println("---> SERVICIOS:");
+        for (DatosServicioDTO datosServicio: datosCatalogoServicios.listaServicios()){
+            System.out.println("Codigo:  " + datosServicio.codigo() + "   Servicio:  " + datosServicio.nombre() + "   Precio:  $" + datosServicio.precioFinal());
+        }
+        System.out.println("--------------------------------------------------------------------------------------------");
     }
 
     private static void eliminarServicio(Scanner sc, ControladorTienda controladorTienda){
@@ -95,7 +103,9 @@ public class MenuGestionarServicios {
         try {
             controladorTienda.eliminarServicioDeTienda(codigoServicio);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido eliminado con exito");
-        } catch (IllegalArgumentException e) {
+        } catch (ServicioNoEncontradoException e){
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
@@ -119,7 +129,9 @@ public class MenuGestionarServicios {
         try {
             controladorTienda.cambiarNombreServicio(codigoServicio, nombreNuevo);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ahora se llama: " + nombreNuevo);
-        } catch (IllegalArgumentException e) {
+        } catch (ServicioNoEncontradoException e){
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
@@ -143,7 +155,9 @@ public class MenuGestionarServicios {
         try {
             controladorTienda.cambiarPrecioServicio(codigoServicio, precioNuevo);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ahora vale: $" + precioNuevo);
-        } catch (IllegalArgumentException e) {
+        } catch (ServicioNoEncontradoException e) {
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }

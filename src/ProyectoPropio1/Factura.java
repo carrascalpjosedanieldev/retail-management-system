@@ -7,11 +7,11 @@ public class Factura {
 
     //ATRIBUTOS:
 
-    private final List<ItemFacturable> lineaDeCobros;
+    private final List<ItemFacturable> itemsFinales;
 
-    private int idFactura;
+    private final int idFactura;
 
-    private static int idFacturaSiguiente=0;
+    private static int idFacturaSiguiente=1;
 
     //GETTERS Y SETTERS:
 
@@ -19,48 +19,27 @@ public class Factura {
         return idFactura;
     }
 
-    private void setIdFactura(int idFactura){
-        this.idFactura = idFactura;
-    }
-
     //CONSTRUCTOR:
 
-    public Factura() {
-        this.lineaDeCobros = new ArrayList<>();
+
+    public Factura(List<ItemFacturable> itemsFinales) {
+        this.itemsFinales = itemsFinales;
+        this.idFactura = idFacturaSiguiente++;
     }
 
     //METODOS:
 
-    public void asignarIdFactura(){
-        int idFactura = idFacturaSiguiente++;
-        setIdFactura(idFactura);
-    }
-
-    public void agregarItem(ItemFacturable itemFacturable){
-        this.lineaDeCobros.add(itemFacturable);
-    }
-
-    public String generarFactura(){
-        StringBuilder factura = new StringBuilder();
-        factura.append("--------------------------------------------------------------------------");
-        factura.append(System.lineSeparator());
-        factura.append("FACTURA N`");
-        factura.append(getIdFactura());
-        factura.append(System.lineSeparator());
-        for (ItemFacturable itemFacturable :this.lineaDeCobros){
-            factura.append(itemFacturable.obtenerDetalleFacturacion());
+    public FacturaDTO generarFactura(){
+        List<DatosLineaFacturaDTO> datosItemsFinales = new ArrayList<>();
+        for (ItemFacturable itemFacturable :this.itemsFinales){
+            datosItemsFinales.add(itemFacturable.obtenerDatosLinea());
         }
-        factura.append(System.lineSeparator());
-        factura.append("TOTAL A PAGAR:  $");
-        factura.append(calcularTotalFactura());
-        factura.append(System.lineSeparator());
-        factura.append("--------------------------------------------------------------------------");
-        return factura.toString();
+        return new FacturaDTO(this.idFactura, datosItemsFinales, this.calcularTotalFactura());
     }
 
     public double calcularTotalFactura() {
         double totalFactura = 0;
-        for (ItemFacturable itemFacturable :this.lineaDeCobros){
+        for (ItemFacturable itemFacturable :this.itemsFinales){
             totalFactura+= itemFacturable.getValorCobrado();
         }
         return totalFactura;

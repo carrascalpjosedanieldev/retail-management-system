@@ -12,40 +12,36 @@ public class UsoTienda {
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
-
-        ControladorTienda miControladorTienda = new ControladorTienda();
-
+        Tienda miTienda = new Tienda("Nombre Por Defecto");
+        GestorVentas miGestorVentas = new GestorVentas(miTienda);
+        ControladorTienda miControladorTienda = new ControladorTienda(miTienda, miGestorVentas);
         //Comentable para pruebas
         miControladorTienda = paraPruebasTienda();
-
         int opcionMenuPrincipal;
-
         do {
             menuPrincipal();
-            opcionMenuPrincipal = pedirOpcion(sc,1,4);
-
+            opcionMenuPrincipal = pedirOpcion(sc,1,3);
             switch (opcionMenuPrincipal){
                 case 1:
-                    crearTienda(sc,miControladorTienda);
-                    break;
-                case 2:
                     modificarTienda(sc, miControladorTienda);
                     break;
-                case 3:
+                case 2:
                     utilizarTienda(sc, miControladorTienda);
                     break;
-                case 4:
+                case 3:
                     salirPrograma();
                     break;
             }
-        } while (opcionMenuPrincipal!=4);
-
+        } while (opcionMenuPrincipal!=3);
     }
 
-    private static ControladorTienda paraPruebasTienda() {
-        ControladorTienda miControladorTienda = new ControladorTienda();
 
-        miControladorTienda.crearTienda("SLIM");
+    private static ControladorTienda paraPruebasTienda() {
+
+        Tienda miTienda = new Tienda("SLIM");
+        GestorVentas miGestorVentas = new GestorVentas(miTienda);
+        ControladorTienda miControladorTienda = new ControladorTienda(miTienda, miGestorVentas);
+
 
         miControladorTienda.registrarServicioNuevo("Domicilio", 15000);
         miControladorTienda.registrarServicioNuevo("Empaquetado General", 15000);
@@ -66,40 +62,40 @@ public class UsoTienda {
 
 
         miControladorTienda.registrarProductoRopa(1, "Pantalon", 75000, 40, "M");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 5, 30);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 4, 30);
 
         miControladorTienda.registrarProductoRopa(1, "Pantalon", 75000, 40, "L");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 6, 30);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 5, 30);
 
 
         miControladorTienda.registrarProductoRopa(1, "Medias", 8000, 50, "M");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 7, 100);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 6, 100);
 
         miControladorTienda.registrarProductoRopa(1, "Medias", 8000, 50, "L");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 8, 100);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(1, 7, 100);
 
 
         miControladorTienda.agregarInventarioATienda("Secundario", 250);//------------Inventario
 
 
         miControladorTienda.registrarProductoRopa(2, "Chaqueta", 120000, 20, "M");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 9, 30);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 8, 30);
 
         miControladorTienda.registrarProductoRopa(2, "Chaqueta", 120000, 30, "L");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 10, 30);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 9, 30);
 
 
         miControladorTienda.registrarProductoRopa(2, "Pantaloneta", 35000, 25, "M");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 11, 40);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 10, 40);
 
         miControladorTienda.registrarProductoRopa(2, "Pantaloneta", 35000, 25, "L");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 12, 40);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 11, 40);
 
 
         miControladorTienda.agregarInventarioATienda("Comida", 150);//------------Inventario
 
         miControladorTienda.registrarProductoPerecedero(3, "Papas", 1000, 20, LocalDate.of(2027,11,10));
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(3, 13, 100);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(3, 12, 100);
 
 
         return miControladorTienda;

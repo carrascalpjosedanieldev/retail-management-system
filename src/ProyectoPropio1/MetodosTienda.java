@@ -13,10 +13,9 @@ public class MetodosTienda {
                 \n                          BIENVENIDO -MENU PRINCIPAL-
                 ---> SELECCIONA QUE QUIERES HACER:
                                * OPCION                              * ACCION
-                                   1                              CREAR TIENDA (1)
-                                   2                              MODIFICAR TIENDA
-                                   3                               UTILIZAR TIENDA
-                                   4                                   SALIR
+                                   1                              MODIFICAR TIENDA
+                                   2                               UTILIZAR TIENDA
+                                   3                                   SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
@@ -80,30 +79,6 @@ public class MetodosTienda {
             }
         } while (!opcionValida);
         return opcion;
-    }
-
-    public static void crearTienda(Scanner sc, ControladorTienda controladorTienda){
-        if (!controladorTienda.puedeCrearTienda()){
-            System.out.print("""
-                                \nACCION DENEGADA:
-                                YA HAS CREADO UNA TIENDA Y EL PROGRAMA SOLO ADMITE EL MANEJO DE UNA SOLA
-                                """);
-            return;
-        }
-        System.out.println("\nHAS SELECCIONADO: -CREAR TIENDA-");
-        System.out.print("""
-                                Escribe el nombre que le pondras a tu tienda:
-                                """ + "---> ");
-        String nombreTienda;
-        nombreTienda=sc.nextLine();
-        try {
-            controladorTienda.crearTienda(nombreTienda);
-            System.out.println("\nGENERACION DE TIENDA EXITOSA:\n" +
-                    "La Tienda: -" + controladorTienda.obtenerNombreTienda() + "- esta lista para generar su Inventario");
-        } catch (IllegalArgumentException e) {
-            System.out.println("\nNO se puede generar esta Tienda por un error de asignacion de datos:\n" +
-                    "ERROR: " + e.getMessage());
-        }
     }
 
     public static void salirPrograma(){

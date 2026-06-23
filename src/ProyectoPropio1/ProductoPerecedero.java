@@ -1,5 +1,7 @@
 package ProyectoPropio1;
 
+import Excepciones.ProductoVencidoException;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -21,7 +23,7 @@ public class ProductoPerecedero extends Producto{
 
     //CONSTRUCTOR:
 
-    public ProductoPerecedero(String nombre, double valorCompra, int stock, LocalDate fechaVencimiento) throws IllegalArgumentException {
+    public ProductoPerecedero(String nombre, double valorCompra, int stock, LocalDate fechaVencimiento){
         super(nombre, valorCompra, stock);
         this.fechaVencimiento=fechaVencimiento;
         this.posibleDescuento=descuentoPorVencimiento;
@@ -29,22 +31,19 @@ public class ProductoPerecedero extends Producto{
 
     //METODOS:
 
-
-    private String vencidoONo() {
+    private boolean estaVencido() {
         long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), this.fechaVencimiento);
-        String vencidoONo = "";
-        if (diasRestantes < 0) {
-            return vencidoONo + "VENCIDO - NO DISPONIBLE";
-        }
-        return vencidoONo + "VIGENTE - DISPONIBLE";
-
+        return diasRestantes < 0;
     }
 
     @Override
-    public String describirProducto() {
-        String vencidoONo = vencidoONo();
-        return String.format("Tipo de Producto:  Comida    Nombre del Producto:  %-10s Fecha Vencimiento: %-12s Codigo:  %-4d Valor Compra:  %-12.2f Ganancia:  %3.0f%s Valor Venta:  %-12.2f Stock:  %-4d Estado: %-15s %n",
-                getNombre(),getFechaVencimiento(),getCodigo(),getValorCompra(),getPorcentajeGanancia(),"%   ",getValorVenta(),getStock(),vencidoONo);
+    public DatosTotalesProductoDTO exportarDatosTotales() {
+        return new DatosTotalesProductoPerecederoDTO(this.getCodigo(), this.getNombre(), this.getValorCompra(), this.getPorcentajeGanancia(), this.getValorVenta(), this.getStock(), this.getFechaVencimiento(), this.estaVencido());
+    }
+
+    @Override
+    public DatosVentaProductoDTO exportarDatosVenta() {
+        return new DatosVentaProductoPerecederoDTO(this.getNombre(), this.getValorVenta(), this.getFechaVencimiento());
     }
 
     @Override
@@ -59,10 +58,10 @@ public class ProductoPerecedero extends Producto{
     }
 
     @Override
-    public void validarEstadoParaVenta() throws IllegalStateException {
+    public void validarEstadoParaVenta() throws ProductoVencidoException{
         long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), this.fechaVencimiento);
         if (diasRestantes < 0) {
-            throw new IllegalStateException("ALERTA: El producto '" + this.getNombre() + "' está vencido. Venta bloqueada.");
+            throw new ProductoVencidoException("ALERTA: El producto '" + this.getNombre() + "' está vencido. Venta bloqueada.");
         }
     }
 

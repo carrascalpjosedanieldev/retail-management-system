@@ -4,7 +4,7 @@ public class Venta implements ItemFacturable{
 
     //ATRIBUTOS:
 
-    private final String nombreProducto;
+    private final Producto productoVendido;
 
     private final int cantidadVendida;
 
@@ -20,10 +20,19 @@ public class Venta implements ItemFacturable{
         return numeroDeVenta;
     }
 
+    public Producto getProductoVendido() {
+        return productoVendido;
+    }
+
+    public int getCantidadVendida() {
+        return cantidadVendida;
+    }
+
+
     //CONSTRUCTOR:
 
-    public Venta(String nombreProducto, int cantidadVendida, double valorCobrado) {
-        this.nombreProducto = nombreProducto;
+    public Venta(Producto producto, int cantidadVendida, double valorCobrado) {
+        this.productoVendido = producto;
         this.cantidadVendida = cantidadVendida;
         this.valorCobrado = valorCobrado;
         idVentaSiguiente++;
@@ -38,11 +47,8 @@ public class Venta implements ItemFacturable{
     }
 
     @Override
-    public String obtenerDetalleFacturacion(){
-        return  "Numero De Venta:  " + this.numeroDeVenta + System.lineSeparator() +
-                "Producto Vendido:  " + this.nombreProducto + System.lineSeparator() +
-                "Cantidad Vendida:  " + this.cantidadVendida + System.lineSeparator() +
-                "Valor A Pagar:  " + this.valorCobrado + System.lineSeparator() ;
+    public DatosLineaFacturaDTO obtenerDatosLinea() {
+        return new DatosLineaFacturaDTO("Producto (Venta N°" + this.numeroDeVenta + ")", this.productoVendido.getNombre(), this.cantidadVendida, this.valorCobrado);
     }
 
 }

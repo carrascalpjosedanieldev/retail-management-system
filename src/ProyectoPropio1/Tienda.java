@@ -1,6 +1,10 @@
 package ProyectoPropio1;
 
+import Excepciones.*;
+
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Tienda {
@@ -25,7 +29,7 @@ public class Tienda {
 
     //CONSTRUCTOR:
 
-    public Tienda(String nombreTienda) throws IllegalArgumentException{
+    public Tienda(String nombreTienda){
         if (nombreTienda==null || nombreTienda.isBlank()){
             throw new IllegalArgumentException("Nombre Vacio");
         }
@@ -45,162 +49,197 @@ public class Tienda {
         return inventario.tieneProductos();
     }
 
-    public Inventario obtenerInventario(int id) throws IllegalArgumentException{
+    public boolean ningunInventarioTieneProductos(){
+        boolean hayProductos = false;
+        if (tiendaNoTieneInventarios()){
+            return false;
+        }
+        for (Inventario inventario:this.misInventarios.values()){
+            if (inventario.tieneProductos()){
+                hayProductos = true;
+                break;
+            }
+        }
+        return hayProductos;
+    }
+
+    private Inventario obtenerInventario(int id) throws InventarioNoEncontradoException{
         Inventario inventario = this.misInventarios.get(id);
         if (inventario==null){
-            throw new IllegalArgumentException("Ese Inventario No existe");
+            throw new InventarioNoEncontradoException("No se encontró ningún Inventario con el ID: " + id);
         }
         return inventario;
     }
 
-    private void validarQueExistanInventarios() throws IllegalArgumentException{
-        if (tiendaNoTieneInventarios()){
-            throw new IllegalArgumentException("No Hay Inventarios");
-        }
+    public boolean noExisteProductoEnInventario(int idInventario, int codigoProducto) throws InventarioNoEncontradoException{
+        return !obtenerInventario(idInventario).buscarProducto(codigoProducto);
     }
 
     //METODOS PARA MOSTRAR INFORMACION:
 
-    public String mostrarInfoInventarios() throws IllegalArgumentException{
-        validarQueExistanInventarios();
-        StringBuilder informacion = new StringBuilder();
-        informacion.append("---> INVENTARIOS:");
-        informacion.append(System.lineSeparator());
-        informacion.append("------------------------------------------------------------------------------------------------------------");
-        informacion.append(System.lineSeparator());
-        for (Inventario inventario :this.misInventarios.values()){
-            informacion.append(inventario.informacionMinima());
+    public DetalleInventarioGeneralDTO exportarDatosInventarioGeneral(){
+        if (tiendaNoTieneInventarios()){
+            throw new IllegalStateException("No hay Inventarios");
         }
-        informacion.append(System.lineSeparator());
-        informacion.append("-------------------------------------------------------------------------------------------------------------");
-        return informacion.toString();
-    }
-
-    public String obtenerDetalleInventario(int id) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventario(id);
-        return inventario.obtenerDetalle();
-    }
-
-    public String mostrarInfoStockInventario(int id) throws IllegalArgumentException{
-        Inventario inventario = obtenerInventario(id);
-        return inventario.mostrarInformacionStock();
-    }
-
-    public String mostrarInventarioGeneral() throws IllegalArgumentException{
-        validarQueExistanInventarios();
-        StringBuilder inventarioGeneral = new StringBuilder();
-        for (Inventario inventario: this.misInventarios.values()){
-            inventarioGeneral.append(inventario.obtenerDetalle());
+        List<DatosInventarioDTO> inventarioGeneral = new ArrayList<>();
+        for (Inventario inventario:this.misInventarios.values()){
+            inventarioGeneral.add(inventario.exportarDatosInventario());
         }
-        return inventarioGeneral.toString();
+        return new DetalleInventarioGeneralDTO(inventarioGeneral);
+    }
+
+    public DetalleInventarioDTO exportarDetalleUnInventario(int id) throws InventarioNoEncontradoException{
+        Inventario inventario = obtenerInventario(id);
+        return inventario.exportarDetalleInventario();
+    }
+
+    public DatosInventarioDTO exportarDatosUnInventario(int id) throws InventarioNoEncontradoException{
+        Inventario inventario = obtenerInventario(id);
+        return inventario.exportarDatosInventario();
     }
 
     //METODOS PARA MODIFICAR TIENDA:
 
-    public void cambiarNombreTienda(String nuevoNombre) throws IllegalArgumentException{
+    public void cambiarNombreTienda(String nuevoNombre){
         if (nuevoNombre==null || nuevoNombre.isBlank()){
             throw new IllegalArgumentException("Nombre Vacio");
         }
         setNombreTienda(nuevoNombre);
     }
 
-    public void agregarInventario(String nombre,int capacidadMaxima) throws IllegalArgumentException{
+    public void agregarInventario(String nombre,int capacidadMaxima){
         Inventario inventario = new Inventario(nombre, capacidadMaxima);
         this.misInventarios.put(inventario.getNumeroId(),inventario);
     }
 
-    public void eliminarInventarioVacio(int id) throws IllegalArgumentException{
+    public void eliminarInventarioVacio(int id) throws InventarioNoVacioException, InventarioNoEncontradoException{
         Inventario inventario = obtenerInventario(id);
         if (inventario.tieneProductos()){
-            throw new IllegalArgumentException("El Inventario No Esta Vacio");
+            throw new InventarioNoVacioException("El Inventario de ID -" + id + "-NO Esta Vacio");
         }
         this.misInventarios.remove(id);
     }
 
     //METODOS PARA MODIFICAR INVENTARIO:
 
-    public void cambiarNombreAUnInventario(int id , String nombreNuevoInv) throws IllegalArgumentException{
+    public void cambiarNombreAUnInventario(int id , String nombreNuevoInv) throws InventarioNoEncontradoException{
         Inventario inventario = obtenerInventario(id);
         inventario.cambiarNombreInventario(nombreNuevoInv);
     }
 
-    public Producto agregarProductoAUnInv(int id, Producto producto) throws IllegalArgumentException{
+    public DatosTotalesProductoDTO agregarProductoAUnInv(int id, Producto producto) throws InventarioNoEncontradoException, CapacidadExcedidaException {
         Inventario inventario = obtenerInventario(id);
         return inventario.agregarUnProducto(producto);
     }
 
-    public void eliminarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
+    public void eliminarProductoAUnInv(int id, int codigo)  throws InventarioNoEncontradoException, ProductoNoEncontradoException {
         Inventario inventario = obtenerInventario(id);
         inventario.eliminarUnProducto(codigo);
     }
 
-    public boolean buscarProductoAUnInv(int id, int codigo) throws IllegalArgumentException{
+    public boolean buscarProductoAUnInv(int id, int codigo) throws InventarioNoEncontradoException{
         Inventario inventario = obtenerInventario(id);
         return inventario.buscarProducto(codigo);
     }
 
-    public void moverProductoAOtroInventario(int idSalida, int idLlegada, int codigo) throws IllegalArgumentException{
+    public void moverProductoAOtroInventario(int idSalida, int idLlegada, int codigo) throws InventarioNoEncontradoException,CapacidadExcedidaException,ProductoNoEncontradoException{
         Inventario inventarioSalida = obtenerInventario(idSalida);
         Inventario inventarioLlegada = obtenerInventario(idLlegada);
         if (idSalida == idLlegada) {
             throw new IllegalArgumentException("Inventario De Salida Y De Llegada Iguales");
         }
         if (inventarioLlegada.buscarProducto(codigo)) {
-            throw new IllegalArgumentException("El producto ya existe en el inventario de destino");
+            throw new IllegalArgumentException("El Producto ya existe en el Inventario de destino");
         }
         Producto producto = inventarioSalida.obtenerProducto(codigo);
         inventarioLlegada.agregarUnProducto(producto);
         inventarioSalida.eliminarUnProducto(codigo);
     }
 
+    //METODOS DE MODIFICAR PRODUCTO:
+
+    public DatosVentaProductoDTO obtenerDatosProductoDeInventario(int idInv, int codigoProd) throws InventarioNoEncontradoException,ProductoNoEncontradoException{
+        Inventario inventario = obtenerInventario(idInv);
+        return inventario.obtenerDatosProducto(codigoProd);
+    }
+
+    public void verificarStockProductoParaVenta(int id, int codigo, int cantidad) throws InventarioNoEncontradoException,StockInsuficienteException,ProductoNoEncontradoException{
+        Inventario inventario = obtenerInventario(id);
+        inventario.verificarStockProductoDisponible(codigo, cantidad);
+    }
+
+    public Venta reducirStockProductoParaVenta(int idInv, int codigoProd, int cantidad) throws InventarioNoEncontradoException,ProductoNoEncontradoException,StockInsuficienteException{
+        Inventario inventario = obtenerInventario(idInv);
+        return inventario.reducirStockProductoPorVenta(codigoProd,cantidad);
+    }
+
+    public void cambiarNombreDeProductoDeInventario(int id, int codigo, String nombreNuevo) throws InventarioNoEncontradoException,ProductoNoEncontradoException{
+        obtenerInventario(id).actualizarNombreProducto(codigo, nombreNuevo);
+    }
+
+    public void actualizarValorVentaPorPorcentajeDeProductoDeInventario(int id, int codigo, double porcentaje) throws InventarioNoEncontradoException,ProductoNoEncontradoException{
+        obtenerInventario(id).actualizarValorVentaPorPorcentaje(codigo, porcentaje);
+    }
+
+    public void actualizarValorCompraDeProductoDeInventario(int id, int codigo, double valorNuevo) throws InventarioNoEncontradoException,ProductoNoEncontradoException{
+        obtenerInventario(id).actualizarValorCompra(codigo, valorNuevo);
+    }
+
+    public void aumentarStockDeProductoDeInventario(int id, int codigo, int cantidad) throws InventarioNoEncontradoException,ProductoNoEncontradoException,CapacidadExcedidaException{
+        obtenerInventario(id).agregarStockProducto(codigo, cantidad);
+    }
+
+    public void reducirStockDeProductoDeInventario(int id, int codigo, int cantidad) throws InventarioNoEncontradoException,ProductoNoEncontradoException,StockInsuficienteException{
+        obtenerInventario(id).reducirStockProducto(codigo, cantidad);
+    }
+
     //METODOS SERVICIOS:
 
-    public boolean tiendaNoTieneServicios() throws IllegalArgumentException{
+    public boolean tiendaNoTieneServicios(){
         return this.serviciosOfrecidos.isEmpty();
     }
 
-    public Servicio obtenerServicio(int codigo) throws IllegalArgumentException{
+    public Servicio obtenerServicio(int codigo) throws ServicioNoEncontradoException{
         Servicio servicio = this.serviciosOfrecidos.get(codigo);
         if (servicio==null){
-            throw new IllegalArgumentException("Ese Servicio No existe");
+            throw new ServicioNoEncontradoException("El Servicio de Codigo-" + codigo + "- No se encuentra en la Tienda");
         }
         return servicio;
     }
 
-    public void registrarServicioAlCatalogo(Servicio servicio) throws IllegalArgumentException{
+    public DatosServicioDTO obtenerDatosUnServicio(int codigoServicio) throws ServicioNoEncontradoException{
+        Servicio servicio = obtenerServicio(codigoServicio);
+        return new DatosServicioDTO(servicio.getCodigoServicio(), servicio.getNombre(), servicio.getValorCobrado());
+    }
+
+    public void registrarServicioAlCatalogo(Servicio servicio){
         this.serviciosOfrecidos.put(servicio.getCodigoServicio(), servicio);
     }
 
-    public void eliminarServicioDelCatalogo(int codigoServicio) throws IllegalArgumentException{
+    public void eliminarServicioDelCatalogo(int codigoServicio) throws ServicioNoEncontradoException{
         Servicio servicio = obtenerServicio(codigoServicio);
         this.serviciosOfrecidos.remove(servicio.getCodigoServicio());
     }
 
-    public void cambiarNombreServicio(int codigoServicio, String nombreServicio) throws IllegalArgumentException{
+    public void cambiarNombreServicio(int codigoServicio, String nombreServicio) throws ServicioNoEncontradoException{
         Servicio servicio = obtenerServicio(codigoServicio);
         servicio.cambiarNombreServicio(nombreServicio);
     }
 
-    public void cambiarPrecioServicio(int codigoServicio, double precioNuevo) throws IllegalArgumentException{
+    public void cambiarPrecioServicio(int codigoServicio, double precioNuevo) throws ServicioNoEncontradoException{
         Servicio servicio = obtenerServicio(codigoServicio);
         servicio.cambiarPrecioBase(precioNuevo);
     }
 
-    public String mostrarServiciosDeLaTienda() throws IllegalArgumentException{
+    public DatosCatalogoServiciosDTO exportarCatalogoServicios(){
         if (tiendaNoTieneServicios()){
-            throw new IllegalArgumentException("No hay Servicios disponibles");
+            throw new IllegalStateException("No hay Servicios disponibles");
         }
-        StringBuilder infoServicios = new StringBuilder();
-        infoServicios.append("---------------------------------------------------------------");
-        infoServicios.append(System.lineSeparator());
-        infoServicios.append("SERVICIOS:");
-        infoServicios.append(System.lineSeparator());
-        for (Servicio servicio:this.serviciosOfrecidos.values()){
-            infoServicios.append(servicio.obtenerInfoServicio());
-            infoServicios.append(System.lineSeparator());
+        List<DatosServicioDTO> listaServicios = new ArrayList<>();
+        for (Servicio servicio: this.serviciosOfrecidos.values()){
+            listaServicios.add(servicio.exportarDatosServicio());
         }
-        infoServicios.append("---------------------------------------------------------------");
-        return infoServicios.toString();
+        return new DatosCatalogoServiciosDTO(listaServicios);
     }
 
 }

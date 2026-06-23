@@ -1,5 +1,7 @@
 package ProyectoPropio1;
 
+import Excepciones.*;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,59 +24,59 @@ public class GestorVentas {
 
     //METODOS PARA VENDER:
 
-    public Venta pedirProducto(int idInv, int codigoProd, int cantidad){
-        Inventario inventario = this.miTienda.obtenerInventario(idInv);
-        return inventario.reducirStockProductoPorVenta(codigoProd,cantidad);
+    public Venta pedirProducto(int idInv, int codigoProd, int cantidad) throws InventarioNoEncontradoException, ProductoNoEncontradoException,StockInsuficienteException{
+        return this.miTienda.reducirStockProductoParaVenta(idInv, codigoProd, cantidad);
     }
 
-    public Factura procesarVentaMultiproducto(Carrito carrito) throws IllegalArgumentException{
-        if (carrito.getItems().isEmpty() && carrito.getServiciosAdicionales().isEmpty()){
-            throw new IllegalArgumentException("No se puede procesar una venta sin productos y sin servicios");
+    public FacturaDTO procesarVentaMultiproducto(Carrito carrito) throws CarritoVacioException, InventarioNoEncontradoException, ProductoNoEncontradoException, StockInsuficienteException, ServicioNoEncontradoException,CapacidadExcedidaException {
+        if (carrito.getItems().isEmpty() && carrito.getCodigosServiciosAdicionales().isEmpty()){
+            throw new CarritoVacioException("No se puede Procesar una Venta con un Carrito Vacio");
         }
-        Factura facturaNueva = new Factura();
-        List<SolicitudItem> itemsProcesadosConExito = new ArrayList<>();
+        List<ItemFacturable> itemsProcesadosConExito = new ArrayList<>();
+        List<SolicitudItem> rollBack = new ArrayList<>();
         try {
             for (SolicitudItem solicitudItem: carrito.getItems()){
-                Inventario inventario = this.miTienda.obtenerInventario(solicitudItem.idInventario());
-                inventario.verificarStockProductoDisponible(solicitudItem.codigoProducto(),solicitudItem.cantidad());
+                this.miTienda.verificarStockProductoParaVenta(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
             }
             for (SolicitudItem solicitudItem: carrito.getItems()){
                 Venta venta = pedirProducto(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
-                itemsProcesadosConExito.add(solicitudItem);
-                facturaNueva.agregarItem(venta);
+                itemsProcesadosConExito.add(venta);
+                rollBack.add(solicitudItem);
             }
-            for (Servicio servicio: carrito.getServiciosAdicionales()){
-                facturaNueva.agregarItem(servicio);
+            for (int codigoServicio:carrito.getCodigosServiciosAdicionales()){
+                Servicio servicio = this.miTienda.obtenerServicio(codigoServicio);
+                itemsProcesadosConExito.add(servicio);
             }
-            facturaNueva.asignarIdFactura();
+            Factura facturaNueva = new Factura(itemsProcesadosConExito);
             this.registroVentas.put(facturaNueva.getIdFactura(), facturaNueva);
-            return facturaNueva;
-        } catch (Exception e){
-            for (SolicitudItem solicitudItem: itemsProcesadosConExito){
-                int idInventario = solicitudItem.idInventario();
-                this.miTienda.obtenerInventario(idInventario).agregarStockProducto(solicitudItem.codigoProducto(), solicitudItem.cantidad());
+            return facturaNueva.generarFactura();
+        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException | StockInsuficienteException | ServicioNoEncontradoException e){
+            for (SolicitudItem solicitudItem: rollBack){
+                this.miTienda.aumentarStockDeProductoDeInventario(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
             }
-            throw new IllegalArgumentException("Fallo al intentar generar la factura:  " + e.getMessage() + ", Cambios revertidos");
+            throw e;
         }
     }
+
+
 
     //METODOS DE INFORMACION:
 
-    public String obtenerHistorial() throws IllegalArgumentException{
-        if (this.registroVentas.isEmpty()){
-            throw new IllegalArgumentException("No Hay Registros");
-        }
-        StringBuilder historial = new StringBuilder();
-        historial.append("-------------------------------------------------------------");
-        historial.append(System.lineSeparator());
-        for (Factura factura :this.registroVentas.values()){
-            historial.append(factura.generarFactura());
-        }
-        historial.append(System.lineSeparator());
-        historial.append("-------------------------------------------------------------");
-
-        return historial.toString();
+    public boolean registroVentasEstaVacio(){
+        return this.registroVentas.isEmpty();
     }
+
+    public HistorialVentasDTO obtenerHistorial(){
+        if (this.registroVentas.isEmpty()){
+            throw new IllegalStateException("No Hay Registros");
+        }
+        List<FacturaDTO> facturasRegistradas = new ArrayList<>();
+        for (Factura factura:this.registroVentas.values()){
+            facturasRegistradas.add(factura.generarFactura());
+        }
+        return new HistorialVentasDTO(facturasRegistradas, this.totalFacturas());
+    }
+
 
     public double totalFacturas() {
         double totalFacturas=0;

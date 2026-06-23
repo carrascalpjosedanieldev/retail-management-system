@@ -1,5 +1,10 @@
 package ProyectoPropio1;
 
+import Excepciones.CapacidadExcedidaException;
+import Excepciones.InventarioNoEncontradoException;
+import Excepciones.ProductoNoEncontradoException;
+import Excepciones.StockInsuficienteException;
+
 import java.util.Scanner;
 
 import static ProyectoPropio1.MetodosTienda.*;
@@ -13,7 +18,7 @@ public class MenuModificarProducto {
                                * OPCION                              * ACCION
                                    1                          CAMBIAR NOMBRE PRODUCTO
                                    2                           ACTUALIZAR VALOR COMPRA
-                                   3
+                                   3                       ACTUALIZAR PORCENTAJE GANANCIA
                                    4                               AUMENTAR STOCK
                                    5                                REDUCIR STOCK
                                    6                                   SALIR
@@ -22,7 +27,7 @@ public class MenuModificarProducto {
     }
 
     public static void modificarProductoAInventario(Scanner sc, ControladorTienda controladorTienda, int idInventario){
-        if (!controladorTienda.inventarioTieneProductos(idInventario)){
+        if (controladorTienda.inventarioNoTieneProductos(idInventario)){
             System.out.println("""
                     \nACCION DENEGADA
                     EL INVENTARIO ESTA VACIO
@@ -64,20 +69,22 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Nombre, escribe el codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
-            System.out.println("""
+        try {
+            if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
+                System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
                 """);
-            return;
-        }
-        System.out.print("Escribe el nombre nuevo que le pondras:\n" +
-                "---> ");
-        String nombreNuevoProd = sc.nextLine();
-        try {
+                return;
+            }
+            System.out.print("Escribe el nombre nuevo que le pondras:\n" +
+                    "---> ");
+            String nombreNuevoProd = sc.nextLine();
             controladorTienda.cambiarNombreDeProductoDeInventario(idInventario, codigoProducto, nombreNuevoProd);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora se llama:  " + nombreNuevoProd);
-        } catch (IllegalArgumentException e) {
+        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException e) {
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
@@ -88,21 +95,23 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Valor de Compra, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
-            System.out.println("""
+        try {
+            if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
+                System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
                 """);
-            return;
-        }
-        System.out.print("""
+                return;
+            }
+            System.out.print("""
                 \nEscribe el valor nuevo que le pondras al producto:
                 """ + "---> ");
-        double valorNuevo = leerDecimal(sc);
-        try {
+            double valorNuevo = leerDecimal(sc);
             controladorTienda.actualizarValorCompraDeProductoDeInventario(idInventario, codigoProducto, valorNuevo);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora tendra el valor de compra:  $" + valorNuevo);
-        } catch (IllegalArgumentException e) {
+        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException e) {
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
@@ -113,21 +122,23 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Porcentaje de Ganancia, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
-            System.out.println("""
+        try {
+            if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
+                System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
                 """);
-            return;
-        }
-        System.out.print("""
+                return;
+            }
+            System.out.print("""
                 \nEscribe el Porcentaje de Ganancia nuevo que le pondras al Producto (Maximo 100%):
                 """ + "---> ");
-        int porcentajeNuevo = leerEntero(sc);
-        try {
+            int porcentajeNuevo = leerEntero(sc);
             controladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(idInventario, codigoProducto, porcentajeNuevo);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora tendra el porcentaje de ganancia:  " + porcentajeNuevo + "%");
-        } catch (IllegalArgumentException e) {
+        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException e) {
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
@@ -138,21 +149,23 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Stock, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
-            System.out.println("""
+        try {
+            if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
+                System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
                 """);
-            return;
-        }
-        System.out.print("""
+                return;
+            }
+            System.out.print("""
                 \nEscribe las unidades nuevas que llegaron:
                 """ + "---> ");
-        int cantidad = leerEntero(sc);
-        try {
+            int cantidad = leerEntero(sc);
             controladorTienda.aumentarStockDeProductoDeInventario(idInventario, codigoProducto, cantidad);
             System.out.println("Al Producto de Codigo -" + codigoProducto + "- se le agregaran " + cantidad + " unidades al stock");
-        } catch (IllegalArgumentException e){
+        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException | CapacidadExcedidaException e) {
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
@@ -163,21 +176,23 @@ public class MenuModificarProducto {
                 A que producto le cambiaras el Stock, Escribe el Codigo
                 """ + "---> ");
         int codigoProducto = leerEntero(sc);
-        if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
-            System.out.println("""
+        try {
+            if (controladorTienda.noExisteProductoEnInventario(idInventario, codigoProducto)) {
+                System.out.println("""
                 \nACCION DENEGADA:
                 EL CODIGO DE PRODUCTO INGRESADO NO EXISTE EN ESTE INVENTARIO
                 """);
-            return;
-        }
-        System.out.print("""
+                return;
+            }
+            System.out.print("""
                 \nEscribe las unidades eliminadas:
                 """ + "---> ");
-        int cantidadQuitada = leerEntero(sc);
-        try {
+            int cantidadQuitada = leerEntero(sc);
             controladorTienda.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidadQuitada);
             System.out.println("Al Producto de Codigo -" + codigoProducto + "- se le reduciran " + cantidadQuitada + " unidades al stock");
-        } catch (IllegalArgumentException e) {
+        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException | StockInsuficienteException e) {
+            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
+        } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }

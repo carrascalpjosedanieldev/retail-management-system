@@ -8,7 +8,7 @@ public class Carrito {
 
     private final Map<String,SolicitudItem> carritoFinal;
 
-    private final List<Servicio> serviciosAdicionales;
+    private final List<Integer> codigosServiciosAdicionales;
 
     //GETTERS Y SETTERS:
 
@@ -16,15 +16,15 @@ public class Carrito {
         return this.carritoFinal.values();
     }
 
-    public List<Servicio> getServiciosAdicionales(){
-        return Collections.unmodifiableList(this.serviciosAdicionales);
+    public List<Integer> getCodigosServiciosAdicionales(){
+        return Collections.unmodifiableList(this.codigosServiciosAdicionales);
     }
 
     //CONSTRUCTOR:
 
     public Carrito() {
         this.carritoFinal = new LinkedHashMap<>();
-        this.serviciosAdicionales = new ArrayList<>();
+        this.codigosServiciosAdicionales = new ArrayList<>();
     }
 
     //METODOS:
@@ -41,37 +41,8 @@ public class Carrito {
         this.carritoFinal.put(key, solicitudItem);
     }
 
-    public void agregarServicio(Servicio servicio){
-        this.serviciosAdicionales.add(servicio);
-    }
-
-    //METODOS DE MOSTRAR INFORMACION:
-
-    public String mostrarDatosServiciosDeCarrito(){
-        StringBuilder datosServicios = new StringBuilder();
-        datosServicios.append("----------------------------------------------------------");
-        datosServicios.append(System.lineSeparator());
-        for (Servicio servicio:this.serviciosAdicionales){
-            datosServicios.append(servicio.obtenerInfoServicio());
-            datosServicios.append(System.lineSeparator());
-        }
-        datosServicios.append("----------------------------------------------------------");
-        return datosServicios.toString();
-    }
-
-    public String mostrarCarrito(){
-        StringBuilder carrito = new StringBuilder();
-        carrito.append("----------------------------------------------------------");
-        carrito.append(System.lineSeparator());
-        carrito.append("                   CARRITO ACTUAL:");
-        carrito.append(System.lineSeparator());
-        for (SolicitudItem item:getItems()){
-            carrito.append(item.mostrarItem());
-            carrito.append("............................");
-            carrito.append(System.lineSeparator());
-        }
-        carrito.append("----------------------------------------------------------");
-        return carrito.toString();
+    public void agregarServicio(int codigoServicio){
+        this.codigosServiciosAdicionales.add(codigoServicio);
     }
 
 }
