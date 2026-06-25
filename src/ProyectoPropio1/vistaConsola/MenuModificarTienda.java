@@ -1,8 +1,6 @@
 package ProyectoPropio1.vistaConsola;
 
 import ProyectoPropio1.servicios.ControladorTienda;
-import ProyectoPropio1.excepciones.InventarioNoEncontradoException;
-import ProyectoPropio1.excepciones.InventarioNoVacioException;
 import ProyectoPropio1.dto.*;
 
 import java.util.Scanner;
@@ -105,7 +103,7 @@ public class MenuModificarTienda {
     private static void verDetalleInventario(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -VER DETALLE INVENTARIO-");
         try {
-            DetalleInventarioGeneralDTO detalleInventarioGeneral = controladorTienda.mostrarInfoInventariosDeTienda();
+            DetalleInventarioGeneralDTO detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
             System.out.println("---> INVENTARIOS:");
             System.out.println("------------------------------------------------------------------------------------------------------------");
             for (DatosInventarioDTO datosInventario:detalleInventarioGeneral.inventarioGeneral()){
@@ -126,7 +124,7 @@ public class MenuModificarTienda {
                 EL INVENTARIO ESTA VACIO
                 """);
             }
-            DetalleInventarioDTO detalleInventario = controladorTienda.obtenerDetalleInventarioDeTienda(numeroId);
+            DetalleInventarioDTO detalleInventario = controladorTienda.obtenerDetalleInventario(numeroId);
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------");
             System.out.println("---> INVENTARIO:  -" + detalleInventario.nombre() + "-  NUMERO ID:  -" + detalleInventario.id() + "-");
             if (detalleInventario.productos().isEmpty()){
@@ -157,8 +155,6 @@ public class MenuModificarTienda {
                 }
             }
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------");
-        } catch (InventarioNoEncontradoException e){
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -179,7 +175,7 @@ public class MenuModificarTienda {
                 ---> INVENTARIOS:
                 ------------------------------------------------------------------------------------
                 """);
-            DetalleInventarioGeneralDTO detalleInventarioGeneral = controladorTienda.mostrarInfoInventariosDeTienda();
+            DetalleInventarioGeneralDTO detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
             for (DatosInventarioDTO datosInventario:detalleInventarioGeneral.inventarioGeneral()){
                 String informacionMinima;
                 informacionMinima = String.format("NOMBRE: %-10s NUMERO IDENTIFICADOR: %-5d CAPACIDAD MAXIMA: %-10d CAPACIDAD OCUPADA: %-10d CAPACIDAD LIBRE: %-10d%n",
@@ -207,7 +203,7 @@ public class MenuModificarTienda {
                 \n---> INVENTARIOS:
                 ------------------------------------------------------------------------------------
                 """);
-            DetalleInventarioGeneralDTO detalleInventarioGeneral = controladorTienda.mostrarInfoInventariosDeTienda();
+            DetalleInventarioGeneralDTO detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
             for (DatosInventarioDTO datosInventario:detalleInventarioGeneral.inventarioGeneral()){
                 String informacionMinima;
                 informacionMinima = String.format("NOMBRE: %-10s NUMERO IDENTIFICADOR: %-5d CAPACIDAD MAXIMA: %-10d CAPACIDAD OCUPADA: %-10d CAPACIDAD LIBRE: %-10d%n",
@@ -221,8 +217,6 @@ public class MenuModificarTienda {
             int numeroId = leerEntero(sc);
             controladorTienda.eliminarInventarioVacio(numeroId);
             System.out.println("Inventario eliminado con exito");
-        } catch (InventarioNoEncontradoException | InventarioNoVacioException e){
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }

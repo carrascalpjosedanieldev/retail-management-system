@@ -1,12 +1,15 @@
 package ProyectoPropio1.dominio;
 
-import ProyectoPropio1.dto.DatosLineaFacturaDTO;
-
 public interface ItemFacturable {
+
+    String getTipoItem();
+
+    String getNombre();
+
+    int getCantidad();
 
     double getValorCobrado();
 
-    DatosLineaFacturaDTO obtenerDatosLinea();
 
 }
 

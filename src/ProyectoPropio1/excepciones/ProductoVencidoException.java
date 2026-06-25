@@ -5,3 +5,4 @@ public class ProductoVencidoException extends RuntimeException {
         super(message);
     }
 }
+

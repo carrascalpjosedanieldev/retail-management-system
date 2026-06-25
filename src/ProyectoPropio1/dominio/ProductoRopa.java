@@ -1,9 +1,6 @@
 package ProyectoPropio1.dominio;
 
-import ProyectoPropio1.dto.DatosTotalesProductoDTO;
-import ProyectoPropio1.dto.DatosTotalesProductoRopaDTO;
-import ProyectoPropio1.dto.DatosVentaProductoDTO;
-import ProyectoPropio1.dto.DatosVentaProductoRopaDTO;
+import java.time.LocalDate;
 
 public class ProductoRopa extends Producto implements Impuestable {
 
@@ -21,25 +18,15 @@ public class ProductoRopa extends Producto implements Impuestable {
 
     //CONSTRUCTOR:
 
-    public ProductoRopa(String nombre, double valorCompra, int stock, Talla talla){
-        super(nombre, valorCompra, stock);
+    public ProductoRopa(int codigo, String nombre, double valorCompra, int stock, Talla talla){
+        super(codigo, nombre, valorCompra, stock);
         this.talla=talla;
     }
 
     //METODOS:
 
     @Override
-    public DatosTotalesProductoDTO exportarDatosTotales() {
-        return new DatosTotalesProductoRopaDTO(this.getCodigo(), this.getNombre(), this.getValorCompra(), this.getPorcentajeGanancia(), this.getValorVenta(), this.getStock(), this.getTalla());
-    }
-
-    @Override
-    public DatosVentaProductoDTO exportarDatosVenta() {
-        return new DatosVentaProductoRopaDTO(this.getNombre(), this.getValorVenta(), this.getTalla());
-    }
-
-    @Override
-    protected double calcularValorVenta() {
+    protected double calcularValorVenta(LocalDate fecha) {
         double valorVenta = getValorCompra() + (getValorCompra() * (getPorcentajeGanancia() / 100));
         valorVenta += calcularImpuesto(valorVenta);
         return valorVenta;

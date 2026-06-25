@@ -5,3 +5,4 @@ public class InventarioNoVacioException extends RuntimeException {
         super(message);
     }
 }
+

@@ -1,16 +1,14 @@
 package ProyectoPropio1.dominio;
 
 import ProyectoPropio1.excepciones.StockInsuficienteException;
-import ProyectoPropio1.dto.DatosTotalesProductoDTO;
-import ProyectoPropio1.dto.DatosVentaProductoDTO;
+
+import java.time.LocalDate;
 
 public abstract class Producto {
 
     //ATRIBUTOS:
 
     private final int codigo;
-
-    private static int codigoSiguiente = 1;
 
     private String nombre;
 
@@ -55,13 +53,13 @@ public abstract class Producto {
         this.stock = stock;
     }
 
-    public double getValorVenta(){
-        return calcularValorVenta();
+    public double getValorVenta(LocalDate fecha){
+        return calcularValorVenta(fecha);
     }
 
     //CONSTRUCTOR:
 
-    protected Producto(String nombre, double valorCompra, int stock){
+    protected Producto(int codigo, String nombre, double valorCompra, int stock){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
         }
@@ -71,25 +69,20 @@ public abstract class Producto {
         if (stock<0){
             throw new IllegalArgumentException("Stock del Producto Invalido");
         }
-        this.codigo = codigoSiguiente;
+        this.codigo = codigo;
         this.nombre = nombre;
         this.valorCompra = valorCompra;
         this.porcentajeGanancia = 20;
         this.stock=stock;
-        codigoSiguiente++;
     }
 
     //METODOS:
 
-    public abstract DatosTotalesProductoDTO exportarDatosTotales();
-
-    public abstract DatosVentaProductoDTO exportarDatosVenta();
-
-    protected double calcularValorVenta(){
+    protected double calcularValorVenta(LocalDate fecha){
         return this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
     }
 
-    public void validarEstadoParaVenta(){
+    public void validarEstadoParaVenta(LocalDate fecha){
     }
 
     //METODOS MODIFICAR PRODUCTO:
@@ -123,7 +116,7 @@ public abstract class Producto {
         setStock(stockTotal);
     }
 
-    protected void reducirStock(int cantidad) throws StockInsuficienteException{
+    protected void reducirStock(int cantidad){
         if (cantidad<0){
             throw new IllegalArgumentException("Cantidad Negativa");
         }

@@ -83,23 +83,23 @@ public class Ejecutable {
 
 
         miControladorTienda.registrarProductoRopa(2, "Chaqueta", 120000, 20, "M");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 8, 30);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 1, 30);
 
         miControladorTienda.registrarProductoRopa(2, "Chaqueta", 120000, 30, "L");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 9, 30);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 2, 30);
 
 
         miControladorTienda.registrarProductoRopa(2, "Pantaloneta", 35000, 25, "M");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 10, 40);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 3, 40);
 
         miControladorTienda.registrarProductoRopa(2, "Pantaloneta", 35000, 25, "L");
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 11, 40);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(2, 4, 40);
 
 
         miControladorTienda.agregarInventarioATienda("Comida", 150);//------------Inventario
 
         miControladorTienda.registrarProductoPerecedero(3, "Papas", 1000, 20, LocalDate.of(2027,11,10));
-        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(3, 12, 100);
+        miControladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(3, 1, 100);
 
 
         return miControladorTienda;

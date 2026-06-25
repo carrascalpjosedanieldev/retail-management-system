@@ -5,3 +5,4 @@ public class ServicioNoEncontradoException extends RuntimeException {
         super(message);
     }
 }
+

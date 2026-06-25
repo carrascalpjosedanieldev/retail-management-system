@@ -1,10 +1,6 @@
 package ProyectoPropio1.dominio;
 
 import ProyectoPropio1.excepciones.ProductoVencidoException;
-import ProyectoPropio1.dto.DatosTotalesProductoDTO;
-import ProyectoPropio1.dto.DatosTotalesProductoPerecederoDTO;
-import ProyectoPropio1.dto.DatosVentaProductoDTO;
-import ProyectoPropio1.dto.DatosVentaProductoPerecederoDTO;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -27,33 +23,23 @@ public class ProductoPerecedero extends Producto{
 
     //CONSTRUCTOR:
 
-    public ProductoPerecedero(String nombre, double valorCompra, int stock, LocalDate fechaVencimiento){
-        super(nombre, valorCompra, stock);
+    public ProductoPerecedero(int codigo, String nombre, double valorCompra, int stock, LocalDate fechaVencimiento){
+        super(codigo, nombre, valorCompra, stock);
         this.fechaVencimiento=fechaVencimiento;
         this.posibleDescuento=descuentoPorVencimiento;
     }
 
     //METODOS:
 
-    private boolean estaVencido() {
-        long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), this.fechaVencimiento);
+    public boolean estaVencido(LocalDate fechaReferencia) {
+        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
         return diasRestantes < 0;
     }
 
     @Override
-    public DatosTotalesProductoDTO exportarDatosTotales() {
-        return new DatosTotalesProductoPerecederoDTO(this.getCodigo(), this.getNombre(), this.getValorCompra(), this.getPorcentajeGanancia(), this.getValorVenta(), this.getStock(), this.getFechaVencimiento(), this.estaVencido());
-    }
-
-    @Override
-    public DatosVentaProductoDTO exportarDatosVenta() {
-        return new DatosVentaProductoPerecederoDTO(this.getNombre(), this.getValorVenta(), this.getFechaVencimiento());
-    }
-
-    @Override
-    protected double calcularValorVenta() {
+    protected double calcularValorVenta(LocalDate fechaReferencia) {
         double valorVenta = getValorCompra() + (getValorCompra() * (getPorcentajeGanancia() / 100));
-        long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(),this.fechaVencimiento);
+        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia,this.fechaVencimiento);
         if (diasRestantes>=0 && diasRestantes<=3){
             valorVenta-=valorVenta*((double)this.posibleDescuento/100);
             return valorVenta;
@@ -62,8 +48,8 @@ public class ProductoPerecedero extends Producto{
     }
 
     @Override
-    public void validarEstadoParaVenta() throws ProductoVencidoException{
-        long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), this.fechaVencimiento);
+    public void validarEstadoParaVenta(LocalDate fechaReferencia){
+        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
         if (diasRestantes < 0) {
             throw new ProductoVencidoException("ALERTA: El producto '" + this.getNombre() + "' está vencido. Venta bloqueada.");
         }

@@ -1,7 +1,5 @@
 package ProyectoPropio1.dominio;
 
-import ProyectoPropio1.dto.DatosLineaFacturaDTO;
-
 public class Venta implements ItemFacturable {
 
     //ATRIBUTOS:
@@ -13,8 +11,6 @@ public class Venta implements ItemFacturable {
     private final double valorCobrado;
 
     private final int numeroDeVenta;
-
-    private static int idVentaSiguiente=0;
 
     //GETTERS Y SETTERS:
 
@@ -33,24 +29,33 @@ public class Venta implements ItemFacturable {
 
     //CONSTRUCTOR:
 
-    public Venta(Producto producto, int cantidadVendida, double valorCobrado) {
+    public Venta(int numeroDeVenta, Producto producto, int cantidadVendida, double valorCobrado) {
         this.productoVendido = producto;
         this.cantidadVendida = cantidadVendida;
         this.valorCobrado = valorCobrado;
-        idVentaSiguiente++;
-        this.numeroDeVenta =idVentaSiguiente;
+        this.numeroDeVenta = numeroDeVenta;
     }
 
     //METODOS:
 
     @Override
-    public double getValorCobrado() {
-        return valorCobrado;
+    public String getTipoItem() {
+        return "Producto (Venta N°" + this.numeroDeVenta + ")";
     }
 
     @Override
-    public DatosLineaFacturaDTO obtenerDatosLinea() {
-        return new DatosLineaFacturaDTO("Producto (Venta N°" + this.numeroDeVenta + ")", this.productoVendido.getNombre(), this.cantidadVendida, this.valorCobrado);
+    public String getNombre() {
+        return this.productoVendido.getNombre();
+    }
+
+    @Override
+    public int getCantidad() {
+        return this.cantidadVendida;
+    }
+
+    @Override
+    public double getValorCobrado() {
+        return valorCobrado;
     }
 
 }

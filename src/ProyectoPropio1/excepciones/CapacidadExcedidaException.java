@@ -5,3 +5,4 @@ public class CapacidadExcedidaException extends RuntimeException {
         super(message);
     }
 }
+

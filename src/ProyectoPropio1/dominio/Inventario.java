@@ -3,25 +3,20 @@ package ProyectoPropio1.dominio;
 import ProyectoPropio1.excepciones.CapacidadExcedidaException;
 import ProyectoPropio1.excepciones.ProductoNoEncontradoException;
 import ProyectoPropio1.excepciones.StockInsuficienteException;
-import ProyectoPropio1.dto.DatosInventarioDTO;
-import ProyectoPropio1.dto.DatosTotalesProductoDTO;
-import ProyectoPropio1.dto.DatosVentaProductoDTO;
-import ProyectoPropio1.dto.DetalleInventarioDTO;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Inventario {
 
     //ATRIBUTOS:
 
+    private int contadorProductos = 1;
+
     private String nombre;
 
     private final int numeroId;
-
-    private static int numeroIdSiguiente = 1;
 
     private final int capacidadMaxima;
 
@@ -45,9 +40,13 @@ public class Inventario {
         return capacidadMaxima;
     }
 
+    public Map<Integer, Producto> getMisProductos() {
+        return Map.copyOf(this.misProductos);
+    }
+
     //CONSTRUCTORES:
 
-    public Inventario(String nombre, int capacidadMaxima){
+    public Inventario(int numeroId, String nombre, int capacidadMaxima){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Inventario Invalido");
         }
@@ -55,10 +54,9 @@ public class Inventario {
             throw new IllegalArgumentException("Capacidad Maxima del Inventario Invalida");
         }
         this.nombre = nombre;
-        this.numeroId = numeroIdSiguiente;
+        this.numeroId = numeroId;
         this.capacidadMaxima = capacidadMaxima;
         this.misProductos = new HashMap<>();
-        numeroIdSiguiente++;
     }
 
     //METODOS DE VALIDACION:
@@ -67,30 +65,16 @@ public class Inventario {
         return !this.misProductos.isEmpty();
     }
 
-    private int calcularCapacidadLibre(){
+    public int calcularCapacidadLibre(){
         return this.capacidadMaxima - this.getCapacidadOcupada();
     }
 
-    private int getCapacidadOcupada(){
+    public int getCapacidadOcupada(){
         int capacidadOcupada = 0;
         for (Producto producto:this.misProductos.values()){
             capacidadOcupada+=producto.getStock();
         }
         return capacidadOcupada;
-    }
-
-    //METODOS PARA MOSTRAR INFORMACION:
-
-    public DetalleInventarioDTO exportarDetalleInventario(){
-        List<DatosTotalesProductoDTO> datosProductosDeInventario = new ArrayList<>();
-        for (Producto producto:this.misProductos.values()){
-            datosProductosDeInventario.add(producto.exportarDatosTotales());
-        }
-        return new DetalleInventarioDTO(this.numeroId, this.nombre, this.capacidadMaxima, this.getCapacidadOcupada(), datosProductosDeInventario);
-    }
-
-    public DatosInventarioDTO exportarDatosInventario(){
-        return new DatosInventarioDTO(this.numeroId, this.nombre, this.capacidadMaxima, this.getCapacidadOcupada(), this.calcularCapacidadLibre());
     }
 
     //METODOS PARA MODIFICAR INVENTARIO:
@@ -102,7 +86,7 @@ public class Inventario {
         setNombre(nuevoNombre);
     }
 
-    public DatosTotalesProductoDTO agregarUnProducto(Producto producto) throws CapacidadExcedidaException{
+    public int agregarUnProducto(Producto producto){
         if (producto==null){
             throw new IllegalArgumentException("No puedes agregar un Producto Nulo");
         }
@@ -111,10 +95,10 @@ public class Inventario {
             throw new CapacidadExcedidaException("El Stock a ingresar Excede La Capacidad");
         }
         this.misProductos.put(producto.getCodigo(),producto);
-        return producto.exportarDatosTotales();
+        return producto.getCodigo();
     }
 
-    public void eliminarUnProducto(int codigo) throws ProductoNoEncontradoException{
+    public void eliminarUnProducto(int codigo){
         Producto producto = obtenerProducto(codigo);
         this.misProductos.remove(codigo);
     }
@@ -123,9 +107,7 @@ public class Inventario {
         return this.misProductos.containsKey(codigo);
     }
 
-    //METODOS MOVER PRODUCTO A OTRO INVENTARIO:
-
-    public Producto obtenerProducto(int codigo) throws ProductoNoEncontradoException{
+    public Producto obtenerProducto(int codigo){
         Producto producto = this.misProductos.get(codigo);
         if (producto==null){
             throw new ProductoNoEncontradoException("El Producto de Codigo -" + codigo + "- No Se Encuentra");
@@ -135,27 +117,26 @@ public class Inventario {
 
     //METODOS PARA MODIFICAR PRODUCTO:
 
-    public DatosVentaProductoDTO obtenerDatosProducto(int codigo) throws ProductoNoEncontradoException{
-        Producto producto = obtenerProducto(codigo);
-        return producto.exportarDatosVenta();
+    public int asignarCodigoProducto(){
+        return this.contadorProductos++;
     }
 
-    public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje) throws ProductoNoEncontradoException{
+    public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje){
         Producto producto = obtenerProducto(codigo);
         producto.cambiarValorVentaPorPorcentaje(porcentaje);
     }
 
-    public void actualizarNombreProducto(int codigo,String nombre) throws ProductoNoEncontradoException{
+    public void actualizarNombreProducto(int codigo,String nombre){
         Producto producto = obtenerProducto(codigo);
         producto.cambiarNombreProducto(nombre);
     }
 
-    public void actualizarValorCompra(int codigo,double valorNuevo) throws ProductoNoEncontradoException{
+    public void actualizarValorCompra(int codigo,double valorNuevo){
         Producto producto = obtenerProducto(codigo);
         producto.cambiarValorCompra(valorNuevo);
     }
 
-    public void agregarStockProducto(int codigo, int cantidad) throws CapacidadExcedidaException,ProductoNoEncontradoException{
+    public void agregarStockProducto(int codigo, int cantidad){
         Producto producto = obtenerProducto(codigo);
         int capacidadLibre = calcularCapacidadLibre();
         if (cantidad>capacidadLibre){
@@ -164,21 +145,15 @@ public class Inventario {
         producto.aumentarStock(cantidad);
     }
 
-    public void reducirStockProducto(int codigo, int cantidad) throws ProductoNoEncontradoException,StockInsuficienteException{
+    public Producto reducirStockProducto(int codigo, int cantidad){
         Producto producto = obtenerProducto(codigo);
         producto.reducirStock(cantidad);
+        return producto;
     }
 
-    public Venta reducirStockProductoPorVenta(int codigo, int cantidad) throws ProductoNoEncontradoException,StockInsuficienteException{
-        reducirStockProducto(codigo, cantidad);
+    public void verificarStockProductoDisponible(int codigo, int cantidad, LocalDate fecha){
         Producto producto = obtenerProducto(codigo);
-        double valorCobrado = producto.getValorVenta()*cantidad;
-        return new Venta(producto, cantidad, valorCobrado);
-    }
-
-    public void verificarStockProductoDisponible(int codigo, int cantidad) throws StockInsuficienteException,ProductoNoEncontradoException{
-        Producto producto = obtenerProducto(codigo);
-        producto.validarEstadoParaVenta();
+        producto.validarEstadoParaVenta(fecha);
         if (cantidad > producto.getStock()){
             throw new StockInsuficienteException("La Cantidad A Reducir Es Mayor A La Cantidad Existente");
         }

@@ -5,3 +5,4 @@ public class StockInsuficienteException extends RuntimeException {
         super(message);
     }
 }
+

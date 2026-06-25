@@ -1,7 +1,6 @@
 package ProyectoPropio1.vistaConsola;
 
 import ProyectoPropio1.servicios.ControladorTienda;
-import ProyectoPropio1.excepciones.ServicioNoEncontradoException;
 import ProyectoPropio1.dto.DatosCatalogoServiciosDTO;
 import ProyectoPropio1.dto.DatosServicioDTO;
 
@@ -62,7 +61,7 @@ public class MenuGestionarServicios {
                     """ + "---> ");
         String nombreServicio = sc.nextLine();
         System.out.print("""
-                    \nEscribe la Capacidad del inventario:
+                    \nEscribe el Precio del Servicio:
                     """ + "---> ");
         double precioServicio = leerDecimal(sc);
         try {
@@ -81,7 +80,7 @@ public class MenuGestionarServicios {
                     """);
             return;
         }
-        DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.exportarCatalogoServicios();
+        DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
         System.out.println("--------------------------------------------------------------------------------------------");
         System.out.println("---> SERVICIOS:");
         for (DatosServicioDTO datosServicio: datosCatalogoServicios.listaServicios()){
@@ -106,8 +105,6 @@ public class MenuGestionarServicios {
         try {
             controladorTienda.eliminarServicioDeTienda(codigoServicio);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido eliminado con exito");
-        } catch (ServicioNoEncontradoException e){
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -132,8 +129,6 @@ public class MenuGestionarServicios {
         try {
             controladorTienda.cambiarNombreServicio(codigoServicio, nombreNuevo);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ahora se llama: " + nombreNuevo);
-        } catch (ServicioNoEncontradoException e){
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -158,8 +153,6 @@ public class MenuGestionarServicios {
         try {
             controladorTienda.cambiarPrecioServicio(codigoServicio, precioNuevo);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ahora vale: $" + precioNuevo);
-        } catch (ServicioNoEncontradoException e) {
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }

@@ -1,21 +1,19 @@
 package ProyectoPropio1.dominio;
 
-import ProyectoPropio1.dto.SolicitudItemDTO;
-
 import java.util.*;
 
 public class Carrito {
 
     //ATRIBUTOS:
 
-    private final Map<String, SolicitudItemDTO> carritoFinal;
+    private final Map<ReferenciaItem, Integer> carritoFinal;
 
     private final List<Integer> codigosServiciosAdicionales;
 
     //GETTERS Y SETTERS:
 
-    public Collection<SolicitudItemDTO> getItems(){
-        return this.carritoFinal.values();
+    public Map<ReferenciaItem,Integer> getItems(){
+        return Map.copyOf(this.carritoFinal);
     }
 
     public List<Integer> getCodigosServiciosAdicionales(){
@@ -31,16 +29,12 @@ public class Carrito {
 
     //METODOS:
 
-    public void agregarItem(SolicitudItemDTO solicitudItem){
-        String key = solicitudItem.idInventario() + "-" + solicitudItem.codigoProducto();
-        if (this.carritoFinal.containsKey(key)){
-            int cantidad = solicitudItem.cantidad();
-            cantidad += this.carritoFinal.get(key).cantidad();
-            SolicitudItemDTO solicitudItemFinal = new SolicitudItemDTO(solicitudItem.idInventario(), solicitudItem.codigoProducto(), cantidad);
-            this.carritoFinal.put(key, solicitudItemFinal);
+    public void agregarItem(ReferenciaItem referenciaItem, int cantidad){
+        if (this.carritoFinal.containsKey(referenciaItem)){
+            this.carritoFinal.put(referenciaItem, this.carritoFinal.get(referenciaItem)+cantidad);
             return;
         }
-        this.carritoFinal.put(key, solicitudItem);
+        this.carritoFinal.put(referenciaItem, cantidad);
     }
 
     public void agregarServicio(int codigoServicio){

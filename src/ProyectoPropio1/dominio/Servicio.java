@@ -1,8 +1,5 @@
 package ProyectoPropio1.dominio;
 
-import ProyectoPropio1.dto.DatosLineaFacturaDTO;
-import ProyectoPropio1.dto.DatosServicioDTO;
-
 public class Servicio implements Impuestable, ItemFacturable {
 
     //ATRIBUTOS:
@@ -13,12 +10,11 @@ public class Servicio implements Impuestable, ItemFacturable {
 
     private final int codigoServicio;
 
-    private static int codigoSiguiente=1;
-
     private static final int IMPUESTO_SERVICIOS = 10;
 
     //GETTERS Y SETTERS:
 
+    @Override
     public String getNombre() {
         return nombre;
     }
@@ -41,7 +37,7 @@ public class Servicio implements Impuestable, ItemFacturable {
 
     //CONSTRUCTOR:
 
-    public Servicio(String nombre, double precioBase){
+    public Servicio(int codigoServicio, String nombre, double precioBase){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre Vacio");
         }
@@ -50,7 +46,7 @@ public class Servicio implements Impuestable, ItemFacturable {
         }
         this.nombre = nombre;
         this.precioBase = precioBase;
-        this.codigoServicio = codigoSiguiente++;
+        this.codigoServicio = codigoServicio;
     }
 
     //METODOS:
@@ -65,17 +61,18 @@ public class Servicio implements Impuestable, ItemFacturable {
     }
 
     @Override
-    public double getValorCobrado() {
-        return obtenerPrecioFinal();
+    public String getTipoItem() {
+        return "Servicio";
     }
 
     @Override
-    public DatosLineaFacturaDTO obtenerDatosLinea() {
-        return new DatosLineaFacturaDTO("Servicio", this.nombre, 1, this.getValorCobrado());
+    public int getCantidad() {
+        return 1;
     }
 
-    public DatosServicioDTO exportarDatosServicio(){
-        return new DatosServicioDTO(this.codigoServicio, this.getNombre(), this.getValorCobrado());
+    @Override
+    public double getValorCobrado() {
+        return obtenerPrecioFinal();
     }
 
     //METODOS MODIFICAR SERVICIO:

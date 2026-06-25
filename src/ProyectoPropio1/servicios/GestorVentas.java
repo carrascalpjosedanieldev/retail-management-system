@@ -1,15 +1,10 @@
 package ProyectoPropio1.servicios;
 
 import ProyectoPropio1.dominio.*;
-import ProyectoPropio1.dto.SolicitudItemDTO;
 import ProyectoPropio1.excepciones.*;
-import ProyectoPropio1.dto.FacturaDTO;
-import ProyectoPropio1.dto.HistorialVentasDTO;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 public class GestorVentas {
 
@@ -18,6 +13,16 @@ public class GestorVentas {
     private final Tienda miTienda;
 
     private final Map<Integer, Factura> registroVentas;
+
+    private int contadorVentas = 1;
+
+    private int contadorFacturas = 0;
+
+    //GETTERS Y SETTERS:
+
+    public List<Factura> getFacturas(){
+        return List.copyOf(this.registroVentas.values());
+    }
 
     //CONTRUCTOR:
 
@@ -28,59 +33,67 @@ public class GestorVentas {
 
     //METODOS PARA VENDER:
 
-    public Venta pedirProducto(int idInv, int codigoProd, int cantidad) throws InventarioNoEncontradoException, ProductoNoEncontradoException,StockInsuficienteException{
-        return this.miTienda.reducirStockProductoParaVenta(idInv, codigoProd, cantidad);
+    public Venta pedirProducto(int idInv, int codigoProd, int cantidad, LocalDate fecha){
+        Producto producto = this.miTienda.pedirProducto(idInv, codigoProd, cantidad, fecha);
+        double valorCobrado = producto.getValorVenta(fecha)*cantidad;
+        return new Venta(this.contadorVentas++, producto, cantidad, valorCobrado);
     }
 
-    public FacturaDTO procesarVentaMultiproducto(Carrito carrito) throws CarritoVacioException, InventarioNoEncontradoException, ProductoNoEncontradoException, StockInsuficienteException, ServicioNoEncontradoException, CapacidadExcedidaException {
+    public Factura procesarVentaMultiproducto(Carrito carrito, LocalDate fecha){
         if (carrito.getItems().isEmpty() && carrito.getCodigosServiciosAdicionales().isEmpty()){
             throw new CarritoVacioException("No se puede Procesar una Venta con un Carrito Vacio");
         }
         List<ItemFacturable> itemsProcesadosConExito = new ArrayList<>();
-        List<SolicitudItemDTO> rollBack = new ArrayList<>();
+        Map<ReferenciaItem,Integer> rollBack = new LinkedHashMap<>();
         try {
-            for (SolicitudItemDTO solicitudItem: carrito.getItems()){
-                this.miTienda.verificarStockProductoParaVenta(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
+            for (Map.Entry<ReferenciaItem,Integer> entry :carrito.getItems().entrySet()){
+                this.miTienda.verificarStockProductoParaVenta(entry.getKey().idInventario(), entry.getKey().codigoProducto(), entry.getValue(), fecha);
             }
-            for (SolicitudItemDTO solicitudItem: carrito.getItems()){
-                Venta venta = pedirProducto(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
+            for (Map.Entry<ReferenciaItem,Integer> entry :carrito.getItems().entrySet()){
+                Venta venta = pedirProducto(entry.getKey().idInventario(), entry.getKey().codigoProducto(), entry.getValue(), fecha);
                 itemsProcesadosConExito.add(venta);
-                rollBack.add(solicitudItem);
+                rollBack.put(entry.getKey(), entry.getValue());
             }
             for (int codigoServicio:carrito.getCodigosServiciosAdicionales()){
                 Servicio servicio = this.miTienda.obtenerServicio(codigoServicio);
                 itemsProcesadosConExito.add(servicio);
             }
-            Factura facturaNueva = new Factura(itemsProcesadosConExito);
+            Factura facturaNueva = new Factura(this.contadorFacturas , itemsProcesadosConExito);
+            this.contadorFacturas++;
             this.registroVentas.put(facturaNueva.getIdFactura(), facturaNueva);
-            return facturaNueva.generarFactura();
+            return facturaNueva;
         } catch (InventarioNoEncontradoException | ProductoNoEncontradoException | StockInsuficienteException | ServicioNoEncontradoException e){
-            for (SolicitudItemDTO solicitudItem: rollBack){
-                this.miTienda.aumentarStockDeProductoDeInventario(solicitudItem.idInventario(), solicitudItem.codigoProducto(), solicitudItem.cantidad());
+            for (Map.Entry<ReferenciaItem,Integer> entry : rollBack.entrySet()){
+                this.miTienda.aumentarStockDeProductoDeInventario(entry.getKey().idInventario(), entry.getKey().codigoProducto(), entry.getValue());
             }
             throw e;
         }
     }
 
-
-
     //METODOS DE INFORMACION:
+
+    public Factura obtenerFactura(int idFactura){
+        Factura factura = this.registroVentas.get(idFactura);
+        if (factura==null){
+            throw new FacturaNoEncontradaException("En el registro de facturas no se encuentra la Factura de ID: " + idFactura);
+        }
+        return factura;
+    }
 
     public boolean registroVentasEstaVacio(){
         return this.registroVentas.isEmpty();
     }
 
-    public HistorialVentasDTO obtenerHistorial(){
+    public List<Factura> obtenerHistorial(){
         if (this.registroVentas.isEmpty()){
             throw new IllegalStateException("No Hay Registros");
         }
-        List<FacturaDTO> facturasRegistradas = new ArrayList<>();
+        List<Factura> facturasRegistradas = new ArrayList<>();
         for (Factura factura:this.registroVentas.values()){
-            facturasRegistradas.add(factura.generarFactura());
+            facturasRegistradas.add(factura);
         }
-        return new HistorialVentasDTO(facturasRegistradas, this.totalFacturas());
+        return facturasRegistradas;
     }
-
 
     public double totalFacturas() {
         double totalFacturas=0;

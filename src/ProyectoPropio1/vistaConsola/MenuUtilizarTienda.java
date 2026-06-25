@@ -1,9 +1,7 @@
 package ProyectoPropio1.vistaConsola;
 
 import ProyectoPropio1.servicios.ControladorTienda;
-import ProyectoPropio1.dominio.Servicio;
 import ProyectoPropio1.dto.SolicitudItemDTO;
-import ProyectoPropio1.excepciones.*;
 import ProyectoPropio1.dto.*;
 
 import java.util.Scanner;
@@ -79,12 +77,8 @@ public class MenuUtilizarTienda {
                     }
                     System.out.println("\n---> Total a pagar:  $" + vistaPreviaCarrito.totalAproximado() + "\n");
                     System.out.println("--------------------------------------------------------------------------------------------");
-                } catch (InventarioNoEncontradoException | ProductoNoEncontradoException |
-                         ServicioNoEncontradoException e){
-                    System.out.println("Venta Rechazada\nERROR en los datos:  " + e.getMessage());
                 } catch (RuntimeException e){
                     System.out.println("NO se pudo completar la accion\nERROR:  " + e.getMessage());
-                } finally {
                     System.out.println("No se agrego este Producto, Pero el Carrito Sigue Intacto");
                 }
                 System.out.println("VAS A PEDIR OTRO PRODUCTO");
@@ -97,7 +91,7 @@ public class MenuUtilizarTienda {
                 pedirServicio = peticionSiNo(sc);
                 while (pedirServicio.equalsIgnoreCase("SI")){
                     try {
-                        DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.exportarCatalogoServicios();
+                        DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
                         System.out.println("--------------------------------------------------------------------------------------------");
                         System.out.println("---> SERVICIOS:");
                         for (DatosServicioDTO datosServicio: datosCatalogoServicios.listaServicios()){
@@ -107,7 +101,6 @@ public class MenuUtilizarTienda {
                         System.out.print("Codigo del Servicio:\n" +
                                 "---> ");
                         int codigoServicio = leerEntero(sc);
-                        Servicio servicio = controladorTienda.obtenerServicio(codigoServicio);
                         controladorTienda.agregarServicioAlCarrito(codigoServicio);
                         System.out.println("Servicio agregado con exito, estos son los servicios que tienes:");
                         VistaPreviaCarritoDTO vistaPreviaCarrito = controladorTienda.obtenerVistaPreviaCarrito();
@@ -127,11 +120,8 @@ public class MenuUtilizarTienda {
                         }
                         System.out.println("\n---> Total a pagar:  $" + vistaPreviaCarrito.totalAproximado() + "\n");
                         System.out.println("--------------------------------------------------------------------------------------------");
-                    } catch (InventarioNoEncontradoException | ProductoNoEncontradoException | ServicioNoEncontradoException e){
-                        System.out.println("Venta Rechazada\nERROR en los datos:  " + e.getMessage());
                     } catch (RuntimeException e){
                         System.out.println("NO se pudo completar la accion\nERROR:  " + e.getMessage());
-                    } finally {
                         System.out.println("No se agrego este Servicio, Pero el Carrito Sigue Intacto");
                     }
                     System.out.println("VAS A PEDIR OTRO SERVICIO");
@@ -139,7 +129,8 @@ public class MenuUtilizarTienda {
                 }
             }
             try {
-                FacturaDTO datosFactura = controladorTienda.confirmarYProcesarVentaActual();
+                int idFactura = controladorTienda.confirmarYProcesarVentaActual();
+                FacturaDTO datosFactura = controladorTienda.obtenerDatosFactura(idFactura);
                 System.out.println("--------------------------------------------------------------------------");
                 System.out.println("---> FACTURA N`" + datosFactura.idFactura());
                 for (DatosLineaFacturaDTO datosLineaFactura:datosFactura.listaItemsFinales()){
@@ -151,11 +142,6 @@ public class MenuUtilizarTienda {
                 }
                 System.out.println("TOTAL A PAGAR:  $" + datosFactura.pagoTotal());
                 System.out.println("--------------------------------------------------------------------------");
-            } catch (CarritoVacioException e) {
-                System.out.println("Venta Rechazada\nERROR:  " + e.getMessage());
-            } catch (InventarioNoEncontradoException | StockInsuficienteException | ProductoNoEncontradoException | ServicioNoEncontradoException |
-                     CapacidadExcedidaException e) {
-                System.out.println("ERROR en los datos:  " + e.getMessage());
             } catch (RuntimeException e){
                 System.out.println("NO se puede completar la accion\nERROR:  " + e.getMessage());
             }
@@ -199,7 +185,7 @@ public class MenuUtilizarTienda {
                 \nHAS SELECCIONADO -VER RECAUDO CLIENTES-
                 """);
         try {
-            HistorialVentasDTO historialVentas = controladorTienda.obtenerHistoralGestor();
+            HistorialVentasDTO historialVentas = controladorTienda.obtenerHistorialVentas();
             for (FacturaDTO datosFactura : historialVentas.facturasRegistradas()){
                 System.out.println("--------------------------------------------------------------------------");
                 System.out.println("---> FACTURA N`" + datosFactura.idFactura());

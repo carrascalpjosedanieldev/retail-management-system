@@ -1,10 +1,6 @@
 package ProyectoPropio1.vistaConsola;
 
 import ProyectoPropio1.servicios.ControladorTienda;
-import ProyectoPropio1.excepciones.CapacidadExcedidaException;
-import ProyectoPropio1.excepciones.InventarioNoEncontradoException;
-import ProyectoPropio1.excepciones.ProductoNoEncontradoException;
-import ProyectoPropio1.excepciones.StockInsuficienteException;
 
 import java.util.Scanner;
 
@@ -83,8 +79,6 @@ public class MenuModificarProducto {
             String nombreNuevoProd = sc.nextLine();
             controladorTienda.cambiarNombreDeProductoDeInventario(idInventario, codigoProducto, nombreNuevoProd);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora se llama:  " + nombreNuevoProd);
-        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException e) {
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -110,8 +104,6 @@ public class MenuModificarProducto {
             double valorNuevo = leerDecimal(sc);
             controladorTienda.actualizarValorCompraDeProductoDeInventario(idInventario, codigoProducto, valorNuevo);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora tendra el valor de compra:  $" + valorNuevo);
-        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException e) {
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -137,8 +129,6 @@ public class MenuModificarProducto {
             int porcentajeNuevo = leerEntero(sc);
             controladorTienda.actualizarValorVentaPorPorcentajeDeProductoDeInventario(idInventario, codigoProducto, porcentajeNuevo);
             System.out.println("El Producto de Codigo -" + codigoProducto + "- ahora tendra el porcentaje de ganancia:  " + porcentajeNuevo + "%");
-        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException e) {
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -164,8 +154,6 @@ public class MenuModificarProducto {
             int cantidad = leerEntero(sc);
             controladorTienda.aumentarStockDeProductoDeInventario(idInventario, codigoProducto, cantidad);
             System.out.println("Al Producto de Codigo -" + codigoProducto + "- se le agregaran " + cantidad + " unidades al stock");
-        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException | CapacidadExcedidaException e) {
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -191,8 +179,6 @@ public class MenuModificarProducto {
             int cantidadQuitada = leerEntero(sc);
             controladorTienda.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidadQuitada);
             System.out.println("Al Producto de Codigo -" + codigoProducto + "- se le reduciran " + cantidadQuitada + " unidades al stock");
-        } catch (InventarioNoEncontradoException | ProductoNoEncontradoException | StockInsuficienteException e) {
-            System.out.println("Proceso Interrumpido\nERROR:  " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
