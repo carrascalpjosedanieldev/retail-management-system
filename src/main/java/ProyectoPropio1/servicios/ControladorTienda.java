@@ -158,13 +158,13 @@ public class ControladorTienda {
             throw new IllegalArgumentException("La talla ingresada no esta entre las opciones (Usa S, M, L o XL).");
         }
         Inventario inventario = this.miTienda.obtenerInventario(id);
-        Producto producto = new ProductoRopa(inventario.asignarCodigoProducto(), nombre, valorCompra, stock, talla);
+        Producto producto = new ProductoRopa(this.miTienda.asignarCodigoProducto(), nombre, valorCompra, stock, talla);
         return this.miTienda.agregarProductoAUnInv(id, producto);
     }
 
     public int registrarProductoPerecedero(int id, String nombre, double valorCompra, int stock, LocalDate fechaVencimiento){
         Inventario inventario = this.miTienda.obtenerInventario(id);
-        Producto producto = new ProductoPerecedero(inventario.asignarCodigoProducto(), nombre, valorCompra, stock, fechaVencimiento);
+        Producto producto = new ProductoPerecedero(this.miTienda.asignarCodigoProducto(), nombre, valorCompra, stock, fechaVencimiento);
         return this.miTienda.agregarProductoAUnInv(id, producto);
     }
 

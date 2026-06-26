@@ -12,8 +12,6 @@ public class Inventario {
 
     //ATRIBUTOS:
 
-    private int contadorProductos = 1;
-
     private String nombre;
 
     private final int numeroId;
@@ -116,10 +114,6 @@ public class Inventario {
     }
 
     //METODOS PARA MODIFICAR PRODUCTO:
-
-    public int asignarCodigoProducto(){
-        return this.contadorProductos++;
-    }
 
     public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje){
         Producto producto = obtenerProducto(codigo);

@@ -19,6 +19,12 @@ public class Tienda {
 
     private int contadorServicios = 1;
 
+    private int contadorGlobalProductos = 1;
+
+    public int asignarCodigoProducto(){
+        return contadorGlobalProductos++;
+    }
+
     //GETTERS Y SETTERS:
 
     public String getNombreTienda() {
