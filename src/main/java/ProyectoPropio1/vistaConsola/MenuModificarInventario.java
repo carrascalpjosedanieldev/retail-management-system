@@ -1,12 +1,16 @@
 package ProyectoPropio1.vistaConsola;
 
-import ProyectoPropio1.servicios.ControladorTienda;
+import ProyectoPropio1.excepciones.ProductoNoEncontradoException;
+import ProyectoPropio1.servicios.controlador.ControladorTienda;
 import ProyectoPropio1.dto.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Scanner;
 
 import static ProyectoPropio1.vistaConsola.MenuModificarProducto.modificarProductoAInventario;
+import static ProyectoPropio1.vistaConsola.MenuGestionarImpuestos.impuestosActivosParaRegistro;
 import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
 
 public class MenuModificarInventario {
@@ -29,21 +33,14 @@ public class MenuModificarInventario {
 
 
     public static void modificarInventario(Scanner sc, ControladorTienda controladorTienda){
-        if (controladorTienda.tiendaNoTieneInventarios()){
-            System.out.println("""
-                    \nACCION DENEGADA
-                    TODAVIA NO HAY INVENTARIO
-                    """);
-            return;
-        }
         System.out.println("\nHAS SELECCIONADO: -MODIFICAR INVENTARIO-");
-        DetalleInventarioGeneralDTO detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
+        List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
         int opcionModificarInventario;
         System.out.println("""
                 \n---> INVENTARIOS:
                 ------------------------------------------------------------------------------------
                 """);
-        for (DatosInventarioDTO datosInventario:detalleInventarioGeneral.inventarioGeneral()){
+        for (DatosInventarioDTO datosInventario:detalleInventarioGeneral){
             String informacionMinima;
             informacionMinima = String.format("NOMBRE: %-10s NUMERO IDENTIFICADOR: %-5d CAPACIDAD MAXIMA: %-10d CAPACIDAD OCUPADA: %-10d CAPACIDAD LIBRE: %-10d%n",
                     datosInventario.nombre(),datosInventario.idInventario(),datosInventario.capacidadMaxima(),datosInventario.capacidadOcupada(),datosInventario.capacidadLibre());
@@ -91,7 +88,7 @@ public class MenuModificarInventario {
                 """ + "---> ");
         String nombreNuevoInv = sc.nextLine();
         try {
-            controladorTienda.cambiarNombreAUnInventario(idInventario, nombreNuevoInv);
+            controladorTienda.cambiarNombreInventario(idInventario, nombreNuevoInv);
             System.out.println("El Inventario de ID -" + idInventario + "- ahora se llama: " + nombreNuevoInv);
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
@@ -108,28 +105,39 @@ public class MenuModificarInventario {
         System.out.print("""
                 \nEscribe el valor de compra del producto nuevo:
                 """ + "---> ");
-        double valorC = leerDecimal(sc);
+        BigDecimal valorC = leerDecimal(sc);
+        System.out.print("""
+                \nEl Porceentaje de Ganancia es 20% por defecto, puedes cambiarlo en -Modificar Producto-
+                """);
         System.out.print("""
                     \nEscribe el stock del producto nuevo:
-                    """ + "--->");
+                    """ + "---> ");
         int stock = leerEntero(sc);
         System.out.print("""
                 \nEscribe el Tipo del producto nuevo:
                 """ + "---> ");
         String tipoLeido = sc.nextLine().trim().toUpperCase();
-        DatosTotalesProductoDTO datosProducto;
-        int codigoProducto;
+        System.out.println();
         try {
+            String impuestosActivosParaRegistro = impuestosActivosParaRegistro(controladorTienda);
+            System.out.println(impuestosActivosParaRegistro);
+            System.out.print("Escribe el ID del Impuesto que le corresponda: \n" +
+                    "---> ");
+            int idImpuesto = leerEntero(sc);
+            DatosTotalesProductoDTO datosProducto;
+            String codigoProducto;
             switch (tipoLeido){
                 case "ROPA":
-                    System.out.println("Ingrese la talla (S, M, L, XL):");
-                    String tallaString = sc.nextLine();
-                    codigoProducto = controladorTienda.registrarProductoRopa(idInventario, nombre, valorC, stock, tallaString);
+                    System.out.print("""
+                            \nIngrese la talla (S, M, L, XL):
+                            """ + "---> ");
+                    String tallaString = sc.nextLine().toUpperCase().trim();
+                    codigoProducto = controladorTienda.registrarProductoRopa(idInventario, nombre, valorC, BigDecimal.valueOf(20), stock,  idImpuesto, tallaString);
                     datosProducto = controladorTienda.obtenerDatosTotalesProducto(idInventario, codigoProducto);
-                    System.out.println("Nuevo Producto:");
+                    System.out.println("\nNuevo Producto:");
                     DatosTotalesProductoRopaDTO productoRopa = (DatosTotalesProductoRopaDTO) datosProducto;
                     String descripcionRopa = String.format(
-                        "Tipo de Producto: Ropa  Nombre del Producto: %-12s Talla: %-4s Codigo: %-4d " +
+                        "Tipo de Producto: Ropa  Nombre del Producto: %-12s Talla: %-4s Codigo: %-40s " +
                         "Valor Compra: %-12.2f Ganancia: %3.0f%% Valor Venta: %-12.2f Stock: %-4d%n",
                         productoRopa.nombre(), productoRopa.talla(),productoRopa.codigo(),
                         productoRopa.valorCompra(), productoRopa.porcentajeGanancia(), productoRopa.valorVentaBase(),
@@ -138,14 +146,16 @@ public class MenuModificarInventario {
                     System.out.println(descripcionRopa);
                     break;
                 case "PERECEDERO":
-                    System.out.println("Ingrese la fecha de vencimiento (Formato DD/MM/AAAA):");
+                    System.out.print("""
+                            \nIngrese la fecha de vencimiento (Formato DD/MM/AAAA):
+                            """ + "---> ");
                     LocalDate fecha = leerFecha(sc);
-                    codigoProducto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC, stock, fecha);
+                    codigoProducto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC, BigDecimal.valueOf(20),  stock, idImpuesto, fecha);
                     datosProducto = controladorTienda.obtenerDatosTotalesProducto(idInventario, codigoProducto);
-                    System.out.println("Nuevo Producto:");
+                    System.out.println("\nNuevo Producto:");
                     DatosTotalesProductoPerecederoDTO productoPerecedero = (DatosTotalesProductoPerecederoDTO) datosProducto;
                     String descripcionPerecedero = String.format(
-                        "Tipo de Producto:  Comida    Nombre del Producto:  %-10s Fecha Vencimiento: %-12s Codigo:  %-4d " +
+                        "Tipo de Producto:  Comida    Nombre del Producto:  %-10s Fecha Vencimiento: %-12s Codigo:  %-40s " +
                         "Valor Compra:  %-12.2f Ganancia:  %3.0f%% Valor Venta:  %-12.2f Stock:  %-4d Estado: %-15s %n",
                         productoPerecedero.nombre(),productoPerecedero.fechaVencimiento(),productoPerecedero.codigo(),
                         productoPerecedero.valorCompra(),productoPerecedero.porcentajeGanancia(),productoPerecedero.valorVentaBase(),
@@ -157,6 +167,7 @@ public class MenuModificarInventario {
             }
         } catch (RuntimeException e){
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -166,10 +177,10 @@ public class MenuModificarInventario {
                 \nHAS SELECCIONADO: -ELIMINAR PRODUCTO-
                 Que Producto vas a eliminar, escribe su codigo:
                 """ + "---> ");
-        int codigoProducto = leerEntero(sc);
+        String codigoProducto = sc.nextLine();
         try {
-            controladorTienda.eliminarProductoAInventario(idInventario, codigoProducto);
-            System.out.println("El Producto de codigo -" + codigoProducto + "- ha sido eliminado con exito");
+            controladorTienda.eliminarProductoDeInventario(codigoProducto, idInventario);
+            System.out.println("El Producto de codigo -" + codigoProducto + "- ha sido Desactivado con Exito");
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -181,14 +192,33 @@ public class MenuModificarInventario {
                 \nHAS SELECCIONADO: -BUSCAR PRODUCTO-
                 Que Producto vas a buscar, escribe su codigo:
                 """ + "---> ");
-        int codigoProducto = leerEntero(sc);
+        String codigoProducto = sc.nextLine();
         try {
-            boolean esta = controladorTienda.buscarProductoAInventario(idInventario, codigoProducto);
-            if (!esta){
-                System.out.println("El Producto de codigo -" + codigoProducto + "- NO esta en ese inventario");
-                return;
-            }
+            DatosTotalesProductoDTO datosTotalesProducto = controladorTienda.obtenerDatosTotalesProducto(idInventario, codigoProducto);
             System.out.println("El Producto de codigo -" + codigoProducto + "- SI esta en ese inventario");
+            if (datosTotalesProducto instanceof DatosTotalesProductoRopaDTO productoRopa) {
+                String datosProducto = String.format(
+                        "Tipo de Producto: Ropa  Nombre del Producto: %-12s Talla: %-4s Codigo: %-40s " +
+                                "Valor Compra: %-12.2f Ganancia: %3.0f%% Valor Venta: %-12.2f Stock: %-4d%n",
+                        productoRopa.nombre(), productoRopa.talla().toString(), productoRopa.codigo(),
+                        productoRopa.valorCompra(), productoRopa.porcentajeGanancia(), productoRopa.valorVentaBase(),
+                        productoRopa.stock()
+                );
+                System.out.println(datosProducto);
+            } else if (datosTotalesProducto instanceof DatosTotalesProductoPerecederoDTO productoPerecedero) {
+                String datosProducto = String.format(
+                        "Tipo de Producto:  Perecedero    Nombre del Producto:  %-10s Fecha Vencimiento: %-12s Codigo:  %-40s " +
+                                "Valor Compra:  %-12.2f Ganancia:  %3.0f%% Valor Venta:  %-12.2f Stock:  %-4d Estado: %-15s %n",
+                        productoPerecedero.nombre(), productoPerecedero.fechaVencimiento().toString(), productoPerecedero.codigo(),
+                        productoPerecedero.valorCompra(), productoPerecedero.porcentajeGanancia(), productoPerecedero.valorVentaBase(),
+                        productoPerecedero.stock(), productoPerecedero.estaVencido()
+                );
+                System.out.println(datosProducto);
+            } else {
+                System.out.println("Tipo de Producto no se puede describir");
+            }
+        } catch (ProductoNoEncontradoException e) {
+            System.out.println("El Producto de codigo -" + codigoProducto + "- NO esta en ese inventario");
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -200,7 +230,7 @@ public class MenuModificarInventario {
                 \nHAS SELECCIONADO: -MOVER PRODUCTO A OTRO INVENTARIO-
                 Que Producto vas a mover, escribe su codigo:
                 """ + "---> ");
-        int codigoProducto = leerEntero(sc);
+        String codigoProducto = sc.nextLine();
         System.out.println("\nA que Inventario lo vas a mover, escribe su numero identificador:\n---> ");
         int numeroId2 = leerEntero(sc);
         try {

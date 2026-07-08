@@ -1,29 +1,47 @@
 package ProyectoPropio1.dominio;
 
+import ProyectoPropio1.dominio.enums.TipoItem;
 import ProyectoPropio1.excepciones.StockInsuficienteException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.UUID;
 
-public abstract class Producto {
+import static ProyectoPropio1.dominio.enums.TipoItem.PRODUCTO;
+
+public abstract class Producto implements ItemFacturable{
 
     //ATRIBUTOS:
 
-    private final int codigo;
+    private final String codigo;
 
     private String nombre;
 
-    private double valorCompra;
+    private BigDecimal valorCompra;
 
-    private double porcentajeGanancia;
+    private BigDecimal porcentajeGanancia;
 
     private int stock;
 
+    private final Impuesto impuesto;
+
+    private boolean activo;
+
     //GETTERS Y SETTERS:
 
-    public int getCodigo() {
+
+    @Override
+    public TipoItem getTipoItem() {
+        return PRODUCTO;
+    }
+
+    @Override
+    public String getCodigo() {
         return codigo;
     }
 
+    @Override
     public String getNombre() {
         return nombre;
     }
@@ -31,55 +49,87 @@ public abstract class Producto {
         this.nombre = nombre;
     }
 
-    public double getValorCompra() {
+    public BigDecimal getValorCompra() {
         return valorCompra;
     }
-    protected void setValorCompra(double valorCompra) {
+    protected void setValorCompra(BigDecimal valorCompra) {
         this.valorCompra = valorCompra;
     }
 
-    public double getPorcentajeGanancia() {
+    public BigDecimal getPorcentajeGanancia() {
         return porcentajeGanancia;
     }
-    protected void setPorcentajeGanancia(double porcentajeGanancia) {
+    protected void setPorcentajeGanancia(BigDecimal porcentajeGanancia) {
         this.porcentajeGanancia = porcentajeGanancia;
     }
 
     public int getStock() {
         return stock;
     }
-
     protected void setStock(int stock) {
         this.stock = stock;
     }
 
-    public double getValorVenta(LocalDate fecha){
+    @Override
+    public BigDecimal getValorVenta(LocalDate fecha){
         return calcularValorVenta(fecha);
+    }
+
+    public int getIdImpuesto() {
+        return impuesto.getId();
+    }
+
+    @Override
+    public BigDecimal getPorcentajeImpuesto(){return impuesto.getPorcentaje();}
+
+    public Impuesto getImpuesto() {
+        return impuesto;
+    }
+
+    public boolean isActivo(){
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     //CONSTRUCTOR:
 
-    protected Producto(int codigo, String nombre, double valorCompra, int stock){
+    protected Producto(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, boolean activo){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
         }
-        if (valorCompra<=0) {
+        if (valorCompra.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Valor de Compra del Producto Invalido");
         }
         if (stock<0){
             throw new IllegalArgumentException("Stock del Producto Invalido");
         }
+        if (impuesto==null){
+            throw new IllegalArgumentException("El Producto Debe tener Impuesto");
+        }
         this.codigo = codigo;
         this.nombre = nombre;
         this.valorCompra = valorCompra;
-        this.porcentajeGanancia = 20;
-        this.stock=stock;
+        this.porcentajeGanancia = porcentajeGanancia;
+        this.stock = stock;
+        this.impuesto = impuesto;
+        this.activo = activo;
+    }
+
+    protected Producto(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto){
+        this(UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, true);
     }
 
     //METODOS:
 
-    protected double calcularValorVenta(LocalDate fecha){
-        return this.valorCompra + (this.valorCompra * (this.porcentajeGanancia / 100));
+    protected BigDecimal calcularValorVenta(LocalDate fecha){
+        BigDecimal factorGanancia = this.porcentajeGanancia.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        BigDecimal ganancia = this.valorCompra.multiply(factorGanancia);
+        BigDecimal impuesto = calcularImpuesto(fecha);
+        BigDecimal valorVenta = this.valorCompra.add(ganancia).add(impuesto);
+        return valorVenta.setScale(4, RoundingMode.HALF_UP);
     }
 
     public void validarEstadoParaVenta(LocalDate fecha){
@@ -87,44 +137,52 @@ public abstract class Producto {
 
     //METODOS MODIFICAR PRODUCTO:
 
-    protected void cambiarValorVentaPorPorcentaje(double porcentajeGanancia){
-        if (porcentajeGanancia<20 || porcentajeGanancia>100){
-            throw new IllegalArgumentException("Porcentaje De Ganancia Invalido");
+    public void cambiarValorVentaPorPorcentaje(BigDecimal porcentajeGanancia) {
+        if (porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0 || porcentajeGanancia.compareTo(new BigDecimal("100")) > 0) {
+            throw new IllegalArgumentException("Porcentaje de Ganancia del Producto Inválido");
         }
         setPorcentajeGanancia(porcentajeGanancia);
     }
 
-    protected void cambiarNombreProducto(String nombre){
+    public void cambiarNombreProducto(String nombre){
         if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre Vacio");
+            throw new IllegalArgumentException("Nombre del Producto Vacio");
         }
         setNombre(nombre);
     }
 
-    protected void cambiarValorCompra(double valorNuevo){
-        if (valorNuevo<=0){
-            throw new IllegalArgumentException("Valor Negativo");
+    public void cambiarValorCompra(BigDecimal valorNuevo){
+        if (valorNuevo.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Valor de Compra del Producto Invalido");
         }
         setValorCompra(valorNuevo);
     }
 
-    protected void aumentarStock(int cantidad){
+    public void aumentarStock(int cantidad){
         if (cantidad<0){
-            throw new IllegalArgumentException("Cantidad Negativa");
+            throw new IllegalArgumentException("Cantidad de Producto a Ingresar Invalida");
         }
         int stockTotal = (getStock()) + cantidad;
         setStock(stockTotal);
     }
 
-    protected void reducirStock(int cantidad){
+    public void reducirStock(int cantidad){
         if (cantidad<0){
-            throw new IllegalArgumentException("Cantidad Negativa");
+            throw new IllegalArgumentException("Cantidad de Producto a Retirar Invalida");
         }
         int stockTotal = (getStock()) - cantidad;
         if (stockTotal<0){
-            throw new StockInsuficienteException("La Cantidad A Reducir Es Mayor A La Cantidad Existente");
+            throw new StockInsuficienteException("La Cantidad de Producto a Reducir es Mayor a la Cantidad Existente");
         }
         setStock(stockTotal);
+    }
+
+    public void activarProducto(){
+        setActivo(true);
+    }
+
+    public void desactivarProducto(){
+        setActivo(false);
     }
 
 }

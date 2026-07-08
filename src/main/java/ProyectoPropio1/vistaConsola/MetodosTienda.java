@@ -1,5 +1,6 @@
 package ProyectoPropio1.vistaConsola;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -34,16 +35,13 @@ public class MetodosTienda {
         }
     }
 
-    public static double leerDecimal(Scanner sc){
-        double numero;
+    public static BigDecimal leerDecimal(Scanner sc){
         while (true){
             try {
-                numero = sc.nextDouble();
-                sc.nextLine();
-                return numero;
-            } catch (InputMismatchException decimalInvalido){
-                System.out.print("\nDebes Ingresar un Numero Valido\n---> ");
-                sc.nextLine();
+                String entrada = sc.nextLine().trim();
+                return new BigDecimal(entrada);
+            } catch (NumberFormatException e) {
+                System.out.print("\nDebes ingresar un número válido (Usa punto para decimales, Ej: 15.50)\n---> ");
             }
         }
     }
@@ -79,6 +77,16 @@ public class MetodosTienda {
             }
         } while (!opcionValida);
         return opcion;
+    }
+
+    public static String peticionSiNo(Scanner sc){
+        String peticion;
+        do {
+            System.out.print("(SI / NO):\n" +
+                    "---> ");
+            peticion = sc.nextLine();
+        } while (!peticion.equalsIgnoreCase("SI") && !peticion.equalsIgnoreCase("NO"));
+        return peticion;
     }
 
     public static void salirPrograma(){

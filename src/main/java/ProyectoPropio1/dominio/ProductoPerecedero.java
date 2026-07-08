@@ -2,6 +2,8 @@ package ProyectoPropio1.dominio;
 
 import ProyectoPropio1.excepciones.ProductoVencidoException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -11,9 +13,9 @@ public class ProductoPerecedero extends Producto{
 
     private final LocalDate fechaVencimiento;
 
-    private static final int descuentoPorVencimiento=30;
+    private static final BigDecimal descuentoPorVencimiento = BigDecimal.valueOf(30);
 
-    private final int posibleDescuento;
+    private final BigDecimal descuento;
 
     //GETTERS Y SETTERS:
 
@@ -23,28 +25,40 @@ public class ProductoPerecedero extends Producto{
 
     //CONSTRUCTOR:
 
-    public ProductoPerecedero(int codigo, String nombre, double valorCompra, int stock, LocalDate fechaVencimiento){
-        super(codigo, nombre, valorCompra, stock);
+    public ProductoPerecedero(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, boolean activo, LocalDate fechaVencimiento){
+        super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, activo);
         this.fechaVencimiento=fechaVencimiento;
-        this.posibleDescuento=descuentoPorVencimiento;
+        this.descuento = descuentoPorVencimiento;
+    }
+
+    public ProductoPerecedero(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, LocalDate fechaVencimiento){
+        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto);
+        this.fechaVencimiento = fechaVencimiento;
+        this.descuento = descuentoPorVencimiento;
     }
 
     //METODOS:
 
-    public boolean estaVencido(LocalDate fechaReferencia) {
+    public String estaVencido(LocalDate fechaReferencia) {
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
-        return diasRestantes < 0;
+        if (diasRestantes < 0){
+            return "Vencido";
+        }
+        return "Disponible";
     }
 
     @Override
-    protected double calcularValorVenta(LocalDate fechaReferencia) {
-        double valorVenta = getValorCompra() + (getValorCompra() * (getPorcentajeGanancia() / 100));
-        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia,this.fechaVencimiento);
-        if (diasRestantes>=0 && diasRestantes<=3){
-            valorVenta-=valorVenta*((double)this.posibleDescuento/100);
-            return valorVenta;
+    protected BigDecimal calcularValorVenta(LocalDate fechaReferencia) {
+        BigDecimal factorGanancia = getPorcentajeGanancia().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
+        BigDecimal valorVenta = getValorCompra().add(ganancia).add(calcularImpuesto(fechaReferencia));
+        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
+        if (diasRestantes >= 0 && diasRestantes <= 3) {
+            BigDecimal factorDescuento = this.descuento.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+            BigDecimal descuentoAplicado = valorVenta.multiply(factorDescuento);
+            valorVenta = valorVenta.subtract(descuentoAplicado);
         }
-        return valorVenta;
+        return valorVenta.setScale(4, RoundingMode.HALF_UP);
     }
 
     @Override
@@ -53,6 +67,12 @@ public class ProductoPerecedero extends Producto{
         if (diasRestantes < 0) {
             throw new ProductoVencidoException("ALERTA: El producto '" + this.getNombre() + "' está vencido. Venta bloqueada.");
         }
+    }
+
+    @Override
+    public BigDecimal calcularImpuesto(LocalDate fecha) {
+        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        return getValorCompra().multiply(factorImpuesto);
     }
 
 }

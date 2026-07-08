@@ -1,24 +1,16 @@
 package ProyectoPropio1.dominio;
 
-import ProyectoPropio1.excepciones.CapacidadExcedidaException;
-import ProyectoPropio1.excepciones.ProductoNoEncontradoException;
-import ProyectoPropio1.excepciones.StockInsuficienteException;
-
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-
 public class Inventario {
 
     //ATRIBUTOS:
 
     private String nombre;
 
-    private final int numeroId;
+    private final Integer idInventario;
 
     private final int capacidadMaxima;
 
-    private final Map<Integer, Producto> misProductos;
+    private int capacidadOcupada;
 
     //GETTERS Y SETTERS:
 
@@ -30,21 +22,25 @@ public class Inventario {
         this.nombre = nombre;
     }
 
-    public int getNumeroId() {
-        return numeroId;
+    public int getIdInventario() {
+        return idInventario;
     }
 
     public int getCapacidadMaxima() {
         return capacidadMaxima;
     }
 
-    public Map<Integer, Producto> getMisProductos() {
-        return Map.copyOf(this.misProductos);
+    public int getCapacidadOcupada() {
+        return capacidadOcupada;
+    }
+
+    public void setCapacidadOcupada(int capacidadOcupada) {
+        this.capacidadOcupada = capacidadOcupada;
     }
 
     //CONSTRUCTORES:
 
-    public Inventario(int numeroId, String nombre, int capacidadMaxima){
+    private Inventario(String nombre, int capacidadMaxima){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Inventario Invalido");
         }
@@ -52,104 +48,54 @@ public class Inventario {
             throw new IllegalArgumentException("Capacidad Maxima del Inventario Invalida");
         }
         this.nombre = nombre;
-        this.numeroId = numeroId;
+        this.idInventario = null;
         this.capacidadMaxima = capacidadMaxima;
-        this.misProductos = new HashMap<>();
+        this.capacidadOcupada = 0;
     }
 
-    //METODOS DE VALIDACION:
-
-    public boolean tieneProductos(){
-        return !this.misProductos.isEmpty();
+    public static Inventario crearNuevo(String nombre, int capacidadMaxima) {
+        return new Inventario(nombre, capacidadMaxima);
     }
 
-    public int calcularCapacidadLibre(){
-        return this.capacidadMaxima - this.getCapacidadOcupada();
-    }
-
-    public int getCapacidadOcupada(){
-        int capacidadOcupada = 0;
-        for (Producto producto:this.misProductos.values()){
-            capacidadOcupada+=producto.getStock();
+    private Inventario(int idInventario, String nombre, int capacidadMaxima, int capacidadOcupada){
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("Nombre del Inventario Invalido");
         }
-        return capacidadOcupada;
+        if (capacidadMaxima<=0){
+            throw new IllegalArgumentException("Capacidad Maxima del Inventario Invalida");
+        }
+        this.nombre = nombre;
+        this.idInventario = idInventario;
+        this.capacidadMaxima = capacidadMaxima;
+        this.capacidadOcupada = capacidadOcupada;
+    }
+
+    public static Inventario reconstruirDesdeBD(int idInventario, String nombre, int capacidadMaxima, int capacidadOcupada) {
+        return new Inventario(idInventario, nombre, capacidadMaxima, capacidadOcupada);
     }
 
     //METODOS PARA MODIFICAR INVENTARIO:
 
     public void cambiarNombreInventario(String nuevoNombre){
         if (nuevoNombre==null || nuevoNombre.isBlank()){
-            throw new IllegalArgumentException("Nombre Vacio");
+            throw new IllegalArgumentException("Nombre de Inventario Vacio");
+        }
+        if (nuevoNombre.length() > 100) {
+            throw new IllegalArgumentException("El Nombre no puede superar los 50 Caracteres.");
         }
         setNombre(nuevoNombre);
     }
 
-    public int agregarUnProducto(Producto producto){
-        if (producto==null){
-            throw new IllegalArgumentException("No puedes agregar un Producto Nulo");
-        }
-        int capacidadLibre = calcularCapacidadLibre();
-        if (producto.getStock()>capacidadLibre){
-            throw new CapacidadExcedidaException("El Stock a ingresar Excede La Capacidad");
-        }
-        this.misProductos.put(producto.getCodigo(),producto);
-        return producto.getCodigo();
+    //METODOS DE VALIDACION:
+
+    public int calcularCapacidadLibre() {
+        return this.capacidadMaxima - this.capacidadOcupada;
     }
 
-    public void eliminarUnProducto(int codigo){
-        Producto producto = obtenerProducto(codigo);
-        this.misProductos.remove(codigo);
-    }
-
-    public boolean buscarProducto(int codigo){
-        return this.misProductos.containsKey(codigo);
-    }
-
-    public Producto obtenerProducto(int codigo){
-        Producto producto = this.misProductos.get(codigo);
-        if (producto==null){
-            throw new ProductoNoEncontradoException("El Producto de Codigo -" + codigo + "- No Se Encuentra");
-        }
-        return producto;
-    }
-
-    //METODOS PARA MODIFICAR PRODUCTO:
-
-    public void actualizarValorVentaPorPorcentaje(int codigo, double porcentaje){
-        Producto producto = obtenerProducto(codigo);
-        producto.cambiarValorVentaPorPorcentaje(porcentaje);
-    }
-
-    public void actualizarNombreProducto(int codigo,String nombre){
-        Producto producto = obtenerProducto(codigo);
-        producto.cambiarNombreProducto(nombre);
-    }
-
-    public void actualizarValorCompra(int codigo,double valorNuevo){
-        Producto producto = obtenerProducto(codigo);
-        producto.cambiarValorCompra(valorNuevo);
-    }
-
-    public void agregarStockProducto(int codigo, int cantidad){
-        Producto producto = obtenerProducto(codigo);
-        int capacidadLibre = calcularCapacidadLibre();
-        if (cantidad>capacidadLibre){
-            throw new CapacidadExcedidaException("La Cantidad A Agregar Excede La Capacidad Maxima");
-        }
-        producto.aumentarStock(cantidad);
-    }
-
-    public Producto reducirStockProducto(int codigo, int cantidad){
-        Producto producto = obtenerProducto(codigo);
-        producto.reducirStock(cantidad);
-        return producto;
-    }
-
-    public void verificarStockProductoDisponible(int codigo, int cantidad, LocalDate fecha){
-        Producto producto = obtenerProducto(codigo);
-        producto.validarEstadoParaVenta(fecha);
-        if (cantidad > producto.getStock()){
-            throw new StockInsuficienteException("La Cantidad A Reducir Es Mayor A La Cantidad Existente");
+    public void validarEspacioDisponible(int stockNuevo) {
+        if (stockNuevo > this.calcularCapacidadLibre()) {
+            throw new IllegalStateException("Capacidad del Inventario Insuficiente. Libre: " + this.calcularCapacidadLibre() +
+                            ", Solicitado: " + stockNuevo);
         }
     }
 

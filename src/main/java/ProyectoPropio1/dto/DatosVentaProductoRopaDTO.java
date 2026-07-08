@@ -1,15 +1,17 @@
 package ProyectoPropio1.dto;
 
-import ProyectoPropio1.dominio.Talla;
+import ProyectoPropio1.dominio.enums.Talla;
 
-public record DatosVentaProductoRopaDTO(String nombre, double precio, Talla talla) implements DatosVentaProductoDTO {
+import java.math.BigDecimal;
+
+public record DatosVentaProductoRopaDTO(String nombre, BigDecimal precio, Talla talla) implements DatosVentaProductoDTO {
     @Override
     public String nombre() {
         return nombre;
     }
 
     @Override
-    public double precio() {
+    public BigDecimal precio() {
         return precio;
     }
 }

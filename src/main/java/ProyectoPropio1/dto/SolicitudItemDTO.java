@@ -1,5 +1,5 @@
 package ProyectoPropio1.dto;
 
-public record SolicitudItemDTO(int idInventario, int codigoProducto, int cantidad) {
+public record SolicitudItemDTO(int idInventario, String codigo, int cantidad) {
 }
 

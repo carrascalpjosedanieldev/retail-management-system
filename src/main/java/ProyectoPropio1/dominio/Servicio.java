@@ -1,16 +1,25 @@
 package ProyectoPropio1.dominio;
 
-public class Servicio implements Impuestable, ItemFacturable {
+import ProyectoPropio1.dominio.enums.TipoItem;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.UUID;
+
+import static ProyectoPropio1.dominio.enums.TipoItem.SERVICIO;
+
+public class Servicio implements ItemFacturable {
 
     //ATRIBUTOS:
 
     private String nombre;
 
-    private double precioBase;
+    private BigDecimal precioBase;
 
-    private final int codigoServicio;
+    private final String codigoServicio;
 
-    private static final int IMPUESTO_SERVICIOS = 10;
+    private final Impuesto impuesto;
 
     //GETTERS Y SETTERS:
 
@@ -23,70 +32,86 @@ public class Servicio implements Impuestable, ItemFacturable {
         this.nombre = nombre;
     }
 
-    public double getPrecioBase() {
+    public BigDecimal getPrecioBase() {
         return precioBase;
     }
 
-    private void setPrecioBase(double precioBase) {
+    private void setPrecioBase(BigDecimal precioBase) {
         this.precioBase = precioBase;
     }
 
-    public int getCodigoServicio() {
-        return codigoServicio;
+    @Override
+    public String getCodigo() {
+        return this.codigoServicio;
+    }
+
+    @Override
+    public BigDecimal getValorVenta(LocalDate fecha) {
+        BigDecimal impuesto = calcularImpuesto(fecha);
+        BigDecimal precioFinal = getPrecioBase().add(impuesto);
+        return precioFinal.setScale(4, RoundingMode.HALF_UP);
+    }
+
+    public Impuesto getImpuesto(){
+        return this.impuesto;
+    }
+
+    public int getIdImpuesto(){
+        return this.impuesto.getId();
+    }
+
+    @Override
+    public BigDecimal getPorcentajeImpuesto(){
+        return this.impuesto.getPorcentaje();
     }
 
     //CONSTRUCTOR:
 
-    public Servicio(int codigoServicio, String nombre, double precioBase){
+    public Servicio(String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto){
         if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre Vacio");
+            throw new IllegalArgumentException("Nombre del Servicio Vacio");
         }
-        if (precioBase<=0){
+        if (precioBase.compareTo(BigDecimal.ZERO) <= 0){
             throw new IllegalArgumentException("Precio del Servicio Invalido");
+        }
+        if (impuesto==null){
+            throw new IllegalArgumentException("Impuesto del Servicio Invalido");
         }
         this.nombre = nombre;
         this.precioBase = precioBase;
         this.codigoServicio = codigoServicio;
+        this.impuesto = impuesto;
+    }
+
+    public Servicio(String nombre, BigDecimal precioBase, Impuesto impuesto){
+        this(UUID.randomUUID().toString(), nombre, precioBase, impuesto);
     }
 
     //METODOS:
 
     @Override
-    public double calcularImpuesto(double precioBase) {
-        return precioBase*((double)IMPUESTO_SERVICIOS/100);
-    }
-
-    private double obtenerPrecioFinal() {
-        return this.precioBase + calcularImpuesto(this.precioBase);
+    public BigDecimal calcularImpuesto(LocalDate fecha) {
+        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        return getPrecioBase().multiply(factorImpuesto);
     }
 
     @Override
-    public String getTipoItem() {
-        return "Servicio";
-    }
-
-    @Override
-    public int getCantidad() {
-        return 1;
-    }
-
-    @Override
-    public double getValorCobrado() {
-        return obtenerPrecioFinal();
+    public TipoItem getTipoItem() {
+        return SERVICIO;
     }
 
     //METODOS MODIFICAR SERVICIO:
 
     public void cambiarNombreServicio(String nombreServicio){
         if (nombreServicio==null || nombreServicio.isBlank()){
-            throw new IllegalArgumentException("Nombre Vacio");
+            throw new IllegalArgumentException("Nombre del Servicio Vacio");
         }
         setNombre(nombreServicio);
     }
 
-    public void cambiarPrecioBase(double precioNuevo){
-        if (precioNuevo<=0){
-            throw new IllegalArgumentException("Precio Invalido");
+    public void cambiarPrecioBase(BigDecimal precioNuevo){
+        if (precioNuevo.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Precio del Servicio Invalido");
         }
         setPrecioBase(precioNuevo);
     }

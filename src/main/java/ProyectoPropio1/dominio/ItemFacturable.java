@@ -1,15 +1,23 @@
 package ProyectoPropio1.dominio;
 
+import ProyectoPropio1.dominio.enums.TipoItem;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 public interface ItemFacturable {
 
-    String getTipoItem();
+    TipoItem getTipoItem();
+
+    BigDecimal calcularImpuesto(LocalDate fecha);
+
+    BigDecimal getPorcentajeImpuesto();
 
     String getNombre();
 
-    int getCantidad();
+    String getCodigo();
 
-    double getValorCobrado();
-
+    BigDecimal getValorVenta(LocalDate fecha);
 
 }
 

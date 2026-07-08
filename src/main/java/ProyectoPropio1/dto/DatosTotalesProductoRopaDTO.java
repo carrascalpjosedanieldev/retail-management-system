@@ -1,7 +1,9 @@
 package ProyectoPropio1.dto;
 
-import ProyectoPropio1.dominio.Talla;
+import ProyectoPropio1.dominio.enums.Talla;
 
-public record DatosTotalesProductoRopaDTO(int codigo, String nombre, double valorCompra, double porcentajeGanancia, double valorVentaBase, int stock, Talla talla) implements DatosTotalesProductoDTO{
+import java.math.BigDecimal;
+
+public record DatosTotalesProductoRopaDTO(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, BigDecimal valorVentaBase, int stock, Talla talla) implements DatosTotalesProductoDTO{
 }
 

@@ -1,11 +1,13 @@
 package ProyectoPropio1.vistaConsola;
 
-import ProyectoPropio1.servicios.ControladorTienda;
+import ProyectoPropio1.dto.ServicioDTO;
+import ProyectoPropio1.servicios.controlador.ControladorTienda;
 import ProyectoPropio1.dto.DatosCatalogoServiciosDTO;
-import ProyectoPropio1.dto.DatosServicioDTO;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
+import static ProyectoPropio1.vistaConsola.MenuGestionarImpuestos.impuestosActivosParaRegistro;
 import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
 
 public class MenuGestionarServicios {
@@ -20,7 +22,8 @@ public class MenuGestionarServicios {
                                    3                            ELIMINAR SERVICIO
                                    4                         MODIFICAR NOMBRE SERVICIO
                                    5                         MODIFICAR PRECIO SERVICIO
-                                   6                                  SALIR
+                                   6                      MODIFICAR IMPUESTO DE SERVICIO
+                                   7                                  SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
@@ -30,7 +33,7 @@ public class MenuGestionarServicios {
         int opcionGestionarServicios;
         do {
             menuGestionarServicios();
-            opcionGestionarServicios = pedirOpcion(sc,1,6);
+            opcionGestionarServicios = pedirOpcion(sc,1,7);
             switch (opcionGestionarServicios){
                 case 1:
                     registrarServicio(sc, controladorTienda);
@@ -48,60 +51,61 @@ public class MenuGestionarServicios {
                     modificarPrecioServicio(sc, controladorTienda);
                     break;
                 case 6:
+                    modifcarImpuestoDeServicio(sc, controladorTienda);
+                    break;
+                case 7:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
-        } while (opcionGestionarServicios!=6);
+        } while (opcionGestionarServicios!=7);
     }
 
     private static void registrarServicio(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -REGISTRAR SERVICIO-");
         System.out.print("""
-                    Escribe el Nombre del Servicio:
+                    \nEscribe el Nombre del Servicio:
                     """ + "---> ");
         String nombreServicio = sc.nextLine();
         System.out.print("""
                     \nEscribe el Precio del Servicio:
                     """ + "---> ");
-        double precioServicio = leerDecimal(sc);
+        BigDecimal precioServicio = leerDecimal(sc);
         try {
-            controladorTienda.registrarServicioNuevo(nombreServicio, precioServicio);
-            System.out.println("Servicio registrado con exito");
+            String impuestosActivosParaRegistro = impuestosActivosParaRegistro(controladorTienda);
+            System.out.print("\n" + impuestosActivosParaRegistro);
+            System.out.print("""
+                    Escribe el ID del Impuesto que le corresponda:
+                    """ + "---> ");
+            int idImpuesto = leerEntero(sc);
+            String codigoServicio = controladorTienda.registrarServicioNuevo(nombreServicio, precioServicio, idImpuesto);
+            System.out.println("\nServicio registrado con exito");
+            ServicioDTO datosServicio = controladorTienda.obtenerDatosServicio(codigoServicio);
+            System.out.println("Codigo:  " + datosServicio.codigo() + "   Servicio:  " + datosServicio.nombre() + "   Precio:  $" + datosServicio.precioFinal());
         } catch (RuntimeException e){
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
 
     private static void verServiciosDisponibles(ControladorTienda controladorTienda){
-        if (controladorTienda.tiendaNoTieneServicios()){
-            System.out.println("""
-                    \nACCION DENEGADA
-                    TODAVIA NO HAY SERVICIOS DISPONIBLES
-                    """);
-            return;
+        try {
+            DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
+            System.out.println("--------------------------------------------------------------------------------------------");
+            System.out.println("---> SERVICIOS:");
+            for (ServicioDTO datosServicio: datosCatalogoServicios.listaServicios()){
+                System.out.println("Codigo:  " + datosServicio.codigo() + "   Servicio:  " + datosServicio.nombre() + "   Precio:  $" + datosServicio.precioFinal());
+            }
+            System.out.println("--------------------------------------------------------------------------------------------");
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
-        DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
-        System.out.println("--------------------------------------------------------------------------------------------");
-        System.out.println("---> SERVICIOS:");
-        for (DatosServicioDTO datosServicio: datosCatalogoServicios.listaServicios()){
-            System.out.println("Codigo:  " + datosServicio.codigo() + "   Servicio:  " + datosServicio.nombre() + "   Precio:  $" + datosServicio.precioFinal());
-        }
-        System.out.println("--------------------------------------------------------------------------------------------");
     }
 
     private static void eliminarServicio(Scanner sc, ControladorTienda controladorTienda){
-        if (controladorTienda.tiendaNoTieneServicios()){
-            System.out.println("""
-                    \nACCION DENEGADA
-                    TODAVIA NO HAY SERVICIOS DISPONIBLES
-                    """);
-            return;
-        }
         System.out.print("""
                 \nHAS SELECCIONADO: -ELIMINAR SERVICIO-
                 Que Servicio vas a eliminar, escribe su codigo:
                 """ + "---> ");
-        int codigoServicio = leerEntero(sc);
+        String  codigoServicio = sc.nextLine();
         try {
             controladorTienda.eliminarServicioDeTienda(codigoServicio);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido eliminado con exito");
@@ -111,18 +115,11 @@ public class MenuGestionarServicios {
     }
 
     private static void modificarNombreServicio(Scanner sc, ControladorTienda controladorTienda){
-        if (controladorTienda.tiendaNoTieneServicios()){
-            System.out.println("""
-                    \nACCION DENEGADA
-                    TODAVIA NO HAY SERVICIOS DISPONIBLES
-                    """);
-            return;
-        }
         System.out.print("""
                 \nHAS SELECCIONADO: -MODIFICAR NOMBRE SERVICIO-
                 A que Servicio le vas a cambiar el Nombre, escribe su Codigo:
                 """ + "---> ");
-        int codigoServicio = leerEntero(sc);
+        String  codigoServicio = sc.nextLine();
         System.out.print("Escribe el Nombre nuevo que le pondras:\n" +
                 "---> ");
         String nombreNuevo = sc.nextLine();
@@ -135,24 +132,42 @@ public class MenuGestionarServicios {
     }
 
     private static void modificarPrecioServicio(Scanner sc, ControladorTienda controladorTienda){
-        if (controladorTienda.tiendaNoTieneServicios()){
-            System.out.println("""
-                    \nACCION DENEGADA
-                    TODAVIA NO HAY SERVICIOS DISPONIBLES
-                    """);
-            return;
-        }
         System.out.print("""
                 \nHAS SELECCIONADO: -MODIFICAR PRECIO SERVICIO-
                 A que Servicio le vas a cambiar el Precio, escribe su Codigo:
                 """ + "---> ");
-        int codigoServicio = leerEntero(sc);
+        String codigoServicio = sc.nextLine();
         System.out.print("Escribe el Precio nuevo que le pondras:\n" +
                 "---> ");
-        double precioNuevo = leerDecimal(sc);
+        BigDecimal precioNuevo = leerDecimal(sc);
         try {
             controladorTienda.cambiarPrecioServicio(codigoServicio, precioNuevo);
             System.out.println("El Servicio de codigo -" + codigoServicio + "- ahora vale: $" + precioNuevo);
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
+    }
+
+    private static void modifcarImpuestoDeServicio(Scanner sc, ControladorTienda controladorTienda){
+        System.out.println("""
+                \nHAS SELECCIONADO: -MODIFICAR IMPUESTO DE SERVICIO-
+                A que Servicio le vas a cambiar el Impuesto, escribe su Codigo:
+                """ + "---> ");
+        String codigoServicio = sc.nextLine();
+        try {
+            ServicioDTO datosServicio = controladorTienda.obtenerDatosServicio(codigoServicio);
+            System.out.println("\nEl Servicio -" + datosServicio.nombre() + "- Tiene el Impuesto de ID -" + datosServicio.idImpuesto() + "-");
+            String impuestosActivosParaRegistro = impuestosActivosParaRegistro(controladorTienda);
+            System.out.println(impuestosActivosParaRegistro);
+            System.out.println("""
+                    \nEscribe el ID del Impuesto que le pondras:
+                    """);
+            int idImpuesto = leerEntero(sc);
+            if (idImpuesto == datosServicio.idImpuesto()){
+                throw new IllegalArgumentException("Impuestos Iguales");
+            }
+            controladorTienda.cambiarImpuestoDeServicio(codigoServicio, idImpuesto);
+            System.out.println("El Servicio de Codigo -" + codigoServicio + "- ahora tiene el Impuesto de ID -" + idImpuesto + "-");
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }

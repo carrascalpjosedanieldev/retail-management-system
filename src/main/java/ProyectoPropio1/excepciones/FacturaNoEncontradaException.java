@@ -5,3 +5,4 @@ public class FacturaNoEncontradaException extends RuntimeException {
         super(message);
     }
 }
+

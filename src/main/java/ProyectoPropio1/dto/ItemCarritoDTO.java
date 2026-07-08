@@ -1,5 +1,7 @@
 package ProyectoPropio1.dto;
 
-public record ItemCarritoDTO(String nombreArticulo, int cantidad, double precioUnitario, double subtotal) {
+import java.math.BigDecimal;
+
+public record ItemCarritoDTO(String nombreArticulo, int cantidad, BigDecimal precioUnitario, BigDecimal subtotal) {
 }
 

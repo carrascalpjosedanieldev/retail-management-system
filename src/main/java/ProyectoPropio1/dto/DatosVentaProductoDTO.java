@@ -1,10 +1,12 @@
 package ProyectoPropio1.dto;
 
+import java.math.BigDecimal;
+
 public interface DatosVentaProductoDTO {
 
     String nombre();
 
-    double precio();
+    BigDecimal precio();
 
 }
 

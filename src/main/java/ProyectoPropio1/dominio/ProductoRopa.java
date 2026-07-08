@@ -1,14 +1,16 @@
 package ProyectoPropio1.dominio;
 
+import ProyectoPropio1.dominio.enums.Talla;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
-public class ProductoRopa extends Producto implements Impuestable {
+public class ProductoRopa extends Producto{
 
     //ATRIBUTOS:
 
     private final Talla talla;
-
-    private static final int IVA_FIJO =19;
 
     //GETTERS Y SETTERS:
 
@@ -18,23 +20,31 @@ public class ProductoRopa extends Producto implements Impuestable {
 
     //CONSTRUCTOR:
 
-    public ProductoRopa(int codigo, String nombre, double valorCompra, int stock, Talla talla){
-        super(codigo, nombre, valorCompra, stock);
+    public ProductoRopa(String  codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, boolean activo, Talla talla){
+        super(codigo, nombre, valorCompra, porcentajeGanancia,  stock, impuesto, activo);
         this.talla=talla;
+    }
+
+    public ProductoRopa(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, Talla talla){
+        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto);
+        this.talla = talla;
     }
 
     //METODOS:
 
     @Override
-    protected double calcularValorVenta(LocalDate fecha) {
-        double valorVenta = getValorCompra() + (getValorCompra() * (getPorcentajeGanancia() / 100));
-        valorVenta += calcularImpuesto(valorVenta);
-        return valorVenta;
+    protected BigDecimal calcularValorVenta(LocalDate fecha) {
+        BigDecimal factorGanancia = getPorcentajeGanancia().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
+        BigDecimal impuesto = calcularImpuesto(fecha);
+        BigDecimal valorVenta = getValorCompra().add(ganancia).add(impuesto);
+        return valorVenta.setScale(4, RoundingMode.HALF_UP);
     }
 
     @Override
-    public double calcularImpuesto(double precioBase) {
-        return precioBase*((double) IVA_FIJO /100);
+    public BigDecimal calcularImpuesto(LocalDate fecha) {
+        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        return getValorCompra().multiply(factorImpuesto);
     }
 
 }
