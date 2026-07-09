@@ -2,8 +2,10 @@ package ProyectoPropio1.servicios.ensambladores;
 
 import ProyectoPropio1.dominio.Factura;
 import ProyectoPropio1.dominio.ItemVendido;
+import ProyectoPropio1.dominio.ReporteRecaudo;
 import ProyectoPropio1.dto.DatosItemVendidoFacturaDTO;
 import ProyectoPropio1.dto.FacturaDTO;
+import ProyectoPropio1.dto.ReporteRecaudoDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,12 @@ public class EnsambladorDTOFactura {
         }
         return new FacturaDTO(factura.getNumeroFactura(), datosItemsFactura, factura.getFechaHoraEmision(), factura.getSubTotal(),
                 factura.getTotalImpuestos(), factura.getTotalGeneral());
+    }
+
+    public ReporteRecaudoDTO ensamblarReporteRecaudo(ReporteRecaudo reporteRecaudo){
+        return new ReporteRecaudoDTO(reporteRecaudo.getFechaInicio(), reporteRecaudo.getFechaFin(),
+                reporteRecaudo.getCantidadFacturasEmitidas(), reporteRecaudo.getSubTotal(),
+                reporteRecaudo.getTotalImpuestos(), reporteRecaudo.getTotalRecaudo());
     }
 
 }

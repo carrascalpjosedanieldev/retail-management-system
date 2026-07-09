@@ -30,6 +30,10 @@ public class ControladorTienda {
 
     private final EnsambladorDTOImpuesto miEnsambladorDTOImpuesto;
 
+    private final EnsambladorDTODescuento miEnsambladorDTODescuento;
+
+    private final ServicioFacturas servicioFacturas;
+
     private final ServicioImpuestos servicioImpuestos;
 
     private final ServicioConfiguraciones servicioConfiguraciones;
@@ -40,6 +44,8 @@ public class ControladorTienda {
 
     private final ServicioServicios servicioServicios;
 
+    private final ServicioDescuentos servicioDescuentos;
+
     //CONSTRUCTOR:
 
     public ControladorTienda(
@@ -47,9 +53,11 @@ public class ControladorTienda {
             EnsambladorDTOProducto ensambladorDTOProducto, EnsambladorDTOInventario ensambladorDTOInventario,
             EnsambladorDTOFactura ensambladorDTOFactura, EnsambladorDTOCarrito ensambladorDTOCarrito,
             EnsambladorDTOServicio ensambladorDTOServicio, EnsambladorDTOImpuesto ensambladorDTOImpuesto,
-            GestorVentas gestorVentas, ServicioImpuestos servicioImpuestos,
+            EnsambladorDTODescuento ensambladorDTODescuento,
+            GestorVentas gestorVentas,
+            ServicioFacturas servicioFacturas, ServicioImpuestos servicioImpuestos,
             ServicioConfiguraciones servicioConfiguraciones, ServicioInventario servicioInventario,
-            ServicioProductos servicioProductos, ServicioServicios servicioServicios
+            ServicioProductos servicioProductos, ServicioServicios servicioServicios, ServicioDescuentos servicioDescuentos
     ) {
         this.miTienda = tienda;
 
@@ -59,13 +67,17 @@ public class ControladorTienda {
         this.miEnsambladorDTOCarrito = ensambladorDTOCarrito;
         this.miEnsambladorDTOServicio = ensambladorDTOServicio;
         this.miEnsambladorDTOImpuesto = ensambladorDTOImpuesto;
+        this.miEnsambladorDTODescuento = ensambladorDTODescuento;
 
         this.miGestorDeVentas = gestorVentas;
+
+        this.servicioFacturas = servicioFacturas;
         this.servicioImpuestos = servicioImpuestos;
         this.servicioConfiguraciones = servicioConfiguraciones;
         this.servicioInventario = servicioInventario;
         this.servicioProductos = servicioProductos;
         this.servicioServicios = servicioServicios;
+        this.servicioDescuentos = servicioDescuentos;
     }
 
     //METODOS DE VALIDACION:
@@ -121,13 +133,29 @@ public class ControladorTienda {
         return this.miEnsambladorDTOImpuesto.ensamblarDetalleImpuestos(impuestos);
     }
 
+    public List<DescuentoDTO> obtenerDetalleDescuentosActivos(){
+        List<Descuento> descuentos = this.servicioDescuentos.obtenerDescuentosActivos();
+        if (descuentos.isEmpty()){
+            throw new IllegalStateException("NO hay Descuentos Activos");
+        }
+        return this.miEnsambladorDTODescuento.ensamblarDetalleDescuentos(descuentos);
+    }
+
+    public List<DescuentoDTO> obtenerDetalleDescuentosInactivos(){
+        List<Descuento> descuentos = this.servicioDescuentos.obtenerDescuentosInactivos();
+        if (descuentos.isEmpty()){
+            throw new IllegalStateException("NO hay Descuentos Inactivos");
+        }
+        return this.miEnsambladorDTODescuento.ensamblarDetalleDescuentos(descuentos);
+    }
+
     public ServicioDTO obtenerDatosServicio(String codigoServicio){
         LocalDate fecha = obtenerFecha();
         Servicio servicio = this.servicioServicios.obtenerServicio(codigoServicio);
         return this.miEnsambladorDTOServicio.ensamblarServicio(servicio, fecha);
     }
 
-    public DatosCatalogoServiciosDTO obtenerCatalogoServicios(){
+    public CatalogoServiciosDTO obtenerCatalogoServicios(){
         LocalDate fecha = obtenerFecha();
         List<Servicio> servicios = this.servicioServicios.obtenerServicios();
         if (servicios.isEmpty()){
@@ -142,14 +170,37 @@ public class ControladorTienda {
         return this.miEnsambladorDTOCarrito.ensamblarVistaPreviaCarritoDTO(carrito, fecha);
     }
 
+    public ReporteRecaudoDTO obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin){
+        ReporteRecaudo reporteRecaudo = this.servicioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin);
+        return this.miEnsambladorDTOFactura.ensamblarReporteRecaudo(reporteRecaudo);
+    }
+
     //METODOS IMPUESTOS:
 
     public int registrarImpuesto(String nombre, BigDecimal porcentaje){
         return this.servicioImpuestos.registrarImpuesto(nombre, porcentaje);
     }
 
-    public void eliminarImpuesto(int idImpuesto){
-        this.servicioImpuestos.eliminarImpuesto(idImpuesto);
+    public void desactivarImpuesto(int idImpuesto){
+        this.servicioImpuestos.desactivarImpuesto(idImpuesto);
+    }
+
+    public void activarImpuesto(int idImpuesto){
+        this.servicioImpuestos.activarImpuesto(idImpuesto);
+    }
+
+    //METODOS DESCUENTOS:
+
+    public int registrarDescuento(String nombre, BigDecimal porcentaje){
+        return this.servicioDescuentos.registrarDescuento(nombre, porcentaje);
+    }
+
+    public void desactivarDescuento(int idDescuento){
+        this.servicioDescuentos.desactivarDescuento(idDescuento);
+    }
+
+    public void activarDescuento(int idDescuento){
+        this.servicioDescuentos.activarDescuento(idDescuento);
     }
 
     //METODOS DE TIENDA:
@@ -178,11 +229,19 @@ public class ControladorTienda {
 
     //METODOS PRODUCTOS:
 
-    public String registrarProductoRopa(int idInventario, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto, String tallaString){
+    public String registrarProductoRopa(int idInventario, String nombre, BigDecimal valorCompra,
+                                        BigDecimal porcentajeGanancia, int stock, int idImpuesto, int idDescuento,
+                                        String tallaString){
         this.servicioInventario.verificarEspacioDisponible(idInventario, stock);
         Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
         if (!impuesto.isActivo()) {
-            throw new IllegalArgumentException("No se puede asignar el Impuesto -" + impuesto.getNombre() + "- porque se encuentra Inactivo.");
+            throw new IllegalArgumentException("No se puede asignar el Impuesto -" + impuesto.getNombre() +
+                    "- porque se encuentra Inactivo.");
+        }
+        Descuento descuento = this.servicioDescuentos.obtenerDescuento(idDescuento);
+        if (!descuento.isActivo()) {
+            throw new IllegalArgumentException("No se puede asignar el Descuento -" + descuento.getNombre() +
+                    "- porque se encuentra Inactivo.");
         }
         Talla talla;
         try {
@@ -190,17 +249,30 @@ public class ControladorTienda {
         } catch (IllegalArgumentException e){
             throw new IllegalArgumentException("La talla ingresada no esta entre las opciones (Usa S, M, L o XL).");
         }
-        Producto producto = new ProductoRopa(nombre, valorCompra, porcentajeGanancia, stock, impuesto, talla);
+        Producto producto = ProductoRopa.crearNuevo(nombre, valorCompra, porcentajeGanancia, stock, impuesto,
+                descuento, talla);
         return this.servicioProductos.registrarProducto(idInventario, producto);
     }
 
-    public String registrarProductoPerecedero(int idInventario, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto, LocalDate fechaVencimiento){
+    public String registrarProductoPerecedero(int idInventario, String nombre, BigDecimal valorCompra,
+                                              BigDecimal porcentajeGanancia, int stock, int idImpuesto,
+                                              int idDescuento, LocalDate fechaVencimiento){
         this.servicioInventario.verificarEspacioDisponible(idInventario, stock);
         Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
         if (!impuesto.isActivo()) {
             throw new IllegalArgumentException("No se puede asignar el Impuesto -" + impuesto.getNombre() + "- porque se encuentra Inactivo.");
         }
-        Producto producto = new ProductoPerecedero(nombre, valorCompra, porcentajeGanancia, stock, impuesto, fechaVencimiento);
+        Descuento descuento = this.servicioDescuentos.obtenerDescuento(idDescuento);
+        if (!descuento.isActivo()) {
+            throw new IllegalArgumentException("No se puede asignar el Descuento -" + descuento.getNombre() +
+                    "- porque se encuentra Inactivo.");
+        }
+        LocalDate fecha = obtenerFecha();
+        if (fechaVencimiento.isBefore(fecha)){
+            throw new IllegalArgumentException("NO se puede Registrar el Producto porque ya esta Vencido");
+        }
+        Producto producto = ProductoPerecedero.crearNuevo(nombre, valorCompra, porcentajeGanancia, stock, impuesto,
+                descuento, fechaVencimiento);
         return this.servicioProductos.registrarProducto(idInventario, producto);
     }
 
@@ -247,6 +319,32 @@ public class ControladorTienda {
         this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
     }
 
+    public void cambiarImpuestoAProducto(String codigoProducto, int idInventario, int idImpuesto){
+        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
+        Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
+        producto.cambiarImpuesto(impuesto);
+        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+    }
+
+    public void cambiarDescuentoAProducto(String codigoProducto, int idInventario, int idDescuento){
+        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
+        Descuento descuento = this.servicioDescuentos.obtenerDescuento(idDescuento);
+        producto.cambiarDescuento(descuento);
+        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+    }
+
+    public void activarProducto(String codigoProducto, int idInventario){
+        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
+        producto.activarProducto();
+        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+    }
+
+    public void desactivarProducto(String codigoProducto, int idInventario){
+        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
+        producto.desactivarProducto();
+        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+    }
+
     public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){
         if (idInventarioOrigen == idInventarioDestino) {
             throw new IllegalArgumentException("El inventario de destino debe ser diferente al de origen.");
@@ -259,12 +357,16 @@ public class ControladorTienda {
 
     //SERVICIOS
 
-    public String registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto){
-        return this.servicioServicios.registrarServicioNuevo(nombreServicio, precioBase, idImpuesto);
+    public String registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento){
+        return this.servicioServicios.registrarServicioNuevo(nombreServicio, precioBase, idImpuesto, idDescuento);
     }
 
-    public void eliminarServicioDeTienda(String codigoServicio){
-        this.servicioServicios.eliminarServicio(codigoServicio);
+    public void desactivarServicioDeTienda(String codigoServicio){
+        this.servicioServicios.desactivarServicio(codigoServicio);
+    }
+
+    public void activarServicioDeTienda(String codigoServicio){
+        this.servicioServicios.activarServicio(codigoServicio);
     }
 
     public void cambiarNombreServicio(String codigoServicio, String nombreNuevo){
@@ -277,6 +379,10 @@ public class ControladorTienda {
 
     public void cambiarImpuestoDeServicio(String codigoServicio, int idImpuesto){
         this.servicioServicios.cambiarImpuestoDeServicio(codigoServicio, idImpuesto);
+    }
+
+    public void cambiarDescuentoDeServicio(String codigoServicio, int idImpuesto){
+        this.servicioServicios.cambiarDescuentoDeServicio(codigoServicio, idImpuesto);
     }
 
     //METODOS CONTROL DE GESTOR DE VENTAS:

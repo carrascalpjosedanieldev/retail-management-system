@@ -4,7 +4,6 @@ import ProyectoPropio1.dominio.enums.TipoItem;
 import ProyectoPropio1.excepciones.StockInsuficienteException;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -24,7 +23,9 @@ public abstract class Producto implements ItemFacturable{
 
     private int stock;
 
-    private final Impuesto impuesto;
+    private Impuesto impuesto;
+
+    private Descuento descuento;
 
     private boolean activo;
 
@@ -75,6 +76,13 @@ public abstract class Producto implements ItemFacturable{
         return calcularValorVenta(fecha);
     }
 
+    public Impuesto getImpuesto() {
+        return impuesto;
+    }
+    private void setImpuesto(Impuesto impuesto) {
+        this.impuesto = impuesto;
+    }
+
     public int getIdImpuesto() {
         return impuesto.getId();
     }
@@ -82,21 +90,33 @@ public abstract class Producto implements ItemFacturable{
     @Override
     public BigDecimal getPorcentajeImpuesto(){return impuesto.getPorcentaje();}
 
-    public Impuesto getImpuesto() {
-        return impuesto;
+    public Descuento getDescuento(){
+        return descuento;
+    }
+    private void setDescuento(Descuento descuento) {
+        this.descuento = descuento;
+    }
+
+    public int getIdDescuento(){
+        return descuento.getId();
+    }
+
+    @Override
+    public BigDecimal getPorcentajeDescuento(){
+        return descuento.getPorcentaje();
     }
 
     public boolean isActivo(){
         return activo;
     }
-
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
 
     //CONSTRUCTOR:
 
-    protected Producto(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, boolean activo){
+    protected Producto(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
+                       int stock, Impuesto impuesto, Descuento descuento, boolean activo){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
         }
@@ -113,27 +133,22 @@ public abstract class Producto implements ItemFacturable{
         this.nombre = nombre;
         this.valorCompra = valorCompra;
         this.porcentajeGanancia = porcentajeGanancia;
+        this.descuento = descuento;
         this.stock = stock;
         this.impuesto = impuesto;
         this.activo = activo;
     }
 
-    protected Producto(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto){
-        this(UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, true);
+    protected Producto(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock,
+                       Impuesto impuesto, Descuento descuento){
+        this(UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, true);
     }
 
     //METODOS:
 
-    protected BigDecimal calcularValorVenta(LocalDate fecha){
-        BigDecimal factorGanancia = this.porcentajeGanancia.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-        BigDecimal ganancia = this.valorCompra.multiply(factorGanancia);
-        BigDecimal impuesto = calcularImpuesto(fecha);
-        BigDecimal valorVenta = this.valorCompra.add(ganancia).add(impuesto);
-        return valorVenta.setScale(4, RoundingMode.HALF_UP);
-    }
+    protected abstract BigDecimal calcularValorVenta(LocalDate fecha);
 
-    public void validarEstadoParaVenta(LocalDate fecha){
-    }
+    public abstract void validarEstadoParaVenta(LocalDate fecha);
 
     //METODOS MODIFICAR PRODUCTO:
 
@@ -177,11 +192,31 @@ public abstract class Producto implements ItemFacturable{
         setStock(stockTotal);
     }
 
+    public void cambiarImpuesto(Impuesto impuesto){
+        if (!impuesto.isActivo()){
+            throw new IllegalArgumentException("El Impuesto que le quieres poner al Producto esta Inactivo");
+        }
+        setImpuesto(impuesto);
+    }
+
+    public void cambiarDescuento(Descuento descuento){
+        if (!descuento.isActivo()){
+            throw new IllegalArgumentException("El Descuento que le quieres poner al Producto esta Inactivo");
+        }
+        setDescuento(descuento);
+    }
+
     public void activarProducto(){
+        if (isActivo()){
+            throw new IllegalArgumentException("El Producto ya esta Activo");
+        }
         setActivo(true);
     }
 
     public void desactivarProducto(){
+        if (!isActivo()){
+            throw new IllegalArgumentException("El Producto ya esta Inactivo");
+        }
         setActivo(false);
     }
 

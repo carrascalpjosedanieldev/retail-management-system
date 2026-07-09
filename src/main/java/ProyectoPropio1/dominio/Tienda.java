@@ -20,13 +20,17 @@ public class Tienda {
         this.nombreTienda = nombreTienda;
     }
 
-    //CONSTRUCTOR:
+    //CONSTRUCTORES:
 
-    public Tienda(String nombreTienda){
+    private Tienda(String nombreTienda){
         if (nombreTienda==null || nombreTienda.isBlank()){
             throw new IllegalArgumentException("Nombre de la Tienda Vacio");
         }
         this.nombreTienda = nombreTienda;
+    }
+
+    public static Tienda crearNueva(String nombreTienda){
+        return new Tienda(nombreTienda);
     }
 
     //METODOS PARA MODIFICAR TIENDA:

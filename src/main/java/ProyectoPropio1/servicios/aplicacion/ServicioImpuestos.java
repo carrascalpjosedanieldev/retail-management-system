@@ -20,11 +20,16 @@ public class ServicioImpuestos {
         return impuesto.getId();
     }
 
-    public void eliminarImpuesto(int idImpuesto){
-        this.repositorioImpuestos.eliminarImpuesto(idImpuesto);
+    public void desactivarImpuesto(int idImpuesto){
+        this.repositorioImpuestos.desactivarImpuesto(idImpuesto);
+    }
+
+    public void activarImpuesto(int idImpuesto){
+        this.repositorioImpuestos.activarImpuesto(idImpuesto);
     }
 
     public Impuesto obtenerImpuesto(int idImpuesto){
+
         return this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
     }
 

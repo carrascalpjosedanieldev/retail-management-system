@@ -17,7 +17,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     @Override
     public void insertarProducto(Producto producto, int idInventario) {
 
-        String sqlPadre = "INSERT INTO productos (codigo_producto, id_inventario, id_impuesto, nombre, valor_compra, porcentaje_ganancia, stock, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlPadre = "INSERT INTO productos (codigo_producto, id_inventario, id_impuesto, id_descuento, nombre, " +
+                "valor_compra, porcentaje_ganancia, stock, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = AdministradorConexion.obtenerConexion()) {
             try {
@@ -26,12 +27,13 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                 try (PreparedStatement pstmt = conn.prepareStatement(sqlPadre)) {
                     pstmt.setString(1, producto.getCodigo());
                     pstmt.setInt(2, idInventario);
-                    pstmt.setInt(3, producto.getImpuesto().getId());
-                    pstmt.setString(4, producto.getNombre());
-                    pstmt.setBigDecimal(5, producto.getValorCompra());
-                    pstmt.setBigDecimal(6, producto.getPorcentajeGanancia());
-                    pstmt.setInt(7, producto.getStock());
-                    pstmt.setBoolean(8, producto.isActivo());
+                    pstmt.setInt(3, producto.getIdImpuesto());
+                    pstmt.setInt(4, producto.getIdDescuento());
+                    pstmt.setString(5, producto.getNombre());
+                    pstmt.setBigDecimal(6, producto.getValorCompra());
+                    pstmt.setBigDecimal(7, producto.getPorcentajeGanancia());
+                    pstmt.setInt(8, producto.getStock());
+                    pstmt.setBoolean(9, producto.isActivo());
                     pstmt.executeUpdate();
                 }
 
@@ -83,7 +85,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
 
     @Override
-    public void eliminarProductoDeInventario(String codigoProducto, int idInventario) {
+    public void desactivarProductoDeInventario(String codigoProducto, int idInventario) {
         String sql = "UPDATE productos SET activo = false WHERE codigo_producto = ? AND id_inventario = ?";
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -107,11 +109,16 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     @Override
     public Producto obtenerProducto(int idInventario, String codigoProducto) {
         String sql =
-                "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
+                "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, " +
+                        "p.activo, " +
                         "r.talla, per.fecha_vencimiento, " +
-                        "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo " +
+                        "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
+                        "i.activo AS impuesto_activo, " +
+                        "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+                        "des.activo AS descuento_activo " +
                         "FROM productos p " +
                         "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
+                        "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
                         "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
                         "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
                         "WHERE p.id_inventario = ? AND p.codigo_producto = ? AND p.activo = true";
@@ -137,16 +144,24 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                     boolean activoImp = rs.getBoolean("impuesto_activo");
                     Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
 
+                    int idDescuento = rs.getInt("id_descuento");
+                    String nombreDesc = rs.getString("nombre_descuento");
+                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
+                    boolean activoDesc = rs.getBoolean("descuento_activo");
+                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
+
                     String tallaString = rs.getString("talla");
                     if (tallaString != null) {
                         Talla talla = Talla.valueOf(tallaString);
-                        return new ProductoRopa(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, activoProd, talla);
+                        return ProductoRopa.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia, stock,
+                                impuesto, descuento, activoProd, talla);
                     }
 
                     Date fechaSql = rs.getDate("fecha_vencimiento");
                     if (fechaSql != null) {
                         LocalDate fechaVencimiento = fechaSql.toLocalDate();
-                        return new ProductoPerecedero(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, activoProd, fechaVencimiento);
+                        return ProductoPerecedero.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia, stock,
+                                impuesto, descuento, activoProd, fechaVencimiento);
                     }
 
                     throw new IllegalStateException("Error de integridad: El producto existe pero no tiene un tipo definido.");
@@ -165,7 +180,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public void actualizarProducto(Producto producto, int idInventario) {
-        String sql = "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, stock = ?, id_impuesto = ?, activo = ? " +
+        String sql = "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, stock = ?, id_impuesto = ?, id_descuento = ? , activo = ? " +
                 "WHERE id_inventario = ? AND codigo_producto = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
@@ -175,10 +190,11 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             pstmt.setBigDecimal(2, producto.getValorCompra());
             pstmt.setBigDecimal(3, producto.getPorcentajeGanancia());
             pstmt.setInt(4, producto.getStock());
-            pstmt.setInt(5, producto.getImpuesto().getId());
-            pstmt.setBoolean(6, producto.isActivo());
-            pstmt.setInt(7, idInventario);
-            pstmt.setString(8, producto.getCodigo());
+            pstmt.setInt(5, producto.getIdImpuesto());
+            pstmt.setInt(6, producto.getIdDescuento());
+            pstmt.setBoolean(7, producto.isActivo());
+            pstmt.setInt(8, idInventario);
+            pstmt.setString(9, producto.getCodigo());
 
             int filasAfectadas = pstmt.executeUpdate();
 
@@ -225,9 +241,11 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         String sql =
                 "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
                         "r.talla, per.fecha_vencimiento, " +
-                        "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo " +
+                        "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
+                        "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, des.activo AS descuento_activo " +
                         "FROM productos p " +
                         "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
+                        "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
                         "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
                         "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
                         "WHERE p.id_inventario = ? AND p.activo = true";
@@ -251,17 +269,25 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                     Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, rs.getString("nombre_impuesto"),
                             rs.getBigDecimal("porcentaje_impuesto"), rs.getBoolean("impuesto_activo"));
 
+                    int idDescuento = rs.getInt("id_descuento");
+                    String nombreDesc = rs.getString("nombre_descuento");
+                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
+                    boolean activoDesc = rs.getBoolean("activo_descuento");
+                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
+
                     String tallaString = rs.getString("talla");
                     if (tallaString != null) {
                         Talla talla = Talla.valueOf(tallaString);
-                        productos.add(new ProductoRopa(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, activoProd, talla));
+                        productos.add(ProductoRopa.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia,
+                                stock, impuesto, descuento, activoProd, talla));
                         continue;
                     }
 
                     Date fechaSql = rs.getDate("fecha_vencimiento");
                     if (fechaSql != null) {
                         LocalDate fechaVencimiento = fechaSql.toLocalDate();
-                        productos.add(new ProductoPerecedero(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, activoProd, fechaVencimiento));
+                        productos.add(ProductoPerecedero.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia,
+                                stock, impuesto, descuento, activoProd, fechaVencimiento));
                         continue;
                     }
 

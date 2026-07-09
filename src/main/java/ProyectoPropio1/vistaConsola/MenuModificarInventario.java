@@ -15,24 +15,24 @@ import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
 
 public class MenuModificarInventario {
 
-    private static void menuModificarInventario(){
+    private static void menuModificarInventarioEspecifico(){
         System.out.print("""
-                \n                           -MODIFICAR INVENTARIO-
+                \n                      -MODIFICAR INVENTARIO ESPECIFICO-
                 ---> SELECCIONA QUE QUIERES HACER:
                                * OPCION                              * ACCION
                                    1                         CAMBIAR NOMBRE INVENTARIO
                                    2                              AGREGAR PRODUCTO
-                                   3                             MODIFICAR PRODUCTO
-                                   4                              ELIMINAR PRODUCTO
-                                   5                               BUSCAR PRODUCTO
-                                   6                      MOVER PRODUCTO A OTRO INVENTARIO
+                                   3                              ELIMINAR PRODUCTO
+                                   4                               BUSCAR PRODUCTO
+                                   5                       MOVER PRODUCTO A OTRO INVENTARIO
+                                   6                             MODIFICAR PRODUCTO
                                    7                                   SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
 
 
-    public static void modificarInventario(Scanner sc, ControladorTienda controladorTienda){
+    public static void modificarInventarioEspecifico(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -MODIFICAR INVENTARIO-");
         List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
         int opcionModificarInventario;
@@ -52,7 +52,7 @@ public class MenuModificarInventario {
                 """ + "---> ");
         int idInventario = leerEntero(sc);
         do {
-            menuModificarInventario();
+            menuModificarInventarioEspecifico();
             opcionModificarInventario = pedirOpcion(sc,1,7);
             switch (opcionModificarInventario){
                 case 1:
@@ -62,16 +62,16 @@ public class MenuModificarInventario {
                     agregarProductoAInventario(sc, controladorTienda, idInventario);
                     break;
                 case 3:
-                    modificarProductoAInventario(sc, controladorTienda, idInventario);
-                    break;
-                case 4:
                     eliminarProductoAInventario(sc, controladorTienda, idInventario);
                     break;
-                case 5:
+                case 4:
                     buscarProductoAInventario(sc, controladorTienda, idInventario);
                     break;
-                case 6:
+                case 5:
                     moverProductoAInventario(sc, controladorTienda, idInventario);
+                    break;
+                case 6:
+                    modificarProductoAInventario(sc, controladorTienda, idInventario);
                     break;
                 case 7:
                     System.out.println("\nSALIENDO . . .");
@@ -107,8 +107,9 @@ public class MenuModificarInventario {
                 """ + "---> ");
         BigDecimal valorC = leerDecimal(sc);
         System.out.print("""
-                \nEl Porceentaje de Ganancia es 20% por defecto, puedes cambiarlo en -Modificar Producto-
+                \nEl Porcentaje de Ganancia es 20% por defecto, puedes cambiarlo en -Modificar Producto-
                 """);
+        BigDecimal porcentajeGanancia = BigDecimal.valueOf(20);
         System.out.print("""
                     \nEscribe el stock del producto nuevo:
                     """ + "---> ");
@@ -124,6 +125,10 @@ public class MenuModificarInventario {
             System.out.print("Escribe el ID del Impuesto que le corresponda: \n" +
                     "---> ");
             int idImpuesto = leerEntero(sc);
+            System.out.print("""
+                \nEl Descuento es -Sin Descuento- por defecto, puedes cambiarlo en -Modificar Producto-
+                """);
+            int idDescuento = 1;
             DatosTotalesProductoDTO datosProducto;
             String codigoProducto;
             switch (tipoLeido){
@@ -132,7 +137,8 @@ public class MenuModificarInventario {
                             \nIngrese la talla (S, M, L, XL):
                             """ + "---> ");
                     String tallaString = sc.nextLine().toUpperCase().trim();
-                    codigoProducto = controladorTienda.registrarProductoRopa(idInventario, nombre, valorC, BigDecimal.valueOf(20), stock,  idImpuesto, tallaString);
+                    codigoProducto = controladorTienda.registrarProductoRopa(idInventario, nombre, valorC, porcentajeGanancia,
+                            stock,  idImpuesto, idDescuento, tallaString);
                     datosProducto = controladorTienda.obtenerDatosTotalesProducto(idInventario, codigoProducto);
                     System.out.println("\nNuevo Producto:");
                     DatosTotalesProductoRopaDTO productoRopa = (DatosTotalesProductoRopaDTO) datosProducto;
@@ -150,7 +156,8 @@ public class MenuModificarInventario {
                             \nIngrese la fecha de vencimiento (Formato DD/MM/AAAA):
                             """ + "---> ");
                     LocalDate fecha = leerFecha(sc);
-                    codigoProducto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC, BigDecimal.valueOf(20),  stock, idImpuesto, fecha);
+                    codigoProducto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC,
+                            porcentajeGanancia,  stock, idImpuesto, idDescuento, fecha);
                     datosProducto = controladorTienda.obtenerDatosTotalesProducto(idInventario, codigoProducto);
                     System.out.println("\nNuevo Producto:");
                     DatosTotalesProductoPerecederoDTO productoPerecedero = (DatosTotalesProductoPerecederoDTO) datosProducto;
@@ -167,7 +174,6 @@ public class MenuModificarInventario {
             }
         } catch (RuntimeException e){
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

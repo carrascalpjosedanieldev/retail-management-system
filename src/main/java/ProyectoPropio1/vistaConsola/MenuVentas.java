@@ -119,7 +119,7 @@ public class MenuVentas {
 
     private static void pedirServicio(Scanner sc, ControladorTienda controladorTienda){
         try {
-            DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
+            CatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
             System.out.println("--------------------------------------------------------------------------------------------");
             System.out.println("---> SERVICIOS:");
             for (ServicioDTO datosServicio: datosCatalogoServicios.listaServicios()){

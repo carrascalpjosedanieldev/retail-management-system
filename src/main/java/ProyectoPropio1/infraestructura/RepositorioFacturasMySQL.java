@@ -2,11 +2,15 @@ package ProyectoPropio1.infraestructura;
 
 import ProyectoPropio1.dominio.Factura;
 import ProyectoPropio1.dominio.ItemVendido;
+import ProyectoPropio1.dominio.ReporteRecaudo;
 import ProyectoPropio1.dominio.enums.TipoItem;
 import ProyectoPropio1.dominio.puertos.RepositorioFacturas;
+import ProyectoPropio1.dto.ReporteRecaudoDTO;
 import ProyectoPropio1.excepciones.StockInsuficienteException;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -149,6 +153,45 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             }
         }
     }
+
+
+
+    @Override
+    public ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin) {
+
+        String sql = "SELECT " +
+                "COUNT(id_factura) AS cantidad, " +
+                "COALESCE(SUM(subtotal), 0) AS suma_subtotal, " +
+                "COALESCE(SUM(total_impuestos), 0) AS suma_impuestos, " +
+                "COALESCE(SUM(total_general), 0) AS suma_general " +
+                "FROM facturas " +
+                "WHERE DATE(fecha) BETWEEN ? AND ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(fechaInicio));
+            ps.setDate(2, java.sql.Date.valueOf(fechaFin));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+
+                    int cantidad = rs.getInt("cantidad");
+                    BigDecimal sumaSubtotal = rs.getBigDecimal("suma_subtotal");
+                    BigDecimal sumaImpuestos = rs.getBigDecimal("suma_impuestos");
+                    BigDecimal sumaGeneral = rs.getBigDecimal("suma_general");
+
+                    return ReporteRecaudo.reconstruirDesdeBD(fechaInicio, fechaFin, cantidad, sumaSubtotal, sumaImpuestos, sumaGeneral);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al generar el reporte de recaudo", e);
+        }
+
+        return ReporteRecaudo.reconstruirDesdeBD(fechaInicio, fechaFin, 0, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+
 
 }
 

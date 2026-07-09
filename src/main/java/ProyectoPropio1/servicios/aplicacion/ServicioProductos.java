@@ -19,7 +19,7 @@ public class ServicioProductos {
     }
 
     public void eliminarProductoDeInventario(String codigo, int idInventario){
-        this.repositorioProducto.eliminarProductoDeInventario(codigo, idInventario);
+        this.repositorioProducto.desactivarProductoDeInventario(codigo, idInventario);
     }
 
     public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){

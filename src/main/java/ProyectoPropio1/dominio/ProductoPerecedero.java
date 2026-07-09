@@ -13,10 +13,6 @@ public class ProductoPerecedero extends Producto{
 
     private final LocalDate fechaVencimiento;
 
-    private static final BigDecimal descuentoPorVencimiento = BigDecimal.valueOf(30);
-
-    private final BigDecimal descuento;
-
     //GETTERS Y SETTERS:
 
     public LocalDate getFechaVencimiento() {
@@ -25,16 +21,30 @@ public class ProductoPerecedero extends Producto{
 
     //CONSTRUCTOR:
 
-    public ProductoPerecedero(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, boolean activo, LocalDate fechaVencimiento){
-        super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, activo);
+    private ProductoPerecedero(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
+                               int stock, Impuesto impuesto, Descuento descuento, boolean activo, LocalDate fechaVencimiento){
+        super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, activo);
         this.fechaVencimiento=fechaVencimiento;
-        this.descuento = descuentoPorVencimiento;
     }
 
-    public ProductoPerecedero(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, Impuesto impuesto, LocalDate fechaVencimiento){
-        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto);
+    public static ProductoPerecedero reconstruirDesdeBD(String codigo, String nombre, BigDecimal valorCompra,
+                                                        BigDecimal porcentajeGanancia, int stock, Impuesto impuesto,
+                                                        Descuento descuento, boolean activo, LocalDate fechaVencimiento){
+        return new ProductoPerecedero(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento,
+                activo, fechaVencimiento);
+    }
+
+    private ProductoPerecedero(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock,
+                               Impuesto impuesto, Descuento descuento, LocalDate fechaVencimiento){
+        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento);
         this.fechaVencimiento = fechaVencimiento;
-        this.descuento = descuentoPorVencimiento;
+    }
+
+    public static ProductoPerecedero crearNuevo(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
+                                                int stock, Impuesto impuesto, Descuento descuento,
+                                                LocalDate fechaVencimiento){
+        return new ProductoPerecedero(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento,
+                fechaVencimiento);
     }
 
     //METODOS:
@@ -52,12 +62,8 @@ public class ProductoPerecedero extends Producto{
         BigDecimal factorGanancia = getPorcentajeGanancia().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
         BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
         BigDecimal valorVenta = getValorCompra().add(ganancia).add(calcularImpuesto(fechaReferencia));
-        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
-        if (diasRestantes >= 0 && diasRestantes <= 3) {
-            BigDecimal factorDescuento = this.descuento.divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-            BigDecimal descuentoAplicado = valorVenta.multiply(factorDescuento);
-            valorVenta = valorVenta.subtract(descuentoAplicado);
-        }
+        BigDecimal descuentoAplicado = calcularDescuento(valorVenta, fechaReferencia);
+        valorVenta = valorVenta.subtract(descuentoAplicado);
         return valorVenta.setScale(4, RoundingMode.HALF_UP);
     }
 
@@ -75,5 +81,13 @@ public class ProductoPerecedero extends Producto{
         return getValorCompra().multiply(factorImpuesto);
     }
 
+    @Override
+    public BigDecimal calcularDescuento(BigDecimal valorVenta, LocalDate fecha) {
+        if (getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
+            return BigDecimal.ZERO;
+        }
+        BigDecimal factorDescuento = getPorcentajeDescuento().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        return valorVenta.multiply(factorDescuento);
+    }
 }
 

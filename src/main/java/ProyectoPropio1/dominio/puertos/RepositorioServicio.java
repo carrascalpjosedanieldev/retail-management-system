@@ -8,12 +8,20 @@ public interface RepositorioServicio {
 
     void insertarServicio(Servicio servicio);
 
-    void eliminarServicio(String codigoServicio);
+    void activarServicio(String codigoServicio);
+
+    void desactivarServicio(String codigoServicio);
 
     Servicio obtenerServicio(String codigoServicio);
 
     void actualizarServicio(Servicio servicio);
 
-    List<Servicio> obtenerServicios();
+    void actualizarImpuestoAServicio(Servicio servicio, int idImpuesto);
+
+    void actualizarDescuentoAServicio(Servicio servicio, int idDescuento);
+
+    List<Servicio> obtenerServiciosActivos();
+
+    List<Servicio> obtenerServiciosInactivos();
 
 }

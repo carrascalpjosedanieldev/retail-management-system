@@ -30,9 +30,13 @@ public class ItemCarrito {
 
     //CONSTRUCTORES:
 
-    public ItemCarrito(ItemFacturable itemFacturable, int cantidad) {
+    private ItemCarrito(ItemFacturable itemFacturable, int cantidad) {
         this.itemFacturable = itemFacturable;
         this.cantidad = cantidad;
+    }
+
+    public static ItemCarrito crearNuevo(ItemFacturable itemFacturable, int cantidad){
+        return new ItemCarrito(itemFacturable, cantidad);
     }
 
     //METODOS:

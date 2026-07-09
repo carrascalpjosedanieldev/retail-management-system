@@ -19,18 +19,19 @@ public class MenuGestionarImpuestos {
                                * OPCION                              * ACCION
                                    1                              REGISTRAR IMPUESTO
                                    2                                VER IMPUESTOS
-                                   3                              ELIMINAR IMPUESTO
-                                   4                                    SALIR
+                                   3                             DESACTIVAR IMPUESTO
+                                   4                              ACTIVAR IMPUESTO
+                                   5                                    SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
 
     public static void gestionarImpuestos(Scanner sc, ControladorTienda controladorTienda){
-        System.out.println("\nHAS SELECCIONADO: -GESTIONAR SERVICIOS-");
+        System.out.println("\nHAS SELECCIONADO: -GESTIONAR IMPUESTOS-");
         int opcionGestionarImpuestos;
         do {
             menuGestionarImpuestos();
-            opcionGestionarImpuestos = pedirOpcion(sc,1,4);
+            opcionGestionarImpuestos = pedirOpcion(sc,1,5);
             switch (opcionGestionarImpuestos){
                 case 1:
                     registrarImpuesto(sc, controladorTienda);
@@ -39,9 +40,12 @@ public class MenuGestionarImpuestos {
                     verImpuestos(sc, controladorTienda);
                     break;
                 case 3:
-                    eliminarImpuesto(sc, controladorTienda);
+                    desactivarImpuesto(sc, controladorTienda);
                     break;
                 case 4:
+                    activarImpuesto(sc, controladorTienda);
+                    break;
+                case 5:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
@@ -55,11 +59,11 @@ public class MenuGestionarImpuestos {
                     """ + "---> ");
         String nombreImpuesto = sc.nextLine();
         System.out.print("""
-                    \nEscribe el Valor del Impuesto:
+                    \nEscribe el Porcentaje del Impuesto:
                     """ + "---> ");
-        BigDecimal valorImpuesto = leerDecimal(sc);
+        BigDecimal porcentajeImpuesto = leerDecimal(sc);
         try {
-            int idImpuesto = controladorTienda.registrarImpuesto(nombreImpuesto, valorImpuesto);
+            int idImpuesto = controladorTienda.registrarImpuesto(nombreImpuesto, porcentajeImpuesto);
             System.out.println("El Impuesto de ID -" + idImpuesto + "- ha sido registrado con exito\n" +
                     "Este Impuesto esta activo, si quieres desactivarlo puedes hacerlo en Gestionar Impuestos");
         } catch (RuntimeException e){
@@ -74,7 +78,6 @@ public class MenuGestionarImpuestos {
                 Deseas ver:
                 1. Los Impuestos Activos
                 2. Los Impuestos Inactivos
-                3. Todos los Impuestos
                 """);
         int opcion = pedirOpcion(sc, 1, 2);
         try {
@@ -86,7 +89,7 @@ public class MenuGestionarImpuestos {
                     System.out.println("---> IMPUESTOS ACTIVOS:");
                     break;
                 case 2:
-                    List<ImpuestoDTO> detalleImpuestosInactivos = controladorTienda.obtenerDetalleImpuestosActivos();
+                    List<ImpuestoDTO> detalleImpuestosInactivos = controladorTienda.obtenerDetalleImpuestosInactivos();
                     detalleImpuestos.addAll(detalleImpuestosInactivos);
                     System.out.println("---> IMPUESTOS INACTIVOS:");
                     break;
@@ -95,7 +98,7 @@ public class MenuGestionarImpuestos {
             for (ImpuestoDTO datosImpuesto: detalleImpuestos){
                 String informacion;
                 informacion = String.format("ID IMPUESTO: %-5d NOMBRE: %-20s PORCENTAJE: %-8.2f ESTADO: %-8s",
-                        datosImpuesto.idImpuesto(), datosImpuesto.nombre(), datosImpuesto.porcenatje(), datosImpuesto.estado());
+                        datosImpuesto.idImpuesto(), datosImpuesto.nombre(), datosImpuesto.porcentaje(), datosImpuesto.estado());
                 System.out.println(informacion);
             }
             System.out.println("------------------------------------------------------------------------------------------------------------");
@@ -106,15 +109,29 @@ public class MenuGestionarImpuestos {
     }
 
 
-    private static void eliminarImpuesto(Scanner sc, ControladorTienda controladorTienda){
-        System.out.println("\nHAS SELECCIONADO: -ELIMINAR IMPUESTO-");
+    private static void desactivarImpuesto(Scanner sc, ControladorTienda controladorTienda){
+        System.out.println("\nHAS SELECCIONADO: -DESACTIVAR IMPUESTO-");
         System.out.print("""
                     \nEscribe el ID del Impuesto:
                     """ + "---> ");
         int idImpuesto = leerEntero(sc);
         try {
-            controladorTienda.eliminarImpuesto(idImpuesto);
-            System.out.println("El Impuesto de ID -" + idImpuesto + "- ha sido Eliminado con exito");
+            controladorTienda.desactivarImpuesto(idImpuesto);
+            System.out.println("El Impuesto de ID -" + idImpuesto + "- ha sido Desactivado con Exito");
+        } catch (RuntimeException e){
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
+    }
+
+    private static void activarImpuesto(Scanner sc, ControladorTienda controladorTienda){
+        System.out.println("\nHAS SELECCIONADO: -ACTIVAR IMPUESTO-");
+        System.out.print("""
+                    \nEscribe el ID del Impuesto:
+                    """ + "---> ");
+        int idImpuesto = leerEntero(sc);
+        try {
+            controladorTienda.activarImpuesto(idImpuesto);
+            System.out.println("El Impuesto de ID -" + idImpuesto + "- ha sido Activado con Exito");
         } catch (RuntimeException e){
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
@@ -128,7 +145,7 @@ public class MenuGestionarImpuestos {
         for (ImpuestoDTO datosImpuesto: detalleImpuestosActivos){
             String informacion;
             informacion = String.format("ID IMPUESTO: %-5d NOMBRE: %-20s PORCENTAJE: %-8.2f ESTADO: %-8s",
-                    datosImpuesto.idImpuesto(), datosImpuesto.nombre(), datosImpuesto.porcenatje(), datosImpuesto.estado());
+                    datosImpuesto.idImpuesto(), datosImpuesto.nombre(), datosImpuesto.porcentaje(), datosImpuesto.estado());
             impuestosParaRegistro.append(informacion);
             impuestosParaRegistro.append(System.lineSeparator());
         }

@@ -1,91 +1,60 @@
 package ProyectoPropio1.vistaConsola;
 
-import ProyectoPropio1.servicios.controlador.ControladorTienda;
 import ProyectoPropio1.dto.*;
+import ProyectoPropio1.servicios.controlador.ControladorTienda;
 
 import java.util.List;
 import java.util.Scanner;
 
-import static ProyectoPropio1.vistaConsola.MenuModificarInventario.modificarInventario;
-import static ProyectoPropio1.vistaConsola.MenuGestionarImpuestos.gestionarImpuestos;
-import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
-import static ProyectoPropio1.vistaConsola.MenuGestionarServicios.gestionarServicios;
+import static ProyectoPropio1.vistaConsola.MenuModificarInventario.modificarInventarioEspecifico;
+import static ProyectoPropio1.vistaConsola.MetodosTienda.leerEntero;
+import static ProyectoPropio1.vistaConsola.MetodosTienda.pedirOpcion;
 
-public class MenuModificarTienda {
+public class MenuGestionarInventarios {
 
-    private static void menuModificarTienda(){
+    private static void menuGestionarInventarios(){
         System.out.print("""
                 \n                             -MODIFICAR TIENDA-
                 ---> SELECCIONA QUE QUIERES HACER:
                                * OPCION                              * ACCION
-                                   1                           CAMBIAR NOMBRE TIENDA
-                                   2                             AGREGAR INVENTARIO
-                                   3                        VER INFO MINIMA INVENTARIOS
-                                   4                           VER DETALLE INVENTARIO
-                                   5                            MODIFICAR INVENTARIO
-                                   6                         ELIMINAR INVENTARIO VACIO
-                                   7                            GESTIONAR SERVICIOS
-                                   8                            GESTIONAR IMPUESTOS
-                                   9                                   SALIR
+                                   1                             AGREGAR INVENTARIO
+                                   2                        VER INFO MINIMA INVENTARIOS
+                                   3                           VER DETALLE INVENTARIO
+                                   4                          ELIMINAR INVENTARIO VACIO
+                                   5                       MODIFICAR INVENTARIO ESPECIFICO
+                                   6                                   SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
 
-
-    public static void modificarTienda(Scanner sc, ControladorTienda controladorTienda){
-        System.out.println("\nHAS SELECCIONADO: -MODIFICAR TIENDA-");
-        int opcionModificarTienda;
+    public static void gestionarInventarios(Scanner sc, ControladorTienda controladorTienda){
+        System.out.println("\nHAS SELECCIONADO: -GESTIONAR INVENTARIOS-");
+        int opcionGestionarInventarios;
         do {
-            menuModificarTienda();
-            opcionModificarTienda = pedirOpcion(sc,1,9);
-            switch (opcionModificarTienda){
+            menuGestionarInventarios();
+            opcionGestionarInventarios = pedirOpcion(sc,1,6);
+            switch (opcionGestionarInventarios){
                 case 1:
-                    cambiarNombreTienda(sc,controladorTienda);
-                    break;
-                case 2:
                     agregarInventario(sc, controladorTienda);
                     break;
-                case 3:
+                case 2:
                     verInfoMinimaInventarios(controladorTienda);
                     break;
-                case 4:
+                case 3:
                     verDetalleInventario(sc,controladorTienda);
                     break;
-                case 5:
-                    modificarInventario(sc, controladorTienda);
-                    break;
-                case 6:
+                case 4:
                     eliminarInventarioVacio(sc, controladorTienda);
                     break;
-                case 7:
-                    gestionarServicios(sc, controladorTienda);
+                case 5:
+                    modificarInventarioEspecifico(sc, controladorTienda);
                     break;
-                case 8:
-                    gestionarImpuestos(sc, controladorTienda);
-                    break;
-                case 9:
+                case 6:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
-        } while (opcionModificarTienda!=9);
+        } while (opcionGestionarInventarios !=6);
     }
-
-
-    private static void cambiarNombreTienda(Scanner sc, ControladorTienda controladorTienda){
-        System.out.println("\nHAS SELECCIONADO: -CAMBIAR NOMBRE TIENDA-");
-        try {
-            System.out.print("La Tienda actualmente se llama -" + controladorTienda.obtenerNombreTienda() + "\n" +
-                    "Escribe el nombre nuevo que le quieres colocar:\n" +
-                    "---> ");
-            String nuevoNombreTienda = sc.nextLine();
-            controladorTienda.cambiarNombreTienda(nuevoNombreTienda);
-            System.out.println("Nombre cambiado con Exito\n" +
-                    "La Tienda ahora se llama -" + nuevoNombreTienda + "-");
-        } catch (RuntimeException e){
-            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
-        }
-    }
-
 
     private static void agregarInventario(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -AGREGAR INVENTARIO-");
@@ -104,7 +73,6 @@ public class MenuModificarTienda {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
-
 
     private static void verDetalleInventario(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -VER DETALLE INVENTARIO-");
@@ -138,20 +106,20 @@ public class MenuModificarTienda {
                 for (DatosTotalesProductoDTO datosTotalesProducto:detalleInventario.productos()){
                     if (datosTotalesProducto instanceof DatosTotalesProductoRopaDTO productoRopa) {
                         String datosProducto = String.format(
-                            "Tipo de Producto: Ropa  Nombre del Producto: %-12s Talla: %-4s Codigo: %-40s " +
-                            "Valor Compra: %-12.2f Ganancia: %3.2f%% Valor Venta: %-12.2f Stock: %-4d%n",
-                            productoRopa.nombre(), productoRopa.talla().toString(), productoRopa.codigo(),
-                            productoRopa.valorCompra(), productoRopa.porcentajeGanancia(), productoRopa.valorVentaBase(),
-                            productoRopa.stock()
+                                "Tipo de Producto: Ropa  Nombre del Producto: %-12s Talla: %-4s Codigo: %-40s " +
+                                        "Valor Compra: %-12.2f Ganancia: %3.2f%% Valor Venta: %-12.2f Stock: %-4d%n",
+                                productoRopa.nombre(), productoRopa.talla().toString(), productoRopa.codigo(),
+                                productoRopa.valorCompra(), productoRopa.porcentajeGanancia(), productoRopa.valorVentaBase(),
+                                productoRopa.stock()
                         );
                         System.out.println(datosProducto);
                     } else if (datosTotalesProducto instanceof DatosTotalesProductoPerecederoDTO productoPerecedero) {
                         String datosProducto = String.format(
-                            "Tipo de Producto:  Perecedero    Nombre del Producto:  %-10s Fecha Vencimiento: %-12s Codigo:  %-40s " +
-                            "Valor Compra:  %-12.2f Ganancia:  %3.2f%% Valor Venta:  %-12.2f Stock:  %-4d Estado: %-15s %n",
-                            productoPerecedero.nombre(), productoPerecedero.fechaVencimiento().toString(), productoPerecedero.codigo(),
-                            productoPerecedero.valorCompra(), productoPerecedero.porcentajeGanancia(), productoPerecedero.valorVentaBase(),
-                            productoPerecedero.stock(), productoPerecedero.estaVencido()
+                                "Tipo de Producto:  Perecedero    Nombre del Producto:  %-10s Fecha Vencimiento: %-12s Codigo:  %-40s " +
+                                        "Valor Compra:  %-12.2f Ganancia:  %3.2f%% Valor Venta:  %-12.2f Stock:  %-4d Estado: %-15s %n",
+                                productoPerecedero.nombre(), productoPerecedero.fechaVencimiento().toString(), productoPerecedero.codigo(),
+                                productoPerecedero.valorCompra(), productoPerecedero.porcentajeGanancia(), productoPerecedero.valorVentaBase(),
+                                productoPerecedero.stock(), productoPerecedero.estaVencido()
                         );
                         System.out.println(datosProducto);
                     } else {
@@ -162,10 +130,8 @@ public class MenuModificarTienda {
             System.out.println("----------------------------------------------------------------------------------------------------------------------------------");
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
-            e.printStackTrace();
         }
     }
-
 
     private static void verInfoMinimaInventarios(ControladorTienda controladorTienda){
         try {
@@ -193,7 +159,6 @@ public class MenuModificarTienda {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
-
 
     private static void eliminarInventarioVacio(Scanner sc, ControladorTienda controladorTienda){
         try {
@@ -229,4 +194,3 @@ public class MenuModificarTienda {
     }
 
 }
-

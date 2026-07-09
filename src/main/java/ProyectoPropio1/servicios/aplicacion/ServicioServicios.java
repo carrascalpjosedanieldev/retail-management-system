@@ -1,7 +1,9 @@
 package ProyectoPropio1.servicios.aplicacion;
 
+import ProyectoPropio1.dominio.Descuento;
 import ProyectoPropio1.dominio.Impuesto;
 import ProyectoPropio1.dominio.Servicio;
+import ProyectoPropio1.dominio.puertos.RepositorioDescuentos;
 import ProyectoPropio1.dominio.puertos.RepositorioImpuestos;
 import ProyectoPropio1.dominio.puertos.RepositorioServicio;
 
@@ -12,10 +14,14 @@ public class ServicioServicios {
 
     private final RepositorioImpuestos repositorioImpuestos;
 
+    private final RepositorioDescuentos repositorioDescuentos;
+
     private final RepositorioServicio repositorioServicio;
 
-    public ServicioServicios(RepositorioImpuestos repositorioImpuestos, RepositorioServicio repositorioServicio) {
+    public ServicioServicios(RepositorioImpuestos repositorioImpuestos, RepositorioDescuentos repositorioDescuentos,
+                             RepositorioServicio repositorioServicio) {
         this.repositorioImpuestos = repositorioImpuestos;
+        this.repositorioDescuentos = repositorioDescuentos;
         this.repositorioServicio = repositorioServicio;
     }
 
@@ -24,18 +30,23 @@ public class ServicioServicios {
     }
 
     public List<Servicio> obtenerServicios(){
-        return this.repositorioServicio.obtenerServicios();
+        return this.repositorioServicio.obtenerServiciosActivos();
     }
 
-    public String registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto){
+    public String registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento){
         Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
-        Servicio servicio = new Servicio(nombreServicio, precioBase, impuesto);
+        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+        Servicio servicio = Servicio.crearNuevo(nombreServicio, precioBase, impuesto, descuento);
         this.repositorioServicio.insertarServicio(servicio);
         return servicio.getCodigo();
     }
 
-    public void eliminarServicio(String codigoServicio){
-        this.repositorioServicio.eliminarServicio(codigoServicio);
+    public void desactivarServicio(String codigoServicio){
+        this.repositorioServicio.desactivarServicio(codigoServicio);
+    }
+
+    public void activarServicio(String codigoServicio){
+        this.repositorioServicio.activarServicio(codigoServicio);
     }
 
     public void cambiarNombreServicio(String codigoServicio, String nombreNuevo){
@@ -45,17 +56,19 @@ public class ServicioServicios {
     }
 
     public void cambiarPrecioServicio(String codigoServicio, BigDecimal precioNuevo){
-        Servicio servicio = this.repositorioServicio.obtenerServicio(codigoServicio);
+        Servicio servicio = this.obtenerServicio(codigoServicio);
         servicio.cambiarPrecioBase(precioNuevo);
         this.repositorioServicio.actualizarServicio(servicio);
     }
 
     public void cambiarImpuestoDeServicio(String codigoServicio, int idImpuesto){
-        Servicio borrador = this.repositorioServicio.obtenerServicio(codigoServicio);
-        Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, null, BigDecimal.ZERO, true);
-        Servicio servicio = new Servicio(borrador.getCodigo(), borrador.getNombre(), borrador.getPrecioBase(), impuesto);
-        this.repositorioServicio.actualizarServicio(servicio);
+        Servicio servicio = this.repositorioServicio.obtenerServicio(codigoServicio);
+        this.repositorioServicio.actualizarImpuestoAServicio(servicio, idImpuesto);
     }
 
+    public void cambiarDescuentoDeServicio(String codigoServicio, int idDescuento){
+        Servicio servicio = this.obtenerServicio(codigoServicio);
+        this.repositorioServicio.actualizarDescuentoAServicio(servicio, idDescuento);
+    }
 
 }

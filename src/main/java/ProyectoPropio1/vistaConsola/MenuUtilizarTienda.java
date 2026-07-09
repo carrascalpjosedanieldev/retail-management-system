@@ -3,9 +3,11 @@ package ProyectoPropio1.vistaConsola;
 import ProyectoPropio1.dto.*;
 import ProyectoPropio1.servicios.controlador.ControladorTienda;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 
 import static ProyectoPropio1.vistaConsola.MenuVentas.vender;
+import static ProyectoPropio1.vistaConsola.MetodosTienda.leerFecha;
 import static ProyectoPropio1.vistaConsola.MetodosTienda.pedirOpcion;
 
 public class MenuUtilizarTienda {
@@ -33,7 +35,7 @@ public class MenuUtilizarTienda {
                     vender(sc, controladorTienda);
                     break;
                 case 2:
-                    verRecaudoClientes(controladorTienda);
+                    verRecaudoClientes(sc, controladorTienda);
                     break;
                 case 3:
                     System.out.println("\nSALIENDO . . .");
@@ -43,12 +45,32 @@ public class MenuUtilizarTienda {
     }
 
 
-    private static void verRecaudoClientes(ControladorTienda controladorTienda){
-        System.out.print("""
+    private static void verRecaudoClientes(Scanner sc, ControladorTienda controladorTienda){
+        System.out.println("""
                 \nHAS SELECCIONADO -VER RECAUDO CLIENTES-
                 """);
         try {
-            System.out.println("En proceso");
+            System.out.print("""
+                    IMPORTANTE LEER:
+                    Debes ingresar las fechas entre las cuales quieres ver el recuado
+                    Si quieres ver el recaudo de un solo dia, ingresa la fecha en los dos campos
+                    """);
+            System.out.print("""
+                            \nIngrese la fecha inicio (Formato DD/MM/AAAA):
+                            """ + "---> ");
+            LocalDate fechaInicio = leerFecha(sc);
+            System.out.print("""
+                            \nIngrese la fecha fin (Formato DD/MM/AAAA):
+                            """ + "---> ");
+            LocalDate fechaFin = leerFecha(sc);
+            ReporteRecaudoDTO reporteRecaudo = controladorTienda.obtenerReporteRecaudo(fechaInicio, fechaFin);
+            System.out.println("\n-------------------------------------------------------------------------------------");
+            System.out.println("Recaudo entre: " + fechaInicio + "  Y  " + fechaFin);
+            System.out.println("Facturas Emitidas:  " + reporteRecaudo.cantidadFacturasEmitidas());
+            System.out.println("SubTotal Neto:  $" + reporteRecaudo.subTotal());
+            System.out.println("Total Impuestos:  $" + reporteRecaudo.totalImpuestos());
+            System.out.println("Total Recaudado:  $" + reporteRecaudo.totalRecaudo());
+            System.out.println("-------------------------------------------------------------------------------------");
         } catch (RuntimeException e){
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }

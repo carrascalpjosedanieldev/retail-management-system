@@ -1,7 +1,7 @@
 package ProyectoPropio1.servicios.ensambladores;
 
 import ProyectoPropio1.dominio.Servicio;
-import ProyectoPropio1.dto.DatosCatalogoServiciosDTO;
+import ProyectoPropio1.dto.CatalogoServiciosDTO;
 import ProyectoPropio1.dto.ServicioDTO;
 
 import java.time.LocalDate;
@@ -14,15 +14,15 @@ public class EnsambladorDTOServicio {
     }
 
     public ServicioDTO ensamblarServicio(Servicio servicio, LocalDate fecha){
-        return new ServicioDTO(servicio.getCodigo(), servicio.getNombre(), servicio.getValorVenta(fecha), servicio.getIdImpuesto());
+        return new ServicioDTO(servicio.getCodigo(), servicio.getNombre(), servicio.getValorVenta(fecha), servicio.getIdImpuesto(), servicio.getIdDescuento());
     }
 
-    public DatosCatalogoServiciosDTO ensamblarDatosCatalogoServicios(List<Servicio> servicios, LocalDate fecha){
+    public CatalogoServiciosDTO ensamblarDatosCatalogoServicios(List<Servicio> servicios, LocalDate fecha){
         List<ServicioDTO> listaServicios = new ArrayList<>();
         for (Servicio servicio: servicios){
             listaServicios.add(this.ensamblarServicio(servicio, fecha));
         }
-        return new DatosCatalogoServiciosDTO(listaServicios);
+        return new CatalogoServiciosDTO(listaServicios);
     }
 
 }

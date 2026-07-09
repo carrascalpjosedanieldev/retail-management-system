@@ -30,7 +30,6 @@ public class ItemVendido {
 
     //GETTERS Y SETTERS:
 
-
     public TipoItem getTipoItem() {
         return tipoItem;
     }
@@ -69,7 +68,7 @@ public class ItemVendido {
 
     //CONSTRUCTOR:
 
-    public ItemVendido(ItemFacturable item, int cantidad, LocalDate fecha) {
+    private ItemVendido(ItemFacturable item, int cantidad, LocalDate fecha) {
         this.tipoItem = item.getTipoItem();
         this.codigo = item.getCodigo();
         this.nombre = item.getNombre();
@@ -80,6 +79,10 @@ public class ItemVendido {
         BigDecimal factorImpuesto = this.porcentajeImpuesto.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_EVEN);
         this.montoImpuesto = this.subtotalNeto.multiply(factorImpuesto);
         this.totalLinea = this.subtotalNeto.add(this.montoImpuesto);
+    }
+
+    public static ItemVendido crearNuevo(ItemFacturable item, int cantidad, LocalDate fecha){
+        return new ItemVendido(item, cantidad, fecha);
     }
 
 }

@@ -13,7 +13,7 @@ import ProyectoPropio1.servicios.ensambladores.*;
 
 import java.util.Scanner;
 
-import static ProyectoPropio1.vistaConsola.MenuModificarTienda.*;
+import static ProyectoPropio1.vistaConsola.MenuGestionarTienda.*;
 import static ProyectoPropio1.vistaConsola.MenuUtilizarTienda.utilizarTienda;
 import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
 
@@ -25,7 +25,7 @@ public class Ejecutable {
 
         RepositorioConfiguracion repositorioConfiguracion = new RepositorioConfiguracionMySQL();
         String nombreTienda = repositorioConfiguracion.obtenerValorConfiguracion("NombreProyectoPropioOriginal");
-        Tienda miTienda = new Tienda(nombreTienda);
+        Tienda miTienda = Tienda.crearNueva(nombreTienda);
 
         EnsambladorDTOProducto ensambladorDTOProducto = new EnsambladorDTOProducto();
         EnsambladorDTOInventario ensambladorDTOInventario = new EnsambladorDTOInventario(ensambladorDTOProducto);
@@ -33,18 +33,22 @@ public class Ejecutable {
         EnsambladorDTOCarrito ensambladorDTOCarrito = new EnsambladorDTOCarrito();
         EnsambladorDTOServicio ensambladorDTOServicio = new EnsambladorDTOServicio();
         EnsambladorDTOImpuesto ensambladorDTOImpuesto = new EnsambladorDTOImpuesto();
+        EnsambladorDTODescuento ensambladorDTODescuento = new EnsambladorDTODescuento();
 
         RepositorioInventario repositorioInventario = new RepositorioInventarioMySQL();
         RepositorioProducto repositorioProducto = new RepositorioProductoMySQL();
         RepositorioImpuestos repositorioImpuestos = new RepositorioImpuestosMySQL();
         RepositorioServicio repositorioServicio = new RepositorioServicioMySQL();
         RepositorioFacturas repositorioFacturas = new RepositorioFacturasMySQL();
+        RepositorioDescuentos repositorioDescuentos = new RepositorioDescuentosMySQL();
 
         ServicioConfiguraciones servicioConfiguraciones = new ServicioConfiguraciones(repositorioConfiguracion);
         ServicioInventario servicioInventario = new ServicioInventario(repositorioInventario);
         ServicioProductos servicioProductos = new ServicioProductos(repositorioProducto);
         ServicioImpuestos servicioImpuestos = new ServicioImpuestos(repositorioImpuestos);
-        ServicioServicios servicioServicios = new ServicioServicios(repositorioImpuestos, repositorioServicio);
+        ServicioServicios servicioServicios = new ServicioServicios(repositorioImpuestos, repositorioDescuentos,
+                                                                    repositorioServicio);
+        ServicioDescuentos servicioDescuentos = new ServicioDescuentos(repositorioDescuentos);
         ServicioFacturas servicioFacturas = new ServicioFacturas(repositorioFacturas);
 
         GestorVentas gestorVentas = new GestorVentas(servicioProductos, servicioServicios, servicioFacturas);
@@ -53,8 +57,10 @@ public class Ejecutable {
                 miTienda,
                 ensambladorDTOProducto, ensambladorDTOInventario, ensambladorDTOFactura,
                 ensambladorDTOCarrito, ensambladorDTOServicio, ensambladorDTOImpuesto,
-                gestorVentas, servicioImpuestos, servicioConfiguraciones,
-                servicioInventario, servicioProductos, servicioServicios
+                ensambladorDTODescuento,
+                gestorVentas,
+                servicioFacturas, servicioImpuestos, servicioConfiguraciones,
+                servicioInventario, servicioProductos, servicioServicios, servicioDescuentos
         );
 
         int opcionMenuPrincipal;
@@ -63,7 +69,7 @@ public class Ejecutable {
             opcionMenuPrincipal = pedirOpcion(sc,1,3);
             switch (opcionMenuPrincipal){
                 case 1:
-                    modificarTienda(sc, miControladorTienda);
+                    gestionarTienda(sc, miControladorTienda);
                     break;
                 case 2:
                     utilizarTienda(sc, miControladorTienda);

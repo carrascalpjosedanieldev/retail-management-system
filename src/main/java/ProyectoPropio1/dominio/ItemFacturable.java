@@ -9,13 +9,17 @@ public interface ItemFacturable {
 
     TipoItem getTipoItem();
 
-    BigDecimal calcularImpuesto(LocalDate fecha);
-
-    BigDecimal getPorcentajeImpuesto();
-
     String getNombre();
 
     String getCodigo();
+
+    BigDecimal getPorcentajeImpuesto();
+
+    BigDecimal calcularImpuesto(LocalDate fecha);
+
+    BigDecimal getPorcentajeDescuento();
+
+    BigDecimal calcularDescuento(BigDecimal valorVenta, LocalDate fecha);
 
     BigDecimal getValorVenta(LocalDate fecha);
 

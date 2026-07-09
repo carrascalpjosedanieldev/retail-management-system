@@ -19,8 +19,12 @@ public class Carrito {
 
     //CONSTRUCTOR:
 
-    public Carrito() {
+    private Carrito() {
         this.carritoFinal = new LinkedHashMap<>();
+    }
+
+    public static Carrito crearNueva(){
+        return new Carrito();
     }
 
     //METODOS:
@@ -30,7 +34,7 @@ public class Carrito {
             this.carritoFinal.get(producto.getCodigo()).aumentarCantidad(cantidad);
             return;
         }
-        ItemCarrito itemCarrito = new ItemCarrito(producto, cantidad);
+        ItemCarrito itemCarrito = ItemCarrito.crearNuevo(producto, cantidad);
         this.carritoFinal.put(producto.getCodigo(), itemCarrito);
     }
 
@@ -53,7 +57,7 @@ public class Carrito {
             this.carritoFinal.get(servicio.getCodigo()).aumentarCantidad(1);
             return;
         }
-        ItemCarrito itemCarrito = new ItemCarrito(servicio, 1);
+        ItemCarrito itemCarrito = ItemCarrito.crearNuevo(servicio, 1);
         this.carritoFinal.put(servicio.getCodigo(), itemCarrito);
     }
 

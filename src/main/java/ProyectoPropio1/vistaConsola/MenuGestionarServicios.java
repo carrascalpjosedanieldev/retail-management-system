@@ -2,11 +2,12 @@ package ProyectoPropio1.vistaConsola;
 
 import ProyectoPropio1.dto.ServicioDTO;
 import ProyectoPropio1.servicios.controlador.ControladorTienda;
-import ProyectoPropio1.dto.DatosCatalogoServiciosDTO;
+import ProyectoPropio1.dto.CatalogoServiciosDTO;
 
 import java.math.BigDecimal;
 import java.util.Scanner;
 
+import static ProyectoPropio1.vistaConsola.MenuGestionarDescuentos.descuentosActivosParaRegistro;
 import static ProyectoPropio1.vistaConsola.MenuGestionarImpuestos.impuestosActivosParaRegistro;
 import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
 
@@ -18,12 +19,14 @@ public class MenuGestionarServicios {
                 ---> SELECCIONA QUE QUIERES HACER:
                                * OPCION                              * ACCION
                                    1                            REGISTRAR SERVICIO
-                                   2                         VER SERVICIOS DISPONIBLES
-                                   3                            ELIMINAR SERVICIO
-                                   4                         MODIFICAR NOMBRE SERVICIO
-                                   5                         MODIFICAR PRECIO SERVICIO
-                                   6                      MODIFICAR IMPUESTO DE SERVICIO
-                                   7                                  SALIR
+                                   2                        VER SERVICIOS DISPONIBLES
+                                   3                             MODIFICAR NOMBRE
+                                   4                             MODIFICAR PRECIO
+                                   5                             CAMBIAR IMPUESTO
+                                   6                            CAMBIAR DESCUENTO
+                                   7                             ACTIVAR SERVICIO
+                                   8                            DESACTIVAR SERVICIO
+                                   9                                  SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
@@ -42,18 +45,24 @@ public class MenuGestionarServicios {
                     verServiciosDisponibles(controladorTienda);
                     break;
                 case 3:
-                    eliminarServicio(sc, controladorTienda);
+                    modificarNombre(sc, controladorTienda);
                     break;
                 case 4:
-                    modificarNombreServicio(sc, controladorTienda);
+                    modificarPrecio(sc, controladorTienda);
                     break;
                 case 5:
-                    modificarPrecioServicio(sc, controladorTienda);
+                    cambiarImpuesto(sc, controladorTienda);
                     break;
                 case 6:
-                    modifcarImpuestoDeServicio(sc, controladorTienda);
+                    cambiarDescuento(sc, controladorTienda);
                     break;
                 case 7:
+                    desactivarServicio(sc, controladorTienda);
+                    break;
+                case 8:
+                    activarServicio(sc, controladorTienda);
+                    break;
+                case 10:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
@@ -77,7 +86,11 @@ public class MenuGestionarServicios {
                     Escribe el ID del Impuesto que le corresponda:
                     """ + "---> ");
             int idImpuesto = leerEntero(sc);
-            String codigoServicio = controladorTienda.registrarServicioNuevo(nombreServicio, precioServicio, idImpuesto);
+            System.out.print("""
+                \nEl Descuento es -Sin Descuento- por defecto, puedes cambiarlo en -Gestionar Servicios-
+                """);
+            int idDescuento = 1;
+            String codigoServicio = controladorTienda.registrarServicioNuevo(nombreServicio, precioServicio, idImpuesto, idDescuento);
             System.out.println("\nServicio registrado con exito");
             ServicioDTO datosServicio = controladorTienda.obtenerDatosServicio(codigoServicio);
             System.out.println("Codigo:  " + datosServicio.codigo() + "   Servicio:  " + datosServicio.nombre() + "   Precio:  $" + datosServicio.precioFinal());
@@ -88,7 +101,7 @@ public class MenuGestionarServicios {
 
     private static void verServiciosDisponibles(ControladorTienda controladorTienda){
         try {
-            DatosCatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
+            CatalogoServiciosDTO datosCatalogoServicios = controladorTienda.obtenerCatalogoServicios();
             System.out.println("--------------------------------------------------------------------------------------------");
             System.out.println("---> SERVICIOS:");
             for (ServicioDTO datosServicio: datosCatalogoServicios.listaServicios()){
@@ -100,21 +113,7 @@ public class MenuGestionarServicios {
         }
     }
 
-    private static void eliminarServicio(Scanner sc, ControladorTienda controladorTienda){
-        System.out.print("""
-                \nHAS SELECCIONADO: -ELIMINAR SERVICIO-
-                Que Servicio vas a eliminar, escribe su codigo:
-                """ + "---> ");
-        String  codigoServicio = sc.nextLine();
-        try {
-            controladorTienda.eliminarServicioDeTienda(codigoServicio);
-            System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido eliminado con exito");
-        } catch (RuntimeException e) {
-            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
-        }
-    }
-
-    private static void modificarNombreServicio(Scanner sc, ControladorTienda controladorTienda){
+    private static void modificarNombre(Scanner sc, ControladorTienda controladorTienda){
         System.out.print("""
                 \nHAS SELECCIONADO: -MODIFICAR NOMBRE SERVICIO-
                 A que Servicio le vas a cambiar el Nombre, escribe su Codigo:
@@ -131,7 +130,7 @@ public class MenuGestionarServicios {
         }
     }
 
-    private static void modificarPrecioServicio(Scanner sc, ControladorTienda controladorTienda){
+    private static void modificarPrecio(Scanner sc, ControladorTienda controladorTienda){
         System.out.print("""
                 \nHAS SELECCIONADO: -MODIFICAR PRECIO SERVICIO-
                 A que Servicio le vas a cambiar el Precio, escribe su Codigo:
@@ -148,9 +147,9 @@ public class MenuGestionarServicios {
         }
     }
 
-    private static void modifcarImpuestoDeServicio(Scanner sc, ControladorTienda controladorTienda){
+    private static void cambiarImpuesto(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("""
-                \nHAS SELECCIONADO: -MODIFICAR IMPUESTO DE SERVICIO-
+                \nHAS SELECCIONADO: -CAMBIAR IMPUESTO DE SERVICIO-
                 A que Servicio le vas a cambiar el Impuesto, escribe su Codigo:
                 """ + "---> ");
         String codigoServicio = sc.nextLine();
@@ -172,6 +171,61 @@ public class MenuGestionarServicios {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }
     }
+
+    private static void cambiarDescuento(Scanner sc, ControladorTienda controladorTienda){
+        System.out.println("""
+                \nHAS SELECCIONADO: -CAMBIAR DESCUENTO DE SERVICIO-
+                A que Servicio le vas a cambiar el Descuento, escribe su Codigo:
+                """ + "---> ");
+        String codigoServicio = sc.nextLine();
+        try {
+            ServicioDTO datosServicio = controladorTienda.obtenerDatosServicio(codigoServicio);
+            System.out.println("\nEl Servicio -" + datosServicio.nombre() + "- Tiene el Descuento de ID -" + datosServicio.idDescuento() + "-");
+            System.out.println(descuentosActivosParaRegistro(controladorTienda));
+            System.out.println("""
+                    \nEscribe el ID del Descuento que le pondras:
+                    """);
+            int idDescuento = leerEntero(sc);
+            if (idDescuento == datosServicio.idDescuento()){
+                throw new IllegalArgumentException("Descuentos Iguales");
+            }
+            controladorTienda.cambiarDescuentoDeServicio(codigoServicio, idDescuento);
+            System.out.println("El Servicio de Codigo -" + codigoServicio + "- ahora tiene el Descuento de ID -" + idDescuento + "-");
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
+    }
+
+
+    private static void activarServicio(Scanner sc, ControladorTienda controladorTienda){
+        System.out.print("""
+                \nHAS SELECCIONADO: -ACTIVAR SERVICIO-
+                Que Servicio vas a Activar, escribe su Codigo:
+                """ + "---> ");
+        String  codigoServicio = sc.nextLine();
+        try {
+            controladorTienda.activarServicioDeTienda(codigoServicio);
+            System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido activado con Exito");
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
+    }
+
+
+    private static void desactivarServicio(Scanner sc, ControladorTienda controladorTienda){
+        System.out.print("""
+                \nHAS SELECCIONADO: -DESACTIVAR SERVICIO-
+                Que Servicio vas a Desactivar, escribe su Codigo:
+                """ + "---> ");
+        String  codigoServicio = sc.nextLine();
+        try {
+            controladorTienda.desactivarServicioDeTienda(codigoServicio);
+            System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido eliminado con Exito");
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
+    }
+
 
 }
 

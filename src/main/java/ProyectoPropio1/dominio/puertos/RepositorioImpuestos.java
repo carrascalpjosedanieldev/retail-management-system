@@ -8,7 +8,9 @@ public interface RepositorioImpuestos {
 
     Impuesto insertarImpuesto(Impuesto impuesto);
 
-    void eliminarImpuesto(int idImpuesto);
+    void desactivarImpuesto(int idImpuesto);
+
+    void activarImpuesto(int idImpuesto);
 
     Impuesto obtenerImpuesto(int idImpuesto);
 

@@ -8,7 +8,7 @@ public interface RepositorioProducto {
 
     void insertarProducto(Producto producto, int idInventario);
 
-    void eliminarProductoDeInventario(String codigoProducto, int idInventario);
+    void desactivarProductoDeInventario(String codigoProducto, int idInventario);
 
     Producto obtenerProducto(int idInventario, String  codigoProducto);
 
