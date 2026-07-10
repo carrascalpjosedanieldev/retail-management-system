@@ -5,7 +5,6 @@ import ProyectoPropio1.dominio.ItemVendido;
 import ProyectoPropio1.dominio.ReporteRecaudo;
 import ProyectoPropio1.dominio.enums.TipoItem;
 import ProyectoPropio1.dominio.puertos.RepositorioFacturas;
-import ProyectoPropio1.dto.ReporteRecaudoDTO;
 import ProyectoPropio1.excepciones.StockInsuficienteException;
 
 import java.math.BigDecimal;
@@ -64,28 +63,20 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
         }
     }
 
-    private void insertarLineaDetalle(Connection conn, int idFactura, ItemVendido item) throws SQLException {
 
-        String sql = "INSERT INTO detalle_facturas " +
-                "(id_factura, tipo_item, codigo_referencia, nombre_item, cantidad, " +
-                "precio_unitario, subtotal_neto, porcentaje_impuesto, monto_impuesto, total_linea) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private void agregarLineaDetalleAlBatch(PreparedStatement ps, int idFactura, ItemVendido item) throws SQLException {
+        ps.setInt(1, idFactura);
+        ps.setString(2, item.getTipoItem().name());
+        ps.setString(3, item.getCodigo());
+        ps.setString(4, item.getNombre());
+        ps.setInt(5, item.getCantidad());
+        ps.setBigDecimal(6, item.getPrecioUnitario());
+        ps.setBigDecimal(7, item.getSubtotalNeto());
+        ps.setBigDecimal(8, item.getPorcentajeImpuesto());
+        ps.setBigDecimal(9, item.getMontoImpuesto());
+        ps.setBigDecimal(10, item.getTotalLinea());
 
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, idFactura);
-            ps.setString(2, item.getTipoItem().name());
-            ps.setString(3, item.getCodigo());
-            ps.setString(4, item.getNombre());
-            ps.setInt(5, item.getCantidad());
-            ps.setBigDecimal(6, item.getPrecioUnitario());
-            ps.setBigDecimal(7, item.getSubtotalNeto());
-            ps.setBigDecimal(8, item.getPorcentajeImpuesto());
-            ps.setBigDecimal(9, item.getMontoImpuesto());
-            ps.setBigDecimal(10, item.getTotalLinea());
-
-            ps.executeUpdate();
-        }
+        ps.addBatch();
     }
 
     @Override
@@ -102,23 +93,33 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
             int idFacturaBD = insertarCabeceraFactura(conn, factura);
 
-            for (ItemVendido item : items) {
-                if (item.getTipoItem() == TipoItem.PRODUCTO){
-                    String sqlUpdateStock = "UPDATE productos SET stock = stock - ? WHERE codigo_producto = ? AND stock >= ?";
+            String sqlDetalle = "INSERT INTO detalle_facturas " +
+                    "(id_factura, tipo_item, codigo_referencia, nombre_item, cantidad, " +
+                    "precio_unitario, subtotal_neto, porcentaje_impuesto, monto_impuesto, total_linea) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                    try (PreparedStatement psStock = conn.prepareStatement(sqlUpdateStock)) {
-                        psStock.setInt(1, item.getCantidad());
-                        psStock.setString(2, item.getCodigo());
-                        psStock.setInt(3, item.getCantidad());
+            try (PreparedStatement psDetalle = conn.prepareStatement(sqlDetalle)) {
 
-                        int filasAfectadas = psStock.executeUpdate();
+                for (ItemVendido item : items) {
+                    if (item.getTipoItem() == TipoItem.PRODUCTO){
+                        String sqlUpdateStock = "UPDATE productos SET stock = stock - ? WHERE codigo_producto = ? AND stock >= ?";
 
-                        if (filasAfectadas == 0) {
-                            throw new StockInsuficienteException("No hay Stock suficiente para el Producto " + item.getCodigo() + ". Requerido: " + item.getCantidad());
+                        try (PreparedStatement psStock = conn.prepareStatement(sqlUpdateStock)) {
+                            psStock.setInt(1, item.getCantidad());
+                            psStock.setString(2, item.getCodigo());
+                            psStock.setInt(3, item.getCantidad());
+
+                            int filasAfectadas = psStock.executeUpdate();
+
+                            if (filasAfectadas == 0) {
+                                throw new StockInsuficienteException("No hay Stock suficiente para el Producto " + item.getCodigo() + ". Requerido: " + item.getCantidad());
+                            }
                         }
                     }
+                    agregarLineaDetalleAlBatch(psDetalle, idFacturaBD, item);
                 }
-                insertarLineaDetalle(conn, idFacturaBD, item);
+                psDetalle.executeBatch();
+
             }
 
             conn.commit();
