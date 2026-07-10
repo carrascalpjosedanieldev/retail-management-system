@@ -1,6 +1,7 @@
 package ProyectoPropio1.vistaConsola;
 
 import ProyectoPropio1.dto.DescuentoDTO;
+import ProyectoPropio1.excepciones.DescuentoNoEncontradoExeption;
 import ProyectoPropio1.servicios.controlador.ControladorTienda;
 
 import java.math.BigDecimal;
@@ -17,11 +18,13 @@ public class MenuGestionarDescuentos {
                 \n                           -GESTIONAR DESCUENTOS-
                 ---> SELECCIONA QUE QUIERES HACER:
                                * OPCION                              * ACCION
-                                   1                              REGISTRAR DESCUENTO
-                                   2                                VER DESCUENTOS
+                                   1                             REGISTRAR DESCUENTO
+                                   2                               VER DESCUENTOS
                                    3                             DESACTIVAR DESCUENTO
                                    4                              ACTIVAR DESCUENTO
-                                   5                                    SALIR
+                                   5                               CAMBIAR NOMBRE
+                                   6                             CAMBIAR PORCENTAJE
+                                   7                                    SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
@@ -31,7 +34,7 @@ public class MenuGestionarDescuentos {
         int opcionGestionarDescuentos;
         do {
             menuGestionarDescuentos();
-            opcionGestionarDescuentos = pedirOpcion(sc,1,5);
+            opcionGestionarDescuentos = pedirOpcion(sc,1,7);
             switch (opcionGestionarDescuentos){
                 case 1:
                     registrarDescuento(sc, controladorTienda);
@@ -46,10 +49,16 @@ public class MenuGestionarDescuentos {
                     activarDescuento(sc, controladorTienda);
                     break;
                 case 5:
+                    cambiarNombre(sc, controladorTienda);
+                    break;
+                case 6:
+                    cambiarPorcentaje(sc, controladorTienda);
+                    break;
+                case 7:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
-        } while (opcionGestionarDescuentos !=5);
+        } while (opcionGestionarDescuentos !=7);
     }
 
     private static void registrarDescuento(Scanner sc, ControladorTienda controladorTienda){
@@ -151,6 +160,50 @@ public class MenuGestionarDescuentos {
             descuentosParaRegistro.append(System.lineSeparator());
         }
         return descuentosParaRegistro.toString();
+    }
+
+    private static void cambiarNombre(Scanner sc, ControladorTienda controladorTienda){
+        System.out.print("""
+                \nHAS SELECCIONADO: -CAMBIAR NOMBRE DESCUENTO-
+                A que Descuento le cambiaras el Nombre, escribe el ID
+                """ + "---> ");
+        int idDescuento = leerEntero(sc);
+        try {
+            System.out.print("Escribe el Nombre nuevo que le pondras:\n" +
+                    "---> ");
+            String nombreNuevo = sc.nextLine();
+            controladorTienda.cambiarNombreDescuento(idDescuento, nombreNuevo);
+            System.out.println("El Descuento de ID -" + idDescuento + "- ahora se llama:  " + nombreNuevo);
+        } catch (DescuentoNoEncontradoExeption e) {
+            System.out.println("""
+                \nACCION DENEGADA:
+                EL DESCUENTO INGRESADO NO EXISTE
+                """);
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
+    }
+
+    private static void cambiarPorcentaje(Scanner sc, ControladorTienda controladorTienda){
+        System.out.print("""
+                \nHAS SELECCIONADO: -CAMBIAR PORCENTAJE DESCUENTO-
+                A que Descuento le cambiaras el Porcentaje, escribe el ID
+                """ + "---> ");
+        int idDescuento = leerEntero(sc);
+        try {
+            System.out.print("Escribe el Porcentaje nuevo que le pondras:\n" +
+                    "---> ");
+            BigDecimal porcentajeNuevo = leerDecimal(sc);
+            controladorTienda.cambiarPorcentajeDescuento(idDescuento, porcentajeNuevo);
+            System.out.println("El Descuento de ID -" + idDescuento + "- ahora tendra el porcentaje:  " + porcentajeNuevo + "%");
+        } catch (DescuentoNoEncontradoExeption e) {
+            System.out.println("""
+                \nACCION DENEGADA:
+                EL DESCUENTO INGRESADO NO EXISTE
+                """);
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
     }
 
 }

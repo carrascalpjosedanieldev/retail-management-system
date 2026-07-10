@@ -13,16 +13,22 @@ public class EnsambladorDTOProducto {
     }
 
     public DatosTotalesProductoDTO ensamblarDatosTotalesProducto(Producto producto, LocalDate fecha){
-        return switch (producto) {
-            case ProductoRopa productoRopa ->
-                    new DatosTotalesProductoRopaDTO(productoRopa.getCodigo(), productoRopa.getNombre(), productoRopa.getValorCompra(),
-                    productoRopa.getPorcentajeGanancia(), productoRopa.getValorVenta(fecha), productoRopa.getStock(), productoRopa.getTalla());
-            case ProductoPerecedero productoPerecedero ->
-                    new DatosTotalesProductoPerecederoDTO(productoPerecedero.getCodigo(), productoPerecedero.getNombre(),
-                    productoPerecedero.getValorCompra(), productoPerecedero.getPorcentajeGanancia(), productoPerecedero.getValorVenta(fecha),
-                    productoPerecedero.getStock(), productoPerecedero.getFechaVencimiento(), productoPerecedero.estaVencido(fecha));
-            default -> throw new IllegalStateException("Tipo de Producto no soportado por el Sistema");
-        };
+        if (producto instanceof ProductoRopa ropa){
+            return new DatosTotalesProductoRopaDTO(ropa.getCodigo(), ropa.getNombre(), ropa.getValorCompra(),
+                    ropa.getPorcentajeGanancia(), ropa.getValorVenta(fecha), ropa.getStock(), ropa.getTalla());
+        } else if (producto instanceof ProductoPerecedero perecedero){
+            String estado;
+            if (perecedero.estaVencido(fecha)){
+                estado = "Vencido";
+            } else {
+                estado = "Disponible";
+            }
+            return new DatosTotalesProductoPerecederoDTO(perecedero.getCodigo(), perecedero.getNombre(),
+                    perecedero.getValorCompra(), perecedero.getPorcentajeGanancia(), perecedero.getValorVenta(fecha),
+                    perecedero.getStock(), perecedero.getFechaVencimiento(), estado);
+        } else {
+            throw new IllegalStateException("Tipo de Producto no soportado por el Sistema");
+        }
     }
 
     public DatosVentaProductoDTO ensamblarDatosVentaProducto(Producto producto, LocalDate fecha){

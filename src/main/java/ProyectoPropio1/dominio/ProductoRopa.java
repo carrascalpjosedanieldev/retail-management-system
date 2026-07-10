@@ -47,32 +47,32 @@ public class ProductoRopa extends Producto{
 
     @Override
     protected BigDecimal calcularValorVenta(LocalDate fecha) {
-        BigDecimal factorGanancia = getPorcentajeGanancia().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
+        BigDecimal factorGanancia = getPorcentajeGanancia().divide(CIEN, 6, RoundingMode.HALF_UP);
         BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
-        BigDecimal impuesto = calcularImpuesto(fecha);
-        BigDecimal valorVenta = getValorCompra().add(ganancia).add(impuesto);
-        BigDecimal factorDescuento = getPorcentajeDescuento().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-        BigDecimal descuentoAplicado = valorVenta.multiply(factorDescuento);
-        valorVenta = valorVenta.subtract(descuentoAplicado);
-        return valorVenta.setScale(4, RoundingMode.HALF_UP);
+        BigDecimal precioBase = getValorCompra().add(ganancia);
+        BigDecimal descuentoAplicado = calcularDescuento(precioBase, fecha);
+        BigDecimal precioFinalSinImpuesto = precioBase.subtract(descuentoAplicado);
+        BigDecimal impuesto = calcularImpuesto(precioFinalSinImpuesto, fecha);
+        BigDecimal valorVenta = precioFinalSinImpuesto.add(impuesto);
+        return valorVenta.setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
     public void validarEstadoParaVenta(LocalDate fecha) {}
 
     @Override
-    public BigDecimal calcularImpuesto(LocalDate fecha) {
-        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-        return getValorCompra().multiply(factorImpuesto);
+    public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto, LocalDate fecha) {
+        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(CIEN, 6, RoundingMode.HALF_UP);
+        return precioFinalSinImpuesto.multiply(factorImpuesto);
     }
 
     @Override
-    public BigDecimal calcularDescuento(BigDecimal valorVenta, LocalDate fecha) {
+    public BigDecimal calcularDescuento(BigDecimal precioBase, LocalDate fecha) {
         if (getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
             return BigDecimal.ZERO;
         }
-        BigDecimal factorDescuento = getPorcentajeDescuento().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-        return valorVenta.multiply(factorDescuento);
+        BigDecimal factorDescuento = getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP);
+        return precioBase.multiply(factorDescuento);
     }
 }
 

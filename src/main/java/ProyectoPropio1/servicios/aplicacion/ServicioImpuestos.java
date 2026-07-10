@@ -33,6 +33,10 @@ public class ServicioImpuestos {
         return this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
     }
 
+    public void actualizarImpuesto(Impuesto impuesto){
+        this.repositorioImpuestos.actualizarImpuesto(impuesto);
+    }
+
     public List<Impuesto> obtenerImpuestosActivos(){
         return this.repositorioImpuestos.obtenerImpuestosActivos();
     }

@@ -29,8 +29,9 @@ public abstract class Producto implements ItemFacturable{
 
     private boolean activo;
 
-    //GETTERS Y SETTERS:
+    protected static final BigDecimal CIEN = new BigDecimal("100");
 
+    //GETTERS Y SETTERS:
 
     @Override
     public TipoItem getTipoItem() {
@@ -127,7 +128,10 @@ public abstract class Producto implements ItemFacturable{
             throw new IllegalArgumentException("Stock del Producto Invalido");
         }
         if (impuesto==null){
-            throw new IllegalArgumentException("El Producto Debe tener Impuesto");
+            throw new IllegalArgumentException("El Producto Debe Tener Impuesto");
+        }
+        if (descuento==null){
+            throw new IllegalArgumentException("El Producto Debe Tener Descuento");
         }
         this.codigo = codigo;
         this.nombre = nombre;
@@ -153,7 +157,7 @@ public abstract class Producto implements ItemFacturable{
     //METODOS MODIFICAR PRODUCTO:
 
     public void cambiarValorVentaPorPorcentaje(BigDecimal porcentajeGanancia) {
-        if (porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0 || porcentajeGanancia.compareTo(new BigDecimal("100")) > 0) {
+        if (porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0 || porcentajeGanancia.compareTo(CIEN) > 0) {
             throw new IllegalArgumentException("Porcentaje de Ganancia del Producto Inválido");
         }
         setPorcentajeGanancia(porcentajeGanancia);

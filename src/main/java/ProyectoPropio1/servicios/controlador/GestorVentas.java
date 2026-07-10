@@ -74,7 +74,9 @@ public class GestorVentas {
         }
         List<ItemVendido> itemsProcesadosConExito = new ArrayList<>();
         for (ItemCarrito item:this.carrito.getItems().values()){
-            ItemVendido itemVendido = ItemVendido.crearNuevo(item.getItemFacturable(), item.getCantidad(), fecha);
+            ItemVendido itemVendido = ItemVendido.crearNuevo(item.getItemFacturable().getTipoItem(), item.getItemFacturable().getCodigo(),
+                    item.getItemFacturable().getNombre(), item.getCantidad(), item.getItemFacturable().getValorVenta(fecha),
+                    item.getItemFacturable().getPorcentajeImpuesto());
             itemsProcesadosConExito.add(itemVendido);
         }
         Factura facturaExitosa = this.servicioFacturas.registrarVentaYObtenerFactura(itemsProcesadosConExito);

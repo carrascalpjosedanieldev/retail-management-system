@@ -32,6 +32,10 @@ public class ServicioDescuentos {
         return this.repositorioDescuentos.obtenerDescuento(idDescuento);
     }
 
+    public void actualizarDescuento(Descuento descuento){
+        this.repositorioDescuentos.actualizarDescuento(descuento);
+    }
+
     public List<Descuento> obtenerDescuentosActivos(){
         return this.repositorioDescuentos.obtenerDescuentosActivos();
     }

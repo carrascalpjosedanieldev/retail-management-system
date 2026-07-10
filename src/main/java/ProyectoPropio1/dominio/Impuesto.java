@@ -8,9 +8,9 @@ public class Impuesto {
 
     private final Integer id;
 
-    private final String nombre;
+    private String nombre;
 
-    private final BigDecimal porcentaje;
+    private BigDecimal porcentaje;
 
     private boolean activo;
 
@@ -19,8 +19,14 @@ public class Impuesto {
     public int getId() { return id; }
 
     public String getNombre() { return nombre; }
+    private void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public BigDecimal getPorcentaje() { return porcentaje; }
+    private void setPorcentaje(BigDecimal porcentaje) {
+        this.porcentaje = porcentaje;
+    }
 
     public boolean isActivo() {
         return activo;
@@ -52,6 +58,25 @@ public class Impuesto {
 
     public static Impuesto crearNuevo(String nombre, BigDecimal porcentaje) {
         return new Impuesto(nombre, porcentaje);
+    }
+
+    //METODOS:
+
+    public void cambiarNombre(String nombreNuevo){
+        if (nombreNuevo==null || nombreNuevo.isBlank()){
+            throw new IllegalArgumentException("Nombre del Impuesto Vacio");
+        }
+        if (nombreNuevo.equals(getNombre())){
+            throw new IllegalArgumentException("El Nombre a colocar al Impuesto es el mismo");
+        }
+        setNombre(nombreNuevo);
+    }
+
+    public void cambiarPorcentaje(BigDecimal porcentajeNuevo){
+        if (porcentaje.compareTo(BigDecimal.ZERO) < 0){
+            throw new IllegalArgumentException("Porcentaje para el Impuesto Invalido");
+        }
+        setPorcentaje(porcentajeNuevo);
     }
 
 }

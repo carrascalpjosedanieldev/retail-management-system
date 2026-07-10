@@ -25,6 +25,8 @@ public class Servicio implements ItemFacturable {
 
     private boolean activo;
 
+    private static final BigDecimal CIEN = new BigDecimal("100");
+
     //GETTERS Y SETTERS:
 
     @Override
@@ -49,13 +51,15 @@ public class Servicio implements ItemFacturable {
         return this.codigoServicio;
     }
 
+
+
     @Override
     public BigDecimal getValorVenta(LocalDate fecha) {
-        BigDecimal impuesto = calcularImpuesto(fecha);
-        BigDecimal valorVenta = getPrecioBase().add(impuesto);
-        BigDecimal descuentoAplicado = calcularDescuento(valorVenta, fecha);
-        valorVenta = valorVenta.subtract(descuentoAplicado);
-        return valorVenta.setScale(4, RoundingMode.HALF_UP);
+        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase(), fecha);
+        BigDecimal precioFinalSinImpuesto = precioBase.subtract(descuentoAplicado);
+        BigDecimal impuesto = calcularImpuesto(precioFinalSinImpuesto, fecha);
+        BigDecimal valorVenta = precioFinalSinImpuesto.add(impuesto);
+        return valorVenta.setScale(6, RoundingMode.HALF_UP);
     }
 
     public Impuesto getImpuesto(){
@@ -137,18 +141,18 @@ public class Servicio implements ItemFacturable {
     }
 
     @Override
-    public BigDecimal calcularImpuesto(LocalDate fecha) {
-        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-        return getPrecioBase().multiply(factorImpuesto);
+    public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto, LocalDate fecha) {
+        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(CIEN, 6, RoundingMode.HALF_UP);
+        return precioFinalSinImpuesto.multiply(factorImpuesto);
     }
 
     @Override
-    public BigDecimal calcularDescuento(BigDecimal valorVenta, LocalDate fecha) {
+    public BigDecimal calcularDescuento(BigDecimal precioBase, LocalDate fecha) {
         if (getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
             return BigDecimal.ZERO;
         }
-        BigDecimal factorDescuento = getPorcentajeDescuento().divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP);
-        return valorVenta.multiply(factorDescuento);
+        BigDecimal factorDescuento = getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP);
+        return precioBase.multiply(factorDescuento);
     }
 
     //METODOS MODIFICAR SERVICIO:

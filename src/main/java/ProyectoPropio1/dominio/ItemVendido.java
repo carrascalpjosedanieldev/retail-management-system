@@ -4,7 +4,6 @@ import ProyectoPropio1.dominio.enums.TipoItem;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 
 public class ItemVendido {
 
@@ -68,21 +67,22 @@ public class ItemVendido {
 
     //CONSTRUCTOR:
 
-    private ItemVendido(ItemFacturable item, int cantidad, LocalDate fecha) {
-        this.tipoItem = item.getTipoItem();
-        this.codigo = item.getCodigo();
-        this.nombre = item.getNombre();
+    private ItemVendido(TipoItem tipoItem, String codigo, String nombre, int cantidad, BigDecimal precioUnitario,
+                        BigDecimal porcentajeImpuesto) {
+        this.tipoItem = tipoItem;
+        this.codigo = codigo;
+        this.nombre = nombre;
         this.cantidad = cantidad;
-        this.precioUnitario = item.getValorVenta(fecha);
-        this.subtotalNeto = this.precioUnitario.multiply(BigDecimal.valueOf(cantidad));
-        this.porcentajeImpuesto = item.getPorcentajeImpuesto();
-        BigDecimal factorImpuesto = this.porcentajeImpuesto.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_EVEN);
-        this.montoImpuesto = this.subtotalNeto.multiply(factorImpuesto);
-        this.totalLinea = this.subtotalNeto.add(this.montoImpuesto);
+        this.precioUnitario = precioUnitario;
+        this.totalLinea = this.precioUnitario.multiply(BigDecimal.valueOf(cantidad));
+        this.porcentajeImpuesto = porcentajeImpuesto;
+        BigDecimal factorDivisor = BigDecimal.ONE.add(this.porcentajeImpuesto.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP));
+        this.subtotalNeto = this.totalLinea.divide(factorDivisor, 6, RoundingMode.HALF_UP);
+        this.montoImpuesto = this.totalLinea.subtract(this.subtotalNeto);
     }
 
-    public static ItemVendido crearNuevo(ItemFacturable item, int cantidad, LocalDate fecha){
-        return new ItemVendido(item, cantidad, fecha);
+    public static ItemVendido crearNuevo(TipoItem tipoItem, String codigo, String nombre, int cantidad, BigDecimal precioUnitario, BigDecimal porcentajeImpuesto){
+        return new ItemVendido(tipoItem, codigo, nombre, cantidad, precioUnitario, porcentajeImpuesto);
     }
 
 }

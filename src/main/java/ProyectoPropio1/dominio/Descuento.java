@@ -8,9 +8,9 @@ public class Descuento {
 
     private final Integer id;
 
-    private final String nombre;
+    private String nombre;
 
-    private final BigDecimal porcentaje;
+    private BigDecimal porcentaje;
 
     private boolean activo;
 
@@ -19,8 +19,14 @@ public class Descuento {
     public int getId() { return id; }
 
     public String getNombre() { return nombre; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public BigDecimal getPorcentaje() { return porcentaje; }
+    public void setPorcentaje(BigDecimal porcentaje) {
+        this.porcentaje = porcentaje;
+    }
 
     public boolean isActivo() {
         return activo;
@@ -52,6 +58,25 @@ public class Descuento {
 
     public static Descuento crearNuevo(String nombre, BigDecimal porcentaje) {
         return new Descuento(nombre, porcentaje);
+    }
+
+    //METODOS:
+
+    public void cambiarNombre(String nombreNuevo){
+        if (nombreNuevo==null || nombreNuevo.isBlank()){
+            throw new IllegalArgumentException("Nombre del Descuento Vacio");
+        }
+        if (nombreNuevo.equals(getNombre())){
+            throw new IllegalArgumentException("El Nombre a colocar al Descuento es el mismo");
+        }
+        setNombre(nombreNuevo);
+    }
+
+    public void cambiarPorcentaje(BigDecimal porcentajeNuevo){
+        if (porcentaje.compareTo(BigDecimal.ZERO) < 0){
+            throw new IllegalArgumentException("Porcentaje para el Descuento Invalido");
+        }
+        setPorcentaje(porcentajeNuevo);
     }
 
 }

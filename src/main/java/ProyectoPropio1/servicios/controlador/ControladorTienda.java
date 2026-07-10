@@ -189,6 +189,18 @@ public class ControladorTienda {
         this.servicioImpuestos.activarImpuesto(idImpuesto);
     }
 
+    public void cambiarNombreImpuesto(int idImpuesto, String nombreNuevo){
+        Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
+        impuesto.cambiarNombre(nombreNuevo);
+        this.servicioImpuestos.actualizarImpuesto(impuesto);
+    }
+
+    public void cambiarPorcentajeImpuesto(int idImpuesto, BigDecimal porcentajeNuevo){
+        Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
+        impuesto.cambiarPorcentaje(porcentajeNuevo);
+        this.servicioImpuestos.actualizarImpuesto(impuesto);
+    }
+
     //METODOS DESCUENTOS:
 
     public int registrarDescuento(String nombre, BigDecimal porcentaje){
@@ -201,6 +213,18 @@ public class ControladorTienda {
 
     public void activarDescuento(int idDescuento){
         this.servicioDescuentos.activarDescuento(idDescuento);
+    }
+
+    public void cambiarNombreDescuento(int idDescuento, String  nombreNuevo){
+        Descuento descuento = this.servicioDescuentos.obtenerDescuento(idDescuento);
+        descuento.cambiarNombre(nombreNuevo);
+        this.servicioDescuentos.actualizarDescuento(descuento);
+    }
+
+    public void cambiarPorcentajeDescuento(int idDescuento, BigDecimal porcentajeNuevo){
+        Descuento descuento = this.servicioDescuentos.obtenerDescuento(idDescuento);
+        descuento.cambiarPorcentaje(porcentajeNuevo);
+        this.servicioDescuentos.actualizarDescuento(descuento);
     }
 
     //METODOS DE TIENDA:

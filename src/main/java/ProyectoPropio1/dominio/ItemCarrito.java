@@ -10,7 +10,7 @@ public class ItemCarrito {
 
     //ATRIBUTOS:
 
-    private ItemFacturable itemFacturable;
+    private final ItemFacturable itemFacturable;
 
     private int cantidad;
 
@@ -66,3 +66,4 @@ public class ItemCarrito {
     }
 
 }
+

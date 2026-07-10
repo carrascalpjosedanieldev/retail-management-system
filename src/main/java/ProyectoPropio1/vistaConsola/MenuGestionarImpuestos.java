@@ -1,6 +1,7 @@
 package ProyectoPropio1.vistaConsola;
 
 import ProyectoPropio1.dto.ImpuestoDTO;
+import ProyectoPropio1.excepciones.ImpuestoNoEncontradoException;
 import ProyectoPropio1.servicios.controlador.ControladorTienda;
 
 import java.math.BigDecimal;
@@ -21,7 +22,9 @@ public class MenuGestionarImpuestos {
                                    2                                VER IMPUESTOS
                                    3                             DESACTIVAR IMPUESTO
                                    4                              ACTIVAR IMPUESTO
-                                   5                                    SALIR
+                                   5                               CAMBIAR NOMBRE
+                                   6                              CAMBIAR PORCENTAJE
+                                   7                                    SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
@@ -31,7 +34,7 @@ public class MenuGestionarImpuestos {
         int opcionGestionarImpuestos;
         do {
             menuGestionarImpuestos();
-            opcionGestionarImpuestos = pedirOpcion(sc,1,5);
+            opcionGestionarImpuestos = pedirOpcion(sc,1,7);
             switch (opcionGestionarImpuestos){
                 case 1:
                     registrarImpuesto(sc, controladorTienda);
@@ -46,10 +49,16 @@ public class MenuGestionarImpuestos {
                     activarImpuesto(sc, controladorTienda);
                     break;
                 case 5:
+                    cambiarNombre(sc, controladorTienda);
+                    break;
+                case 6:
+                    cambiarPorcentaje(sc, controladorTienda);
+                    break;
+                case 7:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
-        } while (opcionGestionarImpuestos !=4);
+        } while (opcionGestionarImpuestos !=7);
     }
 
     private static void registrarImpuesto(Scanner sc, ControladorTienda controladorTienda){
@@ -150,6 +159,50 @@ public class MenuGestionarImpuestos {
             impuestosParaRegistro.append(System.lineSeparator());
         }
         return impuestosParaRegistro.toString();
+    }
+
+    private static void cambiarNombre(Scanner sc, ControladorTienda controladorTienda){
+        System.out.print("""
+                \nHAS SELECCIONADO: -CAMBIAR NOMBRE IMPUESTO-
+                A que Impuesto le cambiaras el Nombre, escribe el ID
+                """ + "---> ");
+        int idImpuesto = leerEntero(sc);
+        try {
+            System.out.print("Escribe el Nombre nuevo que le pondras:\n" +
+                    "---> ");
+            String nombreNuevo = sc.nextLine();
+            controladorTienda.cambiarNombreImpuesto(idImpuesto, nombreNuevo);
+            System.out.println("El Impuesto de ID -" + idImpuesto + "- ahora se llama:  " + nombreNuevo);
+        } catch (ImpuestoNoEncontradoException e) {
+            System.out.println("""
+                \nACCION DENEGADA:
+                EL IMPUESTO INGRESADO NO EXISTE
+                """);
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
+    }
+
+    private static void cambiarPorcentaje(Scanner sc, ControladorTienda controladorTienda){
+        System.out.print("""
+                \nHAS SELECCIONADO: -CAMBIAR PORCENTAJE IMPUESTO-
+                A que Impuesto le cambiaras el Porcentaje, escribe el ID
+                """ + "---> ");
+        int idImpuesto = leerEntero(sc);
+        try {
+            System.out.print("Escribe el Porcentaje nuevo que le pondras:\n" +
+                    "---> ");
+            BigDecimal porcentajeNuevo = leerDecimal(sc);
+            controladorTienda.cambiarPorcentajeImpuesto(idImpuesto, porcentajeNuevo);
+            System.out.println("El Impuesto de ID -" + idImpuesto + "- ahora tendra el porcentaje:  " + porcentajeNuevo + "%");
+        } catch (ImpuestoNoEncontradoException e) {
+            System.out.println("""
+                \nACCION DENEGADA:
+                EL IMPUESTO INGRESADO NO EXISTE
+                """);
+        } catch (RuntimeException e) {
+            System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
+        }
     }
 
 }

@@ -67,8 +67,8 @@ public class Factura {
     }
 
     public static Factura reconstruirDesdeBD(List<ItemVendido> itemsFinales, Integer idFactura, String numeroFactura,
-                                             LocalDateTime fechaHoraEmision, BigDecimal totalGeneral, BigDecimal totalImpuestos,
-                                             BigDecimal subTotal){
+                                             LocalDateTime fechaHoraEmision, BigDecimal totalGeneral,
+                                             BigDecimal totalImpuestos, BigDecimal subTotal){
         return new Factura(itemsFinales, idFactura, numeroFactura, fechaHoraEmision, totalGeneral, totalImpuestos, subTotal);
     }
 
