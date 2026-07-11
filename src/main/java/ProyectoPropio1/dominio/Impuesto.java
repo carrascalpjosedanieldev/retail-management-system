@@ -38,6 +38,9 @@ public class Impuesto {
     //CONSTRUCTORES:
 
     private Impuesto(Integer id, String nombre, BigDecimal porcentaje, boolean activo) {
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("Nombre del Impuesto Vacio");
+        }
         if (porcentaje.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Porcentaje de Impuesto Invalido");
         }

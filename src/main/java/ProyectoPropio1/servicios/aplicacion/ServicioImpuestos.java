@@ -24,8 +24,32 @@ public class ServicioImpuestos {
         return this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
     }
 
-    public void actualizarImpuesto(Impuesto impuesto){
+    private void actualizarImpuesto(Impuesto impuesto){
         this.repositorioImpuestos.actualizarImpuesto(impuesto);
+    }
+
+    public void activarImpuesto(int idImpuesto){
+        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
+        impuesto.activar();
+        this.actualizarImpuesto(impuesto);
+    }
+
+    public void desactivarImpuesto(int idImpuesto){
+        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
+        impuesto.desactivar();
+        this.actualizarImpuesto(impuesto);
+    }
+
+    public void cambiarNombreImpuesto(int idImpuesto, String nombreNuevo){
+        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
+        impuesto.cambiarNombre(nombreNuevo);
+        this.actualizarImpuesto(impuesto);
+    }
+
+    public void cambiarPorcentajeImpuesto(int idImpuesto, BigDecimal porcentajeNuevo){
+        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
+        impuesto.cambiarPorcentaje(porcentajeNuevo);
+        this.actualizarImpuesto(impuesto);
     }
 
     public List<Impuesto> obtenerImpuestosActivos(){

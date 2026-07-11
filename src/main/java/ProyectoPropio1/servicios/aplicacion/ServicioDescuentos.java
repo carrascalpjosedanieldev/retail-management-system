@@ -20,20 +20,36 @@ public class ServicioDescuentos {
         return descuento.getId();
     }
 
-    public void desactivarDescuento(int idDescuento){
-        this.repositorioDescuentos.desactivarDescuento(idDescuento);
-    }
-
-    public void activarDescuento(int idDescuento){
-        this.repositorioDescuentos.activarDescuento(idDescuento);
-    }
-
     public Descuento obtenerDescuento(int idDescuento){
         return this.repositorioDescuentos.obtenerDescuento(idDescuento);
     }
 
-    public void actualizarDescuento(Descuento descuento){
+    private void actualizarDescuento(Descuento descuento){
         this.repositorioDescuentos.actualizarDescuento(descuento);
+    }
+
+    public void desactivarDescuento(int idDescuento){
+        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+        descuento.desactivar();
+        this.actualizarDescuento(descuento);
+    }
+
+    public void activarDescuento(int idDescuento){
+        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+        descuento.activar();
+        this.actualizarDescuento(descuento);
+    }
+
+    public void cambiarNombreDescuento(int idDescuento, String  nombreNuevo){
+        Descuento descuento = this.obtenerDescuento(idDescuento);
+        descuento.cambiarNombre(nombreNuevo);
+        this.actualizarDescuento(descuento);
+    }
+
+    public void cambiarPorcentajeDescuento(int idDescuento, BigDecimal porcentajeNuevo){
+        Descuento descuento = this.obtenerDescuento(idDescuento);
+        descuento.cambiarPorcentaje(porcentajeNuevo);
+        this.actualizarDescuento(descuento);
     }
 
     public List<Descuento> obtenerDescuentosActivos(){

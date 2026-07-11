@@ -45,45 +45,6 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
         }
     }
 
-    @Override
-    public void desactivarDescuento(int idDescuento) {
-        String sql = "UPDATE descuentos SET activo = false WHERE id_descuento = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, idDescuento);
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new DescuentoNoEncontradoExeption("El Descuento con ID " + idDescuento + " no existe o ya fue Desactivado antes.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar desactivar el Descuento", e);
-        }
-
-    }
-
-
-    @Override
-    public void activarDescuento(int idDescuento) {
-        String sql = "UPDATE descuentos SET activo = true WHERE id_descuento = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, idDescuento);
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new DescuentoNoEncontradoExeption("El Descuento con ID " + idDescuento + " no existe o ya fue Activado antes.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar activar el Descuento", e);
-        }
-    }
 
     @Override
     public Descuento obtenerDescuento(int idDescuento) {

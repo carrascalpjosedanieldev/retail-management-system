@@ -8,10 +8,6 @@ public interface RepositorioDescuentos {
 
     Descuento insertarDescuento(Descuento Descuento);
 
-    void desactivarDescuento(int idDescuento);
-
-    void activarDescuento(int idDescuento);
-
     Descuento obtenerDescuento(int idDescuento);
 
     void actualizarDescuento(Descuento descuento);

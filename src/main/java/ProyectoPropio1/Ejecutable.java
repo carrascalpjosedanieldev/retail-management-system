@@ -51,6 +51,8 @@ public class Ejecutable {
         ServicioDescuentos servicioDescuentos = new ServicioDescuentos(repositorioDescuentos);
         ServicioFacturas servicioFacturas = new ServicioFacturas(repositorioFacturas);
 
+        FabricaProductos fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos);
+
         GestorVentas gestorVentas = new GestorVentas(servicioProductos, servicioServicios, servicioFacturas);
 
         ControladorTienda miControladorTienda = new ControladorTienda(
@@ -60,7 +62,8 @@ public class Ejecutable {
                 ensambladorDTODescuento,
                 gestorVentas,
                 servicioFacturas, servicioImpuestos, servicioConfiguraciones,
-                servicioInventario, servicioProductos, servicioServicios, servicioDescuentos
+                servicioInventario, servicioProductos, servicioServicios, servicioDescuentos,
+                fabricaProductos
         );
 
         int opcionMenuPrincipal;

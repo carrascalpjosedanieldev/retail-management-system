@@ -31,7 +31,6 @@ public class Descuento {
     public boolean isActivo() {
         return activo;
     }
-
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
@@ -39,6 +38,9 @@ public class Descuento {
     //CONSTRUCTORES:
 
     private Descuento(Integer id, String nombre, BigDecimal porcentaje, boolean activo) {
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("Nombre del Descuento Vacio");
+        }
         if (porcentaje.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Porcentaje de Descuento Invalido");
         }
@@ -77,6 +79,20 @@ public class Descuento {
             throw new IllegalArgumentException("Porcentaje para el Descuento Invalido");
         }
         setPorcentaje(porcentajeNuevo);
+    }
+
+    public void activar(){
+        if (isActivo()){
+            throw new IllegalStateException("El Descuento ya esta Activo");
+        }
+        setActivo(true);
+    }
+
+    public void desactivar(){
+        if (!isActivo()){
+            throw new IllegalStateException("El Descuento ya esta Inactivo");
+        }
+        setActivo(false);
     }
 
 }
