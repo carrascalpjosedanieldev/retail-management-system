@@ -51,10 +51,7 @@ public class ProductoPerecedero extends Producto{
 
     public boolean estaVencido(LocalDate fechaReferencia) {
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
-        if (diasRestantes < 0){
-            return true;
-        }
-        return false;
+        return diasRestantes < 0;
     }
 
     @Override

@@ -74,5 +74,6 @@ public class ProductoRopa extends Producto{
         BigDecimal factorDescuento = getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP);
         return precioBase.multiply(factorDescuento);
     }
+
 }
 

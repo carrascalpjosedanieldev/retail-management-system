@@ -116,13 +116,20 @@ public abstract class Producto implements ItemFacturable{
 
     //CONSTRUCTOR:
 
+    //Reconstruir desde DB
     protected Producto(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
                        int stock, Impuesto impuesto, Descuento descuento, boolean activo){
+        if (codigo.length() > 50){
+            throw new IllegalArgumentException("El Codigo del Producto execede los Caracteres Maximos Posibles");
+        }
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
         }
         if (valorCompra.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Valor de Compra del Producto Invalido");
+        }
+        if (porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0  || porcentajeGanancia.compareTo(CIEN) > 0){
+            throw new IllegalArgumentException("Porcentaje de Ganancia Invalido");
         }
         if (stock<0){
             throw new IllegalArgumentException("Stock del Producto Invalido");
@@ -143,6 +150,7 @@ public abstract class Producto implements ItemFacturable{
         this.activo = activo;
     }
 
+    //Crear Nuevo
     protected Producto(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock,
                        Impuesto impuesto, Descuento descuento){
         this(UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, true);
@@ -178,7 +186,7 @@ public abstract class Producto implements ItemFacturable{
     }
 
     public void aumentarStock(int cantidad){
-        if (cantidad<0){
+        if (cantidad<=0){
             throw new IllegalArgumentException("Cantidad de Producto a Ingresar Invalida");
         }
         int stockTotal = (getStock()) + cantidad;
@@ -186,7 +194,7 @@ public abstract class Producto implements ItemFacturable{
     }
 
     public void reducirStock(int cantidad){
-        if (cantidad<0){
+        if (cantidad<=0){
             throw new IllegalArgumentException("Cantidad de Producto a Retirar Invalida");
         }
         int stockTotal = (getStock()) - cantidad;
@@ -197,6 +205,9 @@ public abstract class Producto implements ItemFacturable{
     }
 
     public void cambiarImpuesto(Impuesto impuesto){
+        if (impuesto == getImpuesto()){
+            throw new IllegalArgumentException("El Impuesto nuevo y el vigente son el mismo");
+        }
         if (!impuesto.isActivo()){
             throw new IllegalArgumentException("El Impuesto que le quieres poner al Producto esta Inactivo");
         }
@@ -204,6 +215,9 @@ public abstract class Producto implements ItemFacturable{
     }
 
     public void cambiarDescuento(Descuento descuento){
+        if (descuento == getDescuento()){
+            throw new IllegalArgumentException("El Descuento nuevo y el vigente son el mismo");
+        }
         if (!descuento.isActivo()){
             throw new IllegalArgumentException("El Descuento que le quieres poner al Producto esta Inactivo");
         }
@@ -212,14 +226,14 @@ public abstract class Producto implements ItemFacturable{
 
     public void activarProducto(){
         if (isActivo()){
-            throw new IllegalArgumentException("El Producto ya esta Activo");
+            throw new IllegalStateException("El Producto ya esta Activo");
         }
         setActivo(true);
     }
 
     public void desactivarProducto(){
         if (!isActivo()){
-            throw new IllegalArgumentException("El Producto ya esta Inactivo");
+            throw new IllegalStateException("El Producto ya esta Inactivo");
         }
         setActivo(false);
     }

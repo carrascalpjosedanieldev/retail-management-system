@@ -19,9 +19,9 @@ public class Servicio implements ItemFacturable {
 
     private final String codigoServicio;
 
-    private final Impuesto impuesto;
+    private Impuesto impuesto;
 
-    private final Descuento descuento;
+    private Descuento descuento;
 
     private boolean activo;
 
@@ -51,8 +51,6 @@ public class Servicio implements ItemFacturable {
         return this.codigoServicio;
     }
 
-
-
     @Override
     public BigDecimal getValorVenta(LocalDate fecha) {
         BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase(), fecha);
@@ -64,6 +62,9 @@ public class Servicio implements ItemFacturable {
 
     public Impuesto getImpuesto(){
         return this.impuesto;
+    }
+    public void setImpuesto(Impuesto impuesto) {
+        this.impuesto = impuesto;
     }
 
     public int getIdImpuesto(){
@@ -77,6 +78,9 @@ public class Servicio implements ItemFacturable {
 
     public Descuento getDescuento(){
         return descuento;
+    }
+    public void setDescuento(Descuento descuento) {
+        this.descuento = descuento;
     }
 
     public int getIdDescuento(){
@@ -100,6 +104,9 @@ public class Servicio implements ItemFacturable {
 
     private Servicio(String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento,
                      boolean activo){
+        if (codigoServicio.length() > 50){
+            throw new IllegalArgumentException("El Codigo del Servicio execede los Caracteres Maximos Posibles");
+        }
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Servicio Vacio");
         }
@@ -171,11 +178,37 @@ public class Servicio implements ItemFacturable {
         setPrecioBase(precioNuevo);
     }
 
+    public void cambiarImpuesto(Impuesto impuesto){
+        if (impuesto == getImpuesto()){
+            throw new IllegalArgumentException("El Impuesto nuevo y el vigente son el mismo");
+        }
+        if (!impuesto.isActivo()){
+            throw new IllegalArgumentException("El Impuesto que le quieres poner al Servicio esta Inactivo");
+        }
+        setImpuesto(impuesto);
+    }
+
+    public void cambiarDescuento(Descuento descuento){
+        if (descuento == getDescuento()){
+            throw new IllegalArgumentException("El Descuento nuevo y el vigente son el mismo");
+        }
+        if (!descuento.isActivo()){
+            throw new IllegalArgumentException("El Descuento que le quieres poner al Servicio esta Inactivo");
+        }
+        setDescuento(descuento);
+    }
+
     public void activarServicio(){
+        if (isActivo()){
+            throw new IllegalStateException("El Servicio ya esta Activo");
+        }
         setActivo(true);
     }
 
     public void desactivarServicio(){
+        if (!isActivo()){
+            throw new IllegalStateException("El Servicio ya esta Inactivo");
+        }
         setActivo(false);
     }
 

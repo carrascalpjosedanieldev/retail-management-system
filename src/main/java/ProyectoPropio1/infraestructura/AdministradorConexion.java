@@ -8,10 +8,16 @@ import java.sql.SQLException;
 
 public class AdministradorConexion {
 
+    //ATRIBUTOS:
+
     private static final HikariDataSource dataSource;
+
+    //CONSTRUCTORES:
 
     private AdministradorConexion() {
     }
+
+    //METODOS
 
     static {
         HikariConfig config = new HikariConfig();

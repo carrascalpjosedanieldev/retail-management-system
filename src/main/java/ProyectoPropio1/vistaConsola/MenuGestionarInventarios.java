@@ -77,7 +77,7 @@ public class MenuGestionarInventarios {
     private static void verDetalleInventario(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -VER DETALLE INVENTARIO-");
         try {
-            List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
+            List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDatosInventarioGeneral();
             System.out.println("---> INVENTARIOS:");
             System.out.println("------------------------------------------------------------------------------------------------------------");
             for (DatosInventarioDTO datosInventario:detalleInventarioGeneral){
@@ -135,7 +135,7 @@ public class MenuGestionarInventarios {
 
     private static void verInfoMinimaInventarios(ControladorTienda controladorTienda){
         try {
-            List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
+            List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDatosInventarioGeneral();
             if (detalleInventarioGeneral.isEmpty()){
                 System.out.println("""
                     \nACCION DENEGADA
@@ -162,7 +162,7 @@ public class MenuGestionarInventarios {
 
     private static void eliminarInventarioVacio(Scanner sc, ControladorTienda controladorTienda){
         try {
-            List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
+            List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDatosInventarioGeneral();
             if (detalleInventarioGeneral.isEmpty()){
                 System.out.println("""
                     \nACCION DENEGADA

@@ -42,8 +42,9 @@ public class GestorVentas {
         this.carrito = Carrito.crearNueva();
     }
 
-    public void agregarProductoAlCarrito(int idInventario, String codigoProducto, int cantidad){
+    public void agregarProductoAlCarrito(int idInventario, String codigoProducto, int cantidad, LocalDate fecha){
         Producto producto = this.servicioProductos.obtenerProductoDeInventario(idInventario, codigoProducto);
+        producto.validarEstadoParaVenta(fecha);
         this.carrito.agregarProducto(producto, cantidad);
     }
 

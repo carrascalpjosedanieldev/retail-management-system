@@ -31,15 +31,5 @@ public class EnsambladorDTOProducto {
         }
     }
 
-    public DatosVentaProductoDTO ensamblarDatosVentaProducto(Producto producto, LocalDate fecha){
-        return switch (producto) {
-            case ProductoRopa productoRopa ->
-                    new DatosVentaProductoRopaDTO(productoRopa.getNombre(), productoRopa.getValorVenta(fecha), productoRopa.getTalla());
-            case ProductoPerecedero productoPerecedero ->
-                    new DatosVentaProductoPerecederoDTO(productoPerecedero.getNombre(), productoPerecedero.getValorVenta(fecha), productoPerecedero.getFechaVencimiento());
-            default -> throw new IllegalStateException("Tipo de Producto no soportado por el Sistema");
-        };
-    }
-
 }
 

@@ -94,18 +94,12 @@ public class ControladorTienda {
         return this.miEnsambladorDTOProducto.ensamblarDatosTotalesProducto(producto, fecha);
     }
 
-    public DatosVentaProductoDTO obtenerDatosVentaProducto (int idInventario, String codigoProducto){
-        LocalDate fecha = obtenerFecha();
-        Producto producto = this.servicioProductos.obtenerProductoDeInventario(idInventario, codigoProducto);
-        return this.miEnsambladorDTOProducto.ensamblarDatosVentaProducto(producto, fecha);
-    }
-
     public DatosInventarioDTO obtenerDatosInventario (int idInventario){
         Inventario inventario = this.servicioInventario.obtenerInventario(idInventario);
         return this.miEnsambladorDTOInventario.ensamblarDatosInventario(inventario);
     }
 
-    public List<DatosInventarioDTO> obtenerDetalleInventarioGeneral(){
+    public List<DatosInventarioDTO> obtenerDatosInventarioGeneral(){
         List<Inventario> inventarios = this.servicioInventario.obtenerInventarios();
         return this.miEnsambladorDTOInventario.ensamblarDetalleInventarioGeneral(inventarios);
     }
@@ -182,11 +176,15 @@ public class ControladorTienda {
     }
 
     public void desactivarImpuesto(int idImpuesto){
-        this.servicioImpuestos.desactivarImpuesto(idImpuesto);
+        Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
+        impuesto.desactivar();
+        this.servicioImpuestos.actualizarImpuesto(impuesto);
     }
 
     public void activarImpuesto(int idImpuesto){
-        this.servicioImpuestos.activarImpuesto(idImpuesto);
+        Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
+        impuesto.activar();
+        this.servicioImpuestos.actualizarImpuesto(impuesto);
     }
 
     public void cambiarNombreImpuesto(int idImpuesto, String nombreNuevo){
@@ -301,72 +299,50 @@ public class ControladorTienda {
     }
 
     public void eliminarProductoDeInventario(String codigo, int idInventario){
-        this.servicioProductos.eliminarProductoDeInventario(codigo, idInventario);
+        this.servicioProductos.desactivarProductoDeInventario(codigo, idInventario);
     }
 
     public void estaProductoEnInventario(int idInventario, String codigoProducto){
         this.servicioProductos.obtenerProductoDeInventario(idInventario, codigoProducto);
     }
 
-    private Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
-        return this.servicioProductos.obtenerProductoDeInventario(idInventario, codigoProducto);
-    }
-
     public void actualizarNombreDeProductoDeInventario(int idInventario, String  codigoProducto, String nombreNuevo){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarNombreProducto(nombreNuevo);
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.actualizarNombreDeProductoDeInventario(idInventario, codigoProducto, nombreNuevo);
     }
 
-    public void actualizarPorcentajeGananciaDeProductoDeInventario(int idInventario, String  codigoProducto, BigDecimal porcentaje){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarValorVentaPorPorcentaje(porcentaje);
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+    public void actualizarPorcentajeGananciaDeProductoDeInventario(int idInventario, String  codigoProducto, BigDecimal porcentajeNuevo){
+        this.servicioProductos.actualizarPorcentajeGananciaDeProductoDeInventario(idInventario, codigoProducto, porcentajeNuevo);
     }
 
     public void actualizarValorCompraDeProductoDeInventario(int idInventario, String codigoProducto, BigDecimal valorNuevo){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarValorCompra(valorNuevo);
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.actualizarValorCompraDeProductoDeInventario(idInventario, codigoProducto, valorNuevo);
     }
 
     public void aumentarStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
         this.servicioInventario.verificarEspacioDisponible(idInventario, cantidad);
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.aumentarStock(cantidad);
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.aumentarStockDeProductoDeInventario(idInventario, codigoProducto, cantidad);
     }
 
     public void reducirStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.reducirStock(cantidad);
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidad);
     }
 
     public void cambiarImpuestoAProducto(String codigoProducto, int idInventario, int idImpuesto){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
         Impuesto impuesto = this.servicioImpuestos.obtenerImpuesto(idImpuesto);
-        producto.cambiarImpuesto(impuesto);
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.cambiarImpuestoAProducto(codigoProducto, idInventario, impuesto);
     }
 
     public void cambiarDescuentoAProducto(String codigoProducto, int idInventario, int idDescuento){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
         Descuento descuento = this.servicioDescuentos.obtenerDescuento(idDescuento);
-        producto.cambiarDescuento(descuento);
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.cambiarDescuentoAProducto(codigoProducto, idInventario, descuento);
     }
 
     public void activarProducto(String codigoProducto, int idInventario){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.activarProducto();
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.activarProductoDeInventario(codigoProducto, idInventario);
     }
 
     public void desactivarProducto(String codigoProducto, int idInventario){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.desactivarProducto();
-        this.servicioProductos.actualizarProductoDeInventario(idInventario, producto);
+        this.servicioProductos.desactivarProductoDeInventario(codigoProducto, idInventario);
     }
 
     public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){
@@ -416,7 +392,8 @@ public class ControladorTienda {
     }
 
     public void agregarProductoACarritoSesion(int idIventario, String codigoProducto, int cantidad){
-        this.miGestorDeVentas.agregarProductoAlCarrito(idIventario, codigoProducto, cantidad);
+        LocalDate fecha = obtenerFecha();
+        this.miGestorDeVentas.agregarProductoAlCarrito(idIventario, codigoProducto, cantidad, fecha);
     }
 
     public void reducirCantidadProductoACarritoSesion(String codigoProducto, int cantidadAReducir){

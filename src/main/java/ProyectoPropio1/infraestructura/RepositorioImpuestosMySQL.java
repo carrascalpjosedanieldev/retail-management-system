@@ -47,45 +47,6 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
 
     @Override
-    public void desactivarImpuesto(int idImpuesto) {
-        String sql = "UPDATE impuestos SET activo = false WHERE id_impuesto = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, idImpuesto);
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ImpuestoNoEncontradoException("El Impuesto con ID " + idImpuesto + " no existe o ya fue Desactivado antes.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar desactivar el Impuesto", e);
-        }
-    }
-
-
-    @Override
-    public void activarImpuesto(int idImpuesto) {
-        String sql = "UPDATE impuestos SET activo = true WHERE id_impuesto = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, idImpuesto);
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ImpuestoNoEncontradoException("El Impuesto con ID " + idImpuesto + " no existe o ya fue Activado antes.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar Activar el Impuesto", e);
-        }
-    }
-
-    @Override
     public Impuesto obtenerImpuesto(int idImpuesto) {
         if (idImpuesto<=0) {
             throw new IllegalStateException("El ID a buscar debe ser un número positivo.");

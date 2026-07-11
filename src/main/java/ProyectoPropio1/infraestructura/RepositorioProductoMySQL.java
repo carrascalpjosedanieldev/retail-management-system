@@ -180,7 +180,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public void actualizarProducto(Producto producto, int idInventario) {
-        String sql = "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, stock = ?, id_impuesto = ?, id_descuento = ? , activo = ? " +
+        String sql = "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, stock = ?, " +
+                "id_impuesto = ?, id_descuento = ? , activo = ? " +
                 "WHERE id_inventario = ? AND codigo_producto = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();

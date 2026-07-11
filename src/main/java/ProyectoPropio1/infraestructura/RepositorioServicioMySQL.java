@@ -46,45 +46,6 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
 
     @Override
-    public void activarServicio(String codigoServicio) {
-        String sql = "UPDATE servicios SET activo = true WHERE codigo_servicio = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, codigoServicio);
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ServicioNoEncontradoException("El Servicio con Codigo -" + codigoServicio + "- NO existe o ya fue activado antes.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar activar el Servicio", e);
-        }
-    }
-
-    @Override
-    public void desactivarServicio(String codigoServicio) {
-        String sql = "UPDATE servicios SET activo = false WHERE codigo_servicio = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, codigoServicio);
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ServicioNoEncontradoException("El Servicio con Codigo -" + codigoServicio + "- NO existe o ya fue desactivado antes.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar desactivar el Servicio", e);
-        }
-    }
-
-
-    @Override
     public Servicio obtenerServicio(String codigoServicio) {
         String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
                 "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto " +
@@ -137,7 +98,8 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     @Override
     public void actualizarServicio(Servicio servicio) {
-        String sql = "UPDATE servicios SET id_impuesto = ?, nombre = ?, precio_base = ? WHERE codigo_servicio = ?";
+        String sql = "UPDATE servicios SET id_impuesto = ?, nombre = ?, precio_base = ?, id_descuento = ?, activo = ? " +
+                "WHERE codigo_servicio = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -145,11 +107,13 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             pstmt.setInt(1, servicio.getIdImpuesto());
             pstmt.setString(2, servicio.getNombre());
             pstmt.setBigDecimal(3, servicio.getPrecioBase());
+            pstmt.setInt(4, servicio.getIdDescuento());
+            pstmt.setBoolean(5, servicio.isActivo());
 
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas==0){
-                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el codigo -" + servicio.getCodigo() + "- NO existe");
+                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el Codigo -" + servicio.getCodigo() + "- NO existe");
             }
 
         } catch (SQLException e) {
@@ -158,49 +122,6 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     }
 
-
-    @Override
-    public void actualizarImpuestoAServicio(Servicio servicio, int idImpuesto) {
-        String sql = "UPDATE servicios SET id_impuesto = ? WHERE codigo_servicio = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
-
-            pstmt.setInt(1, idImpuesto);
-            pstmt.setString(2, servicio.getCodigo());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas==0){
-                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el codigo -" + servicio.getCodigo() + "- NO existe");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar cambiar el Impuesto del Servicio", e);
-        }
-    }
-
-
-    @Override
-    public void actualizarDescuentoAServicio(Servicio servicio, int idDescuento) {
-        String sql = "UPDATE servicios SET id_descuento = ? WHERE codigo_servicio = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
-
-            pstmt.setInt(1, idDescuento);
-            pstmt.setString(2, servicio.getCodigo());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas==0){
-                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el codigo -" + servicio.getCodigo() + "- NO existe");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar cambiar el Descuento del Servicio", e);
-        }
-    }
 
     @Override
     public List<Servicio> obtenerServiciosActivos() {

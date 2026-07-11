@@ -31,8 +31,7 @@ public class Impuesto {
     public boolean isActivo() {
         return activo;
     }
-
-    public void setActivo(boolean activo) {
+    private void setActivo(boolean activo) {
         this.activo = activo;
     }
 
@@ -77,6 +76,20 @@ public class Impuesto {
             throw new IllegalArgumentException("Porcentaje para el Impuesto Invalido");
         }
         setPorcentaje(porcentajeNuevo);
+    }
+
+    public void activar(){
+        if (isActivo()){
+            throw new IllegalStateException("El Impuesto ya esta Activo");
+        }
+        setActivo(true);
+    }
+
+    public void desactivar(){
+        if (!isActivo()){
+            throw new IllegalStateException("El Impuesto ya esta Inactivo");
+        }
+        setActivo(false);
     }
 
 }

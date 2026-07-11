@@ -41,18 +41,26 @@ public class ServicioServicios {
         return servicio.getCodigo();
     }
 
+    private void actualizarServicio(Servicio servicio){
+        this.repositorioServicio.actualizarServicio(servicio);
+    }
+
     public void desactivarServicio(String codigoServicio){
-        this.repositorioServicio.desactivarServicio(codigoServicio);
+        Servicio servicio = this.obtenerServicio(codigoServicio);
+        servicio.desactivarServicio();
+        this.actualizarServicio(servicio);
     }
 
     public void activarServicio(String codigoServicio){
-        this.repositorioServicio.activarServicio(codigoServicio);
+        Servicio servicio = this.obtenerServicio(codigoServicio);
+        servicio.activarServicio();
+        this.actualizarServicio(servicio);
     }
 
     public void cambiarNombreServicio(String codigoServicio, String nombreNuevo){
-        Servicio servicio = this.repositorioServicio.obtenerServicio(codigoServicio);
+        Servicio servicio = this.obtenerServicio(codigoServicio);
         servicio.cambiarNombreServicio(nombreNuevo);
-        this.repositorioServicio.actualizarServicio(servicio);
+        this.actualizarServicio(servicio);
     }
 
     public void cambiarPrecioServicio(String codigoServicio, BigDecimal precioNuevo){
@@ -63,12 +71,16 @@ public class ServicioServicios {
 
     public void cambiarImpuestoDeServicio(String codigoServicio, int idImpuesto){
         Servicio servicio = this.repositorioServicio.obtenerServicio(codigoServicio);
-        this.repositorioServicio.actualizarImpuestoAServicio(servicio, idImpuesto);
+        Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
+        servicio.cambiarImpuesto(impuesto);
+        this.repositorioServicio.actualizarServicio(servicio);
     }
 
     public void cambiarDescuentoDeServicio(String codigoServicio, int idDescuento){
         Servicio servicio = this.obtenerServicio(codigoServicio);
-        this.repositorioServicio.actualizarDescuentoAServicio(servicio, idDescuento);
+        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+        servicio.cambiarDescuento(descuento);
+        this.repositorioServicio.actualizarServicio(servicio);
     }
 
 }

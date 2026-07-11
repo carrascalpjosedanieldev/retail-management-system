@@ -34,7 +34,7 @@ public class MenuModificarInventario {
 
     public static void modificarInventarioEspecifico(Scanner sc, ControladorTienda controladorTienda){
         System.out.println("\nHAS SELECCIONADO: -MODIFICAR INVENTARIO-");
-        List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDetalleInventarioGeneral();
+        List<DatosInventarioDTO> detalleInventarioGeneral = controladorTienda.obtenerDatosInventarioGeneral();
         int opcionModificarInventario;
         System.out.println("""
                 \n---> INVENTARIOS:
