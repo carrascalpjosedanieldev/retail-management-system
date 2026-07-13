@@ -30,7 +30,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
-                    int idReal = gk.getInt("id_politica");
+                    int idReal = gk.getInt(1);
                     return PoliticaVencimiento.reconstruirDesdeBD(idReal, politicaVencimiento.getNombre(),
                             politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
                             politicaVencimiento.isActiva());
@@ -70,7 +70,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                     String nombre = rs.getString("nombre_politica");
                     int diasUmbral = rs.getInt("dias_umbral");
                     BigDecimal porcentaje = rs.getBigDecimal("porcentaje_descuento");
-                    boolean activo = rs.getBoolean("activo");
+                    boolean activo = rs.getBoolean("activa");
 
                     return PoliticaVencimiento.reconstruirDesdeBD(idReal, nombre, diasUmbral, porcentaje, activo);
                 }
@@ -119,7 +119,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
         List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
 
         String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento WHERE activo = true";
+                "FROM politicas_vencimiento WHERE activa = true";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -148,7 +148,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
         List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
 
         String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento WHERE activo = false";
+                "FROM politicas_vencimiento WHERE activa = false";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);

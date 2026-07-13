@@ -15,7 +15,7 @@ public class MenuGestionarServicios {
 
     private static void menuGestionarServicios(){
         System.out.print("""
-                \n                             -MODIFICAR TIENDA-
+                \n                           -GESTIONAR SERVICIOS-
                 ---> SELECCIONA QUE QUIERES HACER:
                                * OPCION                              * ACCION
                                    1                            REGISTRAR SERVICIO
@@ -36,7 +36,7 @@ public class MenuGestionarServicios {
         int opcionGestionarServicios;
         do {
             menuGestionarServicios();
-            opcionGestionarServicios = pedirOpcion(sc,1,7);
+            opcionGestionarServicios = pedirOpcion(sc,1,9);
             switch (opcionGestionarServicios){
                 case 1:
                     registrarServicio(sc, controladorTienda);
@@ -57,16 +57,16 @@ public class MenuGestionarServicios {
                     cambiarDescuento(sc, controladorTienda);
                     break;
                 case 7:
-                    desactivarServicio(sc, controladorTienda);
-                    break;
-                case 8:
                     activarServicio(sc, controladorTienda);
                     break;
-                case 10:
+                case 8:
+                    desactivarServicio(sc, controladorTienda);
+                    break;
+                case 9:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
-        } while (opcionGestionarServicios!=7);
+        } while (opcionGestionarServicios!=9);
     }
 
     private static void registrarServicio(Scanner sc, ControladorTienda controladorTienda){
@@ -220,7 +220,7 @@ public class MenuGestionarServicios {
         String  codigoServicio = sc.nextLine();
         try {
             controladorTienda.desactivarServicioDeTienda(codigoServicio);
-            System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido eliminado con Exito");
+            System.out.println("El Servicio de codigo -" + codigoServicio + "- ha sido desactivado con Exito");
         } catch (RuntimeException e) {
             System.out.println("No se pudo completar la accion\nERROR:  " + e.getMessage());
         }

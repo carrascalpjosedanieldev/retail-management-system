@@ -30,7 +30,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
-                    int idReal = gk.getInt("id_descuento");
+                    int idReal = gk.getInt(1);
                     return Descuento.reconstruirDesdeBD(idReal, descuento.getNombre(), descuento.getPorcentaje(), descuento.isActivo());
                 } else {
                     throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");

@@ -48,8 +48,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
     @Override
     public Servicio obtenerServicio(String codigoServicio) {
         String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto " +
-                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, des.activo AS descuento_activo " +
+                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+                "des.activo AS descuento_activo " +
                 "FROM servicios s " +
                 "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
                 "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
@@ -78,7 +79,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                     int idDescuento = rs.getInt("id_descuento");
                     String nombreDesc = rs.getString("nombre_descuento");
                     BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
-                    boolean activoDesc = rs.getBoolean("activo_descuento");
+                    boolean activoDesc = rs.getBoolean("descuento_activo");
                     Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
 
                     return Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, activo);
@@ -109,6 +110,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             pstmt.setBigDecimal(3, servicio.getPrecioBase());
             pstmt.setInt(4, servicio.getIdDescuento());
             pstmt.setBoolean(5, servicio.isActivo());
+            pstmt.setString(6, servicio.getCodigo());
 
             int filasAfectadas = pstmt.executeUpdate();
 

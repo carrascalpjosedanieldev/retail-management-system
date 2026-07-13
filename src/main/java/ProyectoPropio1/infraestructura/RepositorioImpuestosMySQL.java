@@ -30,7 +30,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
-                    int idReal = gk.getInt("id_impuesto");
+                    int idReal = gk.getInt(1);
                     return Impuesto.reconstruirDesdeBD(idReal, impuesto.getNombre(), impuesto.getPorcentaje(), impuesto.isActivo());
                 } else {
                     throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");

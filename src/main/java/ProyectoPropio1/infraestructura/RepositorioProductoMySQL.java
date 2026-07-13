@@ -112,7 +112,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         String sql =
                 "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, " +
                         "p.activo, " +
-                        "r.talla, per.fecha_vencimiento, " +
+                        "r.talla, per.fecha_vencimiento, per.id_politica, " +
                         "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
                         "i.activo AS impuesto_activo, " +
                         "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
@@ -124,8 +124,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                         "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
                         "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
                         "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
-                        "LEFT JOIN politicas_vencimiento pove ON p.id_politica = pove.id_politica " +
-                        "WHERE p.id_inventario = ? AND p.codigo_producto = ? AND p.activo = true";
+                        "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
+                        "WHERE p.id_inventario = ? AND p.codigo_producto = ? ";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

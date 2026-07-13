@@ -157,6 +157,7 @@ public class MenuModificarInventario {
                             \nIngrese la fecha de vencimiento (Formato DD/MM/AAAA):
                             """ + "---> ");
                     LocalDate fecha = leerFecha(sc);
+                    System.out.println();
                     String politicasActivasParaRegistro = politicasVencimientoActivasParaRegistro(controladorTienda);
                     System.out.println(politicasActivasParaRegistro);
                     System.out.print("Escribe el ID de la Politica de Vencimiento que le corresponda: \n" +
