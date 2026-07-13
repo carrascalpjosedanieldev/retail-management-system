@@ -38,6 +38,7 @@ public class MenuVentas {
             controladorTienda.abrirCarritoSesion();
             finalizar = false;
             while (!finalizar){
+                System.out.println();
                 menuVentas();
                 peticionMenuVentas = pedirOpcion(sc, 1, 8);
                 switch (peticionMenuVentas){
@@ -218,7 +219,6 @@ public class MenuVentas {
             mostrarFactura(datosFactura);
         } catch (RuntimeException e) {
             System.out.println("\nNo se pudo completar la accion\nERROR:  " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

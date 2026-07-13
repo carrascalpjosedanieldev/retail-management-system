@@ -74,7 +74,7 @@ public class ServicioProductos {
     }
 
     public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
-        return this.repositorioProducto.obtenerProducto(idInventario, codigoProducto);
+        return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
     }
 
     private void actualizarProductoDeInventario(int idInventario, Producto producto){

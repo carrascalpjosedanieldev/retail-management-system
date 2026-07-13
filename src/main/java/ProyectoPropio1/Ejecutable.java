@@ -34,6 +34,7 @@ public class Ejecutable {
         EnsambladorDTOServicio ensambladorDTOServicio = new EnsambladorDTOServicio();
         EnsambladorDTOImpuesto ensambladorDTOImpuesto = new EnsambladorDTOImpuesto();
         EnsambladorDTODescuento ensambladorDTODescuento = new EnsambladorDTODescuento();
+        EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
 
         RepositorioInventario repositorioInventario = new RepositorioInventarioMySQL();
         RepositorioProducto repositorioProducto = new RepositorioProductoMySQL();
@@ -41,6 +42,7 @@ public class Ejecutable {
         RepositorioServicio repositorioServicio = new RepositorioServicioMySQL();
         RepositorioFacturas repositorioFacturas = new RepositorioFacturasMySQL();
         RepositorioDescuentos repositorioDescuentos = new RepositorioDescuentosMySQL();
+        RepositorioPoliticaVencimiento repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
 
         ServicioConfiguraciones servicioConfiguraciones = new ServicioConfiguraciones(repositorioConfiguracion);
         ServicioInventario servicioInventario = new ServicioInventario(repositorioInventario);
@@ -50,8 +52,9 @@ public class Ejecutable {
                                                                     repositorioServicio);
         ServicioDescuentos servicioDescuentos = new ServicioDescuentos(repositorioDescuentos);
         ServicioFacturas servicioFacturas = new ServicioFacturas(repositorioFacturas);
+        ServicioPoliticaVencimiento servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(repositorioPoliticaVencimiento);
 
-        FabricaProductos fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos);
+        FabricaProductos fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPoliticaVencimiento);
 
         GestorVentas gestorVentas = new GestorVentas(servicioProductos, servicioServicios, servicioFacturas);
 
@@ -59,10 +62,10 @@ public class Ejecutable {
                 miTienda,
                 ensambladorDTOProducto, ensambladorDTOInventario, ensambladorDTOFactura,
                 ensambladorDTOCarrito, ensambladorDTOServicio, ensambladorDTOImpuesto,
-                ensambladorDTODescuento,
+                ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento,
                 gestorVentas,
-                servicioFacturas, servicioImpuestos, servicioConfiguraciones,
-                servicioInventario, servicioProductos, servicioServicios, servicioDescuentos,
+                servicioFacturas, servicioImpuestos, servicioConfiguraciones, servicioInventario,
+                servicioProductos, servicioServicios, servicioDescuentos,servicioPoliticaVencimiento,
                 fabricaProductos
         );
 

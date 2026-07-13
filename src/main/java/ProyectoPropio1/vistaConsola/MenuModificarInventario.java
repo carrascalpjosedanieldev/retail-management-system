@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
+import static ProyectoPropio1.vistaConsola.MenuGestionarPoliticasVencimiento.politicasVencimientoActivasParaRegistro;
 import static ProyectoPropio1.vistaConsola.MenuModificarProducto.modificarProductoAInventario;
 import static ProyectoPropio1.vistaConsola.MenuGestionarImpuestos.impuestosActivosParaRegistro;
 import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
@@ -25,7 +26,7 @@ public class MenuModificarInventario {
                                    3                              ELIMINAR PRODUCTO
                                    4                               BUSCAR PRODUCTO
                                    5                       MOVER PRODUCTO A OTRO INVENTARIO
-                                   6                             MODIFICAR PRODUCTO
+                                   6                        MODIFICAR PRODUCTO ESPECIFICO
                                    7                                   SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
@@ -99,7 +100,7 @@ public class MenuModificarInventario {
     private static void agregarProductoAInventario(Scanner sc, ControladorTienda controladorTienda, int idInventario) {
         System.out.print("""
                 \nHAS SELECCIONADO: -AGREGAR PRODUCTO-
-                Escribe el nombre del producto nuevo:
+                Escribe el Nombre del Producto Nuevo:
                 """ + "---> ");
         String nombre = sc.nextLine();
         System.out.print("""
@@ -156,8 +157,13 @@ public class MenuModificarInventario {
                             \nIngrese la fecha de vencimiento (Formato DD/MM/AAAA):
                             """ + "---> ");
                     LocalDate fecha = leerFecha(sc);
+                    String politicasActivasParaRegistro = politicasVencimientoActivasParaRegistro(controladorTienda);
+                    System.out.println(politicasActivasParaRegistro);
+                    System.out.print("Escribe el ID de la Politica de Vencimiento que le corresponda: \n" +
+                            "---> ");
+                    int idPolitica = leerEntero(sc);
                     codigoProducto = controladorTienda.registrarProductoPerecedero(idInventario, nombre, valorC,
-                            porcentajeGanancia,  stock, idImpuesto, idDescuento, fecha);
+                            porcentajeGanancia,  stock, idImpuesto, idDescuento, idPolitica, fecha);
                     datosProducto = controladorTienda.obtenerDatosTotalesProducto(idInventario, codigoProducto);
                     System.out.println("\nNuevo Producto:");
                     DatosTotalesProductoPerecederoDTO productoPerecedero = (DatosTotalesProductoPerecederoDTO) datosProducto;

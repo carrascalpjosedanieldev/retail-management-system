@@ -31,6 +31,8 @@ public class ControladorTienda {
 
     private final EnsambladorDTODescuento miEnsambladorDTODescuento;
 
+    private final EnsambladorDTOPoliticaVencimiento miEnsambladorDTOPoliticaVencimiento;
+
     private final ServicioFacturas servicioFacturas;
 
     private final ServicioImpuestos servicioImpuestos;
@@ -45,6 +47,8 @@ public class ControladorTienda {
 
     private final ServicioDescuentos servicioDescuentos;
 
+    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento;
+
     private final FabricaProductos fabricaProductos;
 
     //CONSTRUCTOR:
@@ -54,11 +58,12 @@ public class ControladorTienda {
             EnsambladorDTOProducto ensambladorDTOProducto, EnsambladorDTOInventario ensambladorDTOInventario,
             EnsambladorDTOFactura ensambladorDTOFactura, EnsambladorDTOCarrito ensambladorDTOCarrito,
             EnsambladorDTOServicio ensambladorDTOServicio, EnsambladorDTOImpuesto ensambladorDTOImpuesto,
-            EnsambladorDTODescuento ensambladorDTODescuento,
+            EnsambladorDTODescuento ensambladorDTODescuento, EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento,
             GestorVentas gestorVentas,
             ServicioFacturas servicioFacturas, ServicioImpuestos servicioImpuestos,
             ServicioConfiguraciones servicioConfiguraciones, ServicioInventario servicioInventario,
             ServicioProductos servicioProductos, ServicioServicios servicioServicios, ServicioDescuentos servicioDescuentos,
+            ServicioPoliticaVencimiento servicioPoliticaVencimiento,
             FabricaProductos fabricaProductos
     ) {
         this.miTienda = tienda;
@@ -70,6 +75,7 @@ public class ControladorTienda {
         this.miEnsambladorDTOServicio = ensambladorDTOServicio;
         this.miEnsambladorDTOImpuesto = ensambladorDTOImpuesto;
         this.miEnsambladorDTODescuento = ensambladorDTODescuento;
+        this.miEnsambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
 
         this.miGestorDeVentas = gestorVentas;
 
@@ -80,6 +86,7 @@ public class ControladorTienda {
         this.servicioProductos = servicioProductos;
         this.servicioServicios = servicioServicios;
         this.servicioDescuentos = servicioDescuentos;
+        this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
 
         this.fabricaProductos = fabricaProductos;
     }
@@ -140,6 +147,22 @@ public class ControladorTienda {
             throw new IllegalStateException("NO hay Descuentos Inactivos");
         }
         return this.miEnsambladorDTODescuento.ensamblarDetalleDescuentos(descuentos);
+    }
+
+    public List<PoliticaVencimientoDTO> obtenerDetallePoliticasVencimientoActivas(){
+        List<PoliticaVencimiento> politicasVencimiento = this.servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas();
+        if (politicasVencimiento.isEmpty()){
+            throw new IllegalStateException("NO hay Politicas de Vencimiento Activas");
+        }
+        return this.miEnsambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(politicasVencimiento);
+    }
+
+    public List<PoliticaVencimientoDTO> obtenerDetallePoliticasVencimientoInactivas(){
+        List<PoliticaVencimiento> politicaVencimientos = this.servicioPoliticaVencimiento.obtenerPoliticasVencimientoInactivas();
+        if (politicaVencimientos.isEmpty()){
+            throw new IllegalStateException("NO hay Politicas de Vencimiento Inactivas");
+        }
+        return this.miEnsambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(politicaVencimientos);
     }
 
     public ServicioDTO obtenerDatosServicio(String codigoServicio){
@@ -212,6 +235,32 @@ public class ControladorTienda {
         this.servicioDescuentos.cambiarPorcentajeDescuento(idDescuento, porcentajeNuevo);
     }
 
+    //METODOS POLITICA VENCIMIENTO:
+
+    public int registrarPoliticaVencimiento(String nombre, int diasUmbral, BigDecimal porcentaje){
+        return this.servicioPoliticaVencimiento.registrarPoliticaVencimiento(nombre, diasUmbral, porcentaje);
+    }
+
+    public void desactivarPoliticaVencimiento(int idPoliticaVencimiento){
+        this.servicioPoliticaVencimiento.desactivarPoliticaVencimiento(idPoliticaVencimiento);
+    }
+
+    public void activarPoliticaVencimiento(int idPoliticaVencimiento){
+        this.servicioPoliticaVencimiento.activarPoliticaVencimiento(idPoliticaVencimiento);
+    }
+
+    public void cambiarNombrePoliticaVencimiento(int idPoliticaVencimiento, String nombreNuevo){
+        this.servicioPoliticaVencimiento.cambiarNombrePoliticaVencimiento(idPoliticaVencimiento, nombreNuevo);
+    }
+
+    public void cambiarDiasUmbralPoliticaVencimiento(int idPoliticaVencimiento, int diasUmbral){
+        this.servicioPoliticaVencimiento.cambiarDiasUmbralPoliticaVencimiento(idPoliticaVencimiento, diasUmbral);
+    }
+
+    public void cambiarPorcentajePoliticaVencimiento(int idPoliticaVencimiento, BigDecimal porcentajeNuevo){
+        this.servicioPoliticaVencimiento.cambiarPorcentajePoliticaVencimiento(idPoliticaVencimiento, porcentajeNuevo);
+    }
+
     //METODOS DE TIENDA:
 
     public String obtenerNombreTienda() {
@@ -249,11 +298,11 @@ public class ControladorTienda {
 
     public String registrarProductoPerecedero(int idInventario, String nombre, BigDecimal valorCompra,
                                               BigDecimal porcentajeGanancia, int stock, int idImpuesto,
-                                              int idDescuento, LocalDate fechaVencimiento){
+                                              int idDescuento, int idPolitica, LocalDate fechaVencimiento){
         this.servicioInventario.verificarEspacioDisponible(idInventario, stock);
         LocalDate fecha = obtenerFecha();
         Producto producto = this.fabricaProductos.fabricarProductoPerecedero(nombre, valorCompra, porcentajeGanancia,
-                stock, idImpuesto, idDescuento, fechaVencimiento, fecha);
+                stock, idImpuesto, idDescuento, fechaVencimiento, idPolitica, fecha);
         return this.servicioProductos.registrarProducto(idInventario, producto);
     }
 

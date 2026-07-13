@@ -10,7 +10,7 @@ public interface RepositorioProducto {
 
     void desactivarProductoDeInventario(String codigoProducto, int idInventario);
 
-    Producto obtenerProducto(int idInventario, String  codigoProducto);
+    Producto obtenerProductoDeInventario(int idInventario, String  codigoProducto);
 
     void actualizarProducto(Producto producto, int idInventario);
 

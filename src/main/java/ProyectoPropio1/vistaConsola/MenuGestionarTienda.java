@@ -7,6 +7,7 @@ import java.util.Scanner;
 import static ProyectoPropio1.vistaConsola.MenuGestionarDescuentos.gestionarDescuentos;
 import static ProyectoPropio1.vistaConsola.MenuGestionarInventarios.gestionarInventarios;
 import static ProyectoPropio1.vistaConsola.MenuGestionarImpuestos.gestionarImpuestos;
+import static ProyectoPropio1.vistaConsola.MenuGestionarPoliticasVencimiento.gestionarPoliticasDeVencimiento;
 import static ProyectoPropio1.vistaConsola.MetodosTienda.*;
 import static ProyectoPropio1.vistaConsola.MenuGestionarServicios.gestionarServicios;
 
@@ -22,7 +23,8 @@ public class MenuGestionarTienda {
                                    3                            GESTIONAR SERVICIOS
                                    4                            GESTIONAR IMPUESTOS
                                    5                            GESTIONAR DESCUENTOS
-                                   6                                   SALIR
+                                   6                      GESTIONAR POLITICAS DE VENCIMIENTO
+                                   7                                   SALIR
                 ---> Ingresa el numero segun tu eleccion:
                 """ + "---> ");
     }
@@ -33,7 +35,7 @@ public class MenuGestionarTienda {
         int opcionGestionarTienda;
         do {
             menuGestionarTienda();
-            opcionGestionarTienda = pedirOpcion(sc,1,6);
+            opcionGestionarTienda = pedirOpcion(sc,1,7);
             switch (opcionGestionarTienda){
                 case 1:
                     cambiarNombreTienda(sc,controladorTienda);
@@ -51,10 +53,13 @@ public class MenuGestionarTienda {
                     gestionarDescuentos(sc, controladorTienda);
                     break;
                 case 6:
+                    gestionarPoliticasDeVencimiento(sc, controladorTienda);
+                    break;
+                case 7:
                     System.out.println("\nSALIENDO . . .");
                     break;
             }
-        } while (opcionGestionarTienda!=6);
+        } while (opcionGestionarTienda!=7);
     }
 
     private static void cambiarNombreTienda(Scanner sc, ControladorTienda controladorTienda){

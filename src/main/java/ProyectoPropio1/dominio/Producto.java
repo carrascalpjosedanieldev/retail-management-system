@@ -116,7 +116,7 @@ public abstract class Producto implements ItemFacturable{
 
     //CONSTRUCTOR:
 
-    //Reconstruir desde DB
+        //Reconstruir desde DB
     protected Producto(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
                        int stock, Impuesto impuesto, Descuento descuento, boolean activo){
         if (codigo.length() > 50){
@@ -150,7 +150,7 @@ public abstract class Producto implements ItemFacturable{
         this.activo = activo;
     }
 
-    //Crear Nuevo
+        //Crear Nuevo
     protected Producto(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock,
                        Impuesto impuesto, Descuento descuento){
         this(UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, true);

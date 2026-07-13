@@ -109,7 +109,6 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);
-
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -121,6 +120,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
                 );
                 impuestos.add(impuesto);
             }
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al listar los Impuestos Activos", e);
         }
@@ -135,18 +135,17 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);
-
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Impuesto impuesto = Impuesto.reconstruirDesdeBD(
-                        rs.getInt("id_impuesto"),
+                Impuesto impuesto = Impuesto.reconstruirDesdeBD(rs.getInt("id_impuesto"),
                         rs.getString("nombre"),
                         rs.getBigDecimal("porcentaje"),
                         rs.getBoolean("activo")
                 );
                 impuestos.add(impuesto);
             }
+
         } catch (SQLException e) {
             throw new RuntimeException("Error al listar los Impuestos Inactivos", e);
         }

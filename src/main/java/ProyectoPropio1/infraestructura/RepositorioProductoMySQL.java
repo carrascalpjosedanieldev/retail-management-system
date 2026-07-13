@@ -74,10 +74,11 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
     private void insertarEspecificoPerecedero(Connection conn, ProductoPerecedero perecedero) throws SQLException {
-        String sql = "INSERT INTO producto_perecedero (codigo_producto, fecha_vencimiento) VALUES (?, ?)";
+        String sql = "INSERT INTO producto_perecedero (codigo_producto, fecha_vencimiento, id_politica) VALUES (?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, perecedero.getCodigo());
             pstmt.setDate(2, java.sql.Date.valueOf(perecedero.getFechaVencimiento()));
+            pstmt.setInt(3, perecedero.getPoliticaVencimiento().getIdPolitica());
             pstmt.executeUpdate();
         }
     }
@@ -107,7 +108,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
 
     @Override
-    public Producto obtenerProducto(int idInventario, String codigoProducto) {
+    public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto) {
         String sql =
                 "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, " +
                         "p.activo, " +
@@ -115,12 +116,15 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                         "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
                         "i.activo AS impuesto_activo, " +
                         "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-                        "des.activo AS descuento_activo " +
+                        "des.activo AS descuento_activo, " +
+                        "pove.id_politica, pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica," +
+                        "pove.activa AS politica_activa " +
                         "FROM productos p " +
                         "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
                         "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
                         "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
                         "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
+                        "LEFT JOIN politicas_vencimiento pove ON p.id_politica = pove.id_politica " +
                         "WHERE p.id_inventario = ? AND p.codigo_producto = ? AND p.activo = true";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
@@ -158,10 +162,19 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                     }
 
                     Date fechaSql = rs.getDate("fecha_vencimiento");
+
+                    int idPolitica = rs.getInt("id_politica");
+                    String nombrePolitica = rs.getString("nombre_politica");
+                    int diasUmbral = rs.getInt("dias_umbral");
+                    BigDecimal porcentajePolitica = rs.getBigDecimal("porcentaje_politica");
+                    boolean activaPolitica = rs.getBoolean("politica_activa");
+                    PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(idPolitica, nombrePolitica,
+                            diasUmbral, porcentajePolitica, activaPolitica);
+
                     if (fechaSql != null) {
                         LocalDate fechaVencimiento = fechaSql.toLocalDate();
                         return ProductoPerecedero.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia, stock,
-                                impuesto, descuento, activoProd, fechaVencimiento);
+                                impuesto, descuento, activoProd, fechaVencimiento, politicaVencimiento);
                     }
 
                     throw new IllegalStateException("Error de integridad: El producto existe pero no tiene un tipo definido.");
@@ -241,14 +254,18 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         List<Producto> productos = new ArrayList<>();
         String sql =
                 "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
-                        "r.talla, per.fecha_vencimiento, " +
+                        "r.talla, per.fecha_vencimiento, per.id_politica, " +
                         "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
-                        "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, des.activo AS descuento_activo " +
+                        "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+                        "des.activo AS descuento_activo, " +
+                        "pove.id_politica, pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica, " +
+                        "pove.activa AS politica_activa " +
                         "FROM productos p " +
                         "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
                         "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
                         "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
                         "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
+                        "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
                         "WHERE p.id_inventario = ? AND p.activo = true";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
@@ -273,7 +290,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                     int idDescuento = rs.getInt("id_descuento");
                     String nombreDesc = rs.getString("nombre_descuento");
                     BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
-                    boolean activoDesc = rs.getBoolean("activo_descuento");
+                    boolean activoDesc = rs.getBoolean("descuento_activo");
                     Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
 
                     String tallaString = rs.getString("talla");
@@ -285,14 +302,23 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                     }
 
                     Date fechaSql = rs.getDate("fecha_vencimiento");
+
+                    int idPolitica = rs.getInt("id_politica");
+                    String nombrePolitica = rs.getString("nombre_politica");
+                    int diasUmbral = rs.getInt("dias_umbral");
+                    BigDecimal porcentajePolitica = rs.getBigDecimal("porcentaje_politica");
+                    boolean activaPolitica = rs.getBoolean("politica_activa");
+                    PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(idPolitica, nombrePolitica,
+                            diasUmbral, porcentajePolitica, activaPolitica);
+
                     if (fechaSql != null) {
                         LocalDate fechaVencimiento = fechaSql.toLocalDate();
                         productos.add(ProductoPerecedero.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia,
-                                stock, impuesto, descuento, activoProd, fechaVencimiento));
+                                stock, impuesto, descuento, activoProd, fechaVencimiento, politicaVencimiento));
                         continue;
                     }
 
-                    throw new IllegalStateException("Error de integridad: El producto " + codigo + " no tiene un tipo definido.");
+                    throw new IllegalStateException("Error de integridad: El producto " + codigo + " NO tiene un tipo definido.");
                 }
             }
 

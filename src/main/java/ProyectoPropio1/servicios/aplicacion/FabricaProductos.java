@@ -1,9 +1,6 @@
 package ProyectoPropio1.servicios.aplicacion;
 
-import ProyectoPropio1.dominio.Descuento;
-import ProyectoPropio1.dominio.Impuesto;
-import ProyectoPropio1.dominio.ProductoPerecedero;
-import ProyectoPropio1.dominio.ProductoRopa;
+import ProyectoPropio1.dominio.*;
 import ProyectoPropio1.dominio.enums.Talla;
 
 import java.math.BigDecimal;
@@ -17,13 +14,17 @@ public class FabricaProductos {
 
     private final ServicioDescuentos servicioDescuentos;
 
+    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento;
+
     private record ComponentesComunes(Impuesto impuesto, Descuento descuento) {}
 
     //CONSTRUCTORES:
 
-    public FabricaProductos(ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos) {
+    public FabricaProductos(ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos,
+                            ServicioPoliticaVencimiento servicioPoliticaVencimiento) {
         this.servicioImpuestos = servicioImpuestos;
         this.servicioDescuentos = servicioDescuentos;
+        this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
     }
 
     //METODOS:
@@ -53,13 +54,15 @@ public class FabricaProductos {
     }
 
     public ProductoPerecedero fabricarProductoPerecedero(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
-                                                         int stock, int idImpuesto, int idDescuento,
-                                                         LocalDate fechaVencimiento, LocalDate fechaActual) {
+                                                         int stock, int idImpuesto, int idDescuento, LocalDate fechaVencimiento,
+                                                         int idPolitica, LocalDate fechaActual) {
         ComponentesComunes componentes = obtenerYValidarComponentes(idImpuesto, idDescuento);
         if (fechaVencimiento.isBefore(fechaActual)){
             throw new IllegalArgumentException("NO se puede Registrar el Producto porque ya está Vencido");
         }
-        return ProductoPerecedero.crearNuevo(nombre, valorCompra, porcentajeGanancia, stock, componentes.impuesto(), componentes.descuento(), fechaVencimiento);
+        PoliticaVencimiento politicaVencimiento = this.servicioPoliticaVencimiento.obtenerPoliticaVencimiento(idPolitica);
+        return ProductoPerecedero.crearNuevo(nombre, valorCompra, porcentajeGanancia, stock, componentes.impuesto(),
+                componentes.descuento(), fechaVencimiento, politicaVencimiento);
     }
 
 }
