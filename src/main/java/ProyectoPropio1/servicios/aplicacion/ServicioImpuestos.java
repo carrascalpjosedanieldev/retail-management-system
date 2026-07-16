@@ -14,8 +14,8 @@ public class ServicioImpuestos {
         this.repositorioImpuestos = repositorioImpuestos;
     }
 
-    public int registrarImpuesto(String nombre, BigDecimal porcentaje){
-        Impuesto borrador = Impuesto.crearNuevo(nombre, porcentaje);
+    public int registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo){
+        Impuesto borrador = Impuesto.crearNuevo(nombre, porcentaje, activo);
         Impuesto impuesto = this.repositorioImpuestos.insertarImpuesto(borrador);
         return impuesto.getId();
     }
@@ -24,31 +24,24 @@ public class ServicioImpuestos {
         return this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
     }
 
+    public void actualizarImpuesto(int idImpuesto, String nombre, BigDecimal porcentaje){
+        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
+        impuesto.cambiarNombre(nombre);
+        impuesto.cambiarPorcentaje(porcentaje);
+        this.repositorioImpuestos.actualizarImpuesto(impuesto);
+    }
+
     private void actualizarImpuesto(Impuesto impuesto){
         this.repositorioImpuestos.actualizarImpuesto(impuesto);
     }
 
-    public void activarImpuesto(int idImpuesto){
+    public void cambiarEstadoImpuesto(int idImpuesto){
         Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
-        impuesto.activar();
-        this.actualizarImpuesto(impuesto);
-    }
-
-    public void desactivarImpuesto(int idImpuesto){
-        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
-        impuesto.desactivar();
-        this.actualizarImpuesto(impuesto);
-    }
-
-    public void cambiarNombreImpuesto(int idImpuesto, String nombreNuevo){
-        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
-        impuesto.cambiarNombre(nombreNuevo);
-        this.actualizarImpuesto(impuesto);
-    }
-
-    public void cambiarPorcentajeImpuesto(int idImpuesto, BigDecimal porcentajeNuevo){
-        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
-        impuesto.cambiarPorcentaje(porcentajeNuevo);
+        if (impuesto.isActivo()){
+            impuesto.desactivar();
+        } else {
+            impuesto.activar();
+        }
         this.actualizarImpuesto(impuesto);
     }
 

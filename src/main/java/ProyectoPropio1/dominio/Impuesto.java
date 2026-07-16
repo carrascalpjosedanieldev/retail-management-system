@@ -54,12 +54,12 @@ public class Impuesto {
         return new Impuesto(id, nombre, porcentaje, activo);
     }
 
-    private Impuesto(String nombre, BigDecimal porcentaje) {
-        this(null, nombre, porcentaje, true);
+    private Impuesto(String nombre, BigDecimal porcentaje, boolean activo) {
+        this(null, nombre, porcentaje, activo);
     }
 
-    public static Impuesto crearNuevo(String nombre, BigDecimal porcentaje) {
-        return new Impuesto(nombre, porcentaje);
+    public static Impuesto crearNuevo(String nombre, BigDecimal porcentaje, boolean activo) {
+        return new Impuesto(nombre, porcentaje, activo);
     }
 
     //METODOS:

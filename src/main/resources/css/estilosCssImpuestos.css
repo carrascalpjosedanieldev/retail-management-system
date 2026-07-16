@@ -1,0 +1,129 @@
+
+.root {
+    -fx-background-color: #f8f9fa;
+}
+
+.titulo-principal {
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", "Arial";
+}
+
+.panel-acciones {
+    -fx-background-color: #ffffff;
+    -fx-padding: 30;
+    -fx-spacing: 20;
+    -fx-border-color: transparent transparent transparent #e2e8f0;
+    -fx-border-width: 0 0 0 2px;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1px;
+}
+
+.table-view .column-header {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 10px;
+    -fx-border-color: transparent #e2e8f0 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+}
+
+.table-row-cell {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cell-size: 45px;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f8fafc;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e0f2fe;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: #0369a1;
+    -fx-font-weight: bold;
+}
+
+.btn-accion {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-color: #0f172a;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8;
+}
+
+.btn-accion:hover {
+    -fx-background-color: #34495e;
+}
+
+.btn-nuevo {
+    -fx-background-color: #10b981;
+    -fx-border-color: #047857;
+}
+.btn-nuevo:hover {
+    -fx-background-color: #34d399;
+}
+
+.label-busqueda {
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+.campo-busqueda {
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-padding: 8px 12px;
+    -fx-background-radius: 6;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6;
+    -fx-border-width: 1px;
+    -fx-background-color: #ffffff;
+}
+
+.campo-busqueda:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.2), 5, 0.0, 0, 0);
+}
+
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-font-family: "Segoe UI", "Arial";
+}
+.dialog-pane .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.dialog-pane .text-field {
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-padding: 8;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+}
+.dialog-pane > .button-bar > .container {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 15px;
+}

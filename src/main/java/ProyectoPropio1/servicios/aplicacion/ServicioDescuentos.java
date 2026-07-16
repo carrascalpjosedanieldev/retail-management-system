@@ -14,10 +14,10 @@ public class ServicioDescuentos {
         this.repositorioDescuentos = repositorioDescuentos;
     }
 
-    public int registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo){
+    public void registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo){
         Descuento borrador = Descuento.crearNuevo(nombre, porcentaje, activo);
         Descuento descuento = this.repositorioDescuentos.insertarDescuento(borrador);
-        return descuento.getId();
+        descuento.getId();
     }
 
     public Descuento obtenerDescuento(int idDescuento){
@@ -42,18 +42,6 @@ public class ServicioDescuentos {
         } else {
             descuento.activar();
         }
-        this.actualizarDescuento(descuento);
-    }
-
-    public void cambiarNombreDescuento(int idDescuento, String  nombreNuevo){
-        Descuento descuento = this.obtenerDescuento(idDescuento);
-        descuento.cambiarNombre(nombreNuevo);
-        this.actualizarDescuento(descuento);
-    }
-
-    public void cambiarPorcentajeDescuento(int idDescuento, BigDecimal porcentajeNuevo){
-        Descuento descuento = this.obtenerDescuento(idDescuento);
-        descuento.cambiarPorcentaje(porcentajeNuevo);
         this.actualizarDescuento(descuento);
     }
 
