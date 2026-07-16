@@ -24,7 +24,15 @@ public class GestionarTiendaControlador {
 
     @FXML
     void abrirDescuentos(ActionEvent event) {
-
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_DESCUENTOS_VIEW));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -47,14 +55,11 @@ public class GestionarTiendaControlador {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.MENU_PRINCIPAL_VIEW));
             Parent root = loader.load();
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
-            System.out.println("Error al cargar la pantalla del menú principal:");
             e.printStackTrace();
         }
     }

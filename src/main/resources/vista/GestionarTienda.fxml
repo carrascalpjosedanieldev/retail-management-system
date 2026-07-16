@@ -10,7 +10,7 @@
       xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ProyectoPropio1.vista.controladores.GestionarTiendaControlador">
 
-    <VBox prefHeight="720.0" prefWidth="250.0" styleClass="sidebar-izquierda"/>
+    <VBox prefHeight="720.0" prefWidth="230.0" styleClass="sidebar-izquierda"/>
 
     <VBox alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-spacing: 50;" HBox.hgrow="ALWAYS">
         <Label styleClass="titulo-principal" text="Panel de Gestión de Tienda"/>
@@ -31,6 +31,6 @@
         </TilePane>
     </VBox>
 
-    <VBox prefHeight="720.0" prefWidth="250.0" styleClass="sidebar-derecha"/>
+    <VBox prefHeight="720.0" prefWidth="230.0" styleClass="sidebar-derecha"/>
 
 </HBox>

@@ -215,16 +215,8 @@ public class ControladorTienda {
 
     //METODOS DESCUENTOS:
 
-    public int registrarDescuento(String nombre, BigDecimal porcentaje){
-        return this.servicioDescuentos.registrarDescuento(nombre, porcentaje);
-    }
-
-    public void desactivarDescuento(int idDescuento){
-        this.servicioDescuentos.desactivarDescuento(idDescuento);
-    }
-
-    public void activarDescuento(int idDescuento){
-        this.servicioDescuentos.activarDescuento(idDescuento);
+    public int registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo){
+        return this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
     }
 
     public void cambiarNombreDescuento(int idDescuento, String  nombreNuevo){

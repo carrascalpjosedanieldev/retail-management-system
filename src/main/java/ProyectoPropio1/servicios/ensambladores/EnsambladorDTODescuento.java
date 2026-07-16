@@ -2,7 +2,6 @@ package ProyectoPropio1.servicios.ensambladores;
 
 import ProyectoPropio1.dominio.Descuento;
 import ProyectoPropio1.dto.DescuentoDTO;
-import ProyectoPropio1.dto.ImpuestoDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,3 +27,4 @@ public class EnsambladorDTODescuento {
     }
 
 }
+
