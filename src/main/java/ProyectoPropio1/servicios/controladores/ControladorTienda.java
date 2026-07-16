@@ -1,4 +1,4 @@
-package ProyectoPropio1.servicios.controlador;
+package ProyectoPropio1.servicios.controladores;
 
 import ProyectoPropio1.dominio.*;
 import ProyectoPropio1.dto.*;
@@ -15,7 +15,7 @@ public class ControladorTienda {
 
     private final Tienda miTienda;
 
-    private final GestorVentas miGestorDeVentas;
+    private final ServicioVentas miGestorDeVentas;
 
     private final EnsambladorDTOProducto miEnsambladorDTOProducto;
 
@@ -59,7 +59,7 @@ public class ControladorTienda {
             EnsambladorDTOFactura ensambladorDTOFactura, EnsambladorDTOCarrito ensambladorDTOCarrito,
             EnsambladorDTOServicio ensambladorDTOServicio, EnsambladorDTOImpuesto ensambladorDTOImpuesto,
             EnsambladorDTODescuento ensambladorDTODescuento, EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento,
-            GestorVentas gestorVentas,
+            ServicioVentas gestorVentas,
             ServicioFacturas servicioFacturas, ServicioImpuestos servicioImpuestos,
             ServicioConfiguraciones servicioConfiguraciones, ServicioInventario servicioInventario,
             ServicioProductos servicioProductos, ServicioServicios servicioServicios, ServicioDescuentos servicioDescuentos,

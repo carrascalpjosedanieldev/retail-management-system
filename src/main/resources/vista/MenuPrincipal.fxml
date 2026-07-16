@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/estilosCssMenuPrincipal.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.MenuPrincipalControlador">
+    <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="288.0" style="-fx-background-color: #f0f0f0; -fx-padding: 60 30 30 30; -fx-spacing: 20;" styleClass="sidebar">
+        <Label prefHeight="62.0" prefWidth="197.0" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-padding: 0 0 30 0;" text="Mi Tienda V 1.0.0" />
+
+        <Button prefHeight="40.0" prefWidth="220.0" style="-fx-font-size: 14px;" text="Punto de Venta" />
+        <Button onAction="#abrirGestionarTienda" prefHeight="40.0" prefWidth="220.0" style="-fx-font-size: 14px;" text="Gestión de Tienda" />
+
+        <Button id="btnSalir" fx:id="btnSalir" onAction="#salirDelSistema" prefHeight="40.0" prefWidth="220.0" style="-fx-font-size: 14px;" text="Salir del Sistema" />
+    </VBox>
+
+    <VBox alignment="CENTER" style="-fx-background-color: #ffffff; -fx-spacing: 30;" HBox.hgrow="ALWAYS">
+        <VBox alignment="CENTER" maxWidth="600.0" prefHeight="118.0" prefWidth="600.0" styleClass="welcome-box">
+            <Label alignment="CENTER" style="-fx-text-fill: #0f172a; -fx-font-size: 42px; -fx-font-weight: bold; -fx-font-family: 'Arial';" styleClass="welcome-text" text="Bienvenido al Sistema" />
+        </VBox>
+
+        <VBox alignment="CENTER" maxWidth="337.0" prefHeight="66.0" prefWidth="337.0" styleClass="clock-box">
+            <Label fx:id="lblReloj" alignment="CENTER" prefHeight="32.0" prefWidth="238.0" style="-fx-text-fill: #0369a1; -fx-font-size: 28px; -fx-font-weight: bold; -fx-font-family: 'Arial';" styleClass="clock-text" text="Cargando hora..." />
+        </VBox>
+
+    </VBox>
+
+</HBox>

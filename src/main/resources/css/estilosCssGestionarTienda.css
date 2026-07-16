@@ -1,0 +1,61 @@
+
+.root {
+    -fx-background-color: #f8f9fa;
+}
+
+.titulo-principal {
+    -fx-text-fill: #333333;
+    -fx-font-size: 42px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", "Arial";
+}
+
+.subtitulo {
+    -fx-text-fill: #666666;
+    -fx-font-size: 18px;
+    -fx-font-family: "Segoe UI", "Arial";
+}
+
+.button {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+    -fx-border-color: #0f172a;
+    -fx-border-width: 3px;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 8, 0.0, 0, 3);
+}
+
+.button:hover {
+    -fx-background-color: #34495e;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 12, 0.0, 0, 5);
+}
+
+#btnSalir {
+    -fx-background-color: #e74c3c;
+    -fx-border-color: #c0392b;
+}
+
+#btnSalir:hover {
+    -fx-background-color: #ff6b6b;
+    -fx-border-color: #ff4757;
+}
+
+.sidebar-izquierda {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: transparent #dbdbdb transparent transparent;
+    -fx-border-width: 0 2px 0 0;
+    -fx-border-style: solid;
+}
+
+.sidebar-derecha {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: transparent transparent transparent #dbdbdb;
+    -fx-border-width: 0 0 0 2px;
+    -fx-border-style: solid;
+}
+

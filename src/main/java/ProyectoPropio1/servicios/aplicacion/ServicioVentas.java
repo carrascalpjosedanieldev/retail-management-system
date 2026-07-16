@@ -1,16 +1,13 @@
-package ProyectoPropio1.servicios.controlador;
+package ProyectoPropio1.servicios.aplicacion;
 
 import ProyectoPropio1.dominio.*;
 import ProyectoPropio1.excepciones.CarritoVacioException;
-import ProyectoPropio1.servicios.aplicacion.ServicioFacturas;
-import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
-import ProyectoPropio1.servicios.aplicacion.ServicioServicios;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GestorVentas {
+public class ServicioVentas {
 
     //ATRIBUTOS;
 
@@ -30,7 +27,7 @@ public class GestorVentas {
 
     //CONTRUCTOR:
 
-    public GestorVentas(ServicioProductos servicioProductos, ServicioServicios servicioServicios, ServicioFacturas servicioFacturas) {
+    public ServicioVentas(ServicioProductos servicioProductos, ServicioServicios servicioServicios, ServicioFacturas servicioFacturas) {
         this.servicioProductos = servicioProductos;
         this.servicioServicios = servicioServicios;
         this.servicioFacturas = servicioFacturas;
