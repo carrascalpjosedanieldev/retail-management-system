@@ -177,8 +177,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
     public List<Servicio> obtenerServiciosInactivos() {
         List<Servicio> servicios = new ArrayList<>();
         String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto " +
-                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, des.activo AS descuento_activo " +
+                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+                "des.activo AS activo_descuento " +
                 "FROM servicios s " +
                 "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
                 "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
@@ -197,8 +198,8 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
                 int idImpuesto = rs.getInt("id_impuesto");
                 String  nombreImp = rs.getString("nombre_impuesto");
-                BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje");
-                boolean activoImp = rs.getBoolean("activo");
+                BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
+                boolean activoImp = rs.getBoolean("activo_impuesto");
                 Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
 
                 int idDescuento = rs.getInt("id_descuento");
@@ -221,3 +222,4 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
 
 }
+

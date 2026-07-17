@@ -29,58 +29,48 @@ public class ServicioServicios {
         return this.repositorioServicio.obtenerServicio(codigoServicio);
     }
 
-    public List<Servicio> obtenerServicios(){
-        return this.repositorioServicio.obtenerServiciosActivos();
-    }
-
-    public String registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento){
+    public void registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento){
         Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
         Servicio servicio = Servicio.crearNuevo(nombreServicio, precioBase, impuesto, descuento);
         this.repositorioServicio.insertarServicio(servicio);
-        return servicio.getCodigo();
+    }
+
+    public void actualizarServicio(String codigoServicio, String nombre, BigDecimal precioBase, int idImpuesto, int idDescuento){
+        Servicio servicio = this.obtenerServicio(codigoServicio);
+        servicio.cambiarNombreServicio(nombre);
+        servicio.cambiarPrecioBase(precioBase);
+        if (servicio.getIdImpuesto() != idImpuesto){
+            Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
+            servicio.cambiarImpuesto(impuesto);
+        }
+        if (servicio.getIdDescuento() != idDescuento){
+            Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+            servicio.cambiarDescuento(descuento);
+        }
+        this.actualizarServicio(servicio);
+    }
+
+    public void cambiarEstadoServicio(String codigoServicio){
+        Servicio servicio = this.obtenerServicio(codigoServicio);
+        if (servicio.isActivo()){
+            servicio.desactivarServicio();
+        } else {
+            servicio.activarServicio();
+        }
+        this.actualizarServicio(servicio);
     }
 
     private void actualizarServicio(Servicio servicio){
         this.repositorioServicio.actualizarServicio(servicio);
     }
 
-    public void desactivarServicio(String codigoServicio){
-        Servicio servicio = this.obtenerServicio(codigoServicio);
-        servicio.desactivarServicio();
-        this.actualizarServicio(servicio);
+    public List<Servicio> obtenerServiciosActivos(){
+        return this.repositorioServicio.obtenerServiciosActivos();
     }
 
-    public void activarServicio(String codigoServicio){
-        Servicio servicio = this.obtenerServicio(codigoServicio);
-        servicio.activarServicio();
-        this.actualizarServicio(servicio);
-    }
-
-    public void cambiarNombreServicio(String codigoServicio, String nombreNuevo){
-        Servicio servicio = this.obtenerServicio(codigoServicio);
-        servicio.cambiarNombreServicio(nombreNuevo);
-        this.actualizarServicio(servicio);
-    }
-
-    public void cambiarPrecioServicio(String codigoServicio, BigDecimal precioNuevo){
-        Servicio servicio = this.obtenerServicio(codigoServicio);
-        servicio.cambiarPrecioBase(precioNuevo);
-        this.repositorioServicio.actualizarServicio(servicio);
-    }
-
-    public void cambiarImpuestoDeServicio(String codigoServicio, int idImpuesto){
-        Servicio servicio = this.repositorioServicio.obtenerServicio(codigoServicio);
-        Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
-        servicio.cambiarImpuesto(impuesto);
-        this.repositorioServicio.actualizarServicio(servicio);
-    }
-
-    public void cambiarDescuentoDeServicio(String codigoServicio, int idDescuento){
-        Servicio servicio = this.obtenerServicio(codigoServicio);
-        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
-        servicio.cambiarDescuento(descuento);
-        this.repositorioServicio.actualizarServicio(servicio);
+    public List<Servicio> obtenerServiciosInactivos(){
+        return this.repositorioServicio.obtenerServiciosInactivos();
     }
 
 }

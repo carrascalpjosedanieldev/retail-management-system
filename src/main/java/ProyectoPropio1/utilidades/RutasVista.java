@@ -14,4 +14,7 @@ public class RutasVista {
     public static final String GESTIONAR_IMPUESTOS_VIEW = "/vista/GestionImpuestos.fxml";
     public static final String ESTILOS_CSS_IMPUESTOS = "/css/estilosCssImpuestos.css";
 
+    public static final String GESTIONAR_SERVICIOS_VIEW = "/vista/GestionServicios.fxml";
+    public static final String ESTILOS_CSS_SERVICIOS = "/css/estilosCssServicios.css";
+
 }

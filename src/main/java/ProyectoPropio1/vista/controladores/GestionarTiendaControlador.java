@@ -18,6 +18,18 @@ public class GestionarTiendaControlador {
     @FXML
     private Button btnSalir;
 
+    private void cambiarVentana(ActionEvent event, String ruta){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
+            Parent root = loader.load();
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     void abrirConfiguraciones(ActionEvent event) {
 
@@ -25,28 +37,12 @@ public class GestionarTiendaControlador {
 
     @FXML
     void abrirDescuentos(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_DESCUENTOS_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        cambiarVentana(event, RutasVista.GESTIONAR_DESCUENTOS_VIEW);
     }
 
     @FXML
     void abrirImpuestos(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_IMPUESTOS_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        cambiarVentana(event, RutasVista.GESTIONAR_DESCUENTOS_VIEW);
     }
 
     @FXML
@@ -56,7 +52,7 @@ public class GestionarTiendaControlador {
 
     @FXML
     void abrirServicios(ActionEvent event) {
-
+        cambiarVentana(event, RutasVista.GESTIONAR_SERVICIOS_VIEW);
     }
 
     @FXML
