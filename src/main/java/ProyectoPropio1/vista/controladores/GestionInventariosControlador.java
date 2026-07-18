@@ -241,9 +241,16 @@ public class GestionInventariosControlador {
 
     @FXML
     void editarProductosInventario(ActionEvent event) {
+        InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Selecciona un inventario para ver sus productos.");
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_PRODUCTOS_VIEW));
             Parent root = loader.load();
+            GestionProductosControlador cascaronControlador = loader.getController();
+            cascaronControlador.inicializarConInventario(seleccionado.idInventario());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {

@@ -23,4 +23,6 @@ public class RutasVista {
     public static final String GESTIONAR_PRODUCTOS_VIEW = "/vista/GestionProductos.fxml";
     public static final String ESTILOS_CSS_PRODUCTOS = "/css/estilosCssProductos.css";
 
+    public static final String CREAR_PRODUCTO_VIEW = "/vista/crearProducto.fxml";
+
 }

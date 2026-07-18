@@ -1,4 +1,4 @@
 package ProyectoPropio1.vista.controladores;
 
-public class GestionarProductosControlador {
+public class TabRopaControlador {
 }

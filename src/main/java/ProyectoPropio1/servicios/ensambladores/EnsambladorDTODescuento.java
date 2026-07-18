@@ -11,17 +11,23 @@ public class EnsambladorDTODescuento {
     public EnsambladorDTODescuento() {
     }
 
+    public DescuentoDTO ensamblarDatosDescuento(Descuento descuento){
+        String estado;
+        if (descuento.isActivo()){
+            estado = "Activo";
+        } else {
+            estado = "Inactivo";
+        }
+        return new DescuentoDTO(
+                descuento.getId(), descuento.getNombre(), descuento.getPorcentaje(), estado
+        );
+    }
+
     public List<DescuentoDTO> ensamblarDetalleDescuentos(List<Descuento> descuentos){
         List<DescuentoDTO> detalleDescuentosActivos = new ArrayList<>();
-        String estado;
         for (Descuento descuento :descuentos){
-            if (descuento.isActivo()){
-                estado = "Activo";
-            } else {
-                estado = "Inactivo";
-            }
-            DescuentoDTO descuentoDTO = new DescuentoDTO(descuento.getId(), descuento.getNombre(), descuento.getPorcentaje(), estado);
-            detalleDescuentosActivos.add(descuentoDTO);
+            DescuentoDTO datosDescuento = this.ensamblarDatosDescuento(descuento);
+            detalleDescuentosActivos.add(datosDescuento);
         }
         return detalleDescuentosActivos;
     }

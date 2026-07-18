@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="632.0" prefWidth="695.0" spacing="20.0" style="-fx-padding: 30;" stylesheets="@../css/estilosCssCrearProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.CrearProductoControlador">
+    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" styleClass="titulo-ventana" text="Crear Nuevo Producto" />
+
+    <HBox spacing="20.0">
+        <Label text="Tipo de Producto:" />
+        <RadioButton fx:id="rbRopa" selected="true" text="Ropa" />
+        <RadioButton fx:id="rbPerecedero" text="Perecedero" />
+    </HBox>
+
+    <GridPane hgap="10" prefHeight="188.0" prefWidth="634.0" vgap="10">
+        <Label text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="txtNombre" prefHeight="50.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Valor Compra:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="txtValorCompra" prefHeight="50.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text=" % Ganancia:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <TextField fx:id="txtGanancia" prefHeight="50.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+
+        <Label text="Stock Inicial:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="txtStock" prefHeight="50.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane>
+
+    <HBox prefHeight="85.0" prefWidth="634.0" spacing="15.0">
+        <VBox prefHeight="85.0" prefWidth="305.0" spacing="5.0">
+            <Label text="Impuesto:" />
+            <ComboBox fx:id="cbImpuesto" prefHeight="50.0" prefWidth="280.0" />
+        </VBox>
+        <VBox prefHeight="85.0" prefWidth="292.0" spacing="5.0">
+            <Label text="Descuento:" />
+            <ComboBox fx:id="cbDescuento" prefHeight="50.0" prefWidth="280.0" />
+        </VBox>
+    </HBox>
+
+    <Separator />
+
+    <VBox fx:id="boxRopa" prefHeight="96.0" prefWidth="634.0" spacing="5.0">
+        <Label text="Talla:" />
+        <ComboBox fx:id="cbTalla" prefHeight="50.0" prefWidth="150.0" />
+    </VBox>
+
+    <VBox fx:id="boxPerecedero" managed="false" spacing="10.0" visible="false">
+        <HBox spacing="15.0">
+            <VBox spacing="5.0">
+                <Label text="Fecha Vencimiento:" />
+                <DatePicker fx:id="dpFechaVencimiento" prefWidth="150.0" />
+            </VBox>
+            <VBox spacing="5.0">
+                <Label text="Política de Vencimiento:" />
+                <ComboBox fx:id="cbPolitica" prefWidth="280.0" />
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
+        <Button onAction="#cancelar" styleClass="btn-cancelar" text="Cancelar" />
+        <Button onAction="#guardarProducto" style="-fx-background-color: #3b82f6; -fx-text-fill: white;" styleClass="btn-guardar" text="Guardar Producto" />
+    </HBox>
+
+</VBox>

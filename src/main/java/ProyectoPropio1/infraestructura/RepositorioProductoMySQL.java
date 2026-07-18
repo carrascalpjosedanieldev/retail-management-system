@@ -266,7 +266,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                         "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
                         "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
                         "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
-                        "WHERE p.id_inventario = ? AND p.activo = true";
+                        "WHERE p.id_inventario = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

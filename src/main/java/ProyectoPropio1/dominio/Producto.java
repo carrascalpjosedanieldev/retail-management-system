@@ -205,9 +205,6 @@ public abstract class Producto implements ItemFacturable{
     }
 
     public void cambiarImpuesto(Impuesto impuesto){
-        if (impuesto == getImpuesto()){
-            throw new IllegalArgumentException("El Impuesto nuevo y el vigente son el mismo");
-        }
         if (!impuesto.isActivo()){
             throw new IllegalArgumentException("El Impuesto que le quieres poner al Producto esta Inactivo");
         }
@@ -215,9 +212,6 @@ public abstract class Producto implements ItemFacturable{
     }
 
     public void cambiarDescuento(Descuento descuento){
-        if (descuento == getDescuento()){
-            throw new IllegalArgumentException("El Descuento nuevo y el vigente son el mismo");
-        }
         if (!descuento.isActivo()){
             throw new IllegalArgumentException("El Descuento que le quieres poner al Producto esta Inactivo");
         }

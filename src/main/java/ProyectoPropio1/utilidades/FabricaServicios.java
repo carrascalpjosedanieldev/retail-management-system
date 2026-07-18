@@ -1,17 +1,8 @@
 package ProyectoPropio1.utilidades;
 
-import ProyectoPropio1.dominio.puertos.RepositorioDescuentos;
-import ProyectoPropio1.dominio.puertos.RepositorioImpuestos;
-import ProyectoPropio1.dominio.puertos.RepositorioInventario;
-import ProyectoPropio1.dominio.puertos.RepositorioServicio;
-import ProyectoPropio1.infraestructura.RepositorioDescuentosMySQL;
-import ProyectoPropio1.infraestructura.RepositorioImpuestosMySQL;
-import ProyectoPropio1.infraestructura.RepositorioInventarioMySQL;
-import ProyectoPropio1.infraestructura.RepositorioServicioMySQL;
-import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
-import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
-import ProyectoPropio1.servicios.aplicacion.ServicioInventario;
-import ProyectoPropio1.servicios.aplicacion.ServicioServicios;
+import ProyectoPropio1.dominio.puertos.*;
+import ProyectoPropio1.infraestructura.*;
+import ProyectoPropio1.servicios.aplicacion.*;
 
 public class FabricaServicios {
 
@@ -55,6 +46,26 @@ public class FabricaServicios {
             servicioInventario = new ServicioInventario(repositorioInventario);
         }
         return servicioInventario;
+    }
+
+    private static ServicioProductos servicioProductos;
+
+    public static ServicioProductos obtenerServicioProductos() {
+        if (servicioProductos == null){
+            RepositorioProducto repositorioProducto = new RepositorioProductoMySQL();
+            servicioProductos = new ServicioProductos(repositorioProducto);
+        }
+        return servicioProductos;
+    }
+
+    private static ServicioPoliticaVencimiento servicioPoliticaVencimiento;
+
+    public static ServicioPoliticaVencimiento obtenerServicioPoliticas() {
+        if (servicioPoliticaVencimiento == null){
+            RepositorioPoliticaVencimiento repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
+            servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(repositorioPoliticaVencimiento);
+        }
+        return servicioPoliticaVencimiento;
     }
 
 }

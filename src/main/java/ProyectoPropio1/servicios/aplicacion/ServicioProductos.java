@@ -14,22 +14,29 @@ public class ServicioProductos {
         this.repositorioProducto = repositorioProducto;
     }
 
-    public String registrarProducto(int id, Producto producto){
-        this.repositorioProducto.insertarProducto(producto, id);
-        return producto.getCodigo();
+    public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
+        return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
     }
 
-    public void desactivarProductoDeInventario(String codigoProducto, int idInventario){
+    public void registrarProducto(int idInventario, Producto producto){
+        this.repositorioProducto.insertarProducto(producto, idInventario);
+    }
+
+    public void cambiarEstadoProducto(int idInventario, String codigoProducto){
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.desactivarProducto();
+        if (producto.isActivo()){
+            producto.desactivarProducto();
+        } else {
+            producto.activarProducto();
+        }
         this.actualizarProductoDeInventario(idInventario, producto);
     }
 
-    public void activarProductoDeInventario(String codigoProducto, int idInventario){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.activarProducto();
-        this.actualizarProductoDeInventario(idInventario, producto);
+    private void actualizarProductoDeInventario(int idInventario, Producto producto){
+        this.repositorioProducto.actualizarProducto(producto, idInventario);
     }
+
+    //public void actualizarProductoDeInvenatrio(int idInventario, String codigoProducto, )
 
     public void cambiarDescuentoAProducto(String codigoProducto, int idInventario, Descuento descuento){
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
@@ -71,14 +78,6 @@ public class ServicioProductos {
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
         producto.cambiarNombreProducto(nombreNuevo);
         this.actualizarProductoDeInventario(idInventario, producto);
-    }
-
-    public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
-        return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
-    }
-
-    private void actualizarProductoDeInventario(int idInventario, Producto producto){
-        this.repositorioProducto.actualizarProducto(producto, idInventario);
     }
 
     public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){

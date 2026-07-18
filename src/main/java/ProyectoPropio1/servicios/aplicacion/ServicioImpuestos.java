@@ -14,10 +14,10 @@ public class ServicioImpuestos {
         this.repositorioImpuestos = repositorioImpuestos;
     }
 
-    public int registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo){
+    public void registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo){
         Impuesto borrador = Impuesto.crearNuevo(nombre, porcentaje, activo);
         Impuesto impuesto = this.repositorioImpuestos.insertarImpuesto(borrador);
-        return impuesto.getId();
+        impuesto.getId();
     }
 
     public Impuesto obtenerImpuesto(int idImpuesto){

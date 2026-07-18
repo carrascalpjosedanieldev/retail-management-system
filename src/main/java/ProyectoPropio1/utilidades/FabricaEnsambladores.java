@@ -44,7 +44,9 @@ public class FabricaEnsambladores {
 
     public static EnsambladorDTOProducto obtenerEnsambladorDTOProducto(){
         if (ensambladorDTOProducto == null){
-            ensambladorDTOProducto = new EnsambladorDTOProducto();
+            EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
+            ensambladorDTOProducto = new EnsambladorDTOProducto(
+                    ensambladorDTOImpuesto, ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento);
         }
         return ensambladorDTOProducto;
     }

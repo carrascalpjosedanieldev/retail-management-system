@@ -11,17 +11,24 @@ public class EnsambladorDTOImpuesto {
     public EnsambladorDTOImpuesto() {
     }
 
+    public ImpuestoDTO ensamblarDatosImpuesto(Impuesto impuesto){
+        String estado;
+        if (impuesto.isActivo()){
+            estado = "Activo";
+        } else {
+            estado = "Inactivo";
+        }
+        return new ImpuestoDTO(
+                impuesto.getId(), impuesto.getNombre(), impuesto.getPorcentaje(), estado
+        );
+    }
+
     public List<ImpuestoDTO> ensamblarDetalleImpuestos(List<Impuesto> impuestos){
         List<ImpuestoDTO> detalleImpuestosActivos = new ArrayList<>();
         String estado;
         for (Impuesto impuesto:impuestos){
-            if (impuesto.isActivo()){
-                estado = "Activo";
-            } else {
-                estado = "Inactivo";
-            }
-            ImpuestoDTO impuestoDTO = new ImpuestoDTO(impuesto.getId(), impuesto.getNombre(), impuesto.getPorcentaje(), estado);
-            detalleImpuestosActivos.add(impuestoDTO);
+            ImpuestoDTO datosImpuesto = this.ensamblarDatosImpuesto(impuesto);
+            detalleImpuestosActivos.add(datosImpuesto);
         }
         return detalleImpuestosActivos;
     }

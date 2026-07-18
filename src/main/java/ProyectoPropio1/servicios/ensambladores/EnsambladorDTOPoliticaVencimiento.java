@@ -11,20 +11,24 @@ public class EnsambladorDTOPoliticaVencimiento {
     public EnsambladorDTOPoliticaVencimiento() {
     }
 
+    public PoliticaVencimientoDTO ensamblarDatosPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
+        String estado;
+        if (politicaVencimiento.isActiva()){
+            estado = "Activo";
+        } else {
+            estado = "Inactivo";
+        }
+        return new PoliticaVencimientoDTO(
+                politicaVencimiento.getIdPolitica(), politicaVencimiento.getNombre(),
+                politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(), estado
+        );
+    }
+
     public List<PoliticaVencimientoDTO> ensamblarDetallePoliticasVencimiento(List<PoliticaVencimiento> politicasVencimiento){
         List<PoliticaVencimientoDTO> detallePoliticasVencimientoActivas = new ArrayList<>();
-        String estado;
         for (PoliticaVencimiento politicaVencimiento:politicasVencimiento){
-            if (politicaVencimiento.isActiva()){
-                estado = "Activo";
-            } else {
-                estado = "Inactivo";
-            }
-            PoliticaVencimientoDTO politicaVencimientoDTO = new PoliticaVencimientoDTO(
-                    politicaVencimiento.getIdPolitica(), politicaVencimiento.getNombre(),
-                    politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(), estado
-            );
-            detallePoliticasVencimientoActivas.add(politicaVencimientoDTO);
+            PoliticaVencimientoDTO datosPoliticaVencimiento = this.ensamblarDatosPoliticaVencimiento(politicaVencimiento);
+            detallePoliticasVencimientoActivas.add(datosPoliticaVencimiento);
         }
         return detallePoliticasVencimientoActivas;
     }
