@@ -2,7 +2,7 @@ package ProyectoPropio1.servicios.ensambladores;
 
 import ProyectoPropio1.dominio.Inventario;
 import ProyectoPropio1.dominio.Producto;
-import ProyectoPropio1.dto.DatosInventarioDTO;
+import ProyectoPropio1.dto.InventarioDTO;
 import ProyectoPropio1.dto.DatosTotalesProductoDTO;
 import ProyectoPropio1.dto.DetalleInventarioDTO;
 
@@ -27,12 +27,12 @@ public class EnsambladorDTOInventario {
         return new DetalleInventarioDTO(inventario.getIdInventario(), inventario.getNombre(), inventario.getCapacidadMaxima(), inventario.getCapacidadOcupada(), datosProductosDeInventario);
     }
 
-    public DatosInventarioDTO ensamblarDatosInventario(Inventario inventario){
-        return new DatosInventarioDTO(inventario.getIdInventario(), inventario.getNombre(), inventario.getCapacidadMaxima(), inventario.getCapacidadOcupada(), inventario.calcularCapacidadLibre());
+    public InventarioDTO ensamblarDatosInventario(Inventario inventario){
+        return new InventarioDTO(inventario.getIdInventario(), inventario.getNombre(), inventario.getCapacidadMaxima(), inventario.getCapacidadOcupada(), inventario.calcularCapacidadLibre());
     }
 
-    public List<DatosInventarioDTO> ensamblarDetalleInventarioGeneral(List<Inventario> inventarios){
-        List<DatosInventarioDTO> inventarioGeneral = new ArrayList<>();
+    public List<InventarioDTO> ensamblarDetalleInventarioGeneral(List<Inventario> inventarios){
+        List<InventarioDTO> inventarioGeneral = new ArrayList<>();
         for (Inventario inventario:inventarios){
             inventarioGeneral.add(this.ensamblarDatosInventario(inventario));
         }

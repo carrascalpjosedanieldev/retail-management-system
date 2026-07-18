@@ -1,8 +1,6 @@
 package ProyectoPropio1.utilidades;
 
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOServicio;
+import ProyectoPropio1.servicios.ensambladores.*;
 
 public class FabricaEnsambladores {
 
@@ -31,6 +29,24 @@ public class FabricaEnsambladores {
             ensambladorDTOServicio = new EnsambladorDTOServicio();
         }
         return ensambladorDTOServicio;
+    }
+
+    private static EnsambladorDTOInventario ensambladorDTOInventario;
+
+    public static EnsambladorDTOInventario obtenerEnsambladorDTOInventario(){
+        if (ensambladorDTOInventario == null){
+            ensambladorDTOInventario = new EnsambladorDTOInventario(obtenerEnsambladorDTOProducto());
+        }
+        return ensambladorDTOInventario;
+    }
+
+    private static EnsambladorDTOProducto ensambladorDTOProducto;
+
+    public static EnsambladorDTOProducto obtenerEnsambladorDTOProducto(){
+        if (ensambladorDTOProducto == null){
+            ensambladorDTOProducto = new EnsambladorDTOProducto();
+        }
+        return ensambladorDTOProducto;
     }
 
 }

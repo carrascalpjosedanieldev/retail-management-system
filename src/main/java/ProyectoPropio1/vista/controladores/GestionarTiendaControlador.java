@@ -26,6 +26,20 @@ public class GestionarTiendaControlador {
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
+            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            alerta.setTitle("Error de Navegación");
+            alerta.setHeaderText("No se pudo cargar la pantalla");
+            alerta.setContentText("Ruta no encontrada: " + ruta + "\nRevisa la consola para más detalles.");
+            try {
+                alerta.getDialogPane().getStylesheets().add(
+                        java.util.Objects.requireNonNull(
+                                getClass().getResource(RutasVista.ESTILOS_CSS_GESTIONAR_TIENDA)
+                        ).toExternalForm()
+                );
+            } catch (NullPointerException cssEx) {
+                System.out.println("No se encontró el CSS para la alerta de error.");
+            }
+            alerta.showAndWait();
             e.printStackTrace();
         }
     }
@@ -42,12 +56,12 @@ public class GestionarTiendaControlador {
 
     @FXML
     void abrirImpuestos(ActionEvent event) {
-        cambiarVentana(event, RutasVista.GESTIONAR_DESCUENTOS_VIEW);
+        cambiarVentana(event, RutasVista.GESTIONAR_IMPUESTOS_VIEW);
     }
 
     @FXML
     void abrirInventarios(ActionEvent event) {
-
+        cambiarVentana(event, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
     }
 
     @FXML
@@ -57,16 +71,9 @@ public class GestionarTiendaControlador {
 
     @FXML
     void volverAlMenu(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.MENU_PRINCIPAL_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        cambiarVentana(event, RutasVista.MENU_PRINCIPAL_VIEW);
+
     }
 
 }
+

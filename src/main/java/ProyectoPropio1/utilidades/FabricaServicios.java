@@ -2,12 +2,15 @@ package ProyectoPropio1.utilidades;
 
 import ProyectoPropio1.dominio.puertos.RepositorioDescuentos;
 import ProyectoPropio1.dominio.puertos.RepositorioImpuestos;
+import ProyectoPropio1.dominio.puertos.RepositorioInventario;
 import ProyectoPropio1.dominio.puertos.RepositorioServicio;
 import ProyectoPropio1.infraestructura.RepositorioDescuentosMySQL;
 import ProyectoPropio1.infraestructura.RepositorioImpuestosMySQL;
+import ProyectoPropio1.infraestructura.RepositorioInventarioMySQL;
 import ProyectoPropio1.infraestructura.RepositorioServicioMySQL;
 import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
 import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
+import ProyectoPropio1.servicios.aplicacion.ServicioInventario;
 import ProyectoPropio1.servicios.aplicacion.ServicioServicios;
 
 public class FabricaServicios {
@@ -42,6 +45,16 @@ public class FabricaServicios {
             servicioServicios = new ServicioServicios(repositorioImpuestos, repositorioDescuentos, repositorioServicio);
         }
         return servicioServicios;
+    }
+
+    private static ServicioInventario servicioInventario;
+
+    public static ServicioInventario obtenerServicioInventario() {
+        if (servicioInventario == null){
+            RepositorioInventario repositorioInventario = new RepositorioInventarioMySQL();
+            servicioInventario = new ServicioInventario(repositorioInventario);
+        }
+        return servicioInventario;
     }
 
 }

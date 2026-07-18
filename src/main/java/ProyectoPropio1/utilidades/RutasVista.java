@@ -17,4 +17,10 @@ public class RutasVista {
     public static final String GESTIONAR_SERVICIOS_VIEW = "/vista/GestionServicios.fxml";
     public static final String ESTILOS_CSS_SERVICIOS = "/css/estilosCssServicios.css";
 
+    public static final String GESTIONAR_INVENTARIOS_VIEW = "/vista/GestionInventarios.fxml";
+    public static final String ESTILOS_CSS_INVENTARIOS = "/css/estilosCssInventarios.css";
+
+    public static final String GESTIONAR_PRODUCTOS_VIEW = "/vista/GestionProductos.fxml";
+    public static final String ESTILOS_CSS_PRODUCTOS = "/css/estilosCssProductos.css";
+
 }
