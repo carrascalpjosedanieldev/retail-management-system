@@ -53,7 +53,9 @@ public class FabricaServicios {
     public static ServicioProductos obtenerServicioProductos() {
         if (servicioProductos == null){
             RepositorioProducto repositorioProducto = new RepositorioProductoMySQL();
-            servicioProductos = new ServicioProductos(repositorioProducto);
+            RepositorioImpuestos repositorioImpuestos = new RepositorioImpuestosMySQL();
+            RepositorioDescuentos repositorioDescuentos = new RepositorioDescuentosMySQL();
+            servicioProductos = new ServicioProductos(repositorioProducto, repositorioImpuestos, repositorioDescuentos);
         }
         return servicioProductos;
     }

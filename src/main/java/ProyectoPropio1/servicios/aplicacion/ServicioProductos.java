@@ -1,6 +1,8 @@
 package ProyectoPropio1.servicios.aplicacion;
 
 import ProyectoPropio1.dominio.*;
+import ProyectoPropio1.dominio.puertos.RepositorioDescuentos;
+import ProyectoPropio1.dominio.puertos.RepositorioImpuestos;
 import ProyectoPropio1.dominio.puertos.RepositorioProducto;
 
 import java.math.BigDecimal;
@@ -10,8 +12,15 @@ public class ServicioProductos {
 
     private final RepositorioProducto repositorioProducto;
 
-    public ServicioProductos(RepositorioProducto repositorioProducto) {
+    private final RepositorioImpuestos repositorioImpuestos;
+
+    private final RepositorioDescuentos repositorioDescuentos;
+
+    public ServicioProductos(RepositorioProducto repositorioProducto, RepositorioImpuestos repositorioImpuestos,
+                             RepositorioDescuentos repositorioDescuentos) {
         this.repositorioProducto = repositorioProducto;
+        this.repositorioImpuestos = repositorioImpuestos;
+        this.repositorioDescuentos = repositorioDescuentos;
     }
 
     public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
@@ -36,17 +45,18 @@ public class ServicioProductos {
         this.repositorioProducto.actualizarProducto(producto, idInventario);
     }
 
-    //public void actualizarProductoDeInvenatrio(int idInventario, String codigoProducto, )
-
-    public void cambiarDescuentoAProducto(String codigoProducto, int idInventario, Descuento descuento){
+    public void actualizarProductoRopaDeInventario(
+            int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
+            BigDecimal porcentajeGanancia,int idImpuesto, int idDescuento
+            ) {
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarDescuento(descuento);
-        this.actualizarProductoDeInventario(idInventario, producto);
-    }
-
-    public void cambiarImpuestoAProducto(String codigoProducto, int idInventario, Impuesto impuesto){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
+        producto.cambiarNombreProducto(nombreNuevo);
+        producto.cambiarValorCompra(valorCompra);
+        producto.cambiarValorVentaPorPorcentaje(porcentajeGanancia);
+        Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
         producto.cambiarImpuesto(impuesto);
+        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+        producto.cambiarDescuento(descuento);
         this.actualizarProductoDeInventario(idInventario, producto);
     }
 
@@ -62,30 +72,20 @@ public class ServicioProductos {
         this.actualizarProductoDeInventario(idInventario, producto);
     }
 
-    public void actualizarValorCompraDeProductoDeInventario(int idInventario, String codigoProducto, BigDecimal valorNuevo){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarValorCompra(valorNuevo);
-        this.actualizarProductoDeInventario(idInventario, producto);
-    }
-
-    public void actualizarPorcentajeGananciaDeProductoDeInventario(int idInventario, String  codigoProducto, BigDecimal porcentaje){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarValorVentaPorPorcentaje(porcentaje);
-        this.actualizarProductoDeInventario(idInventario, producto);
-    }
-
-    public void actualizarNombreDeProductoDeInventario(int idInventario, String  codigoProducto, String nombreNuevo){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarNombreProducto(nombreNuevo);
-        this.actualizarProductoDeInventario(idInventario, producto);
-    }
-
     public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){
         this.repositorioProducto.cambiarInventarioProducto(codigoProducto, idInventarioOrigen, idInventarioDestino);
     }
 
     public List<Producto> obtenerProductosDeInventario(int idInventario){
         return this.repositorioProducto.obtenerProductosPorInventario(idInventario);
+    }
+
+    public List<Producto> obtenerProductosRopaDeInventario(int idInventario){
+        return this.repositorioProducto.obtenerProductosRopaPorInventario(idInventario);
+    }
+
+    public List<Producto> obtenerProductosPerecederoDeInventario(int idInventario){
+        return this.repositorioProducto.obtenerProductosPerecederoPorInventario(idInventario);
     }
 
 }

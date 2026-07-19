@@ -24,5 +24,9 @@ public class RutasVista {
     public static final String ESTILOS_CSS_PRODUCTOS = "/css/estilosCssProductos.css";
 
     public static final String CREAR_PRODUCTO_VIEW = "/vista/crearProducto.fxml";
+    public static final String ESTILOS_CSS_CREAR_PRODUCTOS = "/css/estilosCssCrearProductos.css";
+
+    public static final String EDITAR_ROPA_VIEW = "/vista/editarRopa.fxml";
+    public static final String ESTILOS_CSS_EDITAR_ROPA = "/css/estilosCssEditarRopaOPerecedero.css";
 
 }

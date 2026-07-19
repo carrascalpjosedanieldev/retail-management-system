@@ -1,0 +1,71 @@
+
+.root {
+    -fx-font-family: "Segoe UI", "Open Sans", Helvetica, Arial, sans-serif;
+    -fx-background-color: #ffffff;
+}
+
+.label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+}
+
+.titulo-ventana {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.text-field, .combo-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 10px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e293b;
+}
+
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #3b82f6;
+    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.4), 6, 0, 0, 0);
+}
+
+.campo-lectura {
+    -fx-background-color: #f8fafc;
+    -fx-text-fill: #94a3b8;
+    -fx-border-color: #e2e8f0;
+}
+
+.campo-lectura:focused {
+    -fx-border-color: #e2e8f0;
+    -fx-effect: none;
+}
+
+.button {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.btn-guardar {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.btn-guardar:hover {
+    -fx-background-color: #059669;
+}
+
+.btn-cancelar {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.btn-cancelar:hover {
+    -fx-background-color: #dc2626;
+}

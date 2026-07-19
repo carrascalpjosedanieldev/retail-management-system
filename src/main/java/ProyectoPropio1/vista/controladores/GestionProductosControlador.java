@@ -18,6 +18,10 @@ public class GestionProductosControlador {
 
     public VBox tabGeneral;
 
+    public VBox tabRopa;
+
+    public VBox tabPerecedero;
+
     @FXML
     private TabPane tabPaneProductos;
 
@@ -25,11 +29,23 @@ public class GestionProductosControlador {
     private TabGeneralProductosControlador tabGeneralController;
 
     @FXML
+    private TabRopaControlador tabRopaController;
+
+    @FXML
+    private TabPerecederosControlador tabPerecederoController;
+
+    @FXML
     public void initialize() { }
 
     public void inicializarConInventario(int idInventarioRecibido) {
         if (tabGeneralController != null) {
             tabGeneralController.recibirIdInventario(idInventarioRecibido);
+        }
+        if (tabRopaController != null) {
+            tabRopaController.recibirIdInventario(idInventarioRecibido);
+        }
+        if (tabPerecederoController != null) {
+            //tabPerecederoController.recibirIdInventario(idInventarioRecibido); // Para cuando lo implementes
         }
     }
 
@@ -46,3 +62,5 @@ public class GestionProductosControlador {
     }
 
 }
+
+

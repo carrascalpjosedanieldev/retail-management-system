@@ -1,6 +1,8 @@
 package ProyectoPropio1.dominio.puertos;
 
 import ProyectoPropio1.dominio.Producto;
+import ProyectoPropio1.dominio.ProductoPerecedero;
+import ProyectoPropio1.dominio.ProductoRopa;
 
 import java.util.List;
 
@@ -17,4 +19,9 @@ public interface RepositorioProducto {
     void cambiarInventarioProducto(String codigoProducto, int idInventarioOrigen, int idInventarioDestino);
 
     List<Producto> obtenerProductosPorInventario(int idInventario);
+
+    List<Producto> obtenerProductosRopaPorInventario(int idInventario);
+
+    List<Producto> obtenerProductosPerecederoPorInventario(int idInventario);
+
 }

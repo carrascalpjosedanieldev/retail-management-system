@@ -6,6 +6,7 @@ import ProyectoPropio1.dominio.enums.TipoProducto;
 import ProyectoPropio1.dto.DescuentoDTO;
 import ProyectoPropio1.dto.ImpuestoDTO;
 import ProyectoPropio1.dto.PoliticaVencimientoDTO;
+import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
 import ProyectoPropio1.servicios.aplicacion.*;
 import ProyectoPropio1.utilidades.FabricaServicios;
 
@@ -62,7 +63,10 @@ public class CrearProductoControlador {
 
     private final FabricaProductos fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPolitica);
 
-    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos(); // Para guardar
+    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
+
+    private final ServicioInventario servicioInventario = FabricaServicios.obtenerServicioInventario();
+
 
     @FXML
     public void initialize() {
@@ -71,9 +75,11 @@ public class CrearProductoControlador {
         cargarDatosComboBoxes();
     }
 
+
     public void recibirIdInventario(int idInventario) {
         this.idInventario = idInventario;
     }
+
 
     private void configurarRadioButtons() {
         grupoTipo = new ToggleGroup();
@@ -99,6 +105,7 @@ public class CrearProductoControlador {
         });
     }
 
+
     private void configurarComboBoxes() {
         List<String> listaTallas = Arrays.stream(Talla.values())
                 .map(Enum::name)
@@ -117,6 +124,7 @@ public class CrearProductoControlador {
             @Override public PoliticaVencimientoDTO fromString(String string) { return null; }
         });
     }
+
 
     private void cargarDatosComboBoxes() {
         List<ImpuestoDTO> impuestos = servicioImpuestos.obtenerImpuestosActivos().stream()
@@ -139,6 +147,7 @@ public class CrearProductoControlador {
         cbPolitica.setItems(FXCollections.observableArrayList(politicas));
     }
 
+
     @FXML
     void guardarProducto(ActionEvent event) {
         try {
@@ -158,17 +167,17 @@ public class CrearProductoControlador {
                 return;
             }
             TipoProducto tipoSeleccionado = (TipoProducto) grupoTipo.getSelectedToggle().getUserData();
+            Producto producto = null;
             if (tipoSeleccionado == TipoProducto.ROPA) {
                 String tallaSel = cbTalla.getValue();
                 if (tallaSel == null) {
                     mostrarAlerta("Error", "Debes seleccionar una talla.");
                     return;
                 }
-                Producto nuevoRopa = fabricaProductos.fabricarProductoRopa(
+                producto = fabricaProductos.fabricarProductoRopa(
                         nombre, valorCompra, ganancia, stock,
                         impuestoSel.idImpuesto(), descuentoSel.idDescuento(), tallaSel
                 );
-                servicioProductos.registrarProducto(this.idInventario, nuevoRopa);
             } else if (tipoSeleccionado == TipoProducto.PERECEDERO) {
                 LocalDate fechaVenc = dpFechaVencimiento.getValue();
                 PoliticaVencimientoDTO politicaSel = cbPolitica.getValue();
@@ -176,15 +185,18 @@ public class CrearProductoControlador {
                     mostrarAlerta("Error", "Debes seleccionar Fecha y Política de vencimiento.");
                     return;
                 }
-                Producto nuevoPerecedero = fabricaProductos.fabricarProductoPerecedero(
+                producto = fabricaProductos.fabricarProductoPerecedero(
                         nombre, valorCompra, ganancia, stock,
                         impuestoSel.idImpuesto(), descuentoSel.idDescuento(),
                         fechaVenc, politicaSel.idPoliticaVencimiento(), LocalDate.now()
                 );
-                servicioProductos.registrarProducto(this.idInventario, nuevoPerecedero);
             }
+            this.servicioInventario.verificarEspacioDisponible(this.idInventario, stock);
+            this.servicioProductos.registrarProducto(this.idInventario, producto);
             mostrarAlerta("Éxito", "Producto creado correctamente.");
             cerrarVentana();
+        } catch (CapacidadInventarioExcedidaException e) {
+            mostrarAlerta("Capacidad Excedida", e.getMessage());
         } catch (NumberFormatException e) {
             mostrarAlerta("Error de formato", "Verifica que los campos numéricos (Valor, Ganancia, Stock) contengan solo números válidos y sin espacios.");
         } catch (IllegalArgumentException e) {
@@ -192,15 +204,18 @@ public class CrearProductoControlador {
         }
     }
 
+
     @FXML
     void cancelar(ActionEvent event) {
         cerrarVentana();
     }
 
+
     private void cerrarVentana() {
         Stage stage = (Stage) txtNombre.getScene().getWindow();
         stage.close();
     }
+
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
@@ -209,4 +224,5 @@ public class CrearProductoControlador {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
 }

@@ -72,6 +72,15 @@ public class EnsambladorDTOProducto {
         }
     }
 
+    public List<DatosTotalesProductoRopaDTO> ensamblarDetalleProductosRopa(List<Producto> productosRopa, LocalDate fecha){
+        List<DatosTotalesProductoRopaDTO> datosProductosRopa = new ArrayList<>();
+        for (Producto producto:productosRopa){
+            DatosTotalesProductoRopaDTO productoResumen = (DatosTotalesProductoRopaDTO) this.ensamblarDatosTotalesProducto(producto, fecha);
+            datosProductosRopa.add(productoResumen);
+        }
+        return datosProductosRopa;
+    }
+
     public List<ProductoResumenDTO> ensamblarDetalleProductosResumen(List<Producto> productos, LocalDate fecha){
         List<ProductoResumenDTO> resumenProductos = new ArrayList<>();
         for (Producto producto:productos){

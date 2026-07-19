@@ -40,13 +40,23 @@ public class FabricaEnsambladores {
         return ensambladorDTOInventario;
     }
 
+    private static EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
+
+    public static EnsambladorDTOPoliticaVencimiento obtenerEnsambladorDTOPoliticaVencimiento(){
+        if (ensambladorDTOPoliticaVencimiento == null){
+            ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
+        }
+        return ensambladorDTOPoliticaVencimiento;
+    }
+
     private static EnsambladorDTOProducto ensambladorDTOProducto;
 
     public static EnsambladorDTOProducto obtenerEnsambladorDTOProducto(){
         if (ensambladorDTOProducto == null){
             EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
             ensambladorDTOProducto = new EnsambladorDTOProducto(
-                    ensambladorDTOImpuesto, ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento);
+                    obtenerEnsambladorDTOImpuesto(), obtenerEnsambladorDTODescuento(),
+                    obtenerEnsambladorDTOPoliticaVencimiento());
         }
         return ensambladorDTOProducto;
     }

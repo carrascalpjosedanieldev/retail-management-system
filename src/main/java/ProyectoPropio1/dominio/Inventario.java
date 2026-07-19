@@ -1,5 +1,7 @@
 package ProyectoPropio1.dominio;
 
+import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
+
 public class Inventario {
 
     //ATRIBUTOS:
@@ -94,7 +96,7 @@ public class Inventario {
 
     public void validarEspacioDisponible(int stockNuevo) {
         if (stockNuevo > this.calcularCapacidadLibre()) {
-            throw new IllegalStateException("Capacidad del Inventario Insuficiente. Libre: " + this.calcularCapacidadLibre() +
+            throw new CapacidadInventarioExcedidaException("Capacidad del Inventario Insuficiente. Libre: " + this.calcularCapacidadLibre() +
                             ", Solicitado: " + stockNuevo);
         }
     }

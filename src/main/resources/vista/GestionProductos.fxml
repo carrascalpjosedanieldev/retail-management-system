@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="720.0" prefWidth="1280.0" spacing="20.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.GestionProductosControlador">
+<VBox prefHeight="720.0" prefWidth="1280.0" spacing="20.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.GestionProductosControlador">
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
     </padding>
@@ -22,15 +22,15 @@
 
     <TabPane fx:id="tabPaneProductos" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <Tab text="Vista General">
-            <fx:include fx:id="tabGeneral" source="tabGeneralProductos.fxml"/>
+            <fx:include fx:id="tabGeneral" source="tabGeneralProductos.fxml" />
         </Tab>
 
         <Tab text="👕 Ropa">
-            <fx:include source="tabRopa.fxml"/>
+            <fx:include fx:id="tabRopa" source="tabRopa.fxml"/>
         </Tab>
 
         <Tab text="🍎 Perecederos">
-            <fx:include source="tabPerecederos.fxml"/>
+            <fx:include source="tabPerecederos.fxml" />
         </Tab>
     </TabPane>
 </VBox>
