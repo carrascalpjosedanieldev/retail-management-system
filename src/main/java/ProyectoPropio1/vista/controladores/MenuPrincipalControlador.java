@@ -1,6 +1,7 @@
 package ProyectoPropio1.vista.controladores;
 
 import ProyectoPropio1.utilidades.RutasVista;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -9,16 +10,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-
-import java.io.IOException;
+import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -37,16 +33,13 @@ public class MenuPrincipalControlador {
     }
 
     private void iniciarReloj() {
-
         DateTimeFormatter formatoHora = DateTimeFormatter.ofPattern("hh:mm a");
-
         Timeline reloj = new Timeline(
                 new KeyFrame(Duration.seconds(1), evento -> {
                     LocalTime horaActual = LocalTime.now();
                     lblReloj.setText(horaActual.format(formatoHora));
                 })
         );
-
         reloj.setCycleCount(Timeline.INDEFINITE);
         reloj.play();
     }
@@ -56,40 +49,57 @@ public class MenuPrincipalControlador {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
             Parent root = loader.load();
-
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            System.out.println("Error al cargar la pantalla de Gestión de Tienda:");
-            e.printStackTrace();
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            String mensaje = "Ocurrió un problema al cargar la vista de Gestión de Tienda.\n" +
+                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.";
+            mostrarAlertaConEstilo(Alert.AlertType.ERROR, "Error de Navegación",
+                    "No se pudo abrir la pantalla", mensaje, null, true);
         }
     }
 
     @FXML
     void salirDelSistema(ActionEvent event) {
-        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
-        alerta.setTitle("Confirmar Salida");
-        alerta.setHeaderText(null);
-        alerta.setContentText("¿Estás Seguro de que deseas Salir del Sistema?");
+        salirDelSistema();
+    }
 
-        javafx.scene.control.DialogPane panelAlerta = alerta.getDialogPane();
-
-        String rutaCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_PRINCIPAL).toExternalForm();
-        panelAlerta.getStylesheets().add(rutaCss);
-
+    public void salirDelSistema(){
         Label iconoAmigable = new Label("👋");
         iconoAmigable.setStyle("-fx-font-size: 45px; -fx-padding: 0 10 0 10;");
-        alerta.setGraphic(iconoAmigable);
-
-        Optional<ButtonType> respuesta = alerta.showAndWait();
-
+        Optional<ButtonType> respuesta = mostrarAlertaConEstilo(
+                Alert.AlertType.CONFIRMATION, "Confirmar Salida",
+                null, "¿Estás Seguro de que deseas Salir del Sistema?",
+                iconoAmigable, false
+        );
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             Platform.exit();
             System.exit(0);
         }
+    }
+
+    private Optional<ButtonType> mostrarAlertaConEstilo(
+            Alert.AlertType tipo, String titulo, String cabecera, String contenido,
+            Node iconoPersonalizado, boolean esAlertaError
+    ) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(cabecera);
+        alerta.setContentText(contenido);
+        if (iconoPersonalizado != null) {
+            alerta.setGraphic(iconoPersonalizado);
+        }
+        DialogPane panelAlerta = alerta.getDialogPane();
+        if (esAlertaError) {
+            panelAlerta.setPrefSize(500, 250);
+        }
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_PRINCIPAL);
+        if (urlCss != null) {
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        } else if (esAlertaError) {
+            panelAlerta.setPrefSize(500, 180);
+        }
+        return alerta.showAndWait();
     }
 
 }
