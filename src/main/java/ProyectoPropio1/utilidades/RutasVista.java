@@ -29,4 +29,7 @@ public class RutasVista {
     public static final String EDITAR_ROPA_VIEW = "/vista/editarRopa.fxml";
     public static final String ESTILOS_CSS_EDITAR_ROPA = "/css/estilosCssEditarRopaOPerecedero.css";
 
+    public static final String EDITAR_PERECEDERO_VIEW = "/vista/editarPerecedero.fxml";
+    public static final String ESTILOS_CSS_EDITAR_PERECEDERO = "/css/estilosCssEditarRopaOPerecedero.css";
+
 }

@@ -45,7 +45,7 @@ public class GestionProductosControlador {
             tabRopaController.recibirIdInventario(idInventarioRecibido);
         }
         if (tabPerecederoController != null) {
-            //tabPerecederoController.recibirIdInventario(idInventarioRecibido); // Para cuando lo implementes
+            tabPerecederoController.recibirIdInventario(idInventarioRecibido);
         }
     }
 

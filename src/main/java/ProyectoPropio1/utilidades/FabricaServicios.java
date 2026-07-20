@@ -55,7 +55,9 @@ public class FabricaServicios {
             RepositorioProducto repositorioProducto = new RepositorioProductoMySQL();
             RepositorioImpuestos repositorioImpuestos = new RepositorioImpuestosMySQL();
             RepositorioDescuentos repositorioDescuentos = new RepositorioDescuentosMySQL();
-            servicioProductos = new ServicioProductos(repositorioProducto, repositorioImpuestos, repositorioDescuentos);
+            RepositorioPoliticaVencimiento repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
+            servicioProductos = new ServicioProductos(repositorioProducto, repositorioImpuestos,
+                    repositorioDescuentos, repositorioPoliticaVencimiento);
         }
         return servicioProductos;
     }

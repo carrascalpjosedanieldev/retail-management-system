@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="525.0" spacing="20.0" stylesheets="@../css/estilosCssEditarRopaOPerecedero.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.EditarPerecederoControlador">
+    <padding>
+        <Insets bottom="20.0" left="25.0" right="25.0" top="20.0" />
+    </padding>
+
+    <Label styleClass="titulo-ventana" text="Editar Producto Perecedero">
+        <font>
+            <Font name="System Bold" size="18.0" />
+        </font>
+    </Label>
+
+    <GridPane hgap="15.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="130.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" />
+        </columnConstraints>
+
+        <!-- Fila 0: Código -->
+        <Label text="Código:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="txtCodigo" editable="false" focusTraversable="false" style="-fx-background-color: #f1f5f9; -fx-text-fill: #64748b;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <!-- Fila 1: Nombre -->
+        <Label text="Producto:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <TextField fx:id="txtNombre" promptText="Nombre del producto..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <!-- Fila 2: Fecha de Vencimiento (Solo lectura) -->
+        <Label text="F. Vencimiento:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <TextField fx:id="txtFechaVencimiento" editable="false" focusTraversable="false" style="-fx-background-color: #f1f5f9; -fx-text-fill: #64748b;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <!-- Fila 3: Política de Vencimiento -->
+        <Label text="Política Venc.:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <ComboBox fx:id="cbPoliticaVencimiento" prefWidth="1000.0" promptText="Seleccione política" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+        <!-- Fila 4: Valor de Compra -->
+        <Label text="Valor de Compra:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <TextField fx:id="txtCompra" promptText="Ej: 15000" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+        <!-- Fila 5: Ganancia (%) -->
+        <Label text="Ganancia (%):" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+        <TextField fx:id="txtGanancia" promptText="Ej: 25" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+        <!-- Fila 6: Stock (Solo lectura) -->
+        <Label text="Stock:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+        <TextField fx:id="txtStock" editable="false" focusTraversable="false" styleClass="campo-lectura" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+        <!-- Fila 7: Impuesto -->
+        <Label text="Impuesto:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+        <ComboBox fx:id="cbImpuesto" prefWidth="1000.0" promptText="Seleccione impuesto" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+        <!-- Fila 8: Descuento -->
+        <Label text="Descuento:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+        <ComboBox fx:id="cbDescuento" prefWidth="1000.0" promptText="Seleccione descuento" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+
+        <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+        </rowConstraints>
+    </GridPane>
+
+    <!-- Botones de Acción -->
+    <HBox alignment="CENTER_RIGHT" spacing="15.0">
+        <VBox.margin>
+            <Insets top="10.0" />
+        </VBox.margin>
+        <Button mnemonicParsing="false" onAction="#cancelar" style="-fx-background-color: #ef4444; -fx-text-fill: white;" text="Cancelar" />
+        <Button mnemonicParsing="false" onAction="#guardarCambios" style="-fx-background-color: #10b981; -fx-text-fill: white;" text="Guardar Cambios" />
+    </HBox>
+</VBox>
+

@@ -72,3 +72,5 @@
         <Button mnemonicParsing="false" onAction="#guardarCambios" style="-fx-background-color: #10b981; -fx-text-fill: white;" text="Guardar Cambios" />
     </HBox>
 </VBox>
+
+

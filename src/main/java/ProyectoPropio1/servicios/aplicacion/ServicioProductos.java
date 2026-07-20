@@ -3,6 +3,7 @@ package ProyectoPropio1.servicios.aplicacion;
 import ProyectoPropio1.dominio.*;
 import ProyectoPropio1.dominio.puertos.RepositorioDescuentos;
 import ProyectoPropio1.dominio.puertos.RepositorioImpuestos;
+import ProyectoPropio1.dominio.puertos.RepositorioPoliticaVencimiento;
 import ProyectoPropio1.dominio.puertos.RepositorioProducto;
 
 import java.math.BigDecimal;
@@ -16,11 +17,14 @@ public class ServicioProductos {
 
     private final RepositorioDescuentos repositorioDescuentos;
 
+    private final RepositorioPoliticaVencimiento repositorioPoliticaVencimiento;
+
     public ServicioProductos(RepositorioProducto repositorioProducto, RepositorioImpuestos repositorioImpuestos,
-                             RepositorioDescuentos repositorioDescuentos) {
+                             RepositorioDescuentos repositorioDescuentos, RepositorioPoliticaVencimiento repositorioPoliticaVencimiento) {
         this.repositorioProducto = repositorioProducto;
         this.repositorioImpuestos = repositorioImpuestos;
         this.repositorioDescuentos = repositorioDescuentos;
+        this.repositorioPoliticaVencimiento = repositorioPoliticaVencimiento;
     }
 
     public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
@@ -57,6 +61,23 @@ public class ServicioProductos {
         producto.cambiarImpuesto(impuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
         producto.cambiarDescuento(descuento);
+        this.actualizarProductoDeInventario(idInventario, producto);
+    }
+
+    public void actualizarProductoPerecederoDeInventario(
+            int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
+            BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento
+    ) {
+        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
+        producto.cambiarNombreProducto(nombreNuevo);
+        producto.cambiarValorCompra(valorCompra);
+        producto.cambiarValorVentaPorPorcentaje(porcentajeGanancia);
+        Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
+        producto.cambiarImpuesto(impuesto);
+        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+        producto.cambiarDescuento(descuento);
+        PoliticaVencimiento politicaVencimiento = this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
+        //cambiarPolitica
         this.actualizarProductoDeInventario(idInventario, producto);
     }
 

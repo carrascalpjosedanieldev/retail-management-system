@@ -30,7 +30,7 @@
         </Tab>
 
         <Tab text="🍎 Perecederos">
-            <fx:include source="tabPerecederos.fxml" />
+            <fx:include fx:id="tabPerecedero" source="tabPerecederos.fxml" />
         </Tab>
     </TabPane>
 </VBox>
