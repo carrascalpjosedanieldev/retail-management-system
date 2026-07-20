@@ -7,11 +7,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class GestionarTiendaControlador {
 
@@ -23,30 +22,29 @@ public class GestionarTiendaControlador {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            javafx.scene.control.Alert alerta = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Error de Navegación");
             alerta.setHeaderText("No se pudo cargar la pantalla");
-            alerta.setContentText("Ruta no encontrada: " + ruta + "\nRevisa la consola para más detalles.");
-            try {
-                alerta.getDialogPane().getStylesheets().add(
-                        java.util.Objects.requireNonNull(
-                                getClass().getResource(RutasVista.ESTILOS_CSS_GESTIONAR_TIENDA)
-                        ).toExternalForm()
-                );
-            } catch (NullPointerException cssEx) {
-                System.out.println("No se encontró el CSS para la alerta de error.");
+            alerta.setContentText("Ocurrió un problema al intentar abrir la vista.\n" +
+                    "Ruta solicitada: " + ruta + "\n" +
+                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
+            DialogPane panelAlerta = alerta.getDialogPane();
+            panelAlerta.setPrefSize(500, 250);
+            java.net.URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_GESTIONAR_TIENDA);
+            if (urlCss != null) {
+                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+            } else {
+                panelAlerta.setPrefSize(500, 180);
             }
             alerta.showAndWait();
-            e.printStackTrace();
         }
     }
 
     @FXML
     void abrirConfiguraciones(ActionEvent event) {
-
+        cambiarVentana(event, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
     }
 
     @FXML
