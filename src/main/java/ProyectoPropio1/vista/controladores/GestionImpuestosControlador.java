@@ -20,60 +20,66 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class GestionImpuestosControlador {
 
-    @FXML
-    private TableView<ImpuestoDTO> tablaImpuestos;
+    //ATRIBUTOS:
 
-    @FXML
-    private TableColumn<ImpuestoDTO, Integer> colId;
+    @FXML private TableView<ImpuestoDTO> tablaImpuestos;
 
-    @FXML
-    private TableColumn<ImpuestoDTO, String > colNombre;
+    @FXML private TableColumn<ImpuestoDTO, Integer> colId;
 
-    @FXML
-    private TableColumn<ImpuestoDTO, BigDecimal> colPorcentaje;
+    @FXML private TableColumn<ImpuestoDTO, String > colNombre;
 
-    @FXML
-    private TableColumn<ImpuestoDTO, String> colEstado;
+    @FXML private TableColumn<ImpuestoDTO, BigDecimal> colPorcentaje;
 
-    @FXML
-    private TextField txtBuscar;
+    @FXML private TableColumn<ImpuestoDTO, String> colEstado;
+
+    @FXML private TextField txtBuscar;
 
     private final ServicioImpuestos servicioImpuestos = FabricaServicios.obtenerServicioImpuestos();
 
     private final EnsambladorDTOImpuesto ensambladorDTOImpuesto = FabricaEnsambladores.obtenerEnsambladorDTOImpuesto();
 
-    private final ObservableList<ImpuestoDTO> listaObservableDescuentos = FXCollections.observableArrayList();
+    private final ObservableList<ImpuestoDTO> listaObservableImpuestos = FXCollections.observableArrayList();
+
+    //METODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
-        alerta.getDialogPane().getStylesheets().add(
-                java.util.Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS en la ruta especificada."
-                ).toExternalForm()
-        );
+        DialogPane panelAlerta = alerta.getDialogPane();
+        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
+        aplicarCSS(panelAlerta);
         alerta.showAndWait();
     }
 
+    private void aplicarCSS(DialogPane panel) {
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS);
+        if (urlCss != null) {
+            panel.getStylesheets().add(urlCss.toExternalForm());
+        }
+    }
+
+
     @FXML
     public void initialize() {
+        inicializar();
+    }
+
+    private void inicializar(){
         colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idImpuesto()));
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
@@ -95,7 +101,7 @@ public class GestionImpuestosControlador {
                 }
             }
         });
-        FilteredList<ImpuestoDTO> listaFiltrada = new FilteredList<>(listaObservableDescuentos, b -> true);
+        FilteredList<ImpuestoDTO> listaFiltrada = new FilteredList<>(listaObservableImpuestos, b -> true);
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
             listaFiltrada.setPredicate(impuesto -> {
                 if (valorNuevo == null || valorNuevo.isBlank()) {
@@ -118,35 +124,36 @@ public class GestionImpuestosControlador {
     }
 
     private void cargarDatosTabla() {
-        List<ImpuestoDTO> todosLosDescuentos = new ArrayList<>();
-        List<ImpuestoDTO> descuentosActivos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+        List<ImpuestoDTO> todosLosImpuestos = new ArrayList<>();
+        List<ImpuestoDTO> impuestosActivos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
                 this.servicioImpuestos.obtenerImpuestosActivos()
         );
-        List<ImpuestoDTO> descuentosInactivos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+        List<ImpuestoDTO> impuestosInactivos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
                 this.servicioImpuestos.obtenerImpuestosInactivos()
         );
-        todosLosDescuentos.addAll(descuentosActivos);
-        todosLosDescuentos.addAll(descuentosInactivos);
-        listaObservableDescuentos.setAll(todosLosDescuentos);
+        todosLosImpuestos.addAll(impuestosActivos);
+        todosLosImpuestos.addAll(impuestosInactivos);
+        listaObservableImpuestos.setAll(todosLosImpuestos);
     }
+
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
+        abrirFormularioEdicion();
+    }
+
+    private void abrirFormularioEdicion(){
         ImpuestoDTO seleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Por favor, selecciona un impuesto de la tabla para modificarlo.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
+                    "Por favor, Selecciona un Impuesto de la Tabla para Modificarlo.");
             return;
         }
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Modificar Impuesto");
         dialog.setHeaderText("Editando el impuesto: " + seleccionado.nombre());
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS para el formulario."
-                ).toExternalForm()
-        );
+        aplicarCSS(dialogPane);
         ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -169,36 +176,45 @@ public class GestionImpuestosControlador {
             String nuevoPorcentajeTexto = txtPorcentaje.getText();
             try {
                 if (nuevoNombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación", "El nombre del impuesto no puede estar vacío.");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                            "El Nombre del Impuesto NO puede estar Vacío.");
+                    return;
+                }
+                if (nuevoPorcentajeTexto.isEmpty()) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
+                            "El Porcentaje del Impuesto NO puede estar Vacio");
                     return;
                 }
                 BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
                 this.servicioImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El impuesto se ha actualizado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El Impuesto se ha Actualizado Correctamente.");
                 cargarDatosTabla();
             } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido", "Por favor, ingresa un porcentaje válido (ejemplo: 15 o 15.5).");
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
             } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Impuesto Duplicado", e.getMessage());
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Impuesto",
+                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico", "No se pudo actualizar el impuesto en la base de datos.");
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                        "No se pudo actualizar el impuesto en la base de datos.");
             }
         }
     }
 
+
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
+        abrirFormularioNuevo();
+    }
+
+    private void abrirFormularioNuevo(){
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Registrar Nuevo Impuesto");
         dialog.setHeaderText("Ingresa los detalles del nuevo impuesto.");
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(
-                java.util.Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS para el formulario de impuestos."
-                ).toExternalForm()
-        );
+        aplicarCSS(dialogPane);
         ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -212,9 +228,9 @@ public class GestionImpuestosControlador {
         txtPorcentaje.setPromptText("Ej. 15.5");
         CheckBox chkActivo = new CheckBox("¿Impuesto Activo?");
         chkActivo.setSelected(true);
-        grid.add(new javafx.scene.control.Label("Nombre:"), 0, 0);
+        grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        grid.add(new javafx.scene.control.Label("Porcentaje (%):"), 0, 1);
+        grid.add(new Label("Porcentaje (%):"), 0, 1);
         grid.add(txtPorcentaje, 1, 1);
         grid.add(chkActivo, 1, 2);
         dialogPane.setContent(grid);
@@ -225,53 +241,67 @@ public class GestionImpuestosControlador {
             boolean activo = chkActivo.isSelected();
             try {
                 if (nombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación", "El nombre del impuesto no puede estar vacío.");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                            "El nombre del impuesto no puede estar vacío.");
+                    return;
+                }
+                if (porcentajeTexto.isEmpty()) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
+                            "El Porcentaje del Impuesto NO puede estar Vacio");
                     return;
                 }
                 BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
                 this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El impuesto se ha guardado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El Impuesto se ha Guardado Correctamente.");
                 cargarDatosTabla();
             } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido", "Por favor, ingresa un porcentaje válido (ejemplo: 15 o 15.5).");
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
             } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Impuesto Duplicado", e.getMessage());
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Impuesto",
+                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico", "No se pudo guardar el impuesto en la base de datos.");
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                        "No se pudo Registrar el Impuesto en la Base de Datos.");
             }
         }
     }
 
+
     @FXML
     void cambiarEstadoImpuesto(ActionEvent event) {
+        cambiarEstadoImpuesto();
+    }
+
+    private void cambiarEstadoImpuesto(){
         ImpuestoDTO impuestoSeleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (impuestoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Por favor, selecciona un impuesto de la tabla para cambiar su estado.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
+                    "Por favor, Selecciona un Impuesto de la Tabla para Cambiar su Estado.");
             return;
         }
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar cambio de estado");
         confirmacion.setHeaderText(null);
         confirmacion.setContentText("¿Estás seguro de que deseas cambiar el estado del impuesto '" + impuestoSeleccionado.nombre() + "'?");
-        confirmacion.getDialogPane().getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS."
-                ).toExternalForm()
-        );
+        DialogPane panelConfirmacion = confirmacion.getDialogPane();
+        panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
+        aplicarCSS(panelConfirmacion);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
                 this.servicioImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El estado se ha actualizado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo cambiar el estado: " + e.getMessage());
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                        "NO se Pudo Cambiar el Estado: " + e.getMessage());
             }
         }
     }
+
 
     @FXML
     void volverAlPanel(ActionEvent event) {
@@ -279,11 +309,17 @@ public class GestionImpuestosControlador {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            mostrarAlerta(
+                    Alert.AlertType.ERROR,
+                    "Error de Navegación",
+                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
+                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
+            );
         }
     }
 
-}
+
+}//===================================================================================================================//
+

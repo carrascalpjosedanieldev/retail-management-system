@@ -36,6 +36,8 @@ import java.math.BigDecimal;
 
 public class GestionDescuentosControlador {
 
+    //ATRIBUTOS:
+
     @FXML private TableView<DescuentoDTO> tablaDescuentos;
 
     @FXML private TableColumn<DescuentoDTO, Integer> colId;
@@ -54,6 +56,8 @@ public class GestionDescuentosControlador {
 
     private final ObservableList<DescuentoDTO> listaObservableDescuentos = FXCollections.observableArrayList();
 
+    //METODOS:
+
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -61,11 +65,15 @@ public class GestionDescuentosControlador {
         alerta.setContentText(mensaje);
         DialogPane panelAlerta = alerta.getDialogPane();
         panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
+        aplicarCSS(panelAlerta);
+        alerta.showAndWait();
+    }
+
+    private void aplicarCSS(DialogPane panel) {
         URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
         if (urlCss != null) {
-            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+            panel.getStylesheets().add(urlCss.toExternalForm());
         }
-        alerta.showAndWait();
     }
 
 
@@ -148,10 +156,7 @@ public class GestionDescuentosControlador {
         dialog.setTitle("Modificar Descuento");
         dialog.setHeaderText("Editando el descuento: " + seleccionado.nombre());
         DialogPane dialogPane = dialog.getDialogPane();
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
-        if (urlCss != null) {
-            dialogPane.getStylesheets().add(urlCss.toExternalForm());
-        }
+        aplicarCSS(dialogPane);
         ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -212,10 +217,7 @@ public class GestionDescuentosControlador {
         dialog.setTitle("Registrar Nuevo Descuento");
         dialog.setHeaderText("Ingresa los detalles del nuevo descuento.");
         DialogPane dialogPane = dialog.getDialogPane();
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
-        if (urlCss != null) {
-            dialogPane.getStylesheets().add(urlCss.toExternalForm());
-        }
+        aplicarCSS(dialogPane);
         ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -286,10 +288,8 @@ public class GestionDescuentosControlador {
         confirmacion.setTitle("Confirmar Cambio de Estado");
         confirmacion.setHeaderText(null);
         confirmacion.setContentText("¿Estás Seguro de que Deseas Cambiar el Estado del Descuento -" + descuentoSeleccionado.nombre() + "-?");
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
-        if (urlCss != null) {
-            confirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
-        }
+        DialogPane panelConfirmacion = confirmacion.getDialogPane();
+        aplicarCSS(panelConfirmacion);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
