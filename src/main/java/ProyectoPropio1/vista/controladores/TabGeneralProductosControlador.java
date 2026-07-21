@@ -68,7 +68,6 @@ public class TabGeneralProductosControlador {
         return LocalDate.now();
     }
 
-
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);

@@ -172,7 +172,7 @@ public class GestionImpuestosControlador {
                     mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación", "El nombre del impuesto no puede estar vacío.");
                     return;
                 }
-                BigDecimal nuevoPorcentaje = FormateadorNumeros.stringABigDecimal(nuevoPorcentajeTexto);
+                BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
                 this.servicioImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El impuesto se ha actualizado correctamente.");
                 cargarDatosTabla();
@@ -228,7 +228,7 @@ public class GestionImpuestosControlador {
                     mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación", "El nombre del impuesto no puede estar vacío.");
                     return;
                 }
-                BigDecimal porcentaje = FormateadorNumeros.stringABigDecimal(porcentajeTexto);
+                BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
                 this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El impuesto se ha guardado correctamente.");
                 cargarDatosTabla();

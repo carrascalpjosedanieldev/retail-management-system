@@ -18,21 +18,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableCell;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.io.IOException;
 import java.math.BigDecimal;
 
 public class GestionDescuentosControlador {
@@ -60,17 +59,22 @@ public class GestionDescuentosControlador {
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
-        alerta.getDialogPane().getStylesheets().add(
-                java.util.Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS en la ruta especificada."
-                ).toExternalForm()
-        );
+        DialogPane panelAlerta = alerta.getDialogPane();
+        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
+        if (urlCss != null) {
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        }
         alerta.showAndWait();
     }
 
+
     @FXML
     public void initialize() {
+        inicializar();
+    }
+
+    private void inicializar(){
         colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idDescuento()));
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
@@ -127,23 +131,27 @@ public class GestionDescuentosControlador {
         listaObservableDescuentos.setAll(todosLosDescuentos);
     }
 
+
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
+        abrirFormularioEdicion();
+    }
+
+    private void abrirFormularioEdicion(){
         DescuentoDTO seleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Por favor, selecciona un descuento de la tabla para modificarlo.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
+                    "Por favor, selecciona un descuento de la tabla para modificarlo.");
             return;
         }
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Modificar Descuento");
         dialog.setHeaderText("Editando el descuento: " + seleccionado.nombre());
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS para el formulario."
-                ).toExternalForm()
-        );
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
+        if (urlCss != null) {
+            dialogPane.getStylesheets().add(urlCss.toExternalForm());
+        }
         ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -166,36 +174,48 @@ public class GestionDescuentosControlador {
             String nuevoPorcentajeTexto = txtPorcentaje.getText();
             try {
                 if (nuevoNombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación", "El nombre del descuento no puede estar vacío.");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                            "El Nombre del Descuento NO puede estar Vacío.");
                     return;
                 }
-                BigDecimal nuevoPorcentaje = FormateadorNumeros.stringABigDecimal(nuevoPorcentajeTexto);
+                if (nuevoPorcentajeTexto.isEmpty()) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
+                            "El Porcentaje del Descuento NO puede estar Vacio");
+                    return;
+                }
+                BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
                 this.servicioDescuentos.actualizarDescuento(seleccionado.idDescuento(), nuevoNombre, nuevoPorcentaje);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El descuento se ha actualizado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El descuento se ha actualizado correctamente.");
                 cargarDatosTabla();
             } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido", "Por favor, ingresa un porcentaje válido (ejemplo: 15 o 15.5).");
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
             } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Descuento Duplicado", e.getMessage());
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Descuento",
+                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico", "No se pudo actualizar el descuento en la base de datos.");
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                        "NO se pudo Actualizar el Descuento en la Base de Datos.");
             }
         }
     }
 
+
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
+        abrirFormularioNuevo();
+    }
+
+    private void abrirFormularioNuevo(){
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Registrar Nuevo Descuento");
         dialog.setHeaderText("Ingresa los detalles del nuevo descuento.");
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(
-                java.util.Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS para el formulario de descuentos."
-                ).toExternalForm()
-        );
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
+        if (urlCss != null) {
+            dialogPane.getStylesheets().add(urlCss.toExternalForm());
+        }
         ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
         GridPane grid = new GridPane();
@@ -209,9 +229,9 @@ public class GestionDescuentosControlador {
         txtPorcentaje.setPromptText("Ej. 15.5");
         CheckBox chkActivo = new CheckBox("¿Descuento Activo?");
         chkActivo.setSelected(true);
-        grid.add(new javafx.scene.control.Label("Nombre:"), 0, 0);
+        grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
-        grid.add(new javafx.scene.control.Label("Porcentaje (%):"), 0, 1);
+        grid.add(new Label("Porcentaje (%):"), 0, 1);
         grid.add(txtPorcentaje, 1, 1);
         grid.add(chkActivo, 1, 2);
         dialogPane.setContent(grid);
@@ -222,53 +242,68 @@ public class GestionDescuentosControlador {
             boolean activo = chkActivo.isSelected();
             try {
                 if (nombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación", "El nombre del descuento no puede estar vacío.");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                            "El Nombre del Descuento NO puede estar Vacío.");
                     return;
                 }
-                BigDecimal porcentaje = FormateadorNumeros.stringABigDecimal(porcentajeTexto);
+                if (porcentajeTexto.isEmpty()) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
+                            "El Porcentaje del Descuento NO puede estar Vacio");
+                    return;
+                }
+                BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
                 this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El descuento se ha guardado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El descuento se ha guardado correctamente.");
                 cargarDatosTabla();
             } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido", "Por favor, ingresa un porcentaje válido (ejemplo: 15 o 15.5).");
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
             } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Descuento Duplicado", e.getMessage());
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Descuento",
+                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico", "No se pudo guardar el descuento en la base de datos.");
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                        "No se pudo guardar el descuento en la base de datos.");
             }
         }
     }
 
+
     @FXML
     void cambiarEstadoDescuento(ActionEvent event) {
+        cambiarEstadoDescuento();
+    }
+
+    private void cambiarEstadoDescuento(){
         DescuentoDTO descuentoSeleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (descuentoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Por favor, selecciona un descuento de la tabla para cambiar su estado.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
+                    "Por favor, selecciona un Descuento de la Tabla para cambiar su Estado.");
             return;
         }
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de estado");
+        confirmacion.setTitle("Confirmar Cambio de Estado");
         confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas cambiar el estado del descuento '" + descuentoSeleccionado.nombre() + "'?");
-        confirmacion.getDialogPane().getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS."
-                ).toExternalForm()
-        );
+        confirmacion.setContentText("¿Estás Seguro de que Deseas Cambiar el Estado del Descuento -" + descuentoSeleccionado.nombre() + "-?");
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
+        if (urlCss != null) {
+            confirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        }
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
                 this.servicioDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento());
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El estado se ha actualizado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo cambiar el estado: " + e.getMessage());
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                        "NO se pudo cambiar el Estado: " + e.getMessage());
             }
         }
     }
+
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
@@ -276,12 +311,17 @@ public class GestionDescuentosControlador {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            mostrarAlerta(
+                    Alert.AlertType.ERROR,
+                    "Error de Navegación",
+                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
+                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
+            );
         }
     }
 
-}
+
+} //==================================================================================================================//
 

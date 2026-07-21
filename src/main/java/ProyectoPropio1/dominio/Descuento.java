@@ -41,8 +41,8 @@ public class Descuento {
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Descuento Vacio");
         }
-        if (porcentaje.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Porcentaje de Descuento Invalido");
+        if (porcentaje.compareTo(BigDecimal.ZERO) < 0 || porcentaje.compareTo(BigDecimal.valueOf(100)) > 0) {
+            throw new IllegalArgumentException("Porcentaje de Descuento Invalido:  " + porcentaje + "%");
         }
         this.id = id;
         this.nombre = nombre;

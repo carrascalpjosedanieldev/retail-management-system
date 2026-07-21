@@ -264,7 +264,7 @@ public class GestionServiciosControlador {
                     mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida", "Debes seleccionar un impuesto válido.");
                     return;
                 }
-                BigDecimal nuevoPrecioBase = FormateadorNumeros.stringABigDecimal(nuevoPrecioBaseTexto);
+                BigDecimal nuevoPrecioBase = FormateadorNumeros.stringAPrecio(nuevoPrecioBaseTexto);
                 int idDescuento = (descuentoSeleccionado != null) ? descuentoSeleccionado.getId() : 1;
                 this.servicioServicios.actualizarServicio(
                         seleccionado.codigo(),
@@ -368,7 +368,7 @@ public class GestionServiciosControlador {
                     mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida", "Debes seleccionar un impuesto para el servicio.");
                     return;
                 }
-                BigDecimal precioBase = FormateadorNumeros.stringABigDecimal(precioBaseTexto);
+                BigDecimal precioBase = FormateadorNumeros.stringAPrecio(precioBaseTexto);
                 int idDescuento = (descuentoSeleccionado != null) ? descuentoSeleccionado.getId() : 1;
                 this.servicioServicios.registrarServicioNuevo(
                         nombre,
