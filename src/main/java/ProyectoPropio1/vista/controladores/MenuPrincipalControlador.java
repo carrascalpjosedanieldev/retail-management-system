@@ -21,11 +21,12 @@ import java.util.Optional;
 
 public class MenuPrincipalControlador {
 
-    @FXML
-    public Button btnSalir;
+    //ATRIBUTOS:
 
-    @FXML
-    private Label lblReloj;
+    @FXML public Button btnSalir;
+    @FXML private Label lblReloj;
+
+    //MÉTODOS:
 
     @FXML
     public void initialize() {
@@ -54,7 +55,7 @@ public class MenuPrincipalControlador {
         } catch (Exception e) {
             String mensaje = "Ocurrió un problema al cargar la vista de Gestión de Tienda.\n" +
                     "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.";
-            mostrarAlertaConEstilo(Alert.AlertType.ERROR, "Error de Navegación",
+            mostrarAlerta(Alert.AlertType.ERROR, "Error de Navegación",
                     "No se pudo abrir la pantalla", mensaje, null, true);
         }
     }
@@ -67,7 +68,7 @@ public class MenuPrincipalControlador {
     public void salirDelSistema(){
         Label iconoAmigable = new Label("👋");
         iconoAmigable.setStyle("-fx-font-size: 45px; -fx-padding: 0 10 0 10;");
-        Optional<ButtonType> respuesta = mostrarAlertaConEstilo(
+        Optional<ButtonType> respuesta = mostrarAlerta(
                 Alert.AlertType.CONFIRMATION, "Confirmar Salida",
                 null, "¿Estás Seguro de que deseas Salir del Sistema?",
                 iconoAmigable, false
@@ -78,7 +79,7 @@ public class MenuPrincipalControlador {
         }
     }
 
-    private Optional<ButtonType> mostrarAlertaConEstilo(
+    private Optional<ButtonType> mostrarAlerta(
             Alert.AlertType tipo, String titulo, String cabecera, String contenido,
             Node iconoPersonalizado, boolean esAlertaError
     ) {

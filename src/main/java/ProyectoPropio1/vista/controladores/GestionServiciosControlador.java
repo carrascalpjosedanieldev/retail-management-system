@@ -11,6 +11,7 @@ import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -23,47 +24,32 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class GestionServiciosControlador {
 
-    @FXML
-    private TableColumn<ServicioDTO, String> colCodigo;
+    //ATRIBUTOS:
 
-    @FXML
-    private TableColumn<ServicioDTO, String> colDescuento;
-
-    @FXML
-    private TableColumn<ServicioDTO, String> colEstado;
-
-    @FXML
-    private TableColumn<ServicioDTO, String> colImpuesto;
-
-    @FXML
-    private TableColumn<ServicioDTO, String> colNombre;
-
-    @FXML
-    private TableColumn<ServicioDTO, BigDecimal> colPrecioBase;
-
-    @FXML
-    private TableColumn<ServicioDTO, BigDecimal> colPrecioFinal;
-
-    @FXML
-    private TableView<ServicioDTO> tablaServicios;
-
-    @FXML
-    private TextField txtBuscar;
+    @FXML private TableColumn<ServicioDTO, String> colCodigo;
+    @FXML private TableColumn<ServicioDTO, String> colDescuento;
+    @FXML private TableColumn<ServicioDTO, String> colEstado;
+    @FXML private TableColumn<ServicioDTO, String> colImpuesto;
+    @FXML private TableColumn<ServicioDTO, String> colNombre;
+    @FXML private TableColumn<ServicioDTO, BigDecimal> colPrecioBase;
+    @FXML private TableColumn<ServicioDTO, BigDecimal> colPrecioFinal;
+    @FXML private TableView<ServicioDTO> tablaServicios;
+    @FXML private TextField txtBuscar;
 
     private final ServicioServicios servicioServicios = FabricaServicios.obtenerServicioServicios();
 
@@ -75,11 +61,9 @@ public class GestionServiciosControlador {
 
     private final ObservableList<ServicioDTO> listaObservableServicios = FXCollections.observableArrayList();
 
-    private LocalDate obtenerFecha(){
-        return LocalDate.now();
-    }
+    //MÉTODOS:
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+    private Optional<ButtonType> mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
@@ -87,37 +71,19 @@ public class GestionServiciosControlador {
         DialogPane pane = alerta.getDialogPane();
         pane.setMinHeight(180);
         pane.setMinWidth(400);
-        alerta.getDialogPane().getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_SERVICIOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS."
-                ).toExternalForm()
-        );
-        alerta.showAndWait();
+        aplicarCSS(pane);
+        return alerta.showAndWait();
     }
 
-    @FXML
-    public void initialize() {
-        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigo()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colPrecioBase.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioBase())); // ¡Esta faltaba!
-        colImpuesto.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombreImpuesto()));
-        colDescuento.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombreDescuento()));
-        colPrecioFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioFinal())); // ¡Esta faltaba!
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
-        colPrecioBase.setCellFactory(columna -> new TableCell<ServicioDTO, BigDecimal>() {
-            @Override
-            protected void updateItem(BigDecimal precio, boolean empty) {
-                super.updateItem(precio, empty);
-                if (empty || precio == null) {
-                    setText(null);
-                } else {
-                    setText(String.format("%,.2f", precio));
-                    setStyle("-fx-font-weight: bold; -fx-text-fill: #0f172a;");
-                }
-            }
-        });
-        colPrecioFinal.setCellFactory(columna -> new TableCell<ServicioDTO, BigDecimal>() {
+    private void aplicarCSS(DialogPane panel) {
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_SERVICIOS);
+        if (urlCss != null) {
+            panel.getStylesheets().add(urlCss.toExternalForm());
+        }
+    }
+
+    private void configurarColumnaMoneda(TableColumn<ServicioDTO, BigDecimal> columna) {
+        columna.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(BigDecimal precio, boolean empty) {
                 super.updateItem(precio, empty);
@@ -129,6 +95,67 @@ public class GestionServiciosControlador {
                 }
             }
         });
+    }
+
+    private <T> void configurarComboBox(ComboBox<T> comboBox, List<T> items, String prompt, Function<T, String> extractorTexto) {
+        comboBox.setItems(FXCollections.observableArrayList(items));
+        comboBox.setPromptText(prompt);
+        comboBox.setMaxWidth(Double.MAX_VALUE);
+        comboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(T item) { return (item == null) ? "" : extractorTexto.apply(item); }
+            @Override
+            public T fromString(String string) { return null; }
+        });
+    }
+
+    private Dialog<ButtonType> crearDialogoBase(String titulo, String cabecera) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(titulo);
+        dialog.setHeaderText(cabecera);
+        DialogPane dialogPane = dialog.getDialogPane();
+        dialogPane.setPrefWidth(480);
+        dialogPane.setPrefHeight(450);
+        aplicarCSS(dialogPane);
+        return dialog;
+    }
+
+    private GridPane crearGridPane() {
+        GridPane grid = new GridPane();
+        grid.setHgap(15);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(20));
+        return grid;
+    }
+
+    private void validarFormulario(String nombre, String precioBaseTexto, Impuesto impuesto, Descuento descuento) throws IllegalArgumentException {
+        if (nombre == null || nombre.isEmpty() || precioBaseTexto == null || precioBaseTexto.isEmpty()) {
+            throw new IllegalArgumentException("El Nombre y el Precio Base son Obligatorios.");
+        }
+        if (impuesto == null) {
+            throw new IllegalArgumentException("Debes Seleccionar un Impuesto para el Servicio.");
+        }
+        if (descuento == null){
+            throw new IllegalArgumentException("Debes Seleccionar un Descuento para el Servicio (De preferencia que sea -Sin Descuento-).");
+        }
+    }
+
+
+    @FXML
+    public void initialize() {
+        inicializar();
+    }
+
+    private void inicializar(){
+        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigo()));
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
+        colPrecioBase.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioBase())); // ¡Esta faltaba!
+        colImpuesto.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombreImpuesto()));
+        colDescuento.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombreDescuento()));
+        colPrecioFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioFinal())); // ¡Esta faltaba!
+        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
+        configurarColumnaMoneda(colPrecioBase);
+        configurarColumnaMoneda(colPrecioFinal);
         colEstado.setCellFactory(columna -> new TableCell<ServicioDTO, String>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
@@ -164,7 +191,7 @@ public class GestionServiciosControlador {
     }
 
     private void cargarDatosTabla() {
-        LocalDate fechaActual = obtenerFecha();
+        LocalDate fechaActual = LocalDate.now();
         List<ServicioDTO> todosLosServicios = new ArrayList<>();
         List<ServicioDTO> serviciosActivos = this.ensambladorDTOServicio.ensamblarDatosCatalogoServicios(
                 this.servicioServicios.obtenerServiciosActivos(), fechaActual
@@ -180,66 +207,34 @@ public class GestionServiciosControlador {
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
+        abrirFormularioEdicion();
+    }
+
+    private void abrirFormularioEdicion(){
         ServicioDTO seleccionado = tablaServicios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Por favor, selecciona un servicio de la tabla para modificarlo.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
+                    "Por favor, Selecciona un Servicio de la Tabla para Modificarlo.");
             return;
         }
         List<Impuesto> listaImpuestos = this.servicioImpuestos.obtenerImpuestosActivos();
         List<Descuento> listaDescuentos = this.servicioDescuentos.obtenerDescuentosActivos();
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Modificar Servicio");
-        dialog.setHeaderText("Editando el servicio: " + seleccionado.codigo() + " \n " + seleccionado.nombre());
-        DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setPrefWidth(480);
-        dialogPane.setPrefHeight(450);
-        dialogPane.getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_SERVICIOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS."
-                ).toExternalForm()
-        );
+        Dialog<ButtonType> dialog = crearDialogoBase("Modificar Servicio",
+                "Editando el servicio: " + seleccionado.codigo() + " \n " + seleccionado.nombre());
         ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
+        dialog.getDialogPane().getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
         TextField txtNombre = new TextField(seleccionado.nombre());
         txtNombre.setPrefWidth(250);
         TextField txtPrecioBase = new TextField(seleccionado.precioBase().toString());
-        ComboBox<Impuesto> cbImpuestos = new ComboBox<>(FXCollections.observableArrayList(listaImpuestos));
-        cbImpuestos.setMaxWidth(Double.MAX_VALUE);
-        cbImpuestos.setConverter(new javafx.util.StringConverter<Impuesto>() {
-            @Override
-            public String toString(Impuesto imp) {
-                return (imp == null) ? "" : imp.getNombre() + " (" + imp.getPorcentaje() + "%)";
-            }
-            @Override
-            public Impuesto fromString(String string) { return null; }
-        });
-        ComboBox<Descuento> cbDescuentos = new ComboBox<>(FXCollections.observableArrayList(listaDescuentos));
-        cbDescuentos.setMaxWidth(Double.MAX_VALUE);
-        cbDescuentos.setConverter(new javafx.util.StringConverter<Descuento>() {
-            @Override
-            public String toString(Descuento desc) {
-                return (desc == null) ? "" : desc.getNombre() + " (" + desc.getPorcentaje() + "%)";
-            }
-            @Override
-            public Descuento fromString(String string) { return null; }
-        });
-        for (Impuesto imp : listaImpuestos) {
-            if (imp.getId() == seleccionado.idImpuesto()) {
-                cbImpuestos.getSelectionModel().select(imp);
-                break;
-            }
-        }
-        for (Descuento desc : listaDescuentos) {
-            if (desc.getId() == seleccionado.idDescuento()) {
-                cbDescuentos.getSelectionModel().select(desc);
-                break;
-            }
-        }
+        ComboBox<Impuesto> cbImpuestos = new ComboBox<>();
+        configurarComboBox(cbImpuestos, listaImpuestos, "Seleccione un Impuesto...",
+                imp -> imp.getNombre() + " (" + imp.getPorcentaje() + "%)");
+        ComboBox<Descuento> cbDescuentos = new ComboBox<>();
+        configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
+                desc -> desc.getNombre() + " (" + desc.getPorcentaje() + "%)");
+        listaImpuestos.stream().filter(imp -> imp.getId() == seleccionado.idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
+        listaDescuentos.stream().filter(desc -> desc.getId() == seleccionado.idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
+        GridPane grid = crearGridPane();
         grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
         grid.add(new Label("Precio Base:"), 0, 1);
@@ -248,7 +243,7 @@ public class GestionServiciosControlador {
         grid.add(cbImpuestos, 1, 2);
         grid.add(new Label("Descuento:"), 0, 3);
         grid.add(cbDescuentos, 1, 3);
-        dialogPane.setContent(grid);
+        dialog.getDialogPane().setContent(grid);
         Optional<ButtonType> resultado = dialog.showAndWait();
         if (resultado.isPresent() && resultado.get() == btnActualizar) {
             String nuevoNombre = txtNombre.getText().trim();
@@ -256,94 +251,64 @@ public class GestionServiciosControlador {
             Impuesto impuestoSeleccionado = cbImpuestos.getValue();
             Descuento descuentoSeleccionado = cbDescuentos.getValue();
             try {
-                if (nuevoNombre.isEmpty() || nuevoPrecioBaseTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos", "El nombre y el precio base no pueden estar vacíos.");
-                    return;
-                }
-                if (impuestoSeleccionado == null) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida", "Debes seleccionar un impuesto válido.");
-                    return;
-                }
+                validarFormulario(nuevoNombre, nuevoPrecioBaseTexto, impuestoSeleccionado, descuentoSeleccionado);
                 BigDecimal nuevoPrecioBase = FormateadorNumeros.stringAPrecio(nuevoPrecioBaseTexto);
-                int idDescuento = (descuentoSeleccionado != null) ? descuentoSeleccionado.getId() : 1;
                 this.servicioServicios.actualizarServicio(
-                        seleccionado.codigo(),
-                        nuevoNombre,
-                        nuevoPrecioBase,
-                        impuestoSeleccionado.getId(),
-                        idDescuento
+                        seleccionado.codigo(), nuevoNombre, nuevoPrecioBase, impuestoSeleccionado.getId(),
+                        descuentoSeleccionado.getId()
                 );
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El servicio ha sido actualizado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El Servicio ha sido Actualizado Correctamente.");
                 cargarDatosTabla();
             } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido", "Por favor, ingresa un precio base numérico válido.");
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Por favor, Ingresa un Precio Base numérico válido.");
+            } catch (IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Servicio",
+                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico", "No se pudo actualizar el servicio: " + e.getMessage());
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                        "NO se pudo Actualizar el Servicio en la Base de Datos.\n" +
+                                "Error:  " + e.getMessage());
             }
         }
     }
 
+
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
+        abrirFormularioNuevo();
+    }
+
+    private void abrirFormularioNuevo(){
         List<Impuesto> listaImpuestos = this.servicioImpuestos.obtenerImpuestosActivos();
         List<Descuento> listaDescuentos = this.servicioDescuentos.obtenerDescuentosActivos();
         if (listaImpuestos.isEmpty()) {
             mostrarAlerta(Alert.AlertType.WARNING, "Configuración Requerida",
-                    "No puedes crear un servicio si no tienes al menos un Impuesto activo en el sistema.");
+                    "NO puedes Crear un Servicio si no tienes al menos un Impuesto Activo en el Sistema.");
             return;
         }
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Registrar Nuevo Servicio");
-        dialog.setHeaderText("Ingresa los datos del nuevo servicio");
-        DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setPrefWidth(480);
-        dialogPane.setPrefHeight(450);
-        dialogPane.getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_SERVICIOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS."
-                ).toExternalForm()
-        );
+        if (listaDescuentos.isEmpty()) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Configuración Requerida",
+                    "NO puedes Crear un Servicio si no tienes al menos un Descuento Activo en el Sistema (De preferencia que sea -Sin Descuento-).");
+            return;
+        }
+        Dialog<ButtonType> dialog = crearDialogoBase("Registrar Nuevo Servicio",
+                "Ingresa los Datos del nuevo Servicio");
         ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
+        dialog.getDialogPane().getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
         TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Nombre del servicio...");
+        txtNombre.setPromptText("Nombre del Servicio...");
         txtNombre.setPrefWidth(250);
         TextField txtPrecioBase = new TextField();
         txtPrecioBase.setPromptText("Ej: 1500.00");
         ComboBox<Impuesto> cbImpuestos = new ComboBox<>();
-        cbImpuestos.setItems(FXCollections.observableArrayList(listaImpuestos));
-        cbImpuestos.setPromptText("Seleccione un impuesto...");
-        cbImpuestos.setMaxWidth(Double.MAX_VALUE);
-        cbImpuestos.setConverter(new javafx.util.StringConverter<Impuesto>() {
-            @Override
-            public String toString(Impuesto imp) {
-                return (imp == null) ? "" : imp.getNombre() + " (" + imp.getPorcentaje() + "%)";
-            }
-            @Override
-            public Impuesto fromString(String string) {
-                return null;
-            }
-        });
+        configurarComboBox(cbImpuestos, listaImpuestos, "Seleccione un Impuesto...",
+                imp -> imp.getNombre() + " (" + imp.getPorcentaje() + "%)");
         ComboBox<Descuento> cbDescuentos = new ComboBox<>();
-        cbDescuentos.setItems(FXCollections.observableArrayList(listaDescuentos));
-        cbDescuentos.setPromptText("Seleccione un descuento (Opcional)...");
-        cbDescuentos.setMaxWidth(Double.MAX_VALUE);
-        cbDescuentos.setConverter(new javafx.util.StringConverter<Descuento>() {
-            @Override
-            public String toString(Descuento desc) {
-                return (desc == null) ? "" : desc.getNombre() + " (" + desc.getPorcentaje() + "%)";
-            }
-            @Override
-            public Descuento fromString(String string) {
-                return null;
-            }
-        });
+        configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
+                desc -> desc.getNombre() + " (" + desc.getPorcentaje() + "%)");
+        GridPane grid = crearGridPane();
         grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
         grid.add(new Label("Precio Base:"), 0, 1);
@@ -352,7 +317,7 @@ public class GestionServiciosControlador {
         grid.add(cbImpuestos, 1, 2);
         grid.add(new Label("Descuento:"), 0, 3);
         grid.add(cbDescuentos, 1, 3);
-        dialogPane.setContent(grid);
+        dialog.getDialogPane().setContent(grid);
         Optional<ButtonType> resultado = dialog.showAndWait();
         if (resultado.isPresent() && resultado.get() == btnGuardar) {
             String nombre = txtNombre.getText().trim();
@@ -360,65 +325,62 @@ public class GestionServiciosControlador {
             Impuesto impuestoSeleccionado = cbImpuestos.getValue();
             Descuento descuentoSeleccionado = cbDescuentos.getValue();
             try {
-                if (nombre.isEmpty() || precioBaseTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos", "El nombre y el precio base son obligatorios.");
-                    return;
-                }
-                if (impuestoSeleccionado == null) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida", "Debes seleccionar un impuesto para el servicio.");
-                    return;
-                }
+                validarFormulario(nombre, precioBaseTexto, impuestoSeleccionado, descuentoSeleccionado);
                 BigDecimal precioBase = FormateadorNumeros.stringAPrecio(precioBaseTexto);
-                int idDescuento = (descuentoSeleccionado != null) ? descuentoSeleccionado.getId() : 1;
                 this.servicioServicios.registrarServicioNuevo(
                         nombre,
                         precioBase,
                         impuestoSeleccionado.getId(),
-                        idDescuento
+                        descuentoSeleccionado.getId()
                 );
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El servicio ha sido registrado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El Servicio ha sido Registrado Correctamente.");
                 cargarDatosTabla();
             } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido", "Por favor, ingresa un precio base numérico válido.");
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Por favor, Ingresa un Precio Base numérico válido.");
+            } catch (IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Servicio",
+                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico", "No se pudo registrar el servicio: " + e.getMessage());
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                        "NO se pudo Registrar el Servicio en la Base de Datos:\n" +
+                                "Error:  " + e.getMessage());
             }
         }
     }
 
+
     @FXML
     void cambiarEstadoServicio(ActionEvent event) {
+        cambiarEstadoServicio();
+    }
+
+    private void cambiarEstadoServicio(){
         ServicioDTO seleccionado = tablaServicios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Por favor, selecciona un servicio de la tabla para cambiar su estado.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
+                    "Por favor, Selecciona un Servicio de la Tabla para Cambiar su Estado.");
             return;
         }
         boolean esActivo = seleccionado.estado().equalsIgnoreCase("Activo");
-        String accion = esActivo ? "inactivar" : "activar";
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de estado");
-        confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " el servicio:\n" +
-                seleccionado.codigo() + " - " + seleccionado.nombre() + "?");
-        confirmacion.getDialogPane().getStylesheets().add(
-                Objects.requireNonNull(
-                        getClass().getResource(RutasVista.ESTILOS_CSS_SERVICIOS),
-                        "¡CRÍTICO! No se encontró el archivo CSS."
-                ).toExternalForm()
-        );
-        Optional<ButtonType> respuesta = confirmacion.showAndWait();
+        String accion = esActivo ? "Desactivar" : "Activar";
+        Optional<ButtonType> respuesta = mostrarAlerta(Alert.AlertType.CONFIRMATION, "Confirmar Cambio de Estado",
+                "¿Estás Seguro de que Deseas " + accion + " el Servicio:\n" +
+                        seleccionado.codigo() + " - " + seleccionado.nombre() + "?");
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
                 this.servicioServicios.cambiarEstadoServicio(seleccionado.codigo());
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito", "El estado del servicio ha sido actualizado correctamente.");
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                        "El Estado del Servicio ha sido Actualizado Correctamente.");
                 cargarDatosTabla();
             } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico", "No se pudo actualizar el estado en la base de datos.");
-                e.printStackTrace();
+                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                        "NO se pudo Actualizar el Estado en la Base de Datos.");
             }
         }
     }
+
 
     @FXML
     void volverAlPanel(ActionEvent event) {
@@ -426,12 +388,15 @@ public class GestionServiciosControlador {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            mostrarAlerta(
+                    Alert.AlertType.ERROR, "Error de Navegación",
+                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
+                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
+            );
         }
     }
 
-}
+}//===================================================================================================================//
+

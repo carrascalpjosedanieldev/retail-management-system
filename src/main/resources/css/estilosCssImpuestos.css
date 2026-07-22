@@ -127,3 +127,27 @@
     -fx-background-color: #f1f5f9;
     -fx-padding: 15px;
 }
+
+.dialog-pane .button {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #1e293b;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #cbd5e1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 8, 0, 0, 3);
+}
+
+.dialog-pane .button:pressed {
+    -fx-background-color: #94a3b8;
+    -fx-effect: none;
+    -fx-translate-y: 1px;
+}
+

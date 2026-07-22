@@ -36,15 +36,10 @@ public class GestionImpuestosControlador {
     //ATRIBUTOS:
 
     @FXML private TableView<ImpuestoDTO> tablaImpuestos;
-
     @FXML private TableColumn<ImpuestoDTO, Integer> colId;
-
     @FXML private TableColumn<ImpuestoDTO, String > colNombre;
-
     @FXML private TableColumn<ImpuestoDTO, BigDecimal> colPorcentaje;
-
     @FXML private TableColumn<ImpuestoDTO, String> colEstado;
-
     @FXML private TextField txtBuscar;
 
     private final ServicioImpuestos servicioImpuestos = FabricaServicios.obtenerServicioImpuestos();
@@ -53,7 +48,7 @@ public class GestionImpuestosControlador {
 
     private final ObservableList<ImpuestoDTO> listaObservableImpuestos = FXCollections.observableArrayList();
 
-    //METODOS:
+    //MÉTODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
@@ -181,8 +176,8 @@ public class GestionImpuestosControlador {
                     return;
                 }
                 if (nuevoPorcentajeTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
-                            "El Porcentaje del Impuesto NO puede estar Vacio");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                            "El Porcentaje del Impuesto NO puede estar Vacío");
                     return;
                 }
                 BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
@@ -198,7 +193,8 @@ public class GestionImpuestosControlador {
                         "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
             } catch (Exception e) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "No se pudo actualizar el impuesto en la base de datos.");
+                        "NO se pudo Actualizar el Impuesto en la Base de Datos.\n" +
+                                "Error:  " + e.getMessage());
             }
         }
     }
@@ -246,8 +242,8 @@ public class GestionImpuestosControlador {
                     return;
                 }
                 if (porcentajeTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
-                            "El Porcentaje del Impuesto NO puede estar Vacio");
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                            "El Porcentaje del Impuesto NO puede estar Vacío");
                     return;
                 }
                 BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
@@ -281,10 +277,12 @@ public class GestionImpuestosControlador {
                     "Por favor, Selecciona un Impuesto de la Tabla para Cambiar su Estado.");
             return;
         }
+        boolean esActivo = impuestoSeleccionado.estado().equalsIgnoreCase("Activo");
+        String accion = esActivo ? "Desactivar" : "Activar";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar cambio de estado");
         confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas cambiar el estado del impuesto '" + impuestoSeleccionado.nombre() + "'?");
+        confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " el Impuesto -" + impuestoSeleccionado.nombre() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
         panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
         aplicarCSS(panelConfirmacion);

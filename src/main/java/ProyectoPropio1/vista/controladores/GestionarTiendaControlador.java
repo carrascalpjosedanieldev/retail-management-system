@@ -12,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
 
+import java.net.URL;
+
 public class GestionarTiendaControlador {
 
     @FXML
@@ -31,8 +33,8 @@ public class GestionarTiendaControlador {
                     "Ruta solicitada: " + ruta + "\n" +
                     "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
             DialogPane panelAlerta = alerta.getDialogPane();
-            panelAlerta.setPrefSize(500, 250);
-            java.net.URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_GESTIONAR_TIENDA);
+            panelAlerta.setPrefSize(500, 280);
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_GESTIONAR_TIENDA);
             if (urlCss != null) {
                 panelAlerta.getStylesheets().add(urlCss.toExternalForm());
             } else {
