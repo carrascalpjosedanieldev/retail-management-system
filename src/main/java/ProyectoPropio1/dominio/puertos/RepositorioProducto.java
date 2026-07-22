@@ -14,6 +14,8 @@ public interface RepositorioProducto {
 
     Producto obtenerProductoDeInventario(int idInventario, String  codigoProducto);
 
+    ProductoPerecedero obtenerPerecederoDeInventario(int idInventario, String codigoProducto);
+
     void actualizarProducto(Producto producto, int idInventario);
 
     void cambiarInventarioProducto(String codigoProducto, int idInventarioOrigen, int idInventarioDestino);

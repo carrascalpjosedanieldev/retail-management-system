@@ -62,7 +62,7 @@ public class ProductoPerecedero extends Producto{
                 fechaVencimiento, politicaVencimiento);
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     public boolean estaVencido(LocalDate fechaReferencia) {
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
@@ -119,11 +119,8 @@ public class ProductoPerecedero extends Producto{
     }
 
     public void cambiarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
-        if (politicaVencimiento == getPoliticaVencimiento()){
-            throw new IllegalArgumentException("Las Politicas de Vencimiento son las mismas");
-        }
         if (!politicaVencimiento.isActiva()){
-            throw new IllegalArgumentException("La Politica de Vencimiento que quieres colocar NO esta Activa");
+            throw new IllegalArgumentException("La Política de Vencimiento que quieres colocar NO esta Activa");
         }
         setPoliticaVencimiento(politicaVencimiento);
     }

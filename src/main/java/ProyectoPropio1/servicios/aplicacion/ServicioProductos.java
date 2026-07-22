@@ -68,7 +68,7 @@ public class ServicioProductos {
             int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
             BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento
     ) {
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
+        ProductoPerecedero producto = this.repositorioProducto.obtenerPerecederoDeInventario(idInventario, codigoProducto);
         producto.cambiarNombreProducto(nombreNuevo);
         producto.cambiarValorCompra(valorCompra);
         producto.cambiarValorVentaPorPorcentaje(porcentajeGanancia);
@@ -77,7 +77,7 @@ public class ServicioProductos {
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
         producto.cambiarDescuento(descuento);
         PoliticaVencimiento politicaVencimiento = this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        //cambiarPolitica
+        producto.cambiarPoliticaVencimiento(politicaVencimiento);
         this.actualizarProductoDeInventario(idInventario, producto);
     }
 
