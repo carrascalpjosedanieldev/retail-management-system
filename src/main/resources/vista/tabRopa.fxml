@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox minHeight="0.0" minWidth="0.0" spacing="15.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.TabRopaControlador">
+<VBox minHeight="0.0" minWidth="0.0" spacing="15.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.TabRopaControlador">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -21,14 +21,14 @@
 
     <TableView fx:id="tablaRopa" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colCodigo" prefWidth="100.0" text="Código" />
-            <TableColumn fx:id="colNombre" prefWidth="250.0" text="Prenda" />
+            <TableColumn fx:id="colCodigo" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Código" />
+            <TableColumn fx:id="colNombre" prefWidth="250.0" style="-fx-alignment: CENTER;" text="Prenda" />
             <TableColumn fx:id="colTalla" style="-fx-alignment: CENTER;" text="Talla" />
-            <TableColumn fx:id="colCompra" prefWidth="120.0" text="V. Compra" />
+            <TableColumn fx:id="colCompra" prefWidth="120.0" style="-fx-alignment: CENTER;" text="V. Compra" />
             <TableColumn fx:id="colGanancia" prefWidth="100.0" style="-fx-alignment: CENTER;" text="Ganancia" />
-            <TableColumn fx:id="colImpuesto" prefWidth="160.0" text="Impuesto" />
-            <TableColumn fx:id="colDescuento" prefWidth="160.0" text="Descuento" />
-            <TableColumn fx:id="colVentaFinal" prefWidth="130.0" text="Venta Final" />
+            <TableColumn fx:id="colImpuesto" prefWidth="160.0" style="-fx-alignment: CENTER;" text="Impuesto" />
+            <TableColumn fx:id="colDescuento" prefWidth="160.0" style="-fx-alignment: CENTER;" text="Descuento" />
+            <TableColumn fx:id="colVentaFinal" prefWidth="130.0" style="-fx-alignment: CENTER;" text="Venta Final" />
             <TableColumn fx:id="colStock" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Stock" />
             <TableColumn fx:id="colEstado" prefWidth="110.0" style="-fx-alignment: CENTER;" text="Estado" />
         </columns>
@@ -42,4 +42,3 @@
         <Button mnemonicParsing="false" onAction="#cambiarEstadoProducto" styleClass="btn-accion, btn-secundario" text="Cambiar Estado (Disp / No Disp)" />
     </HBox>
 </VBox>
-

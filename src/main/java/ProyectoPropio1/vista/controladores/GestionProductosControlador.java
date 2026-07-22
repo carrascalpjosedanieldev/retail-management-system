@@ -7,32 +7,24 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.net.URL;
 
 public class GestionProductosControlador {
 
-    public VBox tabGeneral;
-
-    public VBox tabRopa;
-
-    public VBox tabPerecedero;
-
-    @FXML
-    private TabPane tabPaneProductos;
-
-    @FXML
-    private TabGeneralProductosControlador tabGeneralController;
-
-    @FXML
-    private TabRopaControlador tabRopaController;
-
-    @FXML
-    private TabPerecederosControlador tabPerecederoController;
+    @FXML public VBox tabGeneral;
+    @FXML public VBox tabRopa;
+    @FXML public VBox tabPerecedero;
+    @FXML private TabPane tabPaneProductos;
+    @FXML private TabGeneralProductosControlador tabGeneralController;
+    @FXML private TabRopaControlador tabRopaController;
+    @FXML private TabPerecederosControlador tabPerecederoController;
 
     @FXML
     public void initialize() { }
@@ -55,9 +47,22 @@ public class GestionProductosControlador {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_INVENTARIOS_VIEW));
             Parent root = loader.load();
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            Alert alerta = new Alert(Alert.AlertType.ERROR);
+            alerta.setTitle("Error de Navegación");
+            alerta.setHeaderText(null);
+            alerta.setContentText("Ocurrió un problema al intentar volver al panel de Gestión.\n" +
+                    "Detalle: " + e.getMessage());
+            alerta.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            DialogPane pane = alerta.getDialogPane();
+            pane.setMinHeight(180);
+            pane.setMinWidth(400);
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
+            if (urlCss != null) {
+                pane.getStylesheets().add(urlCss.toExternalForm());
+            }
+            alerta.showAndWait();
         }
     }
 

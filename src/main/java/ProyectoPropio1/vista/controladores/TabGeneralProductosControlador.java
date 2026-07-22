@@ -14,12 +14,16 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -32,25 +36,15 @@ import java.util.Objects;
 public class TabGeneralProductosControlador {
 
     @FXML private TableView<ProductoResumenDTO> tablaProductos;
-
     @FXML private TableColumn<ProductoResumenDTO, String> colCodigo;
-
     @FXML private TableColumn<ProductoResumenDTO, String> colNombre;
-
     @FXML private TableColumn<ProductoResumenDTO, BigDecimal> colValor;
-
     @FXML private TableColumn<ProductoResumenDTO, Integer> colStock;
-
     @FXML private TableColumn<ProductoResumenDTO, Boolean> colEstado;
-
     @FXML private TextField txtBuscar;
-
     @FXML private ToggleGroup grupoFiltroEstado;
-
     @FXML private ToggleButton btnFiltroTodos;
-
     @FXML private ToggleButton btnFiltroDisponibles;
-
     @FXML private ToggleButton btnFiltroNoDisponibles;
 
     private int idInventario;
@@ -109,21 +103,60 @@ public class TabGeneralProductosControlador {
     private void configurarColumnas() {
         colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigoProducto()));
         colCodigo.setCellFactory(columna -> new TableCell<>() {
+            private final Tooltip tooltipFlotante = new Tooltip();
+            {
+                tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
+                tooltipFlotante.setShowDelay(Duration.millis(100));
+            }
             @Override
-            protected void updateItem(String uuid, boolean empty) {
-                super.updateItem(uuid, empty);
-                if (empty || uuid == null) {
+            protected void updateItem(String codigo, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
+                super.updateItem(codigo, empty);
+                if (empty || codigo == null) {
                     setText(null);
                     setTooltip(null);
+                    setOnMouseClicked(null);
+                    setStyle("");
                 } else {
-                    setText("#" + uuid.substring(0, Math.min(uuid.length(), 8)));
-                    setTooltip(new Tooltip("ID Completo: " + uuid));
+                    setText(codigo);
+                    tooltipFlotante.setText(codigo + "\n(Clic para copiar)");
+                    setTooltip(tooltipFlotante);
+                    setStyle("-fx-cursor: hand;");
+                    setOnMouseClicked(evt -> {
+                        ClipboardContent contenido = new ClipboardContent();
+                        contenido.putString(codigo);
+                        Clipboard.getSystemClipboard().setContent(contenido);
+                    });
                 }
             }
         });
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(celda.getValue().stock()).asObject());
-        NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(new Locale("es", "CO"));
+        colStock.setCellFactory(columna -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer stock, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
+                super.updateItem(stock, empty);
+                if (empty || stock == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(String.valueOf(stock));
+                    if (stock <= 0) {
+                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                    } else if (stock <= 5) {
+                        setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
+                    }
+                }
+            }
+        });
+        NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
         colValor.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().valorVenta()));
         colValor.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -140,6 +173,9 @@ public class TabGeneralProductosControlador {
         colEstado.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean disponible, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
                 super.updateItem(disponible, empty);
                 if (empty || disponible == null) {
                     setText(null);
@@ -155,6 +191,7 @@ public class TabGeneralProductosControlador {
                 }
             }
         });
+
     }
 
 

@@ -47,5 +47,13 @@ public class FormateadorNumeros {
         }
     }
 
+    public static String formatoMoneda(BigDecimal precio) {
+        if (precio == null) {
+            return "";
+        }
+        NumberFormat formato = NumberFormat.getCurrencyInstance(LOCALIDAD_SISTEMA);
+        return formato.format(precio);
+    }
+
 }
 

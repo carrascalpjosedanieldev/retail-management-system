@@ -130,9 +130,66 @@
     -fx-text-fill: #ffffff;
 }
 
-.segment-left { -fx-background-radius: 6 0 0 6; -fx-border-radius: 6 0 0 6; }
+.segment-left {
+    -fx-background-radius: 6 0 0 6;
+    -fx-border-radius: 6 0 0 6;
+}
 
-.segment-center { -fx-background-radius: 0; -fx-border-radius: 0; -fx-border-width: 1 0 1 0; }
+.segment-center {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 1 0 1 0;
+}
 
-.segment-right { -fx-background-radius: 0 6 6 0; -fx-border-radius: 0 6 6 0; }
+.segment-right {
+    -fx-background-radius: 0 6 6 0;
+    -fx-border-radius: 0 6 6 0;
+}
+
+
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.dialog-pane > .content.label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 15px;
+}
+
+.dialog-pane .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane > .button-bar > .container {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 15px;
+}
+
+.dialog-pane .button {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #1e293b;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 5, 0, 0, 2);
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #cbd5e1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.25), 8, 0, 0, 3);
+}
+
+.dialog-pane .button:pressed {
+    -fx-background-color: #94a3b8;
+    -fx-effect: none;
+    -fx-translate-y: 1px;
+}
 

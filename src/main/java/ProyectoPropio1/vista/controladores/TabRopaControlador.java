@@ -8,6 +8,7 @@ import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
 import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
+import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,56 +21,37 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 public class TabRopaControlador {
 
-    @FXML
-    private TextField txtBuscar;
+    //ATRIBUTOS:
 
-    @FXML
-    private TableView<DatosTotalesProductoRopaDTO> tablaRopa;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, String> colCodigo;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, String> colNombre;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, Talla> colTalla;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colCompra;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colGanancia;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, ImpuestoDTO> colImpuesto;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, DescuentoDTO> colDescuento;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colVentaFinal;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, Integer> colStock;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoRopaDTO, String> colEstado;
+    @FXML private TextField txtBuscar;
+    @FXML private TableView<DatosTotalesProductoRopaDTO> tablaRopa;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, String> colCodigo;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, String> colNombre;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, Talla> colTalla;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colCompra;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colGanancia;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, ImpuestoDTO> colImpuesto;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, DescuentoDTO> colDescuento;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colVentaFinal;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, Integer> colStock;
+    @FXML private TableColumn<DatosTotalesProductoRopaDTO, String> colEstado;
 
     private int idInventario;
 
@@ -77,15 +59,11 @@ public class TabRopaControlador {
 
     private FilteredList<DatosTotalesProductoRopaDTO> listaFiltrada;
 
-    private final NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
-
     private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
 
     private final EnsambladorDTOProducto ensambladorDTOProducto = FabricaEnsambladores.obtenerEnsambladorDTOProducto();
 
-    private LocalDate obtenerFecha(){
-        return LocalDate.now();
-    }
+    //MÉTODOS:
 
     public void recibirIdInventario(int idInventario) {
         this.idInventario = idInventario;
@@ -100,25 +78,29 @@ public class TabRopaControlador {
         DialogPane pane = alerta.getDialogPane();
         pane.setMinHeight(180);
         pane.setMinWidth(400);
-        try {
-            alerta.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS)).toExternalForm());
-        } catch (Exception ignored) {}
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
+        if (urlCss != null) {
+            pane.getStylesheets().add(urlCss.toExternalForm());
+        }
         alerta.showAndWait();
     }
 
     private void cargarDatosTabla() {
         try {
+            LocalDate fechaActual = LocalDate.now();
             List<DatosTotalesProductoRopaDTO> listaRopa = this.ensambladorDTOProducto.ensamblarDetalleProductosRopa(
-                    this.servicioProductos.obtenerProductosRopaDeInventario(this.idInventario), obtenerFecha()
+                    this.servicioProductos.obtenerProductosRopaDeInventario(this.idInventario), fechaActual
             );
             listaObservable.clear();
             listaObservable.setAll(listaRopa);
         } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al cargar datos",
-                    "No se pudo cargar la lista de ropa.\nDetalle: " + e.getMessage()
+            mostrarAlerta(Alert.AlertType.ERROR, "Error al Cargar Datos",
+                    "NO se pudo Cargar la Lista de Ropa.\n" +
+                            "Detalle: " + e.getMessage()
             );
         }
     }
+
 
     @FXML
     public void initialize() {
@@ -128,20 +110,34 @@ public class TabRopaControlador {
 
     private void configurarColumnas() {
         colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigo()));
-        colCodigo.setCellFactory(col -> new TableCell<>() {
+        colCodigo.setCellFactory(columna -> new TableCell<>() {
+            private final Tooltip tooltipFlotante = new Tooltip();
+            {
+                tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
+                tooltipFlotante.setShowDelay(Duration.millis(100));
+            }
             @Override
             protected void updateItem(String codigo, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
                 super.updateItem(codigo, empty);
-
                 if (empty || codigo == null) {
                     setText(null);
                     setTooltip(null);
+                    setOnMouseClicked(null);
+                    setStyle("");
                 } else {
-                    String codigoCorto = codigo.length() > 8 ? codigo.substring(0, 8) + "..." : codigo;
+                    String codigoCorto = codigo.length() > 10 ? codigo.substring(0, 10) + "..." : codigo;
                     setText(codigoCorto);
-                    Tooltip tooltipCompleto = new Tooltip(codigo);
-                    tooltipCompleto.setStyle("-fx-font-size: 13px; -fx-background-color: #1e293b;");
-                    setTooltip(tooltipCompleto);
+                    tooltipFlotante.setText(codigo + "\n(Clic para copiar)");
+                    setTooltip(tooltipFlotante);
+                    setStyle("-fx-cursor: hand; -fx-text-fill: #3b82f6;");
+                    setOnMouseClicked(evt -> {
+                        ClipboardContent contenido = new ClipboardContent();
+                        contenido.putString(codigo);
+                        Clipboard.getSystemClipboard().setContent(contenido);
+                    });
                 }
             }
         });
@@ -184,6 +180,48 @@ public class TabRopaControlador {
                 setText((empty || desc == null) ? null : desc.nombre() + " (" + desc.porcentaje() + "%)");
             }
         });
+        colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(celda.getValue().stock()).asObject());
+        colStock.setCellFactory(columna -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer stock, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
+                super.updateItem(stock, empty);
+                if (empty || stock == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(String.valueOf(stock));
+                    if (stock <= 0) {
+                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                    } else if (stock <= 5) {
+                        setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
+                    }
+                }
+            }
+        });
+        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().disponible()));
+        colEstado.setCellFactory(columna -> new TableCell<>() {
+            @Override
+            protected void updateItem(String estado, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
+                super.updateItem(estado, empty);
+                if (empty || estado == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(estado);
+                    setStyle(estado.equalsIgnoreCase("Activo") || estado.equalsIgnoreCase("Disponible")
+                            ? "-fx-text-fill: #10b981; -fx-font-weight: bold;"
+                            : "-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                }
+            }
+        });
     }
 
     private TableCell<DatosTotalesProductoRopaDTO, BigDecimal> crearCeldaMoneda() {
@@ -191,7 +229,7 @@ public class TabRopaControlador {
             @Override
             protected void updateItem(BigDecimal precio, boolean empty) {
                 super.updateItem(precio, empty);
-                setText((empty || precio == null) ? null : formatoMoneda.format(precio));
+                setText((empty || precio == null) ? null : FormateadorNumeros.formatoMoneda(precio));
             }
         };
     }
@@ -217,10 +255,14 @@ public class TabRopaControlador {
 
     @FXML
     void abrirEditorRopa(ActionEvent event) {
+        abrirEditorRopa();
+    }
+
+    private void abrirEditorRopa(){
         DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida",
-                    "Por favor, seleccione una prenda de ropa en la tabla para editarla.");
+                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Editarla.");
             return;
         }
         try {
@@ -237,25 +279,31 @@ public class TabRopaControlador {
             cargarDatosTabla();
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error de Interfaz",
-                    "No se pudo abrir la ventana de edición.\nDetalle: " + e.getMessage());
+                    "NO se pudo Abrir la Ventana de Edición.\nDetalle: " + e.getMessage());
         }
     }
 
+
     @FXML
     void cambiarEstadoProducto(ActionEvent event) {
+        cambiarEstadoProducto();
+    }
+
+    private void cambiarEstadoProducto(){
         DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida",
-                    "Por favor, seleccione una prenda de ropa en la tabla para cambiar su estado.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
+                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Cambiar su Estado.");
             return;
         }
         try {
             servicioProductos.cambiarEstadoProducto(this.idInventario, productoSeleccionado.codigo());
             cargarDatosTabla();
         } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al cambiar estado",
-                    "No se pudo actualizar el estado del producto.\nDetalle: " + e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR, "Error al Cambiar Estado",
+                    "NO se pudo Actualizar el Estado del Producto.\nDetalle: " + e.getMessage());
         }
     }
 
-}
+
+}//===================================================================================================================//

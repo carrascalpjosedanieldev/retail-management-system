@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox minHeight="0.0" minWidth="0.0" spacing="15.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.TabPerecederosControlador">
+<VBox minHeight="0.0" minWidth="0.0" spacing="15.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.TabPerecederosControlador">
 
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -25,20 +25,20 @@
     <TableView fx:id="tablaPerecederos" VBox.vgrow="ALWAYS">
         <columns>
             <!-- Datos Básicos -->
-            <TableColumn fx:id="colCodigo" prefWidth="90.0" text="Código" />
-            <TableColumn fx:id="colNombre" prefWidth="180.0" text="Producto" />
+            <TableColumn fx:id="colCodigo" prefWidth="90.0" style="-fx-alignment: CENTER;" text="Código" />
+            <TableColumn fx:id="colNombre" prefWidth="180.0" style="-fx-alignment: CENTER;" text="Producto" />
 
             <!-- Datos de Vencimiento -->
             <TableColumn fx:id="colFechaVencimiento" prefWidth="110.0" style="-fx-alignment: CENTER;" text="Vence" />
-            <TableColumn fx:id="colPoliticaVencimiento" prefWidth="110.0" text="Política" />
+            <TableColumn fx:id="colPoliticaVencimiento" prefWidth="110.0" style="-fx-alignment: CENTER;" text="Política" />
             <TableColumn fx:id="colEstaVencido" prefWidth="80.0" style="-fx-alignment: CENTER;" text="¿Vencido?" />
 
             <!-- Valores Financieros -->
-            <TableColumn fx:id="colCompra" prefWidth="100.0" text="V. Compra" />
+            <TableColumn fx:id="colCompra" prefWidth="100.0" style="-fx-alignment: CENTER;" text="V. Compra" />
             <TableColumn fx:id="colGanancia" prefWidth="80.0" style="-fx-alignment: CENTER;" text="Ganancia" />
-            <TableColumn fx:id="colImpuesto" prefWidth="120.0" text="Impuesto" />
-            <TableColumn fx:id="colDescuento" prefWidth="120.0" text="Descuento" />
-            <TableColumn fx:id="colVentaFinal" prefWidth="110.0" text="Venta Final" />
+            <TableColumn fx:id="colImpuesto" prefWidth="120.0" style="-fx-alignment: CENTER;" text="Impuesto" />
+            <TableColumn fx:id="colDescuento" prefWidth="120.0" style="-fx-alignment: CENTER;" text="Descuento" />
+            <TableColumn fx:id="colVentaFinal" prefWidth="110.0" style="-fx-alignment: CENTER;" text="Venta Final" />
 
             <!-- Inventario y Estado -->
             <TableColumn fx:id="colStock" prefWidth="70.0" style="-fx-alignment: CENTER;" text="Stock" />

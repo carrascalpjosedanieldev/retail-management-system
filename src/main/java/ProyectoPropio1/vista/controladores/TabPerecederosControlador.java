@@ -15,13 +15,18 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,47 +34,22 @@ import java.util.Locale;
 
 public class TabPerecederosControlador {
 
-    @FXML
-    private TextField txtBuscar;
+    //ATRIBUTOS:
 
-    @FXML
-    private TableView<DatosTotalesProductoPerecederoDTO> tablaPerecederos;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, String> colCodigo;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, String> colNombre;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, LocalDate> colFechaVencimiento;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, String> colPoliticaVencimiento;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, String> colEstaVencido;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colCompra;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colGanancia;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, String> colImpuesto;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, String> colDescuento;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colVentaFinal;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, Integer> colStock;
-
-    @FXML
-    private TableColumn<DatosTotalesProductoPerecederoDTO, String> colDisponible;
+    @FXML private TextField txtBuscar;
+    @FXML private TableView<DatosTotalesProductoPerecederoDTO> tablaPerecederos;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colCodigo;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colNombre;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, LocalDate> colFechaVencimiento;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colPoliticaVencimiento;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colEstaVencido;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colCompra;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colGanancia;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colImpuesto;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colDescuento;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colVentaFinal;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, Integer> colStock;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colDisponible;
 
     private int idInventario;
 
@@ -83,6 +63,8 @@ public class TabPerecederosControlador {
 
     private final EnsambladorDTOProducto ensambladorDTOProducto = FabricaEnsambladores.obtenerEnsambladorDTOProducto();
 
+    //METODOS:
+
     public void recibirIdInventario(int idInventario) {
         this.idInventario = idInventario;
         cargarDatosTabla();
@@ -93,6 +75,13 @@ public class TabPerecederosControlador {
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
+        DialogPane pane = alerta.getDialogPane();
+        pane.setMinHeight(180);
+        pane.setMinWidth(400);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
+        if (urlCss != null) {
+            pane.getStylesheets().add(urlCss.toExternalForm());
+        }
         alerta.showAndWait();
     }
 
@@ -104,10 +93,81 @@ public class TabPerecederosControlador {
 
     private void configurarColumnas() {
         colCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().codigo()));
+        colCodigo.setCellFactory(columna -> new TableCell<>() {
+            private final Tooltip tooltipFlotante = new Tooltip();
+            {
+                tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
+                tooltipFlotante.setShowDelay(Duration.millis(100));
+            }
+            @Override
+            protected void updateItem(String codigo, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
+                super.updateItem(codigo, empty);
+                if (empty || codigo == null) {
+                    setText(null);
+                    setTooltip(null);
+                    setOnMouseClicked(null);
+                    setStyle("");
+                } else {
+                    String codigoCorto = codigo.length() > 10 ? codigo.substring(0, 10) + "..." : codigo;
+                    setText(codigoCorto);
+                    tooltipFlotante.setText(codigo + "\n(Clic para copiar)");
+                    setTooltip(tooltipFlotante);
+                    setStyle("-fx-cursor: hand; -fx-text-fill: #3b82f6;");
+                    setOnMouseClicked(evt -> {
+                        ClipboardContent contenido = new ClipboardContent();
+                        contenido.putString(codigo);
+                        Clipboard.getSystemClipboard().setContent(contenido);
+                    });
+                }
+            }
+        });
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nombre()));
         colEstaVencido.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().estaVencido()));
         colStock.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().stock()));
+        colStock.setCellFactory(columna -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer stock, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
+                super.updateItem(stock, empty);
+                if (empty || stock == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(String.valueOf(stock));
+                    if (stock <= 0) {
+                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                    } else if (stock <= 5) {
+                        setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
+                    } else {
+                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
+                    }
+                }
+            }
+        });
         colDisponible.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().disponible()));
+        colDisponible.setCellFactory(columna -> new TableCell<>() {
+            @Override
+            protected void updateItem(String estado, boolean empty) {
+                {
+                    setAlignment(Pos.CENTER);
+                }
+                super.updateItem(estado, empty);
+                if (empty || estado == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(estado);
+                    setStyle(estado.equalsIgnoreCase("Activo") || estado.equalsIgnoreCase("Disponible")
+                            ? "-fx-text-fill: #10b981; -fx-font-weight: bold;"
+                            : "-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                }
+            }
+        });
         colFechaVencimiento.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().fechaVencimiento()));
         colPoliticaVencimiento.setCellValueFactory(cellData -> {
             var politica = cellData.getValue().datosPoliticaVencimiento();
