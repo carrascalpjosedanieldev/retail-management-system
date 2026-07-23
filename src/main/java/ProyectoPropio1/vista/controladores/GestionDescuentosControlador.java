@@ -29,25 +29,20 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 public class GestionDescuentosControlador {
 
     //ATRIBUTOS:
 
     @FXML private TableView<DescuentoDTO> tablaDescuentos;
-
     @FXML private TableColumn<DescuentoDTO, Integer> colId;
-
     @FXML private TableColumn<DescuentoDTO, String> colNombre;
-
     @FXML private TableColumn<DescuentoDTO, BigDecimal> colPorcentaje;
-
     @FXML private TableColumn<DescuentoDTO, String> colEstado;
-
     @FXML private TextField txtBuscar;
 
     private final ServicioDescuentos servicioDescuentos = FabricaServicios.obtenerServicioDescuentos();
@@ -56,7 +51,7 @@ public class GestionDescuentosControlador {
 
     private final ObservableList<DescuentoDTO> listaObservableDescuentos = FXCollections.observableArrayList();
 
-    //METODOS:
+    //MÉTODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
@@ -79,10 +74,12 @@ public class GestionDescuentosControlador {
 
     @FXML
     public void initialize() {
-        inicializar();
+        configurarColumnasTabla();
+        configurarFiltroBusqueda();
+        cargarDatosTabla();
     }
 
-    private void inicializar(){
+    private void configurarColumnasTabla(){
         colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idDescuento()));
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
@@ -96,47 +93,92 @@ public class GestionDescuentosControlador {
                     setStyle("");
                 } else {
                     setText(estado);
-                    if (estado.equalsIgnoreCase("Activo")) {
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    }
+                    String color = estado.equalsIgnoreCase("Activo") ? "#10b981" : "#ef4444";
+                    setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
                 }
             }
         });
+    }
+
+    private void configurarFiltroBusqueda(){
         FilteredList<DescuentoDTO> listaFiltrada = new FilteredList<>(listaObservableDescuentos, b -> true);
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
             listaFiltrada.setPredicate(descuento -> {
                 if (valorNuevo == null || valorNuevo.isBlank()) {
                     return true;
                 }
-                String filtro = valorNuevo.toLowerCase();
-                if (String.valueOf(descuento.idDescuento()).contains(filtro)) {
-                    return true;
-                }
-                else if (descuento.nombre().toLowerCase().contains(filtro)) {
-                    return true;
-                }
-                return false;
+                String filtro = valorNuevo.toLowerCase().trim();
+                return String.valueOf(descuento.idDescuento()).contains(filtro) ||
+                        descuento.nombre().toLowerCase().contains(filtro);
             });
         });
         SortedList<DescuentoDTO> listaOrdenada = new SortedList<>(listaFiltrada);
         listaOrdenada.comparatorProperty().bind(tablaDescuentos.comparatorProperty());
         tablaDescuentos.setItems(listaOrdenada);
-        cargarDatosTabla();
     }
 
     private void cargarDatosTabla() {
-        List<DescuentoDTO> todosLosDescuentos = new ArrayList<>();
-        List<DescuentoDTO> descuentosActivos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
+        List<DescuentoDTO> activos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
                 this.servicioDescuentos.obtenerDescuentosActivos()
         );
-        List<DescuentoDTO> descuentosInactivos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
+        List<DescuentoDTO> inactivos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
                 this.servicioDescuentos.obtenerDescuentosInactivos()
         );
-        todosLosDescuentos.addAll(descuentosActivos);
-        todosLosDescuentos.addAll(descuentosInactivos);
+        List<DescuentoDTO> todosLosDescuentos = Stream.concat(
+                activos != null ? activos.stream() : Stream.empty(),
+                inactivos != null ? inactivos.stream() : Stream.empty()
+        ).toList();
         listaObservableDescuentos.setAll(todosLosDescuentos);
+    }
+
+
+    private Dialog<ButtonType> crearDialogo(String titulo, String cabecera, String textoBotonAccion) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(titulo);
+        dialog.setHeaderText(cabecera);
+        DialogPane dialogPane = dialog.getDialogPane();
+        aplicarCSS(dialogPane);
+        ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
+        dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
+        return dialog;
+    }
+
+    private GridPane crearGridPane(){
+        GridPane grid = new GridPane();
+        grid.setHgap(15);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(20, 20, 20, 20));
+        return grid;
+    }
+
+    private void validarCampos(Dialog<ButtonType> dialog, TextField campoNombre, TextField campoPorcentaje){
+        ButtonType btnTipoGuardar = dialog.getDialogPane().getButtonTypes().stream()
+                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
+                .findFirst().orElse(null);
+        Button botonFisicoGuardar = (Button) dialog.getDialogPane().lookupButton(btnTipoGuardar);
+        botonFisicoGuardar.addEventFilter(ActionEvent.ACTION, event -> {
+            String nombre = campoNombre.getText().trim();
+            String porcentajeTexto = campoPorcentaje.getText().trim();
+            if (nombre.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "El Nombre del Descuento NO puede estar Vacío.");
+                event.consume();
+                return;
+            }
+            if (porcentajeTexto.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "El Porcentaje del Descuento NO puede estar Vacío");
+                event.consume();
+                return;
+            }
+            try {
+                FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
+            } catch (NumberFormatException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
+                event.consume();
+            }
+        });
     }
 
 
@@ -149,61 +191,42 @@ public class GestionDescuentosControlador {
         DescuentoDTO seleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, selecciona un descuento de la tabla para modificarlo.");
+                    "Por favor, Selecciona un Descuento de la Tabla para Modificarlo.");
             return;
         }
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Modificar Descuento");
-        dialog.setHeaderText("Editando el descuento: " + seleccionado.nombre());
-        DialogPane dialogPane = dialog.getDialogPane();
-        aplicarCSS(dialogPane);
-        ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
+        Dialog<ButtonType> dialog = crearDialogo("Modificar Descuento",
+                "Editando el descuento: " + seleccionado.nombre(), "Actualizar");
         TextField txtNombre = new TextField();
         txtNombre.setPrefWidth(250);
         TextField txtPorcentaje = new TextField();
         txtNombre.setText(seleccionado.nombre());
         txtPorcentaje.setText(seleccionado.porcentaje().toString());
+        GridPane grid = crearGridPane();
         grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
         grid.add(new Label("Porcentaje (%):"), 0, 1);
         grid.add(txtPorcentaje, 1, 1);
-        dialogPane.setContent(grid);
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnActualizar) {
-            String nuevoNombre = txtNombre.getText().trim();
-            String nuevoPorcentajeTexto = txtPorcentaje.getText();
-            try {
-                if (nuevoNombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                            "El Nombre del Descuento NO puede estar Vacío.");
-                    return;
+        dialog.getDialogPane().setContent(grid);
+        validarCampos(dialog, txtNombre, txtPorcentaje);
+        dialog.showAndWait().ifPresent(resultado -> {
+            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                String nuevoNombre = txtNombre.getText().trim();
+                String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
+                try {
+                    BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
+                    this.servicioDescuentos.actualizarDescuento(seleccionado.idDescuento(), nuevoNombre, nuevoPorcentaje);
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                            "El descuento se ha actualizado correctamente.");
+                    cargarDatosTabla();
+                } catch (IllegalArgumentException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Descuento",
+                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                            "NO se pudo Actualizar el Descuento en la Base de Datos.");
                 }
-                if (nuevoPorcentajeTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
-                            "El Porcentaje del Descuento NO puede estar Vacio");
-                    return;
-                }
-                BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                this.servicioDescuentos.actualizarDescuento(seleccionado.idDescuento(), nuevoNombre, nuevoPorcentaje);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El descuento se ha actualizado correctamente.");
-                cargarDatosTabla();
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Descuento",
-                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "NO se pudo Actualizar el Descuento en la Base de Datos.");
             }
-        }
+        });
     }
 
 
@@ -213,17 +236,8 @@ public class GestionDescuentosControlador {
     }
 
     private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Registrar Nuevo Descuento");
-        dialog.setHeaderText("Ingresa los detalles del nuevo descuento.");
-        DialogPane dialogPane = dialog.getDialogPane();
-        aplicarCSS(dialogPane);
-        ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
+        Dialog<ButtonType> dialog = crearDialogo("Registrar Nuevo Descuento",
+                "Ingresa los detalles del nuevo descuento.", "Guardar");
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Ej. Navidad 2024");
         txtNombre.setPrefWidth(250);
@@ -231,44 +245,35 @@ public class GestionDescuentosControlador {
         txtPorcentaje.setPromptText("Ej. 15.5");
         CheckBox chkActivo = new CheckBox("¿Descuento Activo?");
         chkActivo.setSelected(true);
+        GridPane grid = crearGridPane();
         grid.add(new Label("Nombre:"), 0, 0);
         grid.add(txtNombre, 1, 0);
         grid.add(new Label("Porcentaje (%):"), 0, 1);
         grid.add(txtPorcentaje, 1, 1);
         grid.add(chkActivo, 1, 2);
-        dialogPane.setContent(grid);
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnGuardar) {
-            String nombre = txtNombre.getText();
-            String porcentajeTexto = txtPorcentaje.getText();
-            boolean activo = chkActivo.isSelected();
-            try {
-                if (nombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                            "El Nombre del Descuento NO puede estar Vacío.");
-                    return;
+        dialog.getDialogPane().setContent(grid);
+        validarCampos(dialog, txtNombre, txtPorcentaje);
+        dialog.showAndWait().ifPresent(resultado -> {
+            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                String nombre = txtNombre.getText().trim();
+                String porcentajeTexto = txtPorcentaje.getText().trim();
+                boolean activo = chkActivo.isSelected();
+                try {
+                    BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
+                    this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                            "El descuento se ha guardado correctamente.");
+                    cargarDatosTabla();
+                } catch (IllegalArgumentException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Descuento",
+                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                            "No se pudo guardar el descuento en la base de datos\n" +
+                                    "Error:  " + e.getMessage());
                 }
-                if (porcentajeTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validacion",
-                            "El Porcentaje del Descuento NO puede estar Vacio");
-                    return;
-                }
-                BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El descuento se ha guardado correctamente.");
-                cargarDatosTabla();
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Descuento",
-                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "No se pudo guardar el descuento en la base de datos.");
             }
-        }
+        });
     }
 
 

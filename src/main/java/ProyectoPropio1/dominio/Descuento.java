@@ -68,9 +68,6 @@ public class Descuento {
         if (nombreNuevo==null || nombreNuevo.isBlank()){
             throw new IllegalArgumentException("Nombre del Descuento Vacio");
         }
-        if (nombreNuevo.equals(getNombre())){
-            throw new IllegalArgumentException("El Nombre a colocar al Descuento es el mismo");
-        }
         setNombre(nombreNuevo);
     }
 

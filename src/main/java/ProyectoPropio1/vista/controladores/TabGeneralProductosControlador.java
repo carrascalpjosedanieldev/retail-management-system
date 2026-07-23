@@ -5,7 +5,9 @@ import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
 import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
+import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,19 +23,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 public class TabGeneralProductosControlador {
+
+    //ATRIBUTOS:
 
     @FXML private TableView<ProductoResumenDTO> tablaProductos;
     @FXML private TableColumn<ProductoResumenDTO, String> colCodigo;
@@ -57,10 +59,7 @@ public class TabGeneralProductosControlador {
 
     private FilteredList<ProductoResumenDTO> listaFiltrada;
 
-
-    private LocalDate obtenerFecha(){
-        return LocalDate.now();
-    }
+    //MÉTODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
@@ -68,12 +67,17 @@ public class TabGeneralProductosControlador {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(180);
-        pane.setMinWidth(400);
-        try {
-            alerta.getDialogPane().getStylesheets().add(Objects.requireNonNull(getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS)).toExternalForm());
-        } catch (Exception ignored) {}
+        pane.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
+        if (urlCss != null) {
+            pane.getStylesheets().add(urlCss.toExternalForm());
+        }
         alerta.showAndWait();
+    }
+
+    public void recibirIdInventario(int idInventario) {
+        this.idInventario = idInventario;
+        cargarDatosTabla();
     }
 
 
@@ -84,21 +88,13 @@ public class TabGeneralProductosControlador {
         cargarDatosTabla();
     }
 
-
-    public void recibirIdInventario(int idInventario) {
-        this.idInventario = idInventario;
-        cargarDatosTabla();
-    }
-
-
     private void cargarDatosTabla() {
         List<ProductoResumenDTO> resumenProductos = this.ensambladorDTOProducto.ensamblarDetalleProductosResumen(
-                this.servicioProductos.obtenerProductosDeInventario(this.idInventario), obtenerFecha()
+                this.servicioProductos.obtenerProductosDeInventario(this.idInventario), LocalDate.now()
         );
         listaObservable.clear();
         listaObservable.addAll(resumenProductos);
     }
-
 
     private void configurarColumnas() {
         colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigoProducto()));
@@ -107,12 +103,10 @@ public class TabGeneralProductosControlador {
             {
                 tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
                 tooltipFlotante.setShowDelay(Duration.millis(100));
+                setAlignment(Pos.CENTER);
             }
             @Override
             protected void updateItem(String codigo, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(codigo, empty);
                 if (empty || codigo == null) {
                     setText(null);
@@ -135,11 +129,11 @@ public class TabGeneralProductosControlador {
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(celda.getValue().stock()).asObject());
         colStock.setCellFactory(columna -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(Integer stock, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(stock, empty);
                 if (empty || stock == null) {
                     setText(null);
@@ -156,7 +150,6 @@ public class TabGeneralProductosControlador {
                 }
             }
         });
-        NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
         colValor.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().valorVenta()));
         colValor.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -165,17 +158,17 @@ public class TabGeneralProductosControlador {
                 if (empty || precio == null) {
                     setText(null);
                 } else {
-                    setText(formatoMoneda.format(precio));
+                    setText(FormateadorNumeros.formatoMoneda(precio));
                 }
             }
         });
         colEstado.setCellValueFactory(celda -> new SimpleBooleanProperty(celda.getValue().disponible()).asObject());
         colEstado.setCellFactory(col -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(Boolean disponible, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(disponible, empty);
                 if (empty || disponible == null) {
                     setText(null);
@@ -191,9 +184,7 @@ public class TabGeneralProductosControlador {
                 }
             }
         });
-
     }
-
 
     private void configurarFiltros() {
         listaFiltrada = new FilteredList<>(listaObservable, b -> true);
@@ -212,7 +203,7 @@ public class TabGeneralProductosControlador {
                 return coincideTexto && coincideEstado;
             });
         };
-        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> aplicarFiltros.run());
+        txtBuscar.textProperty().addListener((observable, viejoValor, nuevoValor) -> aplicarFiltros.run());
         grupoFiltroEstado.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null) {
                 grupoFiltroEstado.selectToggle(oldVal);
@@ -241,35 +232,49 @@ public class TabGeneralProductosControlador {
             modalStage.initOwner(ventanaPadre);
             modalStage.showAndWait();
             cargarDatosTabla();
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo abrir la ventana de creación de producto.");
+        } catch (Exception e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "NO se pudo Abrir la Ventana de Creación de Producto.");
         }
     }
 
 
     @FXML
     void cambiarEstadoProducto(ActionEvent event) {
+        cambiarEstadoProducto();
+    }
+
+    private void cambiarEstadoProducto(){
         ProductoResumenDTO seleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención", "Por favor, selecciona un producto para cambiar su estado.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
+                    "Por favor, Selecciona un Producto para Cambiar su Estado.");
             return;
         }
         String textoNuevoEstado = seleccionado.disponible() ? "NO DISPONIBLE" : "DISPONIBLE";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar cambio de estado");
         confirmacion.setHeaderText("Vas a modificar el producto: " + seleccionado.nombre());
-        confirmacion.setContentText("¿Estás seguro de que deseas marcar este producto como " + textoNuevoEstado + "?");
+        confirmacion.setContentText("¿Estás Seguro de que Deseas Marcar este Producto como " + textoNuevoEstado + "?");
+        DialogPane pane = confirmacion.getDialogPane();
+        pane.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
+        if (urlCss != null) {
+            pane.getStylesheets().add(urlCss.toExternalForm());
+        }
         confirmacion.showAndWait().ifPresent(respuesta -> {
             if (respuesta == ButtonType.OK) {
                 try {
                     this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigoProducto());
                     cargarDatosTabla();
                 } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error", "No se pudo cambiar el estado: " + e.getMessage());
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "NO se pudo Cambiar el Estado: " + e.getMessage());
                 }
             }
         });
     }
 
-}
+
+}//===================================================================================================================//
+

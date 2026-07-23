@@ -21,6 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -50,8 +51,7 @@ public class GestionInventariosControlador {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(180);
-        pane.setMinWidth(400);
+        pane.setMinHeight(Region.USE_PREF_SIZE);
         aplicarCSS(pane);
         alerta.showAndWait();
     }
@@ -80,6 +80,7 @@ public class GestionInventariosControlador {
         grid.setPadding(new Insets(20));
         return grid;
     }
+
 
     @FXML
     public void initialize() {
@@ -131,6 +132,7 @@ public class GestionInventariosControlador {
         );
         listaObservable.setAll(inventarios);
     }
+
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
@@ -234,6 +236,7 @@ public class GestionInventariosControlador {
         }
     }
 
+
     @FXML
     void editarProductosInventario(ActionEvent event) {
         InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
@@ -256,6 +259,7 @@ public class GestionInventariosControlador {
         }
     }
 
+
     @FXML
     void volverAlPanel(ActionEvent event) {
         try {
@@ -272,6 +276,7 @@ public class GestionInventariosControlador {
             );
         }
     }
+
 
 }//===================================================================================================================//
 

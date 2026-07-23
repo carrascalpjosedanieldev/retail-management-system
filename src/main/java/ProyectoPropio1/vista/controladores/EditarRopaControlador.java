@@ -10,39 +10,36 @@ import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
 import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
+import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.List;
 
 public class EditarRopaControlador {
 
+    //ATRIBUTOS:
+
     @FXML private TextField txtCodigo;
-
     @FXML private TextField txtNombre;
-
     @FXML private TextField txtTalla;
-
     @FXML private TextField txtCompra;
-
     @FXML private TextField txtGanancia;
-
     @FXML private TextField txtStock;
-
     @FXML private ComboBox<ImpuestoDTO> cbImpuesto;
-
     @FXML private ComboBox<DescuentoDTO> cbDescuento;
 
-    private DatosTotalesProductoRopaDTO productoOriginal;
-
     private int idInventario;
+
+    private DatosTotalesProductoRopaDTO productoOriginal;
 
     private final ServicioImpuestos servicioImpuesto = FabricaServicios.obtenerServicioImpuestos();
 
@@ -54,18 +51,36 @@ public class EditarRopaControlador {
 
     private final EnsambladorDTODescuento ensambladorDTODescuento = FabricaEnsambladores.obtenerEnsambladorDTODescuento();
 
+    //MÉTODOS:
+
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
+        DialogPane panelAlerta = alerta.getDialogPane();
+        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_ROPA);
+        if (urlCss != null) {
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        }
         alerta.showAndWait();
     }
 
+
     @FXML
     public void initialize() {
+        configurarFiltrosTexto();
         configurarVisualizacionCombos();
         cargarDatosCombos();
+    }
+
+    private void configurarFiltrosTexto() {
+        String regexDecimal = "\\d*(\\.\\d*)?";
+        txtCompra.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches(regexDecimal) ? change : null));
+        txtGanancia.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches(regexDecimal) ? change : null));
     }
 
     private void cargarDatosCombos() {
@@ -80,32 +95,23 @@ public class EditarRopaControlador {
             cbDescuento.setItems(FXCollections.observableArrayList(listaDescuentos));
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
-                    "No se pudieron cargar las listas de impuestos o descuentos.\nDetalle: " + e.getMessage());
+                    "NO se pudieron Cargar las Listas de Impuestos o Descuentos.\n" +
+                            "Error:  " + e.getMessage());
         }
     }
 
     private void configurarVisualizacionCombos() {
-        cbImpuesto.setConverter(new javafx.util.StringConverter<ImpuestoDTO>() {
-            @Override
-            public String toString(ImpuestoDTO impuesto) {
-                if (impuesto == null) return "Sin Impuesto";
-                return impuesto.nombre() + " (" + impuesto.porcentaje() + "%)";
+        cbImpuesto.setConverter(new StringConverter<>() {
+            @Override public String toString(ImpuestoDTO i) {
+                return i == null ? "Seleccione..." : i.nombre() + " (" + i.porcentaje() + "%)";
             }
-            @Override
-            public ImpuestoDTO fromString(String string) {
-                return null;
-            }
+            @Override public ImpuestoDTO fromString(String s) { return null; }
         });
-        cbDescuento.setConverter(new javafx.util.StringConverter<DescuentoDTO>() {
-            @Override
-            public String toString(DescuentoDTO descuento) {
-                if (descuento == null) return "Sin Descuento";
-                return descuento.nombre() + " (" + descuento.porcentaje() + "%)";
+        cbDescuento.setConverter(new StringConverter<>() {
+            @Override public String toString(DescuentoDTO d) {
+                return d == null ? "Seleccione..." : d.nombre() + " (" + d.porcentaje() + "%)";
             }
-            @Override
-            public DescuentoDTO fromString(String string) {
-                return null;
-            }
+            @Override public DescuentoDTO fromString(String s) { return null; }
         });
 
     }
@@ -114,35 +120,36 @@ public class EditarRopaControlador {
         this.productoOriginal = producto;
         this.idInventario = idInventario;
         txtCodigo.setText(producto.codigo());
-        txtTalla.setText(producto.talla() != null ? producto.talla().name() : "");
+        txtTalla.setText(producto.talla() != null ? producto.talla().name() : "Sin Talla");
         txtNombre.setText(producto.nombre());
         txtCompra.setText(producto.valorCompra() != null ? producto.valorCompra().toString() : "0");
         txtGanancia.setText(producto.porcentajeGanancia() != null ? producto.porcentajeGanancia().toString() : "0");
         txtStock.setText(String.valueOf(producto.stock()));
         if (producto.datosImpuesto() != null) {
-            for (ImpuestoDTO imp : cbImpuesto.getItems()) {
-                if (imp.idImpuesto() == producto.datosImpuesto().idImpuesto()) {
-                    cbImpuesto.getSelectionModel().select(imp);
-                    break;
-                }
-            }
+            cbImpuesto.getItems().stream()
+                    .filter(i -> i.idImpuesto() == producto.datosImpuesto().idImpuesto())
+                    .findFirst()
+                    .ifPresent(cbImpuesto.getSelectionModel()::select);
         }
         if (producto.datosDescuento() != null) {
-            for (DescuentoDTO desc : cbDescuento.getItems()) {
-                if (desc.idDescuento() == producto.datosDescuento().idDescuento()) {
-                    cbDescuento.getSelectionModel().select(desc);
-                    break;
-                }
-            }
+            cbDescuento.getItems().stream()
+                    .filter(d -> d.idDescuento() == producto.datosDescuento().idDescuento())
+                    .findFirst()
+                    .ifPresent(cbDescuento.getSelectionModel()::select);
         }
     }
 
 
     @FXML
     void guardarCambios(ActionEvent event) {
+        guardarCambios();
+    }
+
+    private void guardarCambios(){
         String nombreNuevo = txtNombre.getText().trim();
         if (nombreNuevo.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos Incompletos", "El nombre de la prenda no puede estar vacío.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Campos Incompletos",
+                    "El Nombre de la Prenda NO puede estar Vacío.");
             return;
         }
         BigDecimal valorCompra;
@@ -157,25 +164,30 @@ public class EditarRopaControlador {
         }
         ImpuestoDTO impuestoSeleccionado = cbImpuesto.getValue();
         DescuentoDTO descuentoSeleccionado = cbDescuento.getValue();
+        if (impuestoSeleccionado == null || descuentoSeleccionado == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
+                    "Debe seleccionar un Impuesto, un Descuento para el Producto.");
+            return;
+        }
         try {
-            Integer idImpuesto = (impuestoSeleccionado != null) ? impuestoSeleccionado.idImpuesto() : null;
-            Integer idDescuento = (descuentoSeleccionado != null) ? descuentoSeleccionado.idDescuento() : null;
             servicioProductos.actualizarProductoRopaDeInventario(
                     this.idInventario,
                     this.productoOriginal.codigo(),
                     nombreNuevo,
                     valorCompra,
                     porcentajeGanancia,
-                    idImpuesto,
-                    idDescuento
+                    impuestoSeleccionado.idImpuesto(),
+                    descuentoSeleccionado.idDescuento()
             );
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa", "La prenda se ha actualizado correctamente.");
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa",
+                    "La Prenda se ha Actualizado Correctamente.");
             cerrarVentana();
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error al Actualizar",
-                    "No se pudo guardar la información en la base de datos.\nDetalle: " + e.getMessage());
+                    "NO se pudo Guardar la Información en la Base de Datos.\nDetalle: " + e.getMessage());
         }
     }
+
 
     @FXML
     void cancelar(ActionEvent event) {
@@ -187,4 +199,6 @@ public class EditarRopaControlador {
         stage.close();
     }
 
-}
+
+}//===================================================================================================================//
+

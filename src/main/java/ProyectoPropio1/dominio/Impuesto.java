@@ -39,7 +39,7 @@ public class Impuesto {
 
     private Impuesto(Integer id, String nombre, BigDecimal porcentaje, boolean activo) {
         if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Impuesto Vacio");
+            throw new IllegalArgumentException("Nombre del Impuesto Vacío");
         }
         if (porcentaje.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Porcentaje de Impuesto Invalido");
@@ -62,14 +62,11 @@ public class Impuesto {
         return new Impuesto(nombre, porcentaje, activo);
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     public void cambiarNombre(String nombreNuevo){
         if (nombreNuevo==null || nombreNuevo.isBlank()){
-            throw new IllegalArgumentException("Nombre del Impuesto Vacio");
-        }
-        if (nombreNuevo.equals(getNombre())){
-            throw new IllegalArgumentException("El Nombre a colocar al Impuesto es el mismo");
+            throw new IllegalArgumentException("Nombre del Impuesto Vacío");
         }
         setNombre(nombreNuevo);
     }

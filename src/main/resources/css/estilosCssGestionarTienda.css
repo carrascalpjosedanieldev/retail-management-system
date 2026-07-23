@@ -8,12 +8,14 @@
     -fx-font-size: 42px;
     -fx-font-weight: bold;
     -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-smoothing-type: lcd;
 }
 
 .subtitulo {
     -fx-text-fill: #666666;
     -fx-font-size: 18px;
     -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-smoothing-type: lcd;
 }
 
 .button {
@@ -28,6 +30,7 @@
     -fx-border-width: 3px;
     -fx-border-radius: 12;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 8, 0.0, 0, 3);
+    -fx-font-smoothing-type: lcd;
 }
 
 .button:hover {
@@ -77,6 +80,7 @@
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #991b1b;
+    -fx-font-smoothing-type: lcd;
 }
 
 .dialog-pane .graphic-container {
@@ -88,6 +92,7 @@
     -fx-text-fill: #334155;
     -fx-font-family: "Segoe UI", "Helvetica Neue", sans-serif;
     -fx-padding: 15px 20px;
+    -fx-font-smoothing-type: lcd;
 }
 
 .dialog-pane .button-bar .button {
@@ -107,4 +112,11 @@
     -fx-background-color: #dc2626;
     -fx-border-color: #991b1b;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 8, 0.0, 0, 3);
+}
+
+.button:pressed,
+#btnSalir:pressed, 
+.dialog-pane .button-bar .button:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0.0, 0, 0);
 }

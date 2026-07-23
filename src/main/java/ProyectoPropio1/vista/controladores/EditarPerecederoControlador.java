@@ -13,46 +13,33 @@ import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOPoliticaVencimiento;
 import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
+import ProyectoPropio1.utilidades.RutasVista;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class EditarPerecederoControlador {
 
-    @FXML
-    private TextField txtCodigo;
+    //ATRIBUTOS:
 
-    @FXML
-    private TextField txtNombre;
-
-    @FXML
-    private TextField txtFechaVencimiento;
-
-    @FXML
-    private ComboBox<PoliticaVencimientoDTO> cbPoliticaVencimiento;
-
-    @FXML
-    private TextField txtCompra;
-
-    @FXML
-    private TextField txtGanancia;
-
-    @FXML
-    private TextField txtStock;
-
-    @FXML
-    private ComboBox<ImpuestoDTO> cbImpuesto;
-
-    @FXML
-    private ComboBox<DescuentoDTO> cbDescuento;
+    @FXML private TextField txtCodigo;
+    @FXML private TextField txtNombre;
+    @FXML private TextField txtFechaVencimiento;
+    @FXML private ComboBox<PoliticaVencimientoDTO> cbPoliticaVencimiento;
+    @FXML private TextField txtCompra;
+    @FXML private TextField txtGanancia;
+    @FXML private TextField txtStock;
+    @FXML private ComboBox<ImpuestoDTO> cbImpuesto;
+    @FXML private ComboBox<DescuentoDTO> cbDescuento;
 
     private DatosTotalesProductoPerecederoDTO productoOriginal;
 
@@ -77,70 +64,63 @@ public class EditarPerecederoControlador {
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
+        DialogPane panelAlerta = alerta.getDialogPane();
+        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_PERECEDERO);
+        if (urlCss != null) {
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        }
         alerta.showAndWait();
     }
 
+
     @FXML
     public void initialize() {
+        configurarFiltrosTexto();
         configurarFormatoComboBoxes();
         cargarListasDesplegables();
     }
 
+    private void configurarFiltrosTexto() {
+        String regexDecimal = "\\d*(\\.\\d*)?";
+        txtCompra.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches(regexDecimal) ? change : null));
+        txtGanancia.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches(regexDecimal) ? change : null));
+    }
+
     private void configurarFormatoComboBoxes() {
-        cbImpuesto.setConverter(new StringConverter<ImpuestoDTO>() {
-            @Override
-            public String toString(ImpuestoDTO impuesto) {
-                if (impuesto == null) return "Seleccione impuesto...";
-                return impuesto.nombre() + " (" + impuesto.porcentaje() + "%)";
+        cbImpuesto.setConverter(new StringConverter<>() {
+            @Override public String toString(ImpuestoDTO i) {
+                return i == null ? "Seleccione..." : i.nombre() + " (" + i.porcentaje() + "%)";
             }
-            @Override
-            public ImpuestoDTO fromString(String string) { return null; }
+            @Override public ImpuestoDTO fromString(String s) { return null; }
         });
-        cbDescuento.setConverter(new StringConverter<DescuentoDTO>() {
-            @Override
-            public String toString(DescuentoDTO descuento) {
-                if (descuento == null) return "Seleccione descuento...";
-                return descuento.nombre() + " (" + descuento.porcentaje() + "%)";
+        cbDescuento.setConverter(new StringConverter<>() {
+            @Override public String toString(DescuentoDTO d) {
+                return d == null ? "Seleccione..." : d.nombre() + " (" + d.porcentaje() + "%)";
             }
-            @Override
-            public DescuentoDTO fromString(String string) { return null; }
+            @Override public DescuentoDTO fromString(String s) { return null; }
         });
-        cbPoliticaVencimiento.setConverter(new StringConverter<PoliticaVencimientoDTO>() {
-            @Override
-            public String toString(PoliticaVencimientoDTO politica) {
-                if (politica == null) return "Seleccione política...";
-                return politica.nombrePolitica();
+        cbPoliticaVencimiento.setConverter(new StringConverter<>() {
+            @Override public String toString(PoliticaVencimientoDTO p) {
+                return p == null ? "Seleccione..." : p.nombrePolitica();
             }
-            @Override
-            public PoliticaVencimientoDTO fromString(String string) { return null; }
+            @Override public PoliticaVencimientoDTO fromString(String s) { return null; }
         });
     }
 
-
     private void cargarListasDesplegables() {
         try {
-            List<ImpuestoDTO> listaImpuestos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                    this.servicioImpuesto.obtenerImpuestosActivos()
-            );
-            if (listaImpuestos != null) {
-                cbImpuesto.getItems().setAll(listaImpuestos);
-            }
-            List<DescuentoDTO> listaDescuentos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                    this.servicioDescuento.obtenerDescuentosActivos()
-            );
-            if (listaDescuentos != null) {
-                cbDescuento.getItems().setAll(listaDescuentos);
-            }
-            List<PoliticaVencimientoDTO> listaPoliticas = this.ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(
-                    this.servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas()
-            );
-            if (listaPoliticas != null) {
-                cbPoliticaVencimiento.getItems().setAll(listaPoliticas);
-            }
+            List<ImpuestoDTO> listaImpuestos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(servicioImpuesto.obtenerImpuestosActivos());
+            if (listaImpuestos != null) cbImpuesto.getItems().setAll(listaImpuestos);
+            List<DescuentoDTO> listaDescuentos = ensambladorDTODescuento.ensamblarDetalleDescuentos(servicioDescuento.obtenerDescuentosActivos());
+            if (listaDescuentos != null) cbDescuento.getItems().setAll(listaDescuentos);
+            List<PoliticaVencimientoDTO> listaPoliticas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas());
+            if (listaPoliticas != null) cbPoliticaVencimiento.getItems().setAll(listaPoliticas);
         } catch (Exception e) {
-            e.printStackTrace();
             mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
-                    "No se pudieron cargar las listas desplegables.\nDetalle: " + e.getMessage());
+                    "NO se Pudieron Cargar las Listas.\nError:  " + e.getMessage());
         }
     }
 
@@ -152,43 +132,39 @@ public class EditarPerecederoControlador {
         txtCompra.setText(producto.valorCompra() != null ? producto.valorCompra().toString() : "0");
         txtGanancia.setText(producto.porcentajeGanancia() != null ? producto.porcentajeGanancia().toString() : "0");
         txtStock.setText(String.valueOf(producto.stock()));
-        if (producto.fechaVencimiento() != null) {
-            DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            txtFechaVencimiento.setText(producto.fechaVencimiento().format(formatoFecha));
-        } else {
-            txtFechaVencimiento.setText("Sin fecha");
-        }
+        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        txtFechaVencimiento.setText(producto.fechaVencimiento() != null ? producto.fechaVencimiento().format(formatoFecha) : "Sin fecha");
         if (producto.datosPoliticaVencimiento() != null) {
-            for (PoliticaVencimientoDTO pol : cbPoliticaVencimiento.getItems()) {
-                if (pol.idPoliticaVencimiento() == producto.datosPoliticaVencimiento().idPoliticaVencimiento()) {
-                    cbPoliticaVencimiento.getSelectionModel().select(pol);
-                    break;
-                }
-            }
+            cbPoliticaVencimiento.getItems().stream()
+                    .filter(p -> p.idPoliticaVencimiento() == producto.datosPoliticaVencimiento().idPoliticaVencimiento())
+                    .findFirst()
+                    .ifPresent(cbPoliticaVencimiento.getSelectionModel()::select);
         }
         if (producto.datosImpuesto() != null) {
-            for (ImpuestoDTO imp : cbImpuesto.getItems()) {
-                if (imp.idImpuesto() == producto.datosImpuesto().idImpuesto()) {
-                    cbImpuesto.getSelectionModel().select(imp);
-                    break;
-                }
-            }
+            cbImpuesto.getItems().stream()
+                    .filter(i -> i.idImpuesto() == producto.datosImpuesto().idImpuesto())
+                    .findFirst()
+                    .ifPresent(cbImpuesto.getSelectionModel()::select);
         }
         if (producto.datosDescuento() != null) {
-            for (DescuentoDTO desc : cbDescuento.getItems()) {
-                if (desc.idDescuento() == producto.datosDescuento().idDescuento()) {
-                    cbDescuento.getSelectionModel().select(desc);
-                    break;
-                }
-            }
+            cbDescuento.getItems().stream()
+                    .filter(d -> d.idDescuento() == producto.datosDescuento().idDescuento())
+                    .findFirst()
+                    .ifPresent(cbDescuento.getSelectionModel()::select);
         }
     }
 
+
     @FXML
     void guardarCambios(ActionEvent event) {
+        guardarCambios();
+    }
+
+    private void guardarCambios(){
         String nombreNuevo = txtNombre.getText().trim();
         if (nombreNuevo.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos Incompletos", "El nombre del producto no puede estar vacío.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Campos Incompletos",
+                    "El Nombre del Producto NO puede estar Vacío.");
             return;
         }
         BigDecimal valorCompra;
@@ -198,34 +174,37 @@ public class EditarPerecederoControlador {
             porcentajeGanancia = new BigDecimal(txtGanancia.getText().trim());
         } catch (NumberFormatException e) {
             mostrarAlerta(Alert.AlertType.WARNING, "Datos Inválidos",
-                    "Por favor, verifique que los campos de Valor de Compra y Ganancia contengan únicamente números válidos.");
+                    "Por favor, Verifique que los campos de Valor de Compra y Ganancia contengan únicamente Números Válidos.");
             return;
         }
         ImpuestoDTO impuestoSeleccionado = cbImpuesto.getValue();
         DescuentoDTO descuentoSeleccionado = cbDescuento.getValue();
         PoliticaVencimientoDTO politicaSeleccionada = cbPoliticaVencimiento.getValue();
+        if (impuestoSeleccionado == null || descuentoSeleccionado == null || politicaSeleccionada == null) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
+                    "Debe seleccionar un Impuesto, un Descuento y una Política de Vencimiento para el producto.");
+            return;
+        }
         try {
-            Integer idImpuesto = (impuestoSeleccionado != null) ? impuestoSeleccionado.idImpuesto() : null;
-            Integer idDescuento = (descuentoSeleccionado != null) ? descuentoSeleccionado.idDescuento() : null;
-            Integer idPolitica = (politicaSeleccionada != null) ? politicaSeleccionada.idPoliticaVencimiento() : null;
             servicioProductos.actualizarProductoPerecederoDeInventario(
                     this.idInventario,
                     this.productoOriginal.codigo(),
                     nombreNuevo,
                     valorCompra,
                     porcentajeGanancia,
-                    idImpuesto,
-                    idDescuento,
-                    idPolitica
+                    impuestoSeleccionado.idImpuesto(),
+                    descuentoSeleccionado.idDescuento(),
+                    politicaSeleccionada.idPoliticaVencimiento()
             );
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa", "El producto perecedero se ha actualizado correctamente.");
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa",
+                    "El Producto Perecedero se ha Actualizado Correctamente.");
             cerrarVentana();
         } catch (Exception e) {
-            e.printStackTrace();
             mostrarAlerta(Alert.AlertType.ERROR, "Error al Actualizar",
-                    "No se pudo guardar la información en la base de datos.\nDetalle: " + e.getMessage());
+                    "NO se pudo Guardar la Información en la Base de Datos.\nError:  " + e.getMessage());
         }
     }
+
 
     @FXML
     void cancelar(ActionEvent event) {
@@ -237,4 +216,6 @@ public class EditarPerecederoControlador {
         stage.close();
     }
 
-}
+
+}//===================================================================================================================//
+

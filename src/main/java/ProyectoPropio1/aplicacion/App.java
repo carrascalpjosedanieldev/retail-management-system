@@ -31,7 +31,7 @@ public class App extends Application {
             MenuPrincipalControlador controlador = loader.getController();
             stagePrincipal.setOnCloseRequest(event -> {
                 event.consume();
-                controlador.salirDelSistema();
+                controlador.salirDeSistema();
             });
             Scene escena = new Scene(root, 1280, 720);
             stagePrincipal.setTitle("Sistema de Gestión de Tienda - JavaFX");

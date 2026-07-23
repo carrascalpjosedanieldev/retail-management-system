@@ -27,9 +27,9 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class GestionImpuestosControlador {
 
@@ -71,15 +71,17 @@ public class GestionImpuestosControlador {
 
     @FXML
     public void initialize() {
-        inicializar();
+        configurarColumnasTabla();
+        configurarFiltroBusqueda();
+        cargarDatosTabla();
     }
 
-    private void inicializar(){
+    private void configurarColumnasTabla() {
         colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idImpuesto()));
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
         colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
-        colEstado.setCellFactory(columna -> new TableCell<ImpuestoDTO, String>() {
+        colEstado.setCellFactory(columna -> new TableCell<>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
@@ -88,47 +90,95 @@ public class GestionImpuestosControlador {
                     setStyle("");
                 } else {
                     setText(estado);
-                    if (estado.equalsIgnoreCase("Activo")) {
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    }
+                    String color = estado.equalsIgnoreCase("Activo") ? "#10b981" : "#ef4444";
+                    setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
                 }
             }
         });
+    }
+
+    private void configurarFiltroBusqueda() {
         FilteredList<ImpuestoDTO> listaFiltrada = new FilteredList<>(listaObservableImpuestos, b -> true);
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
             listaFiltrada.setPredicate(impuesto -> {
-                if (valorNuevo == null || valorNuevo.isBlank()) {
-                    return true;
-                }
+                if (valorNuevo == null || valorNuevo.isBlank()) return true;
                 String filtro = valorNuevo.toLowerCase();
-                if (String.valueOf(impuesto.idImpuesto()).contains(filtro)) {
-                    return true;
-                }
-                else if (impuesto.nombre().toLowerCase().contains(filtro)) {
-                    return true;
-                }
-                return false;
+                return String.valueOf(impuesto.idImpuesto()).contains(filtro) ||
+                        impuesto.nombre().toLowerCase().contains(filtro);
             });
         });
         SortedList<ImpuestoDTO> listaOrdenada = new SortedList<>(listaFiltrada);
         listaOrdenada.comparatorProperty().bind(tablaImpuestos.comparatorProperty());
         tablaImpuestos.setItems(listaOrdenada);
-        cargarDatosTabla();
     }
 
     private void cargarDatosTabla() {
-        List<ImpuestoDTO> todosLosImpuestos = new ArrayList<>();
-        List<ImpuestoDTO> impuestosActivos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                this.servicioImpuestos.obtenerImpuestosActivos()
+        List<ImpuestoDTO> activos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+                servicioImpuestos.obtenerImpuestosActivos()
         );
-        List<ImpuestoDTO> impuestosInactivos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                this.servicioImpuestos.obtenerImpuestosInactivos()
+        List<ImpuestoDTO> inactivos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+                servicioImpuestos.obtenerImpuestosInactivos()
         );
-        todosLosImpuestos.addAll(impuestosActivos);
-        todosLosImpuestos.addAll(impuestosInactivos);
+        List<ImpuestoDTO> todosLosImpuestos = Stream.concat(
+                activos != null ? activos.stream() : Stream.empty(),
+                inactivos != null ? inactivos.stream() : Stream.empty()
+        ).toList();
+
         listaObservableImpuestos.setAll(todosLosImpuestos);
+    }
+
+
+    private Dialog<ButtonType> crearDialogo(String titulo, String cabecera, String textoBotonAccion) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(titulo);
+        dialog.setHeaderText(cabecera);
+        DialogPane dialogPane = dialog.getDialogPane();
+        aplicarCSS(dialogPane);
+        ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
+        dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
+        return dialog;
+    }
+
+    private GridPane crearGridPane(TextField campoNombre, TextField campoPorcentaje){
+        GridPane grid = new GridPane();
+        grid.setHgap(15);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(20, 20, 20, 20));
+        grid.add(new Label("Nombre:"), 0, 0);
+        grid.add(campoNombre, 1, 0);
+        grid.add(new Label("Porcentaje (%):"), 0, 1);
+        grid.add(campoPorcentaje, 1, 1);
+        return grid;
+    }
+
+    private void validarCampos(Dialog<ButtonType> dialog, TextField campoNombre, TextField campoPorcentaje){
+        ButtonType btnTipoGuardar = dialog.getDialogPane().getButtonTypes().stream()
+                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
+                .findFirst().orElse(null);
+        Button botonFisicoGuardar = (Button) dialog.getDialogPane().lookupButton(btnTipoGuardar);
+        botonFisicoGuardar.addEventFilter(ActionEvent.ACTION, event -> {
+            String nombre = campoNombre.getText().trim();
+            String porcentajeTexto = campoPorcentaje.getText().trim();
+            if (nombre.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "El Nombre del Impuesto NO puede estar Vacío.");
+                event.consume();
+                return;
+            }
+            if (porcentajeTexto.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "El Porcentaje del Impuesto NO puede estar Vacío");
+                event.consume();
+                return;
+            }
+            try {
+                FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
+            } catch (NumberFormatException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
+                event.consume();
+            }
+        });
     }
 
 
@@ -144,59 +194,36 @@ public class GestionImpuestosControlador {
                     "Por favor, Selecciona un Impuesto de la Tabla para Modificarlo.");
             return;
         }
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Modificar Impuesto");
-        dialog.setHeaderText("Editando el impuesto: " + seleccionado.nombre());
-        DialogPane dialogPane = dialog.getDialogPane();
-        aplicarCSS(dialogPane);
-        ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
+        Dialog<ButtonType> dialog = crearDialogo("Modificar Impuesto",
+                "Editando el impuesto: " + seleccionado.nombre(), "Actualizar");
         TextField txtNombre = new TextField();
         txtNombre.setPrefWidth(250);
         TextField txtPorcentaje = new TextField();
         txtNombre.setText(seleccionado.nombre());
         txtPorcentaje.setText(seleccionado.porcentaje().toString());
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(txtPorcentaje, 1, 1);
-        dialogPane.setContent(grid);
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnActualizar) {
-            String nuevoNombre = txtNombre.getText().trim();
-            String nuevoPorcentajeTexto = txtPorcentaje.getText();
-            try {
-                if (nuevoNombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                            "El Nombre del Impuesto NO puede estar Vacío.");
-                    return;
+        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
+        dialog.getDialogPane().setContent(grid);
+        validarCampos(dialog, txtNombre, txtPorcentaje);
+        dialog.showAndWait().ifPresent(resultado -> {
+            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                String nuevoNombre = txtNombre.getText().trim();
+                String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
+                try {
+                    BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
+                    this.servicioImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                            "El Impuesto se ha Actualizado Correctamente.");
+                    cargarDatosTabla();
+                } catch (IllegalArgumentException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Impuesto",
+                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                            "NO se pudo Actualizar el Impuesto en la Base de Datos.\n" +
+                                    "Error:  " + e.getMessage());
                 }
-                if (nuevoPorcentajeTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                            "El Porcentaje del Impuesto NO puede estar Vacío");
-                    return;
-                }
-                BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                this.servicioImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Impuesto se ha Actualizado Correctamente.");
-                cargarDatosTabla();
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Impuesto",
-                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "NO se pudo Actualizar el Impuesto en la Base de Datos.\n" +
-                                "Error:  " + e.getMessage());
             }
-        }
+        });
     }
 
 
@@ -206,17 +233,8 @@ public class GestionImpuestosControlador {
     }
 
     private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Registrar Nuevo Impuesto");
-        dialog.setHeaderText("Ingresa los detalles del nuevo impuesto.");
-        DialogPane dialogPane = dialog.getDialogPane();
-        aplicarCSS(dialogPane);
-        ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
+        Dialog<ButtonType> dialog = crearDialogo("Registrar Nuevo Impuesto",
+                "Ingresa los detalles del nuevo impuesto.", "Guardar");
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Ej. IVA 2024");
         txtNombre.setPrefWidth(250);
@@ -224,44 +242,30 @@ public class GestionImpuestosControlador {
         txtPorcentaje.setPromptText("Ej. 15.5");
         CheckBox chkActivo = new CheckBox("¿Impuesto Activo?");
         chkActivo.setSelected(true);
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(txtPorcentaje, 1, 1);
+        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
         grid.add(chkActivo, 1, 2);
-        dialogPane.setContent(grid);
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnGuardar) {
-            String nombre = txtNombre.getText();
-            String porcentajeTexto = txtPorcentaje.getText();
-            boolean activo = chkActivo.isSelected();
-            try {
-                if (nombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                            "El nombre del impuesto no puede estar vacío.");
-                    return;
+        dialog.getDialogPane().setContent(grid);
+        validarCampos(dialog, txtNombre, txtPorcentaje);
+        dialog.showAndWait().ifPresent(resultado -> {
+            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                String nombre = txtNombre.getText().trim();
+                String porcentajeTexto = txtPorcentaje.getText().trim();
+                boolean activo = chkActivo.isSelected();
+                try {
+                    BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
+                    this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                            "El Impuesto se ha Guardado Correctamente.");
+                    cargarDatosTabla();
+                } catch (IllegalArgumentException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Impuesto",
+                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                            "No se pudo Registrar el Impuesto en la Base de Datos.");
                 }
-                if (porcentajeTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                            "El Porcentaje del Impuesto NO puede estar Vacío");
-                    return;
-                }
-                BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Impuesto se ha Guardado Correctamente.");
-                cargarDatosTabla();
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Impuesto",
-                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "No se pudo Registrar el Impuesto en la Base de Datos.");
             }
-        }
+        });
     }
 
 

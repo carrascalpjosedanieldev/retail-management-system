@@ -8,6 +8,7 @@
 .label {
     -fx-text-fill: #475569;
     -fx-font-weight: bold;
+    -fx-font-smoothing-type: lcd;
 }
 
 .titulo-ventana {
@@ -15,6 +16,7 @@
     -fx-text-fill: #1e293b;
     -fx-font-weight: 900;
     -fx-padding: 0 0 15 0;
+    -fx-font-smoothing-type: lcd;
 }
 
 .text-field, .combo-box, .date-picker {
@@ -25,6 +27,7 @@
     -fx-padding: 6px 10px;
     -fx-text-fill: #1e293b;
     -fx-min-height: 38px;
+    -fx-font-smoothing-type: lcd;
 }
 
 .text-field:focused, .combo-box:focused, .date-picker:focused {
@@ -37,6 +40,7 @@
     -fx-text-fill: #1e293b;
     -fx-font-weight: bold;
     -fx-cursor: hand;
+    -fx-font-smoothing-type: lcd;
 }
 
 .radio-button .radio {
@@ -56,41 +60,44 @@
     -fx-border-color: #3b82f6;
 }
 
-
 .button {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
-    -fx-padding: 10px 20px;
+    -fx-border-width: 2px;
+    -fx-padding: 8px 20px;
     -fx-cursor: hand;
+    -fx-font-smoothing-type: lcd;
 }
 
 .btn-guardar {
-    -fx-background-color: #3b82f6;
+    -fx-background-color: #10b981;
     -fx-text-fill: white;
-    -fx-border-width: 0;
-    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.4), 10, 0, 0, 4);
+    -fx-border-color: #0f172a;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 6, 0.0, 0, 2);
 }
 
 .btn-guardar:hover {
-    -fx-background-color: #2563eb;
-    -fx-translate-y: -1px;
-}
-
-.btn-guardar:pressed {
-    -fx-translate-y: 1px;
-    -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.2), 5, 0, 0, 2);
+    -fx-background-color: #047857;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
 }
 
 .btn-cancelar {
-    -fx-background-color: #f1f5f9;
-    -fx-text-fill: #64748b;
-    -fx-border-color: #cbd5e1;
+    -fx-background-color: #64748b;
+    -fx-text-fill: white;
+    -fx-border-color: #334155;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 6, 0.0, 0, 2);
 }
 
 .btn-cancelar:hover {
-    -fx-background-color: #e2e8f0;
-    -fx-text-fill: #334155;
+    -fx-background-color: #475569;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
+}
+
+.btn-guardar:pressed, 
+.btn-cancelar:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0.0, 0, 0);
 }
 

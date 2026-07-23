@@ -5,7 +5,9 @@ import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
 import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
+import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
+
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,21 +18,21 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 
 public class TabPerecederosControlador {
 
@@ -53,8 +55,6 @@ public class TabPerecederosControlador {
 
     private int idInventario;
 
-    private final NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
-
     private final ObservableList<DatosTotalesProductoPerecederoDTO> listaMaestraPerecederos = FXCollections.observableArrayList();
 
     private FilteredList<DatosTotalesProductoPerecederoDTO> listaFiltrada;
@@ -63,7 +63,7 @@ public class TabPerecederosControlador {
 
     private final EnsambladorDTOProducto ensambladorDTOProducto = FabricaEnsambladores.obtenerEnsambladorDTOProducto();
 
-    //METODOS:
+    //MÉTODOS:
 
     public void recibirIdInventario(int idInventario) {
         this.idInventario = idInventario;
@@ -76,14 +76,14 @@ public class TabPerecederosControlador {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(180);
-        pane.setMinWidth(400);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
+        pane.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_PERECEDERO);
         if (urlCss != null) {
             pane.getStylesheets().add(urlCss.toExternalForm());
         }
         alerta.showAndWait();
     }
+
 
     @FXML
     public void initialize() {
@@ -98,12 +98,10 @@ public class TabPerecederosControlador {
             {
                 tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
                 tooltipFlotante.setShowDelay(Duration.millis(100));
+                setAlignment(Pos.CENTER);
             }
             @Override
             protected void updateItem(String codigo, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(codigo, empty);
                 if (empty || codigo == null) {
                     setText(null);
@@ -126,13 +124,32 @@ public class TabPerecederosControlador {
         });
         colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nombre()));
         colEstaVencido.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().estaVencido()));
+        colEstaVencido.setCellFactory(col -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
+            @Override
+            protected void updateItem(String estadoVencido, boolean empty) {
+                super.updateItem(estadoVencido, empty);
+                if (empty || estadoVencido == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(estadoVencido);
+                    boolean esVencido = estadoVencido.equalsIgnoreCase("Sí") || estadoVencido.equalsIgnoreCase("Vencido");
+                    setStyle(esVencido
+                            ? "-fx-text-fill: #ef4444; -fx-font-weight: bold;"
+                            : "-fx-text-fill: #10b981; -fx-font-weight: bold;");
+                }
+            }
+        });
         colStock.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().stock()));
         colStock.setCellFactory(columna -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(Integer stock, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(stock, empty);
                 if (empty || stock == null) {
                     setText(null);
@@ -151,11 +168,11 @@ public class TabPerecederosControlador {
         });
         colDisponible.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().disponible()));
         colDisponible.setCellFactory(columna -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(String estado, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(estado, empty);
                 if (empty || estado == null) {
                     setText(null);
@@ -186,6 +203,17 @@ public class TabPerecederosControlador {
         colVentaFinal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().valorVentaFinal()));
         formatearColumnaMoneda(colCompra);
         formatearColumnaMoneda(colVentaFinal);
+        colGanancia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().porcentajeGanancia()));
+        colGanancia.setCellFactory(col -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
+            @Override
+            protected void updateItem(BigDecimal ganancia, boolean empty) {
+                super.updateItem(ganancia, empty);
+                setText((empty || ganancia == null) ? null : ganancia.toPlainString() + "%");
+            }
+        });
     }
 
     private void formatearColumnaMoneda(TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> columna) {
@@ -196,7 +224,7 @@ public class TabPerecederosControlador {
                 if (empty || precio == null) {
                     setText(null);
                 } else {
-                    setText(formatoMoneda.format(precio));
+                    setText(FormateadorNumeros.formatoMoneda(precio));
                 }
             }
         });
@@ -220,32 +248,30 @@ public class TabPerecederosControlador {
         tablaPerecederos.setItems(listaOrdenada);
     }
 
-    private LocalDate obtenerFecha(){
-        return LocalDate.now();
-    }
-
     private void cargarDatosTabla() {
         try {
+            LocalDate fechaActual = LocalDate.now();
             List<DatosTotalesProductoPerecederoDTO> datosBD = this.ensambladorDTOProducto.ensamblarDetalleProductosPerecedero(
-                    this.servicioProductos.obtenerProductosPerecederoDeInventario(this.idInventario), obtenerFecha()
+                    this.servicioProductos.obtenerProductosPerecederoDeInventario(this.idInventario), fechaActual
             );
             listaMaestraPerecederos.clear();
             if (datosBD != null && !datosBD.isEmpty()) {
                 listaMaestraPerecederos.addAll(datosBD);
             }
-            tablaPerecederos.refresh();
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
-                    "Ocurrió un error al cargar los productos perecederos de la base de datos.\nDetalle: " + e.getMessage());
+                    "Ocurrió un Error al Cargar los Productos Perecederos de la Base de Datos.\n" +
+                            "Error: " + e.getMessage());
         }
     }
+
 
     @FXML
     void abrirEditorPerecedero(ActionEvent event) {
         DatosTotalesProductoPerecederoDTO productoSeleccionado = tablaPerecederos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida",
-                    "Por favor, seleccione un producto perecedero en la tabla para editarlo.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
+                    "Por favor, Seleccione un Producto Perecedero en la Tabla para Editarlo.");
             return;
         }
         try {
@@ -256,30 +282,43 @@ public class TabPerecederosControlador {
             Stage stageEditor = new Stage();
             stageEditor.setScene(new Scene(root));
             stageEditor.setTitle("Editar Producto Perecedero");
-            stageEditor.initModality(Modality.APPLICATION_MODAL);
+            stageEditor.initModality(Modality.WINDOW_MODAL);
+            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stageEditor.initOwner(ventanaPadre);
             stageEditor.setResizable(false);
             stageEditor.showAndWait();
             cargarDatosTabla();
         } catch (Exception e) {
-            e.printStackTrace();
             mostrarAlerta(Alert.AlertType.ERROR, "Error de Interfaz",
-                    "No se pudo abrir la ventana de edición.\nDetalle: " + e.getMessage());
+                    "NO se pudo Abrir la Ventana de Edición.\n" +
+                            "Error: " + e.getMessage());
         }
     }
 
+
     @FXML
     void cambiarEstadoProducto(ActionEvent event) {
+        cambiarEstadoProducto();
+    }
+
+    private void cambiarEstadoProducto(){
         DatosTotalesProductoPerecederoDTO productoSeleccionado = this.tablaPerecederos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
-                    "Por favor, seleccione un producto perecedero de la tabla para cambiar su estado.");
+                    "Por favor, Seleccione un Producto Perecedero de la Tabla para Cambiar su Estado.");
             return;
         }
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar Cambio de Estado");
         confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Está seguro que desea cambiar el estado del producto:\n"
+        confirmacion.setContentText("¿Está Seguro que desea Cambiar el Estado del Producto:\n"
                 + productoSeleccionado.codigo() + " - " + productoSeleccionado.nombre() + "?");
+        DialogPane pane = confirmacion.getDialogPane();
+        pane.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_PERECEDERO);
+        if (urlCss != null) {
+            pane.getStylesheets().add(urlCss.toExternalForm());
+        }
         confirmacion.showAndWait().ifPresent(respuesta -> {
             if (respuesta == ButtonType.OK) {
                 try {
@@ -288,14 +327,16 @@ public class TabPerecederosControlador {
                             productoSeleccionado.codigo()
                     );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Estado Actualizado",
-                            "El estado del producto se actualizó correctamente.");
+                            "El Estado del Producto se Actualizó Correctamente.");
                     cargarDatosTabla();
                 } catch (Exception e) {
                     mostrarAlerta(Alert.AlertType.ERROR, "Error en la Actualización",
-                            "Ocurrió un error al intentar cambiar el estado del producto.\nDetalle: " + e.getMessage());
+                            "Ocurrió un Error al Intentar cambiar el Estado del Producto.\n" +
+                                    "Detalle: " + e.getMessage());
                 }
             }
         });
     }
 
-}
+
+}//===================================================================================================================//

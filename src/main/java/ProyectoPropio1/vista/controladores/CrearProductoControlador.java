@@ -10,15 +10,18 @@ import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
 import ProyectoPropio1.servicios.aplicacion.*;
 import ProyectoPropio1.utilidades.FabricaServicios;
 
+import ProyectoPropio1.utilidades.RutasVista;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -26,29 +29,17 @@ import java.util.List;
 public class CrearProductoControlador {
 
     @FXML private RadioButton rbRopa;
-
     @FXML private RadioButton rbPerecedero;
-
     @FXML private TextField txtNombre;
-
     @FXML private TextField txtValorCompra;
-
     @FXML private TextField txtGanancia;
-
     @FXML private TextField txtStock;
-
     @FXML private ComboBox<ImpuestoDTO> cbImpuesto;
-
     @FXML private ComboBox<DescuentoDTO> cbDescuento;
-
     @FXML private VBox boxRopa;
-
     @FXML private ComboBox<String> cbTalla;
-
     @FXML private VBox boxPerecedero;
-
     @FXML private DatePicker dpFechaVencimiento;
-
     @FXML private ComboBox<PoliticaVencimientoDTO> cbPolitica;
 
     private ToggleGroup grupoTipo;
@@ -67,19 +58,44 @@ public class CrearProductoControlador {
 
     private final ServicioInventario servicioInventario = FabricaServicios.obtenerServicioInventario();
 
-
-    @FXML
-    public void initialize() {
-        configurarRadioButtons();
-        configurarComboBoxes();
-        cargarDatosComboBoxes();
-    }
-
+    //MÉTODOS:
 
     public void recibirIdInventario(int idInventario) {
         this.idInventario = idInventario;
     }
 
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        DialogPane panelAlerta = alerta.getDialogPane();
+        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_CREAR_PRODUCTOS);
+        if (urlCss != null) {
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        }
+        alerta.showAndWait();
+    }
+
+
+    @FXML
+    public void initialize() {
+        configurarFiltrosTexto();
+        configurarRadioButtons();
+        configurarComboBoxes();
+        cargarDatosComboBoxes();
+    }
+
+    private void configurarFiltrosTexto() {
+        txtStock.setTextFormatter(new TextFormatter<>(change ->
+                change.getText().matches("\\d*") ? change : null));
+        String regexDecimal = "\\d*(\\.\\d*)?";
+        txtValorCompra.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches(regexDecimal) ? change : null));
+        txtGanancia.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches(regexDecimal) ? change : null));
+    }
 
     private void configurarRadioButtons() {
         grupoTipo = new ToggleGroup();
@@ -90,21 +106,15 @@ public class CrearProductoControlador {
         grupoTipo.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 TipoProducto tipoSeleccionado = (TipoProducto) newVal.getUserData();
-                if (tipoSeleccionado == TipoProducto.ROPA) {
-                    boxRopa.setVisible(true);
-                    boxRopa.setManaged(true);
-                    boxPerecedero.setVisible(false);
-                    boxPerecedero.setManaged(false);
-                } else if (tipoSeleccionado == TipoProducto.PERECEDERO) {
-                    boxRopa.setVisible(false);
-                    boxRopa.setManaged(false);
-                    boxPerecedero.setVisible(true);
-                    boxPerecedero.setManaged(true);
-                }
+                boolean esRopa = (tipoSeleccionado == TipoProducto.ROPA);
+                boxRopa.setVisible(esRopa);
+                boxRopa.setManaged(esRopa);
+                boxPerecedero.setVisible(!esRopa);
+                boxPerecedero.setManaged(!esRopa);
             }
         });
+        rbRopa.setSelected(true);
     }
-
 
     private void configurarComboBoxes() {
         List<String> listaTallas = Arrays.stream(Talla.values())
@@ -124,7 +134,6 @@ public class CrearProductoControlador {
             @Override public PoliticaVencimientoDTO fromString(String string) { return null; }
         });
     }
-
 
     private void cargarDatosComboBoxes() {
         List<ImpuestoDTO> impuestos = servicioImpuestos.obtenerImpuestosActivos().stream()
@@ -150,10 +159,15 @@ public class CrearProductoControlador {
 
     @FXML
     void guardarProducto(ActionEvent event) {
+        guardarProducto();
+    }
+
+    private void guardarProducto(){
         try {
             if (txtNombre.getText().isBlank() || txtValorCompra.getText().isBlank() ||
                     txtGanancia.getText().isBlank() || txtStock.getText().isBlank()) {
-                mostrarAlerta("Error", "Todos los campos de texto son obligatorios.");
+                mostrarAlerta(Alert.AlertType.WARNING, "Campos de Texto Vacíos",
+                        "Todos los Campos de Texto son Obligatorios.");
                 return;
             }
             String nombre = txtNombre.getText();
@@ -163,7 +177,8 @@ public class CrearProductoControlador {
             ImpuestoDTO impuestoSel = cbImpuesto.getValue();
             DescuentoDTO descuentoSel = cbDescuento.getValue();
             if (impuestoSel == null || descuentoSel == null) {
-                mostrarAlerta("Error", "Debes seleccionar un Impuesto y un Descuento.");
+                mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Seleccionado",
+                        "Debes seleccionar un Impuesto y un Descuento.");
                 return;
             }
             TipoProducto tipoSeleccionado = (TipoProducto) grupoTipo.getSelectedToggle().getUserData();
@@ -171,7 +186,8 @@ public class CrearProductoControlador {
             if (tipoSeleccionado == TipoProducto.ROPA) {
                 String tallaSel = cbTalla.getValue();
                 if (tallaSel == null) {
-                    mostrarAlerta("Error", "Debes seleccionar una talla.");
+                    mostrarAlerta(Alert.AlertType.WARNING, "Talla NO Seleccionada",
+                            "Debes Seleccionar una Talla.");
                     return;
                 }
                 producto = fabricaProductos.fabricarProductoRopa(
@@ -182,7 +198,8 @@ public class CrearProductoControlador {
                 LocalDate fechaVenc = dpFechaVencimiento.getValue();
                 PoliticaVencimientoDTO politicaSel = cbPolitica.getValue();
                 if (fechaVenc == null || politicaSel == null) {
-                    mostrarAlerta("Error", "Debes seleccionar Fecha y Política de vencimiento.");
+                    mostrarAlerta(Alert.AlertType.WARNING, "Campos NO Seleccionados",
+                            "Debes seleccionar Fecha y Política de Vencimiento.");
                     return;
                 }
                 producto = fabricaProductos.fabricarProductoPerecedero(
@@ -193,14 +210,21 @@ public class CrearProductoControlador {
             }
             this.servicioInventario.verificarEspacioDisponible(this.idInventario, stock);
             this.servicioProductos.registrarProducto(this.idInventario, producto);
-            mostrarAlerta("Éxito", "Producto creado correctamente.");
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                    "Producto Creado Correctamente.");
             cerrarVentana();
         } catch (CapacidadInventarioExcedidaException e) {
-            mostrarAlerta("Capacidad Excedida", e.getMessage());
+            mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida", e.getMessage());
         } catch (NumberFormatException e) {
-            mostrarAlerta("Error de formato", "Verifica que los campos numéricos (Valor, Ganancia, Stock) contengan solo números válidos y sin espacios.");
+            mostrarAlerta(Alert.AlertType.WARNING, "Error de Formato en los Números",
+                    "Verifica que los Campos Numéricos (Valor, Ganancia, Stock) Contengan Solo números Válidos y sin Espacios.");
         } catch (IllegalArgumentException e) {
-            mostrarAlerta("Regla de Negocio", e.getMessage());
+            mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Producto",
+                    "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+        } catch (Exception e){
+            mostrarAlerta(Alert.AlertType.ERROR, "Error Critico",
+                    "NO se pudo Guardar el Producto en la Base de Datos\n" +
+                            "Error:  " + e.getMessage());
         }
     }
 
@@ -210,19 +234,11 @@ public class CrearProductoControlador {
         cerrarVentana();
     }
 
-
     private void cerrarVentana() {
         Stage stage = (Stage) txtNombre.getScene().getWindow();
         stage.close();
     }
 
 
-    private void mostrarAlerta(String titulo, String mensaje) {
-        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
-    }
+}//===================================================================================================================//
 
-}

@@ -22,11 +22,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -55,13 +57,13 @@ public class TabRopaControlador {
 
     private int idInventario;
 
-    private final ObservableList<DatosTotalesProductoRopaDTO> listaObservable = FXCollections.observableArrayList();
-
-    private FilteredList<DatosTotalesProductoRopaDTO> listaFiltrada;
-
     private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
 
     private final EnsambladorDTOProducto ensambladorDTOProducto = FabricaEnsambladores.obtenerEnsambladorDTOProducto();
+
+    private final ObservableList<DatosTotalesProductoRopaDTO> listaObservable = FXCollections.observableArrayList();
+
+    private FilteredList<DatosTotalesProductoRopaDTO> listaFiltrada;
 
     //MÉTODOS:
 
@@ -76,9 +78,8 @@ public class TabRopaControlador {
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
         DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(180);
-        pane.setMinWidth(400);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
+        pane.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_ROPA);
         if (urlCss != null) {
             pane.getStylesheets().add(urlCss.toExternalForm());
         }
@@ -115,12 +116,10 @@ public class TabRopaControlador {
             {
                 tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
                 tooltipFlotante.setShowDelay(Duration.millis(100));
+                setAlignment(Pos.CENTER);
             }
             @Override
             protected void updateItem(String codigo, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(codigo, empty);
                 if (empty || codigo == null) {
                     setText(null);
@@ -146,6 +145,9 @@ public class TabRopaControlador {
         colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().disponible()));
         colTalla.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().talla()));
         colTalla.setCellFactory(col -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(Talla talla, boolean empty) {
                 super.updateItem(talla, empty);
@@ -158,6 +160,9 @@ public class TabRopaControlador {
         colVentaFinal.setCellFactory(col -> crearCeldaMoneda());
         colGanancia.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentajeGanancia()));
         colGanancia.setCellFactory(col -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(BigDecimal ganancia, boolean empty) {
                 super.updateItem(ganancia, empty);
@@ -182,11 +187,11 @@ public class TabRopaControlador {
         });
         colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(celda.getValue().stock()).asObject());
         colStock.setCellFactory(columna -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(Integer stock, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(stock, empty);
                 if (empty || stock == null) {
                     setText(null);
@@ -205,11 +210,11 @@ public class TabRopaControlador {
         });
         colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().disponible()));
         colEstado.setCellFactory(columna -> new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(String estado, boolean empty) {
-                {
-                    setAlignment(Pos.CENTER);
-                }
                 super.updateItem(estado, empty);
                 if (empty || estado == null) {
                     setText(null);
@@ -226,6 +231,9 @@ public class TabRopaControlador {
 
     private TableCell<DatosTotalesProductoRopaDTO, BigDecimal> crearCeldaMoneda() {
         return new TableCell<>() {
+            {
+                setAlignment(Pos.CENTER);
+            }
             @Override
             protected void updateItem(BigDecimal precio, boolean empty) {
                 super.updateItem(precio, empty);
@@ -240,7 +248,6 @@ public class TabRopaControlador {
             listaFiltrada.setPredicate(ropa -> {
                 if (newVal == null || newVal.isBlank()) return true;
                 String filtro = newVal.toLowerCase().trim();
-
                 return ropa.nombre().toLowerCase().contains(filtro) ||
                         ropa.codigo().toLowerCase().contains(filtro) ||
                         ropa.talla().name().toLowerCase().contains(filtro) ||
@@ -255,10 +262,6 @@ public class TabRopaControlador {
 
     @FXML
     void abrirEditorRopa(ActionEvent event) {
-        abrirEditorRopa();
-    }
-
-    private void abrirEditorRopa(){
         DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida",
@@ -273,13 +276,15 @@ public class TabRopaControlador {
             Stage stageEditor = new Stage();
             stageEditor.setScene(new Scene(root));
             stageEditor.setTitle("Editar Prenda de Ropa");
-            stageEditor.initModality(Modality.APPLICATION_MODAL);
+            stageEditor.initModality(Modality.WINDOW_MODAL);
+            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stageEditor.initOwner(ventanaPadre);
             stageEditor.setResizable(false);
             stageEditor.showAndWait();
             cargarDatosTabla();
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error de Interfaz",
-                    "NO se pudo Abrir la Ventana de Edición.\nDetalle: " + e.getMessage());
+                    "NO se pudo Abrir la Ventana de Edición.\nError: " + e.getMessage());
         }
     }
 
@@ -296,13 +301,34 @@ public class TabRopaControlador {
                     "Por favor, Seleccione una Prenda de Ropa en la Tabla para Cambiar su Estado.");
             return;
         }
-        try {
-            servicioProductos.cambiarEstadoProducto(this.idInventario, productoSeleccionado.codigo());
-            cargarDatosTabla();
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al Cambiar Estado",
-                    "NO se pudo Actualizar el Estado del Producto.\nDetalle: " + e.getMessage());
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmar Cambio de Estado");
+        confirmacion.setHeaderText(null);
+        confirmacion.setContentText("¿Está Seguro que desea Cambiar el Estado del Producto:\n"
+                + productoSeleccionado.codigo() + " - " + productoSeleccionado.nombre() + "?");
+        DialogPane pane = confirmacion.getDialogPane();
+        pane.setMinHeight(Region.USE_PREF_SIZE);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_ROPA);
+        if (urlCss != null) {
+            pane.getStylesheets().add(urlCss.toExternalForm());
         }
+        confirmacion.showAndWait().ifPresent(respuesta -> {
+            if (respuesta == ButtonType.OK) {
+                try {
+                    this.servicioProductos.cambiarEstadoProducto(
+                            this.idInventario,
+                            productoSeleccionado.codigo()
+                    );
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Estado Actualizado",
+                            "El Estado del Producto se Actualizó Correctamente.");
+                    cargarDatosTabla();
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error en la Actualización",
+                            "Ocurrió un Error al Intentar cambiar el Estado del Producto.\n" +
+                                    "Error: " + e.getMessage());
+                }
+            }
+        });
     }
 
 

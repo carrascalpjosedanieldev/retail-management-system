@@ -12,7 +12,7 @@ public class FormateadorNumeros {
 
     private static void validarVacio(String valor) {
         if (valor == null || valor.trim().isEmpty()) {
-            throw new IllegalArgumentException("El campo no puede estar vacío.");
+            throw new IllegalArgumentException("El Campo NO puede estar Vacío.");
         }
     }
 
@@ -25,11 +25,11 @@ public class FormateadorNumeros {
             }
             BigDecimal precio = (BigDecimal) formato.parse(valor.trim());
             if (precio.compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("El precio no puede ser un valor negativo.");
+                throw new IllegalArgumentException("El Precio NO Puede ser un Valor Negativo.");
             }
             return precio;
         } catch (ParseException e) {
-            throw new NumberFormatException("Formato de precio inválido. Usa puntos para miles y coma para decimales (Ej: 1.500,50).");
+            throw new NumberFormatException("Formato de Precio Inválido. Usa puntos para miles y coma para decimales (Ej: 1.500,50).");
         }
     }
 
@@ -43,7 +43,7 @@ public class FormateadorNumeros {
             }
             return porcentaje;
         } catch (NumberFormatException e) {
-            throw new NumberFormatException("Formato numérico inválido. Ingresa un porcentaje válido (Ej: 15 o 15.5).");
+            throw new NumberFormatException("Formato Numérico Inválido. Ingresa un Porcentaje Válido (Ej: 15 o 15.5).");
         }
     }
 

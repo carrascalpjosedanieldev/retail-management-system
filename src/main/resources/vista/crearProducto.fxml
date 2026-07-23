@@ -80,7 +80,7 @@
 
     <HBox alignment="CENTER_RIGHT" spacing="10.0">
         <Button onAction="#cancelar" styleClass="btn-cancelar" text="Cancelar" />
-        <Button onAction="#guardarProducto" style="-fx-background-color: #3b82f6; -fx-text-fill: white;" styleClass="btn-guardar" text="Guardar Producto" />
+        <Button onAction="#guardarProducto" styleClass="btn-guardar" text="Guardar Producto" />
     </HBox>
 
 </VBox>

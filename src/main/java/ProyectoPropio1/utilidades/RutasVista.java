@@ -8,8 +8,8 @@ public class RutasVista {
     public static final String GESTIONAR_TIENDA_VIEW = "/vista/GestionarTienda.fxml";
     public static final String ESTILOS_CSS_GESTIONAR_TIENDA = "/css/estilosCssGestionarTienda.css";
 
-    public static final String GESTIONAR_CONFIGURACIONES_VIEW = "";
-    public static final String ESTILOS_CSS_CONFIGURACIONES = "";
+    public static final String GESTIONAR_CONFIGURACIONES_VIEW = "/vista/";
+    public static final String ESTILOS_CSS_CONFIGURACIONES = "/css/";
 
     public static final String GESTIONAR_DESCUENTOS_VIEW = "/vista/GestionDescuentos.fxml";
     public static final String ESTILOS_CSS_DESCUENTOS = "/css/estilosCssDescuentos.css";
@@ -36,3 +36,4 @@ public class RutasVista {
     public static final String ESTILOS_CSS_EDITAR_PERECEDERO = "/css/estilosCssEditarRopaOPerecedero.css";
 
 }
+

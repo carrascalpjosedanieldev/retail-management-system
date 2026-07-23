@@ -109,7 +109,7 @@ public class GestionServiciosControlador {
         });
     }
 
-    private Dialog<ButtonType> crearDialogoBase(String titulo, String cabecera) {
+    private Dialog<ButtonType> crearDialogoBase(String titulo, String cabecera, String textoBoton) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(titulo);
         dialog.setHeaderText(cabecera);
@@ -117,27 +117,63 @@ public class GestionServiciosControlador {
         dialogPane.setPrefWidth(480);
         dialogPane.setPrefHeight(450);
         aplicarCSS(dialogPane);
+        ButtonType btnAccion = new ButtonType(textoBoton, ButtonBar.ButtonData.OK_DONE);
+        dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
         return dialog;
     }
 
-    private GridPane crearGridPane() {
+    private GridPane crearGridPane(TextField txtNombre, TextField txtPrecioBase,
+                                   ComboBox<Impuesto> cbImpuestos, ComboBox<Descuento> cbDescuentos) {
         GridPane grid = new GridPane();
         grid.setHgap(15);
         grid.setVgap(15);
         grid.setPadding(new Insets(20));
+        grid.add(new Label("Nombre:"), 0, 0);
+        grid.add(txtNombre, 1, 0);
+        grid.add(new Label("Precio Base:"), 0, 1);
+        grid.add(txtPrecioBase, 1, 1);
+        grid.add(new Label("Impuesto:"), 0, 2);
+        grid.add(cbImpuestos, 1, 2);
+        grid.add(new Label("Descuento:"), 0, 3);
+        grid.add(cbDescuentos, 1, 3);
         return grid;
     }
 
-    private void validarFormulario(String nombre, String precioBaseTexto, Impuesto impuesto, Descuento descuento) throws IllegalArgumentException {
-        if (nombre == null || nombre.isEmpty() || precioBaseTexto == null || precioBaseTexto.isEmpty()) {
-            throw new IllegalArgumentException("El Nombre y el Precio Base son Obligatorios.");
-        }
-        if (impuesto == null) {
-            throw new IllegalArgumentException("Debes Seleccionar un Impuesto para el Servicio.");
-        }
-        if (descuento == null){
-            throw new IllegalArgumentException("Debes Seleccionar un Descuento para el Servicio (De preferencia que sea -Sin Descuento-).");
-        }
+    private void validarCampos(Dialog<ButtonType> dialog, TextField txtNombre, TextField txtPrecioBase,
+                               ComboBox<Impuesto> cbImpuestos, ComboBox<Descuento> cbDescuentos) {
+        ButtonType btnTipoAccion = dialog.getDialogPane().getButtonTypes().stream()
+                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
+                .findFirst().orElse(null);
+        Button botonFisico = (Button) dialog.getDialogPane().lookupButton(btnTipoAccion);
+        botonFisico.addEventFilter(ActionEvent.ACTION, event -> {
+            String nombre = txtNombre.getText().trim();
+            String precioTexto = txtPrecioBase.getText().trim();
+            if (nombre.isEmpty() || precioTexto.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "El Nombre y el Precio Base son Obligatorios.");
+                event.consume();
+                return;
+            }
+            if (cbImpuestos.getValue() == null) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "Debes Seleccionar un Impuesto para el Servicio.");
+                event.consume();
+                return;
+            }
+            if (cbDescuentos.getValue() == null) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "Debes Seleccionar un Descuento para el Servicio (De preferencia que sea -Sin Descuento-).");
+                event.consume();
+                return;
+            }
+            try {
+                FormateadorNumeros.stringAPrecio(precioTexto);
+            } catch (IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Por favor, Ingresa un Precio Base Numérico Válido.");
+                event.consume();
+            }
+        });
     }
 
 
@@ -220,9 +256,8 @@ public class GestionServiciosControlador {
         List<Impuesto> listaImpuestos = this.servicioImpuestos.obtenerImpuestosActivos();
         List<Descuento> listaDescuentos = this.servicioDescuentos.obtenerDescuentosActivos();
         Dialog<ButtonType> dialog = crearDialogoBase("Modificar Servicio",
-                "Editando el servicio: " + seleccionado.codigo() + " \n " + seleccionado.nombre());
-        ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
+                "Editando el servicio: " + seleccionado.codigo() + " \n " + seleccionado.nombre(),
+                "Actualizar");
         TextField txtNombre = new TextField(seleccionado.nombre());
         txtNombre.setPrefWidth(250);
         TextField txtPrecioBase = new TextField(seleccionado.precioBase().toString());
@@ -232,46 +267,33 @@ public class GestionServiciosControlador {
         ComboBox<Descuento> cbDescuentos = new ComboBox<>();
         configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
                 desc -> desc.getNombre() + " (" + desc.getPorcentaje() + "%)");
-        listaImpuestos.stream().filter(imp -> imp.getId() == seleccionado.idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
-        listaDescuentos.stream().filter(desc -> desc.getId() == seleccionado.idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Precio Base:"), 0, 1);
-        grid.add(txtPrecioBase, 1, 1);
-        grid.add(new Label("Impuesto:"), 0, 2);
-        grid.add(cbImpuestos, 1, 2);
-        grid.add(new Label("Descuento:"), 0, 3);
-        grid.add(cbDescuentos, 1, 3);
+        listaImpuestos.stream().filter(imp ->
+                imp.getId() == seleccionado.idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
+        listaDescuentos.stream().filter(desc ->
+                desc.getId() == seleccionado.idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
+        GridPane grid = crearGridPane(txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
         dialog.getDialogPane().setContent(grid);
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnActualizar) {
-            String nuevoNombre = txtNombre.getText().trim();
-            String nuevoPrecioBaseTexto = txtPrecioBase.getText().trim();
-            Impuesto impuestoSeleccionado = cbImpuestos.getValue();
-            Descuento descuentoSeleccionado = cbDescuentos.getValue();
-            try {
-                validarFormulario(nuevoNombre, nuevoPrecioBaseTexto, impuestoSeleccionado, descuentoSeleccionado);
-                BigDecimal nuevoPrecioBase = FormateadorNumeros.stringAPrecio(nuevoPrecioBaseTexto);
-                this.servicioServicios.actualizarServicio(
-                        seleccionado.codigo(), nuevoNombre, nuevoPrecioBase, impuestoSeleccionado.getId(),
-                        descuentoSeleccionado.getId()
-                );
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Servicio ha sido Actualizado Correctamente.");
-                cargarDatosTabla();
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Por favor, Ingresa un Precio Base numérico válido.");
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Servicio",
-                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "NO se pudo Actualizar el Servicio en la Base de Datos.\n" +
-                                "Error:  " + e.getMessage());
+        validarCampos(dialog, txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
+        dialog.showAndWait().ifPresent(resultado -> {
+            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                try {
+                    String nuevoNombre = txtNombre.getText().trim();
+                    BigDecimal nuevoPrecioBase = FormateadorNumeros.stringAPrecio(txtPrecioBase.getText().trim());
+                    Impuesto impuestoSeleccionado = cbImpuestos.getValue();
+                    Descuento descuentoSeleccionado = cbDescuentos.getValue();
+                    this.servicioServicios.actualizarServicio(
+                            seleccionado.codigo(), nuevoNombre, nuevoPrecioBase,
+                            impuestoSeleccionado.getId(), descuentoSeleccionado.getId()
+                    );
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                            "El Servicio ha sido Actualizado Correctamente.");
+                    cargarDatosTabla();
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                            "NO se pudo Actualizar el Servicio en la Base de Datos.\nError:  " + e.getMessage());
+                }
             }
-        }
+        });
     }
 
 
@@ -294,9 +316,7 @@ public class GestionServiciosControlador {
             return;
         }
         Dialog<ButtonType> dialog = crearDialogoBase("Registrar Nuevo Servicio",
-                "Ingresa los Datos del nuevo Servicio");
-        ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
+                "Ingresa los Datos del nuevo Servicio", "Guardar");
         TextField txtNombre = new TextField();
         txtNombre.setPromptText("Nombre del Servicio...");
         txtNombre.setPrefWidth(250);
@@ -308,46 +328,29 @@ public class GestionServiciosControlador {
         ComboBox<Descuento> cbDescuentos = new ComboBox<>();
         configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
                 desc -> desc.getNombre() + " (" + desc.getPorcentaje() + "%)");
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Precio Base:"), 0, 1);
-        grid.add(txtPrecioBase, 1, 1);
-        grid.add(new Label("Impuesto:"), 0, 2);
-        grid.add(cbImpuestos, 1, 2);
-        grid.add(new Label("Descuento:"), 0, 3);
-        grid.add(cbDescuentos, 1, 3);
+        GridPane grid = crearGridPane(txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
         dialog.getDialogPane().setContent(grid);
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnGuardar) {
-            String nombre = txtNombre.getText().trim();
-            String precioBaseTexto = txtPrecioBase.getText().trim();
-            Impuesto impuestoSeleccionado = cbImpuestos.getValue();
-            Descuento descuentoSeleccionado = cbDescuentos.getValue();
-            try {
-                validarFormulario(nombre, precioBaseTexto, impuestoSeleccionado, descuentoSeleccionado);
-                BigDecimal precioBase = FormateadorNumeros.stringAPrecio(precioBaseTexto);
-                this.servicioServicios.registrarServicioNuevo(
-                        nombre,
-                        precioBase,
-                        impuestoSeleccionado.getId(),
-                        descuentoSeleccionado.getId()
-                );
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Servicio ha sido Registrado Correctamente.");
-                cargarDatosTabla();
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Por favor, Ingresa un Precio Base numérico válido.");
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Servicio",
-                        "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "NO se pudo Registrar el Servicio en la Base de Datos:\n" +
-                                "Error:  " + e.getMessage());
+        validarCampos(dialog, txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
+        dialog.showAndWait().ifPresent(resultado -> {
+            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                try {
+                    String nombre = txtNombre.getText().trim();
+                    BigDecimal precioBase = FormateadorNumeros.stringAPrecio(txtPrecioBase.getText().trim());
+                    Impuesto impuestoSeleccionado = cbImpuestos.getValue();
+                    Descuento descuentoSeleccionado = cbDescuentos.getValue();
+                    this.servicioServicios.registrarServicioNuevo(
+                            nombre, precioBase, impuestoSeleccionado.getId(), descuentoSeleccionado.getId()
+                    );
+                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
+                            "El Servicio ha sido Registrado Correctamente.");
+                    cargarDatosTabla();
+                } catch (Exception e) {
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
+                            "NO se pudo Registrar el Servicio en la Base de Datos:\n" +
+                                    "Error:  " + e.getMessage());
+                }
             }
-        }
+        });
     }
 
 
@@ -397,6 +400,7 @@ public class GestionServiciosControlador {
             );
         }
     }
+
 
 }//===================================================================================================================//
 

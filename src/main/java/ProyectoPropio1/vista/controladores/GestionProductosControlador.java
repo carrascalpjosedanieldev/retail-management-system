@@ -18,6 +18,8 @@ import java.net.URL;
 
 public class GestionProductosControlador {
 
+    //ATRIBUTOS:
+
     @FXML public VBox tabGeneral;
     @FXML public VBox tabRopa;
     @FXML public VBox tabPerecedero;
@@ -25,6 +27,8 @@ public class GestionProductosControlador {
     @FXML private TabGeneralProductosControlador tabGeneralController;
     @FXML private TabRopaControlador tabRopaController;
     @FXML private TabPerecederosControlador tabPerecederoController;
+
+    //MÉTODOS:
 
     @FXML
     public void initialize() { }
@@ -41,6 +45,7 @@ public class GestionProductosControlador {
         }
     }
 
+
     @FXML
     void volverAlPanel(ActionEvent event) {
         try {
@@ -52,7 +57,7 @@ public class GestionProductosControlador {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Error de Navegación");
             alerta.setHeaderText(null);
-            alerta.setContentText("Ocurrió un problema al intentar volver al panel de Gestión.\n" +
+            alerta.setContentText("Ocurrió un Problema al Intentar Volver al Panel de Gestión.\n" +
                     "Detalle: " + e.getMessage());
             alerta.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             DialogPane pane = alerta.getDialogPane();
@@ -66,6 +71,7 @@ public class GestionProductosControlador {
         }
     }
 
-}
+
+}//===================================================================================================================//
 
 

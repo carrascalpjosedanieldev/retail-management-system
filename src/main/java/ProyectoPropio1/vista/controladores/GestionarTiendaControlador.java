@@ -28,9 +28,9 @@ public class GestionarTiendaControlador {
         } catch (Exception e) {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Error de Navegación");
-            alerta.setHeaderText("No se pudo cargar la pantalla");
-            alerta.setContentText("Ocurrió un problema al intentar abrir la vista.\n" +
-                    "Ruta solicitada: " + ruta + "\n" +
+            alerta.setHeaderText("NO se pudo Cargar la Pantalla");
+            alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
+                    "Ruta Solicitada: " + ruta + "\n" +
                     "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
             DialogPane panelAlerta = alerta.getDialogPane();
             panelAlerta.setPrefSize(500, 280);
@@ -75,5 +75,5 @@ public class GestionarTiendaControlador {
 
     }
 
-}
+}//===================================================================================================================//
 
