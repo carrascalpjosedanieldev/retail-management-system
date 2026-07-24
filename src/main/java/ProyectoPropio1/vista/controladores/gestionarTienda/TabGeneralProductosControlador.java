@@ -51,13 +51,21 @@ public class TabGeneralProductosControlador {
 
     private int idInventario;
 
-    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
+    private final ServicioProductos servicioProductos;
 
-    private final EnsambladorDTOProducto ensambladorDTOProducto = FabricaEnsambladores.obtenerEnsambladorDTOProducto();
+    private final EnsambladorDTOProducto ensambladorDTOProducto;
 
     private final ObservableList<ProductoResumenDTO> listaObservable = FXCollections.observableArrayList();
 
     private FilteredList<ProductoResumenDTO> listaFiltrada;
+
+    //CONSTRUCTOR:
+
+    public TabGeneralProductosControlador(ServicioProductos servicioProductos,
+                                          EnsambladorDTOProducto ensambladorDTOProducto) {
+        this.servicioProductos = servicioProductos;
+        this.ensambladorDTOProducto = ensambladorDTOProducto;
+    }
 
     //MÉTODOS:
 

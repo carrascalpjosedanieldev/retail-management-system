@@ -1,7 +1,6 @@
 package ProyectoPropio1.vista.controladores;
 
 import ProyectoPropio1.servicios.aplicacion.ServicioConfiguraciones;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.animation.KeyFrame;
@@ -30,7 +29,13 @@ public class MenuPrincipalControlador {
     @FXML private Label lblReloj;
     @FXML private Label lblNombreTienda;
 
-    private final ServicioConfiguraciones servicioConfiguraciones = FabricaServicios.obtenerServicioConfiguraciones();
+    private final ServicioConfiguraciones servicioConfiguraciones;
+
+    //CONSTRUCTOR:
+
+    public MenuPrincipalControlador(ServicioConfiguraciones servicioConfiguraciones) {
+        this.servicioConfiguraciones = servicioConfiguraciones;
+    }
 
     //MÉTODOS:
 

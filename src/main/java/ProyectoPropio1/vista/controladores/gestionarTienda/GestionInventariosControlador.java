@@ -3,8 +3,6 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 import ProyectoPropio1.dto.InventarioDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioInventario;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOInventario;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -39,11 +37,21 @@ public class GestionInventariosControlador {
     @FXML private TableView<InventarioDTO> tablaInventarios;
     @FXML private TextField txtBuscar;
 
-    private final ServicioInventario servicioInventario = FabricaServicios.obtenerServicioInventario();
+    private final ServicioInventario servicioInventario;
 
-    private final EnsambladorDTOInventario ensambladorDTOInventario = FabricaEnsambladores.obtenerEnsambladorDTOInventario();
+    private final EnsambladorDTOInventario ensambladorDTOInventario;
 
     private final ObservableList<InventarioDTO> listaObservable = FXCollections.observableArrayList();
+
+    //CONSTRUCTOR:
+
+    public GestionInventariosControlador(ServicioInventario servicioInventario,
+                                         EnsambladorDTOInventario ensambladorDTOInventario) {
+        this.servicioInventario = servicioInventario;
+        this.ensambladorDTOInventario = ensambladorDTOInventario;
+    }
+
+    //MÉTODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);

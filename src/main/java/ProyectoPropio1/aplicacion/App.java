@@ -3,6 +3,8 @@ package ProyectoPropio1.aplicacion;
 // PARA EXPORTAR EL PROYECTO FÁCILMENTE:
 // Get-ChildItem -Recurse -Filter *.java | Get-Content | Out-File proyecto_completo.txt
 
+import ProyectoPropio1.servicios.aplicacion.ServicioConfiguraciones;
+import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import ProyectoPropio1.vista.controladores.MenuPrincipalControlador;
@@ -13,20 +15,27 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-// mvn javafx:run -e
-
 public class App extends Application {
 
     public static void main(String[] args) {
-
         launch(args);
-
     }
 
     @Override
     public void start(Stage stagePrincipal){
         try {
+            ServicioConfiguraciones servicioConfiguraciones = FabricaServicios.obtenerServicioConfiguraciones();
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.MENU_PRINCIPAL_VIEW));
+            loader.setControllerFactory(claseControlador -> {
+                if (claseControlador == MenuPrincipalControlador.class) {
+                    return new MenuPrincipalControlador(servicioConfiguraciones);
+                }
+                try {
+                    return claseControlador.getDeclaredConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
             Parent root = loader.load();
             MenuPrincipalControlador controlador = loader.getController();
             stagePrincipal.setOnCloseRequest(event -> {
@@ -53,7 +62,5 @@ public class App extends Application {
         }
     }
 
-}
-
-// mvn javafx:run -e
+}//===================================================================================================================//
 

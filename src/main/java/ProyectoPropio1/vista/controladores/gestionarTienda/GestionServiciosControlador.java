@@ -7,8 +7,6 @@ import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
 import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
 import ProyectoPropio1.servicios.aplicacion.ServicioServicios;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOServicio;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -51,15 +49,25 @@ public class GestionServiciosControlador {
     @FXML private TableView<ServicioDTO> tablaServicios;
     @FXML private TextField txtBuscar;
 
-    private final ServicioServicios servicioServicios = FabricaServicios.obtenerServicioServicios();
+    private final ServicioServicios servicioServicios;
+    private final ServicioImpuestos servicioImpuestos;
+    private final ServicioDescuentos servicioDescuentos;
 
-    private final ServicioImpuestos servicioImpuestos = FabricaServicios.obtenerServicioImpuestos();
-
-    private final ServicioDescuentos servicioDescuentos = FabricaServicios.obtenerServicioDescuentos();
-
-    private final EnsambladorDTOServicio ensambladorDTOServicio = FabricaEnsambladores.obtenerEnsambladorDTOServicio();
+    private final EnsambladorDTOServicio ensambladorDTOServicio;
 
     private final ObservableList<ServicioDTO> listaObservableServicios = FXCollections.observableArrayList();
+
+    //CONSTRUCTOR:
+
+    public GestionServiciosControlador(
+            ServicioServicios servicioServicios, ServicioImpuestos servicioImpuestos,
+            ServicioDescuentos servicioDescuentos, EnsambladorDTOServicio ensambladorDTOServicio
+    ) {
+        this.servicioServicios = servicioServicios;
+        this.servicioImpuestos = servicioImpuestos;
+        this.servicioDescuentos = servicioDescuentos;
+        this.ensambladorDTOServicio = ensambladorDTOServicio;
+    }
 
     //MÉTODOS:
 

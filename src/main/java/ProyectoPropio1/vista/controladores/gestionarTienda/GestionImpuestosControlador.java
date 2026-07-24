@@ -3,8 +3,6 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 import ProyectoPropio1.dto.ImpuestoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -42,11 +40,18 @@ public class GestionImpuestosControlador {
     @FXML private TableColumn<ImpuestoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
-    private final ServicioImpuestos servicioImpuestos = FabricaServicios.obtenerServicioImpuestos();
+    private final ServicioImpuestos servicioImpuestos;
 
-    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto = FabricaEnsambladores.obtenerEnsambladorDTOImpuesto();
+    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
 
     private final ObservableList<ImpuestoDTO> listaObservableImpuestos = FXCollections.observableArrayList();
+
+    //CONSTRUCTOR:
+
+    public GestionImpuestosControlador(ServicioImpuestos servicioImpuestos, EnsambladorDTOImpuesto ensambladorDTOImpuesto) {
+        this.servicioImpuestos = servicioImpuestos;
+        this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
+    }
 
     //MÉTODOS:
 

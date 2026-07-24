@@ -11,8 +11,6 @@ import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOPoliticaVencimiento;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.event.ActionEvent;
@@ -45,19 +43,33 @@ public class EditarPerecederoControlador {
 
     private int idInventario;
 
-    private final ServicioImpuestos servicioImpuesto = FabricaServicios.obtenerServicioImpuestos();
+    private final ServicioImpuestos servicioImpuesto;
+    private final ServicioDescuentos servicioDescuento;
+    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento;
+    private final ServicioProductos servicioProductos;
 
-    private final ServicioDescuentos servicioDescuento = FabricaServicios.obtenerServicioDescuentos();
+    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
+    private final EnsambladorDTODescuento ensambladorDTODescuento;
+    private final EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
 
-    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento = FabricaServicios.obtenerServicioPoliticas();
+    //CONSTRUCTOR:
 
-    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
+    public EditarPerecederoControlador(
+            ServicioImpuestos servicioImpuesto, ServicioDescuentos servicioDescuento,
+            ServicioPoliticaVencimiento servicioPoliticaVencimiento, ServicioProductos servicioProductos,
+            EnsambladorDTOImpuesto ensambladorDTOImpuesto, EnsambladorDTODescuento ensambladorDTODescuento,
+            EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento
+    ) {
+        this.servicioImpuesto = servicioImpuesto;
+        this.servicioDescuento = servicioDescuento;
+        this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
+        this.servicioProductos = servicioProductos;
+        this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
+        this.ensambladorDTODescuento = ensambladorDTODescuento;
+        this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
+    }
 
-    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto = FabricaEnsambladores.obtenerEnsambladorDTOImpuesto();
-
-    private final EnsambladorDTODescuento ensambladorDTODescuento = FabricaEnsambladores.obtenerEnsambladorDTODescuento();
-
-    private final EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento = FabricaEnsambladores.obtenerEnsambladorDTOPoliticaVencimiento();
+    //METODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);

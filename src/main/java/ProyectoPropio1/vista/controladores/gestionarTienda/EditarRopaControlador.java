@@ -8,8 +8,6 @@ import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
@@ -41,15 +39,25 @@ public class EditarRopaControlador {
 
     private DatosTotalesProductoRopaDTO productoOriginal;
 
-    private final ServicioImpuestos servicioImpuesto = FabricaServicios.obtenerServicioImpuestos();
+    private final ServicioImpuestos servicioImpuesto;
+    private final ServicioDescuentos servicioDescuento;
+    private final ServicioProductos servicioProductos;
 
-    private final ServicioDescuentos servicioDescuento = FabricaServicios.obtenerServicioDescuentos();
+    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
+    private final EnsambladorDTODescuento ensambladorDTODescuento;
 
-    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
+    //CONSTRUCTOR:
 
-    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto = FabricaEnsambladores.obtenerEnsambladorDTOImpuesto();
+    public EditarRopaControlador(ServicioImpuestos servicioImpuesto, ServicioDescuentos servicioDescuento,
+                                 ServicioProductos servicioProductos, EnsambladorDTOImpuesto ensambladorDTOImpuesto,
+                                 EnsambladorDTODescuento ensambladorDTODescuento) {
+        this.servicioImpuesto = servicioImpuesto;
+        this.servicioDescuento = servicioDescuento;
+        this.servicioProductos = servicioProductos;
+        this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
+        this.ensambladorDTODescuento = ensambladorDTODescuento;
+    }
 
-    private final EnsambladorDTODescuento ensambladorDTODescuento = FabricaEnsambladores.obtenerEnsambladorDTODescuento();
 
     //MÉTODOS:
 

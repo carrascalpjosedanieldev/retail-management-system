@@ -1,11 +1,8 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-
 import ProyectoPropio1.dto.DescuentoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -45,11 +42,19 @@ public class GestionDescuentosControlador {
     @FXML private TableColumn<DescuentoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
-    private final ServicioDescuentos servicioDescuentos = FabricaServicios.obtenerServicioDescuentos();
+    private final ServicioDescuentos servicioDescuentos;
 
-    private final EnsambladorDTODescuento ensambladorDTODescuento = FabricaEnsambladores.obtenerEnsambladorDTODescuento();
+    private final EnsambladorDTODescuento ensambladorDTODescuento;
 
     private final ObservableList<DescuentoDTO> listaObservableDescuentos = FXCollections.observableArrayList();
+
+    //CONSTRUCTOR:
+
+    public GestionDescuentosControlador(ServicioDescuentos servicioDescuentos,
+                                        EnsambladorDTODescuento ensambladorDTODescuento) {
+        this.servicioDescuentos = servicioDescuentos;
+        this.ensambladorDTODescuento = ensambladorDTODescuento;
+    }
 
     //MÉTODOS:
 

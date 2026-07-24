@@ -23,7 +23,17 @@ import java.util.Optional;
 
 public class GestionConfiguracionesControlador {
 
-    private final ServicioConfiguraciones servicioConfiguraciones = FabricaServicios.obtenerServicioConfiguraciones();
+    //ATRIBUTOS:
+
+    private final ServicioConfiguraciones servicioConfiguraciones;
+
+    //CONSTRUCTOR:
+
+    public GestionConfiguracionesControlador(ServicioConfiguraciones servicioConfiguraciones) {
+        this.servicioConfiguraciones = servicioConfiguraciones;
+    }
+
+    //MÉTODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
@@ -202,3 +212,4 @@ public class GestionConfiguracionesControlador {
 
 
 }//===================================================================================================================//
+

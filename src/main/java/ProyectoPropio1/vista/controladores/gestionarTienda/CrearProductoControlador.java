@@ -8,9 +8,8 @@ import ProyectoPropio1.dto.ImpuestoDTO;
 import ProyectoPropio1.dto.PoliticaVencimientoDTO;
 import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
 import ProyectoPropio1.servicios.aplicacion.*;
-import ProyectoPropio1.utilidades.FabricaServicios;
-
 import ProyectoPropio1.utilidades.RutasVista;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -46,17 +45,27 @@ public class CrearProductoControlador {
 
     private int idInventario;
 
-    private final ServicioImpuestos servicioImpuestos = FabricaServicios.obtenerServicioImpuestos();
+    private final ServicioImpuestos servicioImpuestos;
+    private final ServicioDescuentos servicioDescuentos;
+    private final ServicioPoliticaVencimiento servicioPolitica;
+    private final ServicioProductos servicioProductos;
+    private final ServicioInventario servicioInventario;
 
-    private final ServicioDescuentos servicioDescuentos = FabricaServicios.obtenerServicioDescuentos();
+    private final FabricaProductos fabricaProductos;
 
-    private final ServicioPoliticaVencimiento servicioPolitica = FabricaServicios.obtenerServicioPoliticas();
+    //CONSTRUCTOR:
 
-    private final FabricaProductos fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPolitica);
-
-    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
-
-    private final ServicioInventario servicioInventario = FabricaServicios.obtenerServicioInventario();
+    public CrearProductoControlador(
+            ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos,
+            ServicioPoliticaVencimiento servicioPolitica, ServicioProductos servicioProductos,
+            ServicioInventario servicioInventario) {
+        this.servicioImpuestos = servicioImpuestos;
+        this.servicioDescuentos = servicioDescuentos;
+        this.servicioPolitica = servicioPolitica;
+        this.servicioProductos = servicioProductos;
+        this.servicioInventario = servicioInventario;
+        this.fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPolitica);
+    }
 
     //MÉTODOS:
 

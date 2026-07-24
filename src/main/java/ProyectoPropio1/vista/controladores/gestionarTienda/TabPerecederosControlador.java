@@ -3,8 +3,6 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 import ProyectoPropio1.dto.DatosTotalesProductoPerecederoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -55,13 +53,20 @@ public class TabPerecederosControlador {
 
     private int idInventario;
 
+    private final ServicioProductos servicioProductos;
+
+    private final EnsambladorDTOProducto ensambladorDTOProducto;
+
     private final ObservableList<DatosTotalesProductoPerecederoDTO> listaMaestraPerecederos = FXCollections.observableArrayList();
 
     private FilteredList<DatosTotalesProductoPerecederoDTO> listaFiltrada;
 
-    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
+    //CONSTRUCTOR:
 
-    private final EnsambladorDTOProducto ensambladorDTOProducto = FabricaEnsambladores.obtenerEnsambladorDTOProducto();
+    public TabPerecederosControlador(ServicioProductos servicioProductos, EnsambladorDTOProducto ensambladorDTOProducto) {
+        this.servicioProductos = servicioProductos;
+        this.ensambladorDTOProducto = ensambladorDTOProducto;
+    }
 
     //MÉTODOS:
 
@@ -340,3 +345,4 @@ public class TabPerecederosControlador {
 
 
 }//===================================================================================================================//
+

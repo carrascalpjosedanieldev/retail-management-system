@@ -6,8 +6,6 @@ import ProyectoPropio1.dto.DescuentoDTO;
 import ProyectoPropio1.dto.ImpuestoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -57,13 +55,20 @@ public class TabRopaControlador {
 
     private int idInventario;
 
-    private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
+    private final ServicioProductos servicioProductos;
 
-    private final EnsambladorDTOProducto ensambladorDTOProducto = FabricaEnsambladores.obtenerEnsambladorDTOProducto();
+    private final EnsambladorDTOProducto ensambladorDTOProducto;
 
     private final ObservableList<DatosTotalesProductoRopaDTO> listaObservable = FXCollections.observableArrayList();
 
     private FilteredList<DatosTotalesProductoRopaDTO> listaFiltrada;
+
+    //CONSTRUCTOR:
+
+    public TabRopaControlador(ServicioProductos servicioProductos, EnsambladorDTOProducto ensambladorDTOProducto) {
+        this.servicioProductos = servicioProductos;
+        this.ensambladorDTOProducto = ensambladorDTOProducto;
+    }
 
     //MÉTODOS:
 
@@ -333,3 +338,4 @@ public class TabRopaControlador {
 
 
 }//===================================================================================================================//
+
