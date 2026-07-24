@@ -3,6 +3,7 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 import ProyectoPropio1.dto.DatosTotalesProductoPerecederoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -280,7 +281,7 @@ public class TabPerecederosControlador {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.EDITAR_PERECEDERO_VIEW));
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.EDITAR_PERECEDERO_VIEW);
             Parent root = loader.load();
             EditarPerecederoControlador controladorEditor = loader.getController();
             controladorEditor.cargarDatosProducto(productoSeleccionado, this.idInventario);

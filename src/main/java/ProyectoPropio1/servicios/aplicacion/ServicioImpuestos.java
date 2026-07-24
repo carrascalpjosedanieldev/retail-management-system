@@ -15,9 +15,8 @@ public class ServicioImpuestos {
     }
 
     public void registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo){
-        Impuesto borrador = Impuesto.crearNuevo(nombre, porcentaje, activo);
-        Impuesto impuesto = this.repositorioImpuestos.insertarImpuesto(borrador);
-        impuesto.getId();
+        Impuesto impuesto = Impuesto.crearNuevo(nombre, porcentaje, activo);
+        this.repositorioImpuestos.insertarImpuesto(impuesto);
     }
 
     public Impuesto obtenerImpuesto(int idImpuesto){

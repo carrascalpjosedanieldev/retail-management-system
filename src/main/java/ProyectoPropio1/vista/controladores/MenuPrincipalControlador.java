@@ -1,6 +1,7 @@
 package ProyectoPropio1.vista.controladores;
 
 import ProyectoPropio1.servicios.aplicacion.ServicioConfiguraciones;
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.animation.KeyFrame;
@@ -8,9 +9,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -105,15 +104,13 @@ public class MenuPrincipalControlador {
     @FXML
     void abrirGestionarTienda(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
+            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
         } catch (Exception e) {
-            String mensaje = "Ocurrió un problema al cargar la vista de Gestión de Tienda.\n" +
-                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.";
+            String mensaje = "Ocurrió un Problema al Cargar la Vista de Gestión de Tienda.\n" +
+                    "Si el Problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.";
             mostrarAlerta(Alert.AlertType.ERROR, "Error de Navegación",
-                    "No se pudo abrir la pantalla", mensaje, null, true);
+                    "NO se pudo Abrir la Pantalla", mensaje, null, true);
         }
     }
 

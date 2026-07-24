@@ -7,6 +7,7 @@ import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
 import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
 import ProyectoPropio1.servicios.aplicacion.ServicioServicios;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOServicio;
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -18,10 +19,8 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -396,10 +395,8 @@ public class GestionServiciosControlador {
     @FXML
     void volverAlPanel(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
+            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
         } catch (Exception e) {
             mostrarAlerta(
                     Alert.AlertType.ERROR, "Error de Navegación",

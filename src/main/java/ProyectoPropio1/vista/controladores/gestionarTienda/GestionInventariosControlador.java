@@ -3,6 +3,7 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 import ProyectoPropio1.dto.InventarioDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioInventario;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOInventario;
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -223,7 +224,6 @@ public class GestionInventariosControlador {
         abrirFormularioNuevo();
     }
 
-
     private void abrirFormularioNuevo(){
         Dialog<ButtonType> dialog = crearDialogoBase("Nuevo Inventario", "Ingresa los datos de la nueva bodega / inventario", 500);
         ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
@@ -295,7 +295,7 @@ public class GestionInventariosControlador {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_PRODUCTOS_VIEW));
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.GESTIONAR_PRODUCTOS_VIEW);
             Parent root = loader.load();
             GestionProductosControlador controlador = loader.getController();
             controlador.inicializarConInventario(seleccionado.idInventario());
@@ -312,10 +312,8 @@ public class GestionInventariosControlador {
     @FXML
     void volverAlPanel(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
+            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
         } catch (Exception e) {
             mostrarAlerta(
                     Alert.AlertType.ERROR,

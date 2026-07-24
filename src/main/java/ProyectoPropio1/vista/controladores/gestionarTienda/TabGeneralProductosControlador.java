@@ -3,8 +3,7 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 import ProyectoPropio1.dto.ProductoResumenDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
-import ProyectoPropio1.utilidades.FabricaEnsambladores;
-import ProyectoPropio1.utilidades.FabricaServicios;
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -228,7 +227,7 @@ public class TabGeneralProductosControlador {
     @FXML
     void abrirSelectorNuevoProducto(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.CREAR_PRODUCTO_VIEW));
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.CREAR_PRODUCTO_VIEW);
             Parent root = loader.load();
             CrearProductoControlador controlador = loader.getController();
             controlador.recibirIdInventario(this.idInventario);

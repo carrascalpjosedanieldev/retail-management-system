@@ -2,15 +2,13 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dominio.Tienda;
 import ProyectoPropio1.servicios.aplicacion.ServicioConfiguraciones;
-import ProyectoPropio1.utilidades.FabricaServicios;
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -196,10 +194,8 @@ public class GestionConfiguracionesControlador {
     @FXML
     public void volverPanelGestion(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
+            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
         } catch (Exception e) {
             mostrarAlerta(
                     Alert.AlertType.ERROR,

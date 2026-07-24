@@ -24,6 +24,9 @@ public class RutasVista {
     public static final String GESTIONAR_SERVICIOS_VIEW = "/vista/gestionarTienda/GestionServicios.fxml";
     public static final String ESTILOS_CSS_SERVICIOS = "/css/gestionarTienda/estilosCssServicios.css";
 
+    public static final String GESTIONAR_POLITICAS_V_VIEW = "/vista/gestionarTienda/GestionPoliticasVencimiento.fxml";
+    public static final String ESTILOS_CSS_POLITICAS_V = "/css/gestionarTienda/estilosCssPoliticasVencimiento.css";
+
     public static final String GESTIONAR_INVENTARIOS_VIEW = "/vista/gestionarTienda/GestionInventarios.fxml";
     public static final String ESTILOS_CSS_INVENTARIOS = "/css/gestionarTienda/estilosCssInventarios.css";
 

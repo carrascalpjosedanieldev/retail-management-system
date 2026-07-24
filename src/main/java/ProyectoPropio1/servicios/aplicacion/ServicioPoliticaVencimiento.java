@@ -14,47 +14,34 @@ public class ServicioPoliticaVencimiento {
         this.repositorioPoliticaVencimiento = repositorioPoliticaVencimiento;
     }
 
-    public int registrarPoliticaVencimiento(String nombre, int diasUmbral, BigDecimal porcentaje){
-        PoliticaVencimiento borrador = PoliticaVencimiento.crearNuevo(nombre, diasUmbral, porcentaje);
-        PoliticaVencimiento politicaVencimiento = this.repositorioPoliticaVencimiento.insertarPoliticaVencimiento(borrador);
-        return politicaVencimiento.getIdPolitica();
+    public void registrarPoliticaVencimiento(String nombre, int diasUmbral, BigDecimal porcentaje, boolean activa){
+        PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.crearNuevo(nombre, diasUmbral, porcentaje, activa);
+        this.repositorioPoliticaVencimiento.insertarPoliticaVencimiento(politicaVencimiento);
     }
 
     public PoliticaVencimiento obtenerPoliticaVencimiento(int idPoliticaVencimiento){
         return this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
     }
 
+    public void actualizarPoliticaVencimiento(int idPolitica, String nombre, int diasUmbral, BigDecimal porcentaje){
+        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPolitica);
+        politicaVencimiento.cambiarNombrePolitica(nombre);
+        politicaVencimiento.cambiarDiasUmbral(diasUmbral);
+        politicaVencimiento.cambiarPorcentajeDescuento(porcentaje);
+        this.actualizarPoliticaVencimiento(politicaVencimiento);
+    }
+
     private void actualizarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
         this.repositorioPoliticaVencimiento.actualizarPoliticaVencimiento(politicaVencimiento);
     }
 
-    public void activarPoliticaVencimiento(int idPoliticaVencimiento){
-        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        politicaVencimiento.activar();
-        this.actualizarPoliticaVencimiento(politicaVencimiento);
-    }
-
-    public void desactivarPoliticaVencimiento(int idPoliticaVencimiento){
-        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        politicaVencimiento.desactivar();
-        this.actualizarPoliticaVencimiento(politicaVencimiento);
-    }
-
-    public void cambiarNombrePoliticaVencimiento(int idPoliticaVencimiento, String nombreNuevo){
-        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        politicaVencimiento.cambiarNombrePolitica(nombreNuevo);
-        this.actualizarPoliticaVencimiento(politicaVencimiento);
-    }
-
-    public void cambiarDiasUmbralPoliticaVencimiento(int idPoliticaVencimiento, int diasUmbral){
-        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        politicaVencimiento.cambiarDiasUmbral(diasUmbral);
-        this.actualizarPoliticaVencimiento(politicaVencimiento);
-    }
-
-    public void cambiarPorcentajePoliticaVencimiento(int idPoliticaVencimiento, BigDecimal porcentajeNuevo){
-        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        politicaVencimiento.cambiarPorcentajeDescuento(porcentajeNuevo);
+    public void cambiarEstadoPoliticaDeVencimiento(int idPolitica){
+        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPolitica);
+        if (politicaVencimiento.isActiva()){
+            politicaVencimiento.desactivar();
+        } else {
+            politicaVencimiento.activar();
+        }
         this.actualizarPoliticaVencimiento(politicaVencimiento);
     }
 

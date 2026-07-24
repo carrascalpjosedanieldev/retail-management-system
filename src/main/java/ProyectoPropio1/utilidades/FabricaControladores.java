@@ -58,6 +58,12 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     FabricaEnsambladores.obtenerEnsambladorDTOImpuesto()
             );
         }
+        if (claseControlador == GestionPoliticasVencimientoControlador.class){
+            return new GestionPoliticasVencimientoControlador(
+                    FabricaServicios.obtenerServicioPoliticas(),
+                    FabricaEnsambladores.obtenerEnsambladorDTOPoliticaVencimiento()
+            );
+        }
         if (claseControlador == GestionInventariosControlador.class){
             return new GestionInventariosControlador(
                     FabricaServicios.obtenerServicioInventario(),

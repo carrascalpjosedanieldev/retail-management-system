@@ -6,6 +6,7 @@ import ProyectoPropio1.dto.DescuentoDTO;
 import ProyectoPropio1.dto.ImpuestoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -274,7 +275,7 @@ public class TabRopaControlador {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.EDITAR_ROPA_VIEW));
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.EDITAR_ROPA_VIEW);
             Parent root = loader.load();
             EditarRopaControlador controladorEditor = loader.getController();
             controladorEditor.cargarDatosProducto(productoSeleccionado, this.idInventario);

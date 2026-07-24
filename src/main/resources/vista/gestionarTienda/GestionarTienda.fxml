@@ -2,44 +2,35 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.ScrollPane?>
 
-<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../css/gestionarTienda/estilosCssGestionarTienda.css"
-      xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="ProyectoPropio1.vista.controladores.gestionarTienda.GestionarTiendaControlador">
+<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../css/gestionarTienda/estilosCssGestionarTienda.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.gestionarTienda.GestionarTiendaControlador">
 
-    <VBox prefHeight="720.0" prefWidth="230.0" styleClass="sidebar-izquierda"/>
+    <VBox prefHeight="720.0" prefWidth="230.0" styleClass="sidebar-izquierda" />
 
-    <ScrollPane fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-background: #f8f9fa;">
+    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: #f8f9fa;" HBox.hgrow="ALWAYS">
 
         <VBox alignment="CENTER" style="-fx-background-color: #f8f9fa; -fx-spacing: 50; -fx-padding: 20;">
-            <Label styleClass="titulo-principal" text="Panel de Gestión de Tienda"/>
-            <Label styleClass="subtitulo" text="Selecciona el módulo que deseas administrar"/>
+            <Label styleClass="titulo-principal" text="Panel de Gestión de Tienda" />
+            <Label styleClass="subtitulo" text="Selecciona el módulo que deseas administrar" />
 
             <TilePane alignment="CENTER" hgap="30.0" maxWidth="700.0" prefColumns="2" vgap="30.0">
-                <Button onAction="#abrirConfiguraciones" prefHeight="80.0" prefWidth="300.0"
-                        text="GESTIONAR CONFIGURACIONES"/>
-                <Button onAction="#abrirInventarios" prefHeight="80.0" prefWidth="300.0"
-                        text="GESTIONAR INVENTARIOS"/>
-                <Button onAction="#abrirServicios" prefHeight="80.0" prefWidth="300.0"
-                        text="GESTIONAR SERVICIOS"/>
-                <Button onAction="#abrirImpuestos" prefHeight="80.0" prefWidth="300.0"
-                        text="GESTIONAR IMPUESTOS"/>
-                <Button onAction="#abrirDescuentos" prefHeight="80.0" prefWidth="300.0"
-                        text="GESTIONAR DESCUENTOS"/>
-
-                <Button id="btnSalir" fx:id="btnSalir" onAction="#volverAlMenu" prefHeight="80.0" prefWidth="300.0"
-                        text="SALIR AL MENÚ"/>
+                <Button onAction="#abrirConfiguraciones" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR CONFIGURACIONES" />
+                <Button onAction="#abrirInventarios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR INVENTARIOS" />
+                <Button onAction="#abrirServicios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR SERVICIOS" />
+                <Button onAction="#abrirImpuestos" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR IMPUESTOS" />
+                <Button onAction="#abrirDescuentos" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR DESCUENTOS" />
+            <Button onAction="#abrirPoliticasVencimiento" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR POLITICAS V." />
             </TilePane>
+
+             <Button id="btnSalir" fx:id="btnSalir" onAction="#volverAlMenu" prefHeight="80.0" prefWidth="300.0" text="SALIR AL MENÚ" />
         </VBox>
 
     </ScrollPane>
 
-    <VBox prefHeight="720.0" prefWidth="230.0" styleClass="sidebar-derecha"/>
+    <VBox prefHeight="720.0" prefWidth="230.0" styleClass="sidebar-derecha" />
 
 </HBox>
-

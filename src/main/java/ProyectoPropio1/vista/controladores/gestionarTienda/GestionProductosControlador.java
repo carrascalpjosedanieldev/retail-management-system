@@ -1,12 +1,11 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
+import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TabPane;
@@ -49,10 +48,8 @@ public class GestionProductosControlador {
     @FXML
     void volverAlPanel(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_INVENTARIOS_VIEW));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
+            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
         } catch (Exception e) {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Error de Navegación");

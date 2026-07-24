@@ -1,8 +1,8 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dto.ImpuestoDTO;
-import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
+import ProyectoPropio1.dto.PoliticaVencimientoDTO;
+import ProyectoPropio1.servicios.aplicacion.ServicioPoliticaVencimiento;
+import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOPoliticaVencimiento;
 import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
@@ -28,28 +28,30 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class GestionImpuestosControlador {
+public class GestionPoliticasVencimientoControlador {
 
     //ATRIBUTOS:
 
-    @FXML private TableView<ImpuestoDTO> tablaImpuestos;
-    @FXML private TableColumn<ImpuestoDTO, Integer> colId;
-    @FXML private TableColumn<ImpuestoDTO, String > colNombre;
-    @FXML private TableColumn<ImpuestoDTO, BigDecimal> colPorcentaje;
-    @FXML private TableColumn<ImpuestoDTO, String> colEstado;
+    @FXML private TableView<PoliticaVencimientoDTO> tablaPoliticasVencimiento;
+    @FXML private TableColumn<PoliticaVencimientoDTO, Integer> colId;
+    @FXML private TableColumn<PoliticaVencimientoDTO, String> colNombre;
+    @FXML private TableColumn<PoliticaVencimientoDTO, Integer> colDiasUmbral;
+    @FXML private TableColumn<PoliticaVencimientoDTO, BigDecimal> colPorcentaje;
+    @FXML private TableColumn<PoliticaVencimientoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
-    private final ServicioImpuestos servicioImpuestos;
+    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento;
 
-    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
+    private final EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
 
-    private final ObservableList<ImpuestoDTO> listaObservableImpuestos = FXCollections.observableArrayList();
+    private final ObservableList<PoliticaVencimientoDTO> listaObservablePoliticasVencimiento = FXCollections.observableArrayList();
 
     //CONSTRUCTOR:
 
-    public GestionImpuestosControlador(ServicioImpuestos servicioImpuestos, EnsambladorDTOImpuesto ensambladorDTOImpuesto) {
-        this.servicioImpuestos = servicioImpuestos;
-        this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
+    public GestionPoliticasVencimientoControlador(ServicioPoliticaVencimiento servicioPoliticaVencimiento,
+                                                  EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento) {
+        this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
+        this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
     }
 
     //MÉTODOS:
@@ -81,9 +83,10 @@ public class GestionImpuestosControlador {
     }
 
     private void configurarColumnasTabla() {
-        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idImpuesto()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
+        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idPoliticaVencimiento()));
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombrePolitica()));
+        colDiasUmbral.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().diasUmbral()));
+        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentajeDescuento()));
         colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
         colEstado.setCellFactory(columna -> new TableCell<>() {
             @Override
@@ -102,33 +105,32 @@ public class GestionImpuestosControlador {
     }
 
     private void configurarFiltroBusqueda() {
-        FilteredList<ImpuestoDTO> listaFiltrada = new FilteredList<>(listaObservableImpuestos, b -> true);
+        FilteredList<PoliticaVencimientoDTO> listaFiltrada = new FilteredList<>(listaObservablePoliticasVencimiento, b -> true);
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
-            listaFiltrada.setPredicate(impuesto -> {
+            listaFiltrada.setPredicate(politicaVencimiento -> {
                 if (valorNuevo == null || valorNuevo.isBlank()) return true;
                 String filtro = valorNuevo.toLowerCase();
-                return String.valueOf(impuesto.idImpuesto()).contains(filtro) ||
-                        impuesto.nombre().toLowerCase().contains(filtro);
+                return String.valueOf(politicaVencimiento.idPoliticaVencimiento()).contains(filtro) ||
+                        politicaVencimiento.nombrePolitica().toLowerCase().contains(filtro);
             });
         });
-        SortedList<ImpuestoDTO> listaOrdenada = new SortedList<>(listaFiltrada);
-        listaOrdenada.comparatorProperty().bind(tablaImpuestos.comparatorProperty());
-        tablaImpuestos.setItems(listaOrdenada);
+        SortedList<PoliticaVencimientoDTO> listaOrdenada = new SortedList<>(listaFiltrada);
+        listaOrdenada.comparatorProperty().bind(tablaPoliticasVencimiento.comparatorProperty());
+        tablaPoliticasVencimiento.setItems(listaOrdenada);
     }
 
     private void cargarDatosTabla() {
-        List<ImpuestoDTO> activos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                servicioImpuestos.obtenerImpuestosActivos()
+        List<PoliticaVencimientoDTO> activas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(
+                servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas()
         );
-        List<ImpuestoDTO> inactivos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                servicioImpuestos.obtenerImpuestosInactivos()
+        List<PoliticaVencimientoDTO> inactivas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(
+                servicioPoliticaVencimiento.obtenerPoliticasVencimientoInactivas()
         );
-        List<ImpuestoDTO> todosLosImpuestos = Stream.concat(
-                activos != null ? activos.stream() : Stream.empty(),
-                inactivos != null ? inactivos.stream() : Stream.empty()
+        List<PoliticaVencimientoDTO> todasLasPoliticasV = Stream.concat(
+                activas != null ? activas.stream() : Stream.empty(),
+                inactivas != null ? inactivas.stream() : Stream.empty()
         ).toList();
-
-        listaObservableImpuestos.setAll(todosLosImpuestos);
+        listaObservablePoliticasVencimiento.setAll(todasLasPoliticasV);
     }
 
 
@@ -143,7 +145,7 @@ public class GestionImpuestosControlador {
         return dialog;
     }
 
-    private GridPane crearGridPane(TextField campoNombre, TextField campoPorcentaje){
+    private GridPane crearGridPane(TextField campoNombre, TextField campoPorcentaje, TextField campoDiasUmbral){
         GridPane grid = new GridPane();
         grid.setHgap(15);
         grid.setVgap(15);
@@ -152,10 +154,12 @@ public class GestionImpuestosControlador {
         grid.add(campoNombre, 1, 0);
         grid.add(new Label("Porcentaje (%):"), 0, 1);
         grid.add(campoPorcentaje, 1, 1);
+        grid.add(new Label("Dias Umbral"), 0 , 2);
+        grid.add(campoDiasUmbral, 1, 2);
         return grid;
     }
 
-    private void validarCampos(Dialog<ButtonType> dialog, TextField campoNombre, TextField campoPorcentaje){
+    private void validarCampos(Dialog<ButtonType> dialog, TextField campoNombre, TextField campoPorcentaje, TextField campoDiasUmbral){
         ButtonType btnTipoGuardar = dialog.getDialogPane().getButtonTypes().stream()
                 .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
                 .findFirst().orElse(null);
@@ -163,15 +167,22 @@ public class GestionImpuestosControlador {
         botonFisicoGuardar.addEventFilter(ActionEvent.ACTION, event -> {
             String nombre = campoNombre.getText().trim();
             String porcentajeTexto = campoPorcentaje.getText().trim();
+            String diasUmbralTexto = campoDiasUmbral.getText().trim();
             if (nombre.isEmpty()) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Nombre del Impuesto NO puede estar Vacío.");
+                        "El Nombre de la Política NO puede estar Vacío.");
                 event.consume();
                 return;
             }
             if (porcentajeTexto.isEmpty()) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Porcentaje del Impuesto NO puede estar Vacío");
+                        "El Porcentaje NO puede estar Vacío.");
+                event.consume();
+                return;
+            }
+            if (diasUmbralTexto.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
+                        "Los Días Umbral NO pueden estar Vacíos.");
                 event.consume();
                 return;
             }
@@ -180,6 +191,14 @@ public class GestionImpuestosControlador {
             } catch (NumberFormatException e) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
                         "Error al Ingresar el Porcentaje:\n" + e.getMessage());
+                event.consume();
+                return;
+            }
+            try {
+                Integer.parseInt(diasUmbralTexto);
+            } catch (NumberFormatException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "Los Días Umbral deben ser un número entero válido.");
                 event.consume();
             }
         });
@@ -192,38 +211,44 @@ public class GestionImpuestosControlador {
     }
 
     private void abrirFormularioEdicion(){
-        ImpuestoDTO seleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
+        PoliticaVencimientoDTO seleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Impuesto de la Tabla para Modificarlo.");
+                    "Por favor, Selecciona una Política de Vencimiento de la Tabla para Modificarlo.");
             return;
         }
-        Dialog<ButtonType> dialog = crearDialogo("Modificar Impuesto",
-                "Editando el impuesto: " + seleccionado.nombre(), "Actualizar");
+        Dialog<ButtonType> dialog = crearDialogo("Modificar Política Vencimiento",
+                "Editando la Política de Vencimiento: " + seleccionado.nombrePolitica(), "Actualizar");
         TextField txtNombre = new TextField();
         txtNombre.setPrefWidth(250);
         TextField txtPorcentaje = new TextField();
-        txtNombre.setText(seleccionado.nombre());
-        txtPorcentaje.setText(seleccionado.porcentaje().toString());
-        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
+        txtNombre.setText(seleccionado.nombrePolitica());
+        txtPorcentaje.setText(seleccionado.porcentajeDescuento().toString());
+        TextField txtDiasUmbral = new TextField();
+        txtDiasUmbral.setText(String.valueOf(seleccionado.diasUmbral()));
+        GridPane grid = crearGridPane(txtNombre, txtPorcentaje, txtDiasUmbral);
         dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje);
+        validarCampos(dialog, txtNombre, txtPorcentaje, txtDiasUmbral);
         dialog.showAndWait().ifPresent(resultado -> {
             if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                 String nuevoNombre = txtNombre.getText().trim();
                 String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
+                String nuevoDiasUmbralTexto = txtDiasUmbral.getText().trim();
                 try {
                     BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                    this.servicioImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
+                    int nuevoDiasUmbral = Integer.parseInt(nuevoDiasUmbralTexto);
+                    this.servicioPoliticaVencimiento.actualizarPoliticaVencimiento(
+                            seleccionado.idPoliticaVencimiento(), nuevoNombre, nuevoDiasUmbral, nuevoPorcentaje
+                    );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Impuesto se ha Actualizado Correctamente.");
+                            "La Política de Vencimiento se ha Actualizado Correctamente.");
                     cargarDatosTabla();
                 } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Impuesto",
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar la Política de Vencimiento",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
                 } catch (Exception e) {
                     mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Actualizar el Impuesto en la Base de Datos.\n" +
+                            "NO se pudo Actualizar la Política de Vencimiento en la Base de Datos.\n" +
                                     "Error:  " + e.getMessage());
                 }
             }
@@ -237,36 +262,42 @@ public class GestionImpuestosControlador {
     }
 
     private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = crearDialogo("Registrar Nuevo Impuesto",
-                "Ingresa los detalles del nuevo impuesto.", "Guardar");
+        Dialog<ButtonType> dialog = crearDialogo("Registrar Nueva Política de Vencimiento",
+                "Ingresa los detalles de la Nueva Política de Vencimiento.", "Guardar");
         TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Ej. IVA 2024");
+        txtNombre.setPromptText("Ej. Política General 2024");
         txtNombre.setPrefWidth(250);
         TextField txtPorcentaje = new TextField();
         txtPorcentaje.setPromptText("Ej. 15.5");
-        CheckBox chkActivo = new CheckBox("¿Impuesto Activo?");
+        TextField txtDiasUmbral = new TextField();
+        txtDiasUmbral.setPromptText("Ej. 3");
+        CheckBox chkActivo = new CheckBox("¿Política V Activa?");
         chkActivo.setSelected(true);
-        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
-        grid.add(chkActivo, 1, 2);
+        GridPane grid = crearGridPane(txtNombre, txtPorcentaje, txtDiasUmbral);
+        grid.add(chkActivo, 1, 3);
         dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje);
+        validarCampos(dialog, txtNombre, txtPorcentaje, txtDiasUmbral);
         dialog.showAndWait().ifPresent(resultado -> {
             if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                 String nombre = txtNombre.getText().trim();
                 String porcentajeTexto = txtPorcentaje.getText().trim();
+                String diasUmbralTexto = txtDiasUmbral.getText().trim();
                 boolean activo = chkActivo.isSelected();
                 try {
                     BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                    this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
+                    int diasUmbral = Integer.parseInt(diasUmbralTexto);
+                    this.servicioPoliticaVencimiento.registrarPoliticaVencimiento(
+                            nombre, diasUmbral, porcentaje, activo
+                    );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Impuesto se ha Guardado Correctamente.");
+                            "La Política de Vencimiento se ha Guardado Correctamente.");
                     cargarDatosTabla();
                 } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Impuesto",
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar la Política de Vencimiento",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
                 } catch (Exception e) {
                     mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "No se pudo Registrar el Impuesto en la Base de Datos.");
+                            "No se pudo Registrar la Política de Vencimiento en la Base de Datos.");
                 }
             }
         });
@@ -274,30 +305,33 @@ public class GestionImpuestosControlador {
 
 
     @FXML
-    void cambiarEstadoImpuesto(ActionEvent event) {
-        cambiarEstadoImpuesto();
+    void cambiarEstadoPoliticaV(ActionEvent event) {
+        cambiarEstadoPoliticaV();
     }
 
-    private void cambiarEstadoImpuesto(){
-        ImpuestoDTO impuestoSeleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
-        if (impuestoSeleccionado == null) {
+    private void cambiarEstadoPoliticaV(){
+        PoliticaVencimientoDTO politicaSeleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
+        if (politicaSeleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Impuesto de la Tabla para Cambiar su Estado.");
+                    "Por favor, Selecciona una Política de Vencimiento de la Tabla para Cambiar su Estado.");
             return;
         }
-        boolean esActivo = impuestoSeleccionado.estado().equalsIgnoreCase("Activo");
+        boolean esActivo = politicaSeleccionado.estado().equalsIgnoreCase("Activo");
         String accion = esActivo ? "Desactivar" : "Activar";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar cambio de estado");
         confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " el Impuesto -" + impuestoSeleccionado.nombre() + "-?");
+        confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " la Política -" +
+                politicaSeleccionado.nombrePolitica() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
         panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
         aplicarCSS(panelConfirmacion);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
-                this.servicioImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
+                this.servicioPoliticaVencimiento.cambiarEstadoPoliticaDeVencimiento(
+                        politicaSeleccionado.idPoliticaVencimiento()
+                );
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();
