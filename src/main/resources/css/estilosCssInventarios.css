@@ -209,3 +209,16 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0.0, 0, 0);
 }
 
+.capacidad-agotada {
+    -fx-text-fill: #ef4444;
+    -fx-font-weight: bold;
+}
+.capacidad-baja {
+    -fx-text-fill: #f59e0b;
+    -fx-font-weight: bold;
+}
+.capacidad-ok {
+    -fx-text-fill: #10b981;
+    -fx-font-weight: bold;
+}
+

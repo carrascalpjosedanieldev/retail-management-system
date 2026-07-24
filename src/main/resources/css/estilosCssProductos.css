@@ -194,3 +194,13 @@
     -fx-translate-y: 1px;
 }
 
+.tab-pane .tab:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane .tab .focus-indicator {
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
+}
+

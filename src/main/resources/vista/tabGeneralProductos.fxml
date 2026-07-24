@@ -12,7 +12,8 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="550.0" prefWidth="900.0" spacing="15.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.TabGeneralProductosControlador">    <padding>
+<VBox prefHeight="550.0" prefWidth="900.0" spacing="15.0" stylesheets="@../css/estilosCssProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.TabGeneralProductosControlador">
+    <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
@@ -21,10 +22,8 @@
             <fx:define>
                 <ToggleGroup fx:id="grupoFiltroEstado" />
             </fx:define>
-            <ToggleButton fx:id="btnFiltroTodos" mnemonicParsing="false" selected="true" styleClass="segment-btn, segment-left" text="Todos">
-            <toggleGroup>
-               <ToggleGroup fx:id="grupoFiltroEstado" />
-            </toggleGroup></ToggleButton>
+
+            <ToggleButton fx:id="btnFiltroTodos" mnemonicParsing="false" selected="true" styleClass="segment-btn, segment-left" text="Todos" toggleGroup="$grupoFiltroEstado" />
             <ToggleButton fx:id="btnFiltroDisponibles" mnemonicParsing="false" styleClass="segment-btn, segment-center" text="Disponibles" toggleGroup="$grupoFiltroEstado" />
             <ToggleButton fx:id="btnFiltroNoDisponibles" mnemonicParsing="false" styleClass="segment-btn, segment-right" text="No Disponibles" toggleGroup="$grupoFiltroEstado" />
         </HBox>

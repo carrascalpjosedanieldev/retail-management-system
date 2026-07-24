@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class GestionInventariosControlador {
 
@@ -63,6 +64,75 @@ public class GestionInventariosControlador {
         }
     }
 
+
+    @FXML
+    public void initialize() {
+        configurarColumnasTabla();
+        configurarFiltroBusqueda();
+        cargarDatosTabla();
+    }
+
+    private void configurarColumnasTabla(){
+        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idInventario()));
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
+        colCapacidadMax.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadMaxima()));
+        colCapacidadOcupada.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadOcupada()));
+        colCapacidadLibre.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadLibre()));
+        colCapacidadLibre.setCellFactory(columna -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer libre, boolean empty) {
+                super.updateItem(libre, empty);
+                getStyleClass().removeAll("capacidad-agotada", "capacidad-baja", "capacidad-ok");
+                if (empty || libre == null) {
+                    setText(null);
+                } else {
+                    setText(String.valueOf(libre));
+                    if (libre <= 0) {
+                        getStyleClass().add("capacidad-agotada");
+                    } else if (libre <= 10) {
+                        getStyleClass().add("capacidad-baja");
+                    } else {
+                        getStyleClass().add("capacidad-ok");
+                    }
+                }
+            }
+        });
+    }
+
+    private void configurarFiltroBusqueda(){
+        FilteredList<InventarioDTO> listaFiltrada = new FilteredList<>(listaObservable, b -> true);
+        txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
+            listaFiltrada.setPredicate(inv -> {
+                if (valorNuevo == null || valorNuevo.isBlank()){
+                    return true;
+                }
+                String filtro = valorNuevo.toLowerCase().trim();
+                String idComoTexto = String.valueOf(inv.idInventario());
+                String nombre = inv.nombre() != null ? inv.nombre().toLowerCase() : "";
+                return nombre.contains(filtro) || idComoTexto.contains(filtro);
+            });
+        });
+        SortedList<InventarioDTO> listaOrdenada = new SortedList<>(listaFiltrada);
+        listaOrdenada.comparatorProperty().bind(tablaInventarios.comparatorProperty());
+        tablaInventarios.setItems(listaOrdenada);
+    }
+
+    private void cargarDatosTabla() {
+        CompletableFuture.supplyAsync(() -> {
+                    return this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
+                            this.servicioInventario.obtenerTodosLosInventarios()
+                    );
+                }).thenAcceptAsync(listaObservable::setAll, javafx.application.Platform::runLater)
+                .exceptionally(ex -> {
+                    javafx.application.Platform.runLater(() -> {
+                        mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                                "No se pudieron cargar los inventarios: " + ex.getMessage());
+                    });
+                    return null;
+                });
+    }
+
+
     private Dialog<ButtonType> crearDialogoBase(String titulo, String cabecera, double ancho) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(titulo);
@@ -83,66 +153,19 @@ public class GestionInventariosControlador {
 
 
     @FXML
-    public void initialize() {
-        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idInventario()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colCapacidadMax.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadMaxima()));
-        colCapacidadOcupada.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadOcupada()));
-        colCapacidadLibre.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadLibre()));
-        colCapacidadLibre.setCellFactory(columna -> new TableCell<>() {
-            @Override
-            protected void updateItem(Integer libre, boolean empty) {
-                super.updateItem(libre, empty);
-                if (empty || libre == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(String.valueOf(libre));
-                    if (libre <= 0) {
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    } else if (libre <= 10) {
-                        setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    }
-                }
-            }
-        });
-        FilteredList<InventarioDTO> listaFiltrada = new FilteredList<>(listaObservable, b -> true);
-        txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
-            listaFiltrada.setPredicate(inv -> {
-                if (valorNuevo == null || valorNuevo.isBlank()){
-                    return true;
-                }
-                String filtro = valorNuevo.toLowerCase().trim();
-                String idComoTexto = String.valueOf(inv.idInventario());
-                return inv.nombre().toLowerCase().contains(filtro) ||
-                        idComoTexto.contains(filtro);
-            });
-        });
-        SortedList<InventarioDTO> listaOrdenada = new SortedList<>(listaFiltrada);
-        listaOrdenada.comparatorProperty().bind(tablaInventarios.comparatorProperty());
-        tablaInventarios.setItems(listaOrdenada);
-        cargarDatosTabla();
-    }
-
-    private void cargarDatosTabla() {
-        List<InventarioDTO> inventarios = this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
-                this.servicioInventario.obtenerTodosLosInventarios()
-        );
-        listaObservable.setAll(inventarios);
-    }
-
-
-    @FXML
     void abrirFormularioEdicion(ActionEvent event) {
+        abrirFormularioEdicion();
+    }
+
+    private void abrirFormularioEdicion(){
         InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
                     "Por favor, Selecciona un Inventario de la Tabla para Modificarlo.");
             return;
         }
-        Dialog<ButtonType> dialog = crearDialogoBase("Modificar Inventario", "Editando inventario: " + seleccionado.nombre(), 420);
+        Dialog<ButtonType> dialog = crearDialogoBase("Modificar Inventario",
+                "Editando inventario: " + seleccionado.nombre(), 420);
         ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
         TextField txtNombre = new TextField(seleccionado.nombre());
@@ -159,15 +182,19 @@ public class GestionInventariosControlador {
         notaVisual.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
         grid.add(notaVisual, 1, 2);
         dialog.getDialogPane().setContent(grid);
+        Button btnActualizarNode = (Button) dialog.getDialogPane().lookupButton(btnActualizar);
+        btnActualizarNode.addEventFilter(ActionEvent.ACTION, evt -> {
+            String nuevoNombre = txtNombre.getText().trim();
+            if (nuevoNombre.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos",
+                        "El Nombre del Inventario NO puede estar Vacío.");
+                evt.consume();
+            }
+        });
         Optional<ButtonType> resultado = dialog.showAndWait();
         if (resultado.isPresent() && resultado.get() == btnActualizar) {
             String nuevoNombre = txtNombre.getText().trim();
             try {
-                if (nuevoNombre.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos",
-                            "El Nombre del Inventario NO puede estar Vacío.");
-                    return;
-                }
                 if (nuevoNombre.equalsIgnoreCase(seleccionado.nombre())) {
                     return;
                 }
@@ -183,8 +210,14 @@ public class GestionInventariosControlador {
         }
     }
 
+
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
+        abrirFormularioNuevo();
+    }
+
+
+    private void abrirFormularioNuevo(){
         Dialog<ButtonType> dialog = crearDialogoBase("Nuevo Inventario", "Ingresa los datos de la nueva bodega / inventario", 500);
         ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
@@ -194,9 +227,9 @@ public class GestionInventariosControlador {
         TextField txtCapacidad = new TextField();
         txtCapacidad.setPromptText("Ej: 500");
         Label lblAdvertencia = new Label("""
-                ⚠️ Importante: Verifica bien este número.
-                Una vez creado el inventario, su capacidad
-                máxima NO podrá ser modificada.""");
+            ⚠️ Importante: Verifica bien este número.
+            Una vez creado el inventario, su capacidad
+            máxima NO podrá ser modificada.""");
         lblAdvertencia.setStyle("-fx-text-fill: #ea580c; -fx-font-size: 12px; -fx-font-weight: bold;");
         GridPane grid = crearGridPane();
         grid.add(new Label("Nombre:"), 0, 0);
@@ -205,29 +238,38 @@ public class GestionInventariosControlador {
         grid.add(txtCapacidad, 1, 1);
         grid.add(lblAdvertencia, 1, 2);
         dialog.getDialogPane().setContent(grid);
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnGuardar) {
+        Button btnGuardarNode = (Button) dialog.getDialogPane().lookupButton(btnGuardar);
+        btnGuardarNode.addEventFilter(ActionEvent.ACTION, evt -> {
             String nombre = txtNombre.getText().trim();
             String capacidadTexto = txtCapacidad.getText().trim();
+            if (nombre.isEmpty() || capacidadTexto.isEmpty()) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos",
+                        "El Nombre y la Capacidad son Obligatorios.");
+                evt.consume();
+                return;
+            }
             try {
-                if (nombre.isEmpty() || capacidadTexto.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos",
-                            "El Nombre y la Capacidad son Obligatorios.");
-                    return;
-                }
                 int capacidad = Integer.parseInt(capacidadTexto);
                 if (capacidad <= 0) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Dato Inválido",
                             "La Capacidad debe ser un Número Positivo.");
-                    return;
+                    evt.consume();
                 }
+            } catch (NumberFormatException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
+                        "La Capacidad debe ser un Número Entero (ej. 500), Sin Letras ni Decimales.");
+                evt.consume();
+            }
+        });
+        Optional<ButtonType> resultado = dialog.showAndWait();
+        if (resultado.isPresent() && resultado.get() == btnGuardar) {
+            String nombre = txtNombre.getText().trim();
+            int capacidad = Integer.parseInt(txtCapacidad.getText().trim());
+            try {
                 this.servicioInventario.agregarInventario(nombre, capacidad);
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Inventario ha sido Creado Correctamente.");
                 cargarDatosTabla();
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "La Capacidad debe ser un Número Entero (ej. 500), Sin Letras ni Decimales.");
             } catch (Exception e) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
                         "NO se pudo Registrar el Inventario en la Base de Datos:\n" +
