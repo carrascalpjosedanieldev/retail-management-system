@@ -23,7 +23,7 @@
                 <ToggleGroup fx:id="grupoFiltroEstado" />
             </fx:define>
 
-            <ToggleButton fx:id="btnFiltroTodos" mnemonicParsing="false" selected="true" styleClass="segment-btn, segment-left" text="Todos" toggleGroup="$grupoFiltroEstado" />
+            <ToggleButton fx:id="btnFiltroTodos" mnemonicParsing="false" selected="true" styleClass="segment-btn, segment-left" text="Todos"/>
             <ToggleButton fx:id="btnFiltroDisponibles" mnemonicParsing="false" styleClass="segment-btn, segment-center" text="Disponibles" toggleGroup="$grupoFiltroEstado" />
             <ToggleButton fx:id="btnFiltroNoDisponibles" mnemonicParsing="false" styleClass="segment-btn, segment-right" text="No Disponibles" toggleGroup="$grupoFiltroEstado" />
         </HBox>
@@ -48,8 +48,9 @@
     </TableView>
 
     <HBox alignment="CENTER_LEFT" spacing="15.0">
-        <Button mnemonicParsing="false" onAction="#abrirSelectorNuevoProducto" styleClass="btn-accion, btn-nuevo" text="+ Nuevo Producto" />
-        <Region HBox.hgrow="ALWAYS" />
+        <Button mnemonicParsing="false" onAction="#abrirSelectorNuevoProducto" prefHeight="31.0" prefWidth="174.0" styleClass="btn-accion, btn-nuevo" text="+ Nuevo Producto" />
+      <Button mnemonicParsing="false" onAction="#abrirManejarStock" prefHeight="31.0" prefWidth="178.0" styleClass="btn-accion" text="Manejar Stock" />
+      <Button mnemonicParsing="false" onAction="#abrirMoverAOtroInventario" prefHeight="31.0" prefWidth="221.0" styleClass="btn-accion" text="Mover a otro Inventario" />
         <Button mnemonicParsing="false" onAction="#cambiarEstadoProducto" styleClass="btn-accion, btn-secundario" text="Cambiar Estado (Disp / No Disp)" />
     </HBox>
 </VBox>

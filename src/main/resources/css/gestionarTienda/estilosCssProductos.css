@@ -204,3 +204,78 @@
     -fx-border-width: 0px;
 }
 
+.toggle-stock {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+}
+
+.toggle-reponer {
+    -fx-background-radius: 6 0 0 6;
+    -fx-border-radius: 6 0 0 6;
+}
+.toggle-reponer:selected {
+    -fx-background-color: #10b981;
+    -fx-border-color: #047857;
+    -fx-text-fill: white;
+}
+
+.toggle-retirar {
+    -fx-background-radius: 0 6 6 0;
+    -fx-border-radius: 0 6 6 0;
+    -fx-border-width: 1 1 1 0;
+}
+.toggle-retirar:selected {
+    -fx-background-color: #ef4444;
+    -fx-border-color: #b91c1c;
+    -fx-text-fill: white;
+}
+
+.input-cantidad {
+    -fx-font-size: 16px;
+    -fx-alignment: center;
+    -fx-padding: 10px 15px;
+}
+
+.lbl-vista-previa {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2563eb;
+}
+
+.lbl-vista-previa-error {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ef4444;
+}
+
+.combo-box-personalizado {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e293b;
+    -fx-padding: 2px;
+}
+
+.combo-box-personalizado:focused {
+    -fx-border-color: #3b82f6;
+    -fx-border-width: 2px;
+}
+
+.combo-box-personalizado .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #334155;
+    -fx-padding: 8px 12px;
+}
+
+.combo-box-personalizado .list-cell:hover {
+    -fx-background-color: #e0f2fe;
+    -fx-text-fill: #0f172a;
+}
+

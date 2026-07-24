@@ -68,7 +68,7 @@ public class GestionPoliticasVencimientoControlador {
     }
 
     private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_POLITICAS_V);
         if (urlCss != null) {
             panel.getStylesheets().add(urlCss.toExternalForm());
         }

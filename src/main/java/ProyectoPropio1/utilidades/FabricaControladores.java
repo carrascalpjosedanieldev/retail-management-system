@@ -80,8 +80,10 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == TabGeneralProductosControlador.class){
             return new TabGeneralProductosControlador(
+                    FabricaServicios.obtenerServicioInventario(),
                     FabricaServicios.obtenerServicioProductos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOProducto()
+                    FabricaEnsambladores.obtenerEnsambladorDTOProducto(),
+                    FabricaEnsambladores.obtenerEnsambladorDTOInventario()
             );
         }
         if (claseControlador == TabPerecederosControlador.class){
