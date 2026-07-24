@@ -1,4 +1,4 @@
-package ProyectoPropio1.vista.controladores;
+package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dto.DatosTotalesProductoPerecederoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;

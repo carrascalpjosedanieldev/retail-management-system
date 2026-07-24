@@ -72,5 +72,15 @@ public class FabricaServicios {
         return servicioPoliticaVencimiento;
     }
 
+    private static ServicioConfiguraciones servicioConfiguraciones;
+
+    public static ServicioConfiguraciones obtenerServicioConfiguraciones(){
+        if (servicioConfiguraciones == null){
+            RepositorioConfiguracion repositorioConfiguracion = new RepositorioConfiguracionMySQL();
+            servicioConfiguraciones = new ServicioConfiguraciones(repositorioConfiguracion);
+        }
+        return servicioConfiguraciones;
+    }
+
 }
 

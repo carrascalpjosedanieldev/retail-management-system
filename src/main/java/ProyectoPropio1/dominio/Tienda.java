@@ -24,7 +24,7 @@ public class Tienda {
 
     private Tienda(String nombreTienda){
         if (nombreTienda==null || nombreTienda.isBlank()){
-            throw new IllegalArgumentException("Nombre de la Tienda Vacio");
+            throw new IllegalArgumentException("Nombre de la Tienda Vacío");
         }
         this.nombreTienda = nombreTienda;
     }
@@ -37,7 +37,7 @@ public class Tienda {
 
     public void cambiarNombreTienda(String nuevoNombre){
         if (nuevoNombre==null || nuevoNombre.isBlank()){
-            throw new IllegalArgumentException("Nombre de la Tienda Vacio");
+            throw new IllegalArgumentException("Nombre de la Tienda Vacío");
         }
         setNombreTienda(nuevoNombre);
     }

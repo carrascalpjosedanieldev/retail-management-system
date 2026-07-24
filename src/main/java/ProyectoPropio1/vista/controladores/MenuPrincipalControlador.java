@@ -1,5 +1,7 @@
 package ProyectoPropio1.vista.controladores;
 
+import ProyectoPropio1.servicios.aplicacion.ServicioConfiguraciones;
+import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.animation.KeyFrame;
@@ -18,6 +20,7 @@ import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class MenuPrincipalControlador {
 
@@ -25,6 +28,9 @@ public class MenuPrincipalControlador {
 
     @FXML public Button btnSalir;
     @FXML private Label lblReloj;
+    @FXML private Label lblNombreTienda;
+
+    private final ServicioConfiguraciones servicioConfiguraciones = FabricaServicios.obtenerServicioConfiguraciones();
 
     //MÉTODOS:
 
@@ -56,6 +62,7 @@ public class MenuPrincipalControlador {
     @FXML
     public void initialize() {
         iniciarReloj();
+        cargarNombreTienda();
     }
 
     private void iniciarReloj() {
@@ -68,6 +75,25 @@ public class MenuPrincipalControlador {
         );
         reloj.setCycleCount(Timeline.INDEFINITE);
         reloj.play();
+    }
+
+    private void cargarNombreTienda() {
+        CompletableFuture.supplyAsync(() -> {
+                    return this.servicioConfiguraciones.obtenerValorConfiguracion(RutasVista.NOMBRE_TIENDA_CLAVE);
+                }).thenAcceptAsync(nombreTienda -> {
+                    if (nombreTienda != null && !nombreTienda.isBlank()) {
+                        lblNombreTienda.setText(nombreTienda);
+                    } else {
+                        lblNombreTienda.setText("Mi Tienda");
+                    }
+                }, Platform::runLater)
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> {
+                        lblNombreTienda.setText("Tienda (Modo Offline)");
+                        System.err.println("Error al Cargar el Nombre de la Tienda: " + ex.getMessage());
+                    });
+                    return null;
+                });
     }
 
 

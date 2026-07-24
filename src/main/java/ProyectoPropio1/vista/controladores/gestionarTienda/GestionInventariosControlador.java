@@ -1,4 +1,4 @@
-package ProyectoPropio1.vista.controladores;
+package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dto.InventarioDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioInventario;
@@ -26,7 +26,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 

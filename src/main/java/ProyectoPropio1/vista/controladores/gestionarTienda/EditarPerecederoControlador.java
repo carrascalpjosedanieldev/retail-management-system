@@ -1,18 +1,20 @@
-package ProyectoPropio1.vista.controladores;
+package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dto.DatosTotalesProductoRopaDTO;
+import ProyectoPropio1.dto.DatosTotalesProductoPerecederoDTO;
 import ProyectoPropio1.dto.DescuentoDTO;
 import ProyectoPropio1.dto.ImpuestoDTO;
+import ProyectoPropio1.dto.PoliticaVencimientoDTO;
 import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
 import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
+import ProyectoPropio1.servicios.aplicacion.ServicioPoliticaVencimiento;
 import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
 import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
+import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOPoliticaVencimiento;
 import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.RutasVista;
 
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -22,28 +24,32 @@ import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class EditarRopaControlador {
+public class EditarPerecederoControlador {
 
     //ATRIBUTOS:
 
     @FXML private TextField txtCodigo;
     @FXML private TextField txtNombre;
-    @FXML private TextField txtTalla;
+    @FXML private TextField txtFechaVencimiento;
+    @FXML private ComboBox<PoliticaVencimientoDTO> cbPoliticaVencimiento;
     @FXML private TextField txtCompra;
     @FXML private TextField txtGanancia;
     @FXML private TextField txtStock;
     @FXML private ComboBox<ImpuestoDTO> cbImpuesto;
     @FXML private ComboBox<DescuentoDTO> cbDescuento;
 
-    private int idInventario;
+    private DatosTotalesProductoPerecederoDTO productoOriginal;
 
-    private DatosTotalesProductoRopaDTO productoOriginal;
+    private int idInventario;
 
     private final ServicioImpuestos servicioImpuesto = FabricaServicios.obtenerServicioImpuestos();
 
     private final ServicioDescuentos servicioDescuento = FabricaServicios.obtenerServicioDescuentos();
+
+    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento = FabricaServicios.obtenerServicioPoliticas();
 
     private final ServicioProductos servicioProductos = FabricaServicios.obtenerServicioProductos();
 
@@ -51,7 +57,7 @@ public class EditarRopaControlador {
 
     private final EnsambladorDTODescuento ensambladorDTODescuento = FabricaEnsambladores.obtenerEnsambladorDTODescuento();
 
-    //MÉTODOS:
+    private final EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento = FabricaEnsambladores.obtenerEnsambladorDTOPoliticaVencimiento();
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
@@ -60,7 +66,7 @@ public class EditarRopaControlador {
         alerta.setContentText(mensaje);
         DialogPane panelAlerta = alerta.getDialogPane();
         panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_ROPA);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_PERECEDERO);
         if (urlCss != null) {
             panelAlerta.getStylesheets().add(urlCss.toExternalForm());
         }
@@ -71,8 +77,8 @@ public class EditarRopaControlador {
     @FXML
     public void initialize() {
         configurarFiltrosTexto();
-        configurarVisualizacionCombos();
-        cargarDatosCombos();
+        configurarFormatoComboBoxes();
+        cargarListasDesplegables();
     }
 
     private void configurarFiltrosTexto() {
@@ -83,24 +89,7 @@ public class EditarRopaControlador {
                 change.getControlNewText().matches(regexDecimal) ? change : null));
     }
 
-    private void cargarDatosCombos() {
-        try {
-            List<ImpuestoDTO> listaImpuestos = this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                    this.servicioImpuesto.obtenerImpuestosActivos()
-            );
-            List<DescuentoDTO> listaDescuentos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                    this.servicioDescuento.obtenerDescuentosActivos()
-            );
-            cbImpuesto.setItems(FXCollections.observableArrayList(listaImpuestos));
-            cbDescuento.setItems(FXCollections.observableArrayList(listaDescuentos));
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
-                    "NO se pudieron Cargar las Listas de Impuestos o Descuentos.\n" +
-                            "Error:  " + e.getMessage());
-        }
-    }
-
-    private void configurarVisualizacionCombos() {
+    private void configurarFormatoComboBoxes() {
         cbImpuesto.setConverter(new StringConverter<>() {
             @Override public String toString(ImpuestoDTO i) {
                 return i == null ? "Seleccione..." : i.nombre() + " (" + i.porcentaje() + "%)";
@@ -113,18 +102,44 @@ public class EditarRopaControlador {
             }
             @Override public DescuentoDTO fromString(String s) { return null; }
         });
-
+        cbPoliticaVencimiento.setConverter(new StringConverter<>() {
+            @Override public String toString(PoliticaVencimientoDTO p) {
+                return p == null ? "Seleccione..." : p.nombrePolitica();
+            }
+            @Override public PoliticaVencimientoDTO fromString(String s) { return null; }
+        });
     }
 
-    public void cargarDatosProducto(DatosTotalesProductoRopaDTO producto, int idInventario) {
+    private void cargarListasDesplegables() {
+        try {
+            List<ImpuestoDTO> listaImpuestos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(servicioImpuesto.obtenerImpuestosActivos());
+            if (listaImpuestos != null) cbImpuesto.getItems().setAll(listaImpuestos);
+            List<DescuentoDTO> listaDescuentos = ensambladorDTODescuento.ensamblarDetalleDescuentos(servicioDescuento.obtenerDescuentosActivos());
+            if (listaDescuentos != null) cbDescuento.getItems().setAll(listaDescuentos);
+            List<PoliticaVencimientoDTO> listaPoliticas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas());
+            if (listaPoliticas != null) cbPoliticaVencimiento.getItems().setAll(listaPoliticas);
+        } catch (Exception e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
+                    "NO se Pudieron Cargar las Listas.\nError:  " + e.getMessage());
+        }
+    }
+
+    public void cargarDatosProducto(DatosTotalesProductoPerecederoDTO producto, int idInventario) {
         this.productoOriginal = producto;
         this.idInventario = idInventario;
         txtCodigo.setText(producto.codigo());
-        txtTalla.setText(producto.talla() != null ? producto.talla().name() : "Sin Talla");
         txtNombre.setText(producto.nombre());
         txtCompra.setText(producto.valorCompra() != null ? producto.valorCompra().toString() : "0");
         txtGanancia.setText(producto.porcentajeGanancia() != null ? producto.porcentajeGanancia().toString() : "0");
         txtStock.setText(String.valueOf(producto.stock()));
+        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        txtFechaVencimiento.setText(producto.fechaVencimiento() != null ? producto.fechaVencimiento().format(formatoFecha) : "Sin fecha");
+        if (producto.datosPoliticaVencimiento() != null) {
+            cbPoliticaVencimiento.getItems().stream()
+                    .filter(p -> p.idPoliticaVencimiento() == producto.datosPoliticaVencimiento().idPoliticaVencimiento())
+                    .findFirst()
+                    .ifPresent(cbPoliticaVencimiento.getSelectionModel()::select);
+        }
         if (producto.datosImpuesto() != null) {
             cbImpuesto.getItems().stream()
                     .filter(i -> i.idImpuesto() == producto.datosImpuesto().idImpuesto())
@@ -149,7 +164,7 @@ public class EditarRopaControlador {
         String nombreNuevo = txtNombre.getText().trim();
         if (nombreNuevo.isEmpty()) {
             mostrarAlerta(Alert.AlertType.WARNING, "Campos Incompletos",
-                    "El Nombre de la Prenda NO puede estar Vacío.");
+                    "El Nombre del Producto NO puede estar Vacío.");
             return;
         }
         BigDecimal valorCompra;
@@ -159,32 +174,34 @@ public class EditarRopaControlador {
             porcentajeGanancia = new BigDecimal(txtGanancia.getText().trim());
         } catch (NumberFormatException e) {
             mostrarAlerta(Alert.AlertType.WARNING, "Datos Inválidos",
-                    "Por favor, verifique que los campos de Valor de Compra, Ganancia y Stock contengan únicamente números válidos.");
+                    "Por favor, Verifique que los campos de Valor de Compra y Ganancia contengan únicamente Números Válidos.");
             return;
         }
         ImpuestoDTO impuestoSeleccionado = cbImpuesto.getValue();
         DescuentoDTO descuentoSeleccionado = cbDescuento.getValue();
-        if (impuestoSeleccionado == null || descuentoSeleccionado == null) {
+        PoliticaVencimientoDTO politicaSeleccionada = cbPoliticaVencimiento.getValue();
+        if (impuestoSeleccionado == null || descuentoSeleccionado == null || politicaSeleccionada == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
-                    "Debe seleccionar un Impuesto, un Descuento para el Producto.");
+                    "Debe seleccionar un Impuesto, un Descuento y una Política de Vencimiento para el producto.");
             return;
         }
         try {
-            servicioProductos.actualizarProductoRopaDeInventario(
+            servicioProductos.actualizarProductoPerecederoDeInventario(
                     this.idInventario,
                     this.productoOriginal.codigo(),
                     nombreNuevo,
                     valorCompra,
                     porcentajeGanancia,
                     impuestoSeleccionado.idImpuesto(),
-                    descuentoSeleccionado.idDescuento()
+                    descuentoSeleccionado.idDescuento(),
+                    politicaSeleccionada.idPoliticaVencimiento()
             );
             mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa",
-                    "La Prenda se ha Actualizado Correctamente.");
+                    "El Producto Perecedero se ha Actualizado Correctamente.");
             cerrarVentana();
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.ERROR, "Error al Actualizar",
-                    "NO se pudo Guardar la Información en la Base de Datos.\nDetalle: " + e.getMessage());
+                    "NO se pudo Guardar la Información en la Base de Datos.\nError:  " + e.getMessage());
         }
     }
 

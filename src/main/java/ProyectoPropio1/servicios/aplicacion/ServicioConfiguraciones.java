@@ -11,10 +11,25 @@ public class ServicioConfiguraciones {
         this.repositorioConfiguracion = repositorioConfiguracion;
     }
 
-    public void cambiarNombreTienda(String nombreNuevo, Tienda tienda){
-        String descripcion = this.repositorioConfiguracion.obtenerDescripcionConfiguracion("NombreProyectoPropioOriginal");
+    public String obtenerValorConfiguracion(String clave){
+        return this.repositorioConfiguracion.obtenerValorConfiguracion(clave);
+    }
+
+    public void actualizarValorConfiguracion(String clave, String valor){
+        this.repositorioConfiguracion.actualizarValorConfiguracion(clave, valor);
+    }
+
+    public String obtenerDescripcionConfiguracion(String clave){
+        return this.repositorioConfiguracion.obtenerDescripcionConfiguracion(clave);
+    }
+
+    public void actualizarDescripcionConfiguracion(String clave, String descripcion){
+        this.repositorioConfiguracion.actualizarDescripcionConfiguracion(clave, descripcion);
+    }
+
+    public void cambiarNombreYDescripcionTienda(String claveTienda, String nombreNuevo, Tienda tienda, String descripcion){
         tienda.cambiarNombreTienda(nombreNuevo);
-        this.repositorioConfiguracion.actualizarValorConfiguracion("NombreProyectoPropioOriginal", nombreNuevo, descripcion);
+        this.repositorioConfiguracion.actualizarValorYDescripcionConfiguracion(claveTienda, nombreNuevo, descripcion);
     }
 
 }

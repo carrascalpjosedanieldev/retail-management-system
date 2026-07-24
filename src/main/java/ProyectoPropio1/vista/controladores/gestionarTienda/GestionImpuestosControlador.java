@@ -1,14 +1,15 @@
-package ProyectoPropio1.vista.controladores;
+package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-
-import ProyectoPropio1.dto.DescuentoDTO;
-import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
+import ProyectoPropio1.dto.ImpuestoDTO;
+import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
+import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
 import ProyectoPropio1.utilidades.FabricaEnsambladores;
 import ProyectoPropio1.utilidades.FabricaServicios;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,40 +17,36 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableCell;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import java.math.BigDecimal;
 import java.util.stream.Stream;
 
-public class GestionDescuentosControlador {
+public class GestionImpuestosControlador {
 
     //ATRIBUTOS:
 
-    @FXML private TableView<DescuentoDTO> tablaDescuentos;
-    @FXML private TableColumn<DescuentoDTO, Integer> colId;
-    @FXML private TableColumn<DescuentoDTO, String> colNombre;
-    @FXML private TableColumn<DescuentoDTO, BigDecimal> colPorcentaje;
-    @FXML private TableColumn<DescuentoDTO, String> colEstado;
+    @FXML private TableView<ImpuestoDTO> tablaImpuestos;
+    @FXML private TableColumn<ImpuestoDTO, Integer> colId;
+    @FXML private TableColumn<ImpuestoDTO, String > colNombre;
+    @FXML private TableColumn<ImpuestoDTO, BigDecimal> colPorcentaje;
+    @FXML private TableColumn<ImpuestoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
-    private final ServicioDescuentos servicioDescuentos = FabricaServicios.obtenerServicioDescuentos();
+    private final ServicioImpuestos servicioImpuestos = FabricaServicios.obtenerServicioImpuestos();
 
-    private final EnsambladorDTODescuento ensambladorDTODescuento = FabricaEnsambladores.obtenerEnsambladorDTODescuento();
+    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto = FabricaEnsambladores.obtenerEnsambladorDTOImpuesto();
 
-    private final ObservableList<DescuentoDTO> listaObservableDescuentos = FXCollections.observableArrayList();
+    private final ObservableList<ImpuestoDTO> listaObservableImpuestos = FXCollections.observableArrayList();
 
     //MÉTODOS:
 
@@ -65,7 +62,7 @@ public class GestionDescuentosControlador {
     }
 
     private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS);
         if (urlCss != null) {
             panel.getStylesheets().add(urlCss.toExternalForm());
         }
@@ -79,12 +76,12 @@ public class GestionDescuentosControlador {
         cargarDatosTabla();
     }
 
-    private void configurarColumnasTabla(){
-        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idDescuento()));
+    private void configurarColumnasTabla() {
+        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idImpuesto()));
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
         colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
-        colEstado.setCellFactory(columna -> new TableCell<DescuentoDTO, String>() {
+        colEstado.setCellFactory(columna -> new TableCell<>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
@@ -100,35 +97,34 @@ public class GestionDescuentosControlador {
         });
     }
 
-    private void configurarFiltroBusqueda(){
-        FilteredList<DescuentoDTO> listaFiltrada = new FilteredList<>(listaObservableDescuentos, b -> true);
+    private void configurarFiltroBusqueda() {
+        FilteredList<ImpuestoDTO> listaFiltrada = new FilteredList<>(listaObservableImpuestos, b -> true);
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
-            listaFiltrada.setPredicate(descuento -> {
-                if (valorNuevo == null || valorNuevo.isBlank()) {
-                    return true;
-                }
-                String filtro = valorNuevo.toLowerCase().trim();
-                return String.valueOf(descuento.idDescuento()).contains(filtro) ||
-                        descuento.nombre().toLowerCase().contains(filtro);
+            listaFiltrada.setPredicate(impuesto -> {
+                if (valorNuevo == null || valorNuevo.isBlank()) return true;
+                String filtro = valorNuevo.toLowerCase();
+                return String.valueOf(impuesto.idImpuesto()).contains(filtro) ||
+                        impuesto.nombre().toLowerCase().contains(filtro);
             });
         });
-        SortedList<DescuentoDTO> listaOrdenada = new SortedList<>(listaFiltrada);
-        listaOrdenada.comparatorProperty().bind(tablaDescuentos.comparatorProperty());
-        tablaDescuentos.setItems(listaOrdenada);
+        SortedList<ImpuestoDTO> listaOrdenada = new SortedList<>(listaFiltrada);
+        listaOrdenada.comparatorProperty().bind(tablaImpuestos.comparatorProperty());
+        tablaImpuestos.setItems(listaOrdenada);
     }
 
     private void cargarDatosTabla() {
-        List<DescuentoDTO> activos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                this.servicioDescuentos.obtenerDescuentosActivos()
+        List<ImpuestoDTO> activos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+                servicioImpuestos.obtenerImpuestosActivos()
         );
-        List<DescuentoDTO> inactivos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                this.servicioDescuentos.obtenerDescuentosInactivos()
+        List<ImpuestoDTO> inactivos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+                servicioImpuestos.obtenerImpuestosInactivos()
         );
-        List<DescuentoDTO> todosLosDescuentos = Stream.concat(
+        List<ImpuestoDTO> todosLosImpuestos = Stream.concat(
                 activos != null ? activos.stream() : Stream.empty(),
                 inactivos != null ? inactivos.stream() : Stream.empty()
         ).toList();
-        listaObservableDescuentos.setAll(todosLosDescuentos);
+
+        listaObservableImpuestos.setAll(todosLosImpuestos);
     }
 
 
@@ -143,11 +139,15 @@ public class GestionDescuentosControlador {
         return dialog;
     }
 
-    private GridPane crearGridPane(){
+    private GridPane crearGridPane(TextField campoNombre, TextField campoPorcentaje){
         GridPane grid = new GridPane();
         grid.setHgap(15);
         grid.setVgap(15);
         grid.setPadding(new Insets(20, 20, 20, 20));
+        grid.add(new Label("Nombre:"), 0, 0);
+        grid.add(campoNombre, 1, 0);
+        grid.add(new Label("Porcentaje (%):"), 0, 1);
+        grid.add(campoPorcentaje, 1, 1);
         return grid;
     }
 
@@ -161,13 +161,13 @@ public class GestionDescuentosControlador {
             String porcentajeTexto = campoPorcentaje.getText().trim();
             if (nombre.isEmpty()) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Nombre del Descuento NO puede estar Vacío.");
+                        "El Nombre del Impuesto NO puede estar Vacío.");
                 event.consume();
                 return;
             }
             if (porcentajeTexto.isEmpty()) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Porcentaje del Descuento NO puede estar Vacío");
+                        "El Porcentaje del Impuesto NO puede estar Vacío");
                 event.consume();
                 return;
             }
@@ -188,24 +188,20 @@ public class GestionDescuentosControlador {
     }
 
     private void abrirFormularioEdicion(){
-        DescuentoDTO seleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
+        ImpuestoDTO seleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Descuento de la Tabla para Modificarlo.");
+                    "Por favor, Selecciona un Impuesto de la Tabla para Modificarlo.");
             return;
         }
-        Dialog<ButtonType> dialog = crearDialogo("Modificar Descuento",
-                "Editando el descuento: " + seleccionado.nombre(), "Actualizar");
+        Dialog<ButtonType> dialog = crearDialogo("Modificar Impuesto",
+                "Editando el impuesto: " + seleccionado.nombre(), "Actualizar");
         TextField txtNombre = new TextField();
         txtNombre.setPrefWidth(250);
         TextField txtPorcentaje = new TextField();
         txtNombre.setText(seleccionado.nombre());
         txtPorcentaje.setText(seleccionado.porcentaje().toString());
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(txtPorcentaje, 1, 1);
+        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
         dialog.getDialogPane().setContent(grid);
         validarCampos(dialog, txtNombre, txtPorcentaje);
         dialog.showAndWait().ifPresent(resultado -> {
@@ -214,16 +210,17 @@ public class GestionDescuentosControlador {
                 String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
                 try {
                     BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                    this.servicioDescuentos.actualizarDescuento(seleccionado.idDescuento(), nuevoNombre, nuevoPorcentaje);
+                    this.servicioImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El descuento se ha actualizado correctamente.");
+                            "El Impuesto se ha Actualizado Correctamente.");
                     cargarDatosTabla();
                 } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Descuento",
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Impuesto",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
                 } catch (Exception e) {
                     mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Actualizar el Descuento en la Base de Datos.");
+                            "NO se pudo Actualizar el Impuesto en la Base de Datos.\n" +
+                                    "Error:  " + e.getMessage());
                 }
             }
         });
@@ -236,20 +233,16 @@ public class GestionDescuentosControlador {
     }
 
     private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = crearDialogo("Registrar Nuevo Descuento",
-                "Ingresa los detalles del nuevo descuento.", "Guardar");
+        Dialog<ButtonType> dialog = crearDialogo("Registrar Nuevo Impuesto",
+                "Ingresa los detalles del nuevo impuesto.", "Guardar");
         TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Ej. Navidad 2024");
+        txtNombre.setPromptText("Ej. IVA 2024");
         txtNombre.setPrefWidth(250);
         TextField txtPorcentaje = new TextField();
         txtPorcentaje.setPromptText("Ej. 15.5");
-        CheckBox chkActivo = new CheckBox("¿Descuento Activo?");
+        CheckBox chkActivo = new CheckBox("¿Impuesto Activo?");
         chkActivo.setSelected(true);
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(txtPorcentaje, 1, 1);
+        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
         grid.add(chkActivo, 1, 2);
         dialog.getDialogPane().setContent(grid);
         validarCampos(dialog, txtNombre, txtPorcentaje);
@@ -260,17 +253,16 @@ public class GestionDescuentosControlador {
                 boolean activo = chkActivo.isSelected();
                 try {
                     BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                    this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
+                    this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El descuento se ha guardado correctamente.");
+                            "El Impuesto se ha Guardado Correctamente.");
                     cargarDatosTabla();
                 } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Descuento",
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Impuesto",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
                 } catch (Exception e) {
                     mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "No se pudo guardar el descuento en la base de datos\n" +
-                                    "Error:  " + e.getMessage());
+                            "No se pudo Registrar el Impuesto en la Base de Datos.");
                 }
             }
         });
@@ -278,40 +270,43 @@ public class GestionDescuentosControlador {
 
 
     @FXML
-    void cambiarEstadoDescuento(ActionEvent event) {
-        cambiarEstadoDescuento();
+    void cambiarEstadoImpuesto(ActionEvent event) {
+        cambiarEstadoImpuesto();
     }
 
-    private void cambiarEstadoDescuento(){
-        DescuentoDTO descuentoSeleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
-        if (descuentoSeleccionado == null) {
+    private void cambiarEstadoImpuesto(){
+        ImpuestoDTO impuestoSeleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
+        if (impuestoSeleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, selecciona un Descuento de la Tabla para cambiar su Estado.");
+                    "Por favor, Selecciona un Impuesto de la Tabla para Cambiar su Estado.");
             return;
         }
+        boolean esActivo = impuestoSeleccionado.estado().equalsIgnoreCase("Activo");
+        String accion = esActivo ? "Desactivar" : "Activar";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Cambio de Estado");
+        confirmacion.setTitle("Confirmar cambio de estado");
         confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás Seguro de que Deseas Cambiar el Estado del Descuento -" + descuentoSeleccionado.nombre() + "-?");
+        confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " el Impuesto -" + impuestoSeleccionado.nombre() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
+        panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
         aplicarCSS(panelConfirmacion);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
-                this.servicioDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento());
+                this.servicioImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();
             } catch (Exception e) {
                 mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                        "NO se pudo cambiar el Estado: " + e.getMessage());
+                        "NO se Pudo Cambiar el Estado: " + e.getMessage());
             }
         }
     }
 
 
     @FXML
-    private void volverAlPanel(ActionEvent event) {
+    void volverAlPanel(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(RutasVista.GESTIONAR_TIENDA_VIEW));
             Parent root = loader.load();
@@ -328,5 +323,5 @@ public class GestionDescuentosControlador {
     }
 
 
-} //==================================================================================================================//
+}//===================================================================================================================//
 
