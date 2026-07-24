@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="632.0" prefWidth="695.0" spacing="20.0" style="-fx-padding: 30;" stylesheets="@../css/estilosCssCrearProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.CrearProductoControlador">
+<VBox prefHeight="632.0" prefWidth="695.0" spacing="20.0" style="-fx-padding: 30;" stylesheets="@../../css/gestionarTienda/estilosCssCrearProductos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.CrearProductoControlador">
     <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" styleClass="titulo-ventana" text="Crear Nuevo Producto" />
 
     <HBox spacing="20.0">
