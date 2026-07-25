@@ -23,7 +23,7 @@
                 <ToggleGroup fx:id="grupoFiltroEstado" />
             </fx:define>
 
-            <ToggleButton fx:id="btnFiltroTodos" mnemonicParsing="false" selected="true" styleClass="segment-btn, segment-left" text="Todos"/>
+            <ToggleButton fx:id="btnFiltroTodos" mnemonicParsing="false" selected="true" styleClass="segment-btn, segment-left" text="Todos" toggleGroup="$grupoFiltroEstado" />
             <ToggleButton fx:id="btnFiltroDisponibles" mnemonicParsing="false" styleClass="segment-btn, segment-center" text="Disponibles" toggleGroup="$grupoFiltroEstado" />
             <ToggleButton fx:id="btnFiltroNoDisponibles" mnemonicParsing="false" styleClass="segment-btn, segment-right" text="No Disponibles" toggleGroup="$grupoFiltroEstado" />
         </HBox>
@@ -54,3 +54,4 @@
         <Button mnemonicParsing="false" onAction="#cambiarEstadoProducto" styleClass="btn-accion, btn-secundario" text="Cambiar Estado (Disp / No Disp)" />
     </HBox>
 </VBox>
+

@@ -1,10 +1,10 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dto.InventarioDTO;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioInventario;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOInventario;
-import ProyectoPropio1.utilidades.CargadorVistas;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.aplicacion.dto.InventarioDTO;
+import ProyectoPropio1.aplicacion.servicios.ServicioInventario;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTOInventario;
+import ProyectoPropio1.vista.utilidades.CargadorVistas;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

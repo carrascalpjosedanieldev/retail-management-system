@@ -1,16 +1,16 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dto.InventarioDTO;
-import ProyectoPropio1.dto.ProductoResumenDTO;
-import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
-import ProyectoPropio1.servicios.aplicacion.orquestadores.OrquestadorProductoInventario;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioInventario;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioProductos;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOInventario;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOProducto;
-import ProyectoPropio1.utilidades.CargadorVistas;
-import ProyectoPropio1.utilidades.FormateadorNumeros;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.aplicacion.dto.InventarioDTO;
+import ProyectoPropio1.aplicacion.dto.ProductoResumenDTO;
+import ProyectoPropio1.dominio.excepciones.CapacidadInventarioExcedidaException;
+import ProyectoPropio1.aplicacion.orquestadores.OrquestadorProductoInventario;
+import ProyectoPropio1.aplicacion.servicios.ServicioInventario;
+import ProyectoPropio1.aplicacion.servicios.ServicioProductos;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTOInventario;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTOProducto;
+import ProyectoPropio1.vista.utilidades.CargadorVistas;
+import ProyectoPropio1.vista.utilidades.FormateadorNumeros;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

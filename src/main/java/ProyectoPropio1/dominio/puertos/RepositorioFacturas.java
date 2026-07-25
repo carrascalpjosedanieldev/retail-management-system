@@ -1,8 +1,8 @@
 package ProyectoPropio1.dominio.puertos;
 
-import ProyectoPropio1.dominio.Factura;
-import ProyectoPropio1.dominio.ItemVendido;
-import ProyectoPropio1.dominio.ReporteRecaudo;
+import ProyectoPropio1.dominio.entidades.Factura;
+import ProyectoPropio1.dominio.entidades.ItemVendido;
+import ProyectoPropio1.dominio.entidades.ReporteRecaudo;
 
 import java.time.LocalDate;
 import java.util.List;

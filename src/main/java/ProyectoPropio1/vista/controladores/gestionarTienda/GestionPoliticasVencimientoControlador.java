@@ -1,11 +1,11 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dto.PoliticaVencimientoDTO;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioPoliticaVencimiento;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
-import ProyectoPropio1.utilidades.CargadorVistas;
-import ProyectoPropio1.utilidades.FormateadorNumeros;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.aplicacion.dto.PoliticaVencimientoDTO;
+import ProyectoPropio1.aplicacion.servicios.ServicioPoliticaVencimiento;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
+import ProyectoPropio1.vista.utilidades.CargadorVistas;
+import ProyectoPropio1.vista.utilidades.FormateadorNumeros;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

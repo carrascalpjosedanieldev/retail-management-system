@@ -1,8 +1,7 @@
 package ProyectoPropio1.dominio.puertos;
 
-import ProyectoPropio1.dominio.Producto;
-import ProyectoPropio1.dominio.ProductoPerecedero;
-import ProyectoPropio1.dominio.ProductoRopa;
+import ProyectoPropio1.dominio.entidades.Producto;
+import ProyectoPropio1.dominio.entidades.ProductoPerecedero;
 
 import java.util.List;
 

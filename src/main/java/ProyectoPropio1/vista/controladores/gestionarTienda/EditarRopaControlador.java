@@ -1,14 +1,14 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dto.DatosTotalesProductoRopaDTO;
-import ProyectoPropio1.dto.DescuentoDTO;
-import ProyectoPropio1.dto.ImpuestoDTO;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioDescuentos;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioImpuestos;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioProductos;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTODescuento;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOImpuesto;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.aplicacion.dto.DatosTotalesProductoRopaDTO;
+import ProyectoPropio1.aplicacion.dto.DescuentoDTO;
+import ProyectoPropio1.aplicacion.dto.ImpuestoDTO;
+import ProyectoPropio1.aplicacion.servicios.ServicioDescuentos;
+import ProyectoPropio1.aplicacion.servicios.ServicioImpuestos;
+import ProyectoPropio1.aplicacion.servicios.ServicioProductos;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTODescuento;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTOImpuesto;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;

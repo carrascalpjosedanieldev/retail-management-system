@@ -1,11 +1,11 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dto.DescuentoDTO;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioDescuentos;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTODescuento;
-import ProyectoPropio1.utilidades.CargadorVistas;
-import ProyectoPropio1.utilidades.FormateadorNumeros;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.aplicacion.dto.DescuentoDTO;
+import ProyectoPropio1.aplicacion.servicios.ServicioDescuentos;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTODescuento;
+import ProyectoPropio1.vista.utilidades.CargadorVistas;
+import ProyectoPropio1.vista.utilidades.FormateadorNumeros;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

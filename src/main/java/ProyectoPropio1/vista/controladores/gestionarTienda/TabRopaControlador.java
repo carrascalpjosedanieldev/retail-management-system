@@ -1,14 +1,14 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dominio.enums.Talla;
-import ProyectoPropio1.dto.DatosTotalesProductoRopaDTO;
-import ProyectoPropio1.dto.DescuentoDTO;
-import ProyectoPropio1.dto.ImpuestoDTO;
-import ProyectoPropio1.servicios.aplicacion.servicios.ServicioProductos;
-import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOProducto;
-import ProyectoPropio1.utilidades.CargadorVistas;
-import ProyectoPropio1.utilidades.FormateadorNumeros;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.aplicacion.dto.DatosTotalesProductoRopaDTO;
+import ProyectoPropio1.aplicacion.dto.DescuentoDTO;
+import ProyectoPropio1.aplicacion.dto.ImpuestoDTO;
+import ProyectoPropio1.aplicacion.servicios.ServicioProductos;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTOProducto;
+import ProyectoPropio1.vista.utilidades.CargadorVistas;
+import ProyectoPropio1.vista.utilidades.FormateadorNumeros;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;

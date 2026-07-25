@@ -1,6 +1,6 @@
 package ProyectoPropio1.dominio.puertos;
 
-import ProyectoPropio1.dominio.Servicio;
+import ProyectoPropio1.dominio.entidades.Servicio;
 
 import java.util.List;
 

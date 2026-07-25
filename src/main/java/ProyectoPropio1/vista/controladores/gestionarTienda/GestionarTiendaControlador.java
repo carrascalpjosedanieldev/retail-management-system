@@ -1,7 +1,7 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.utilidades.CargadorVistas;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.vista.utilidades.CargadorVistas;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

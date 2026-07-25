@@ -1,16 +1,18 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
-import ProyectoPropio1.dominio.Producto;
+import ProyectoPropio1.aplicacion.servicios.ServicioDescuentos;
+import ProyectoPropio1.aplicacion.servicios.ServicioImpuestos;
+import ProyectoPropio1.aplicacion.servicios.ServicioPoliticaVencimiento;
+import ProyectoPropio1.dominio.entidades.Producto;
 import ProyectoPropio1.dominio.enums.Talla;
 import ProyectoPropio1.dominio.enums.TipoProducto;
-import ProyectoPropio1.dto.DescuentoDTO;
-import ProyectoPropio1.dto.ImpuestoDTO;
-import ProyectoPropio1.dto.PoliticaVencimientoDTO;
-import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
-import ProyectoPropio1.servicios.aplicacion.fabricas.FabricaProductos;
-import ProyectoPropio1.servicios.aplicacion.orquestadores.OrquestadorProductoInventario;
-import ProyectoPropio1.servicios.aplicacion.servicios.*;
-import ProyectoPropio1.utilidades.RutasVista;
+import ProyectoPropio1.aplicacion.dto.DescuentoDTO;
+import ProyectoPropio1.aplicacion.dto.ImpuestoDTO;
+import ProyectoPropio1.aplicacion.dto.PoliticaVencimientoDTO;
+import ProyectoPropio1.dominio.excepciones.CapacidadInventarioExcedidaException;
+import ProyectoPropio1.aplicacion.fabricas.FabricaProductos;
+import ProyectoPropio1.aplicacion.orquestadores.OrquestadorProductoInventario;
+import ProyectoPropio1.vista.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;

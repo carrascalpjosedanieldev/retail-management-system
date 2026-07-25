@@ -1,6 +1,6 @@
 package ProyectoPropio1.dominio.puertos;
 
-import ProyectoPropio1.dominio.PoliticaVencimiento;
+import ProyectoPropio1.dominio.entidades.PoliticaVencimiento;
 
 import java.util.List;
 
