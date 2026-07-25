@@ -1,5 +1,6 @@
 package ProyectoPropio1.utilidades;
 
+import ProyectoPropio1.servicios.aplicacion.orquestadores.OrquestadorProductoInventario;
 import ProyectoPropio1.vista.controladores.MenuPrincipalControlador;
 import ProyectoPropio1.vista.controladores.gestionarTienda.*;
 
@@ -19,8 +20,10 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     FabricaServicios.obtenerServicioImpuestos(),
                     FabricaServicios.obtenerServicioDescuentos(),
                     FabricaServicios.obtenerServicioPoliticas(),
-                    FabricaServicios.obtenerServicioProductos(),
-                    FabricaServicios.obtenerServicioInventario()
+                    new OrquestadorProductoInventario(
+                            FabricaServicios.obtenerServicioProductos(),
+                            FabricaServicios.obtenerServicioInventario()
+                    )
             );
         }
         if (claseControlador == EditarPerecederoControlador.class){
@@ -80,8 +83,8 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == TabGeneralProductosControlador.class){
             return new TabGeneralProductosControlador(
-                    FabricaServicios.obtenerServicioInventario(),
                     FabricaServicios.obtenerServicioProductos(),
+                    FabricaServicios.obtenerServicioInventario(),
                     FabricaEnsambladores.obtenerEnsambladorDTOProducto(),
                     FabricaEnsambladores.obtenerEnsambladorDTOInventario()
             );

@@ -8,6 +8,7 @@ import ProyectoPropio1.dto.ImpuestoDTO;
 import ProyectoPropio1.dto.PoliticaVencimientoDTO;
 import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
 import ProyectoPropio1.servicios.aplicacion.fabricas.FabricaProductos;
+import ProyectoPropio1.servicios.aplicacion.orquestadores.OrquestadorProductoInventario;
 import ProyectoPropio1.servicios.aplicacion.servicios.*;
 import ProyectoPropio1.utilidades.RutasVista;
 
@@ -49,23 +50,22 @@ public class CrearProductoControlador {
     private final ServicioImpuestos servicioImpuestos;
     private final ServicioDescuentos servicioDescuentos;
     private final ServicioPoliticaVencimiento servicioPolitica;
-    private final ServicioProductos servicioProductos;
-    private final ServicioInventario servicioInventario;
 
     private final FabricaProductos fabricaProductos;
+
+    private final OrquestadorProductoInventario orquestadorProductoInventario;
 
     //CONSTRUCTOR:
 
     public CrearProductoControlador(
             ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos,
-            ServicioPoliticaVencimiento servicioPolitica, ServicioProductos servicioProductos,
-            ServicioInventario servicioInventario) {
+            ServicioPoliticaVencimiento servicioPolitica, OrquestadorProductoInventario orquestadorProductoInventario
+    ) {
         this.servicioImpuestos = servicioImpuestos;
         this.servicioDescuentos = servicioDescuentos;
         this.servicioPolitica = servicioPolitica;
-        this.servicioProductos = servicioProductos;
-        this.servicioInventario = servicioInventario;
         this.fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPolitica);
+        this.orquestadorProductoInventario = orquestadorProductoInventario;
     }
 
     //MÉTODOS:
@@ -217,9 +217,12 @@ public class CrearProductoControlador {
                         impuestoSel.idImpuesto(), descuentoSel.idDescuento(),
                         fechaVenc, politicaSel.idPoliticaVencimiento(), LocalDate.now()
                 );
+            } else {
+                mostrarAlerta(Alert.AlertType.ERROR, "Tipo de Producto NO Identificado",
+                        "Tipo de Producto Invalido");
+                return;
             }
-            this.servicioInventario.verificarEspacioDisponible(this.idInventario, stock);
-            this.servicioProductos.registrarProducto(this.idInventario, producto);
+            this.orquestadorProductoInventario.validarEspacioInventarioYGuardarProducto(this.idInventario, producto);
             mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                     "Producto Creado Correctamente.");
             cerrarVentana();

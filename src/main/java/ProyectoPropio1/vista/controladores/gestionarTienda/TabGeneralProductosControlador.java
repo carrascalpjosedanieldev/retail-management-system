@@ -3,6 +3,7 @@ package ProyectoPropio1.vista.controladores.gestionarTienda;
 import ProyectoPropio1.dto.InventarioDTO;
 import ProyectoPropio1.dto.ProductoResumenDTO;
 import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
+import ProyectoPropio1.servicios.aplicacion.orquestadores.OrquestadorProductoInventario;
 import ProyectoPropio1.servicios.aplicacion.servicios.ServicioInventario;
 import ProyectoPropio1.servicios.aplicacion.servicios.ServicioProductos;
 import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOInventario;
@@ -58,11 +59,13 @@ public class TabGeneralProductosControlador {
 
     private int idInventario;
 
-    private final ServicioInventario servicioInventario;
     private final ServicioProductos servicioProductos;
+    private final ServicioInventario servicioInventario;
 
     private final EnsambladorDTOProducto ensambladorDTOProducto;
     private final EnsambladorDTOInventario ensambladorDTOInventario;
+
+    private final OrquestadorProductoInventario orquestadorProductoInventario;
 
     private final ObservableList<ProductoResumenDTO> listaObservable = FXCollections.observableArrayList();
 
@@ -71,13 +74,14 @@ public class TabGeneralProductosControlador {
     //CONSTRUCTOR:
 
     public TabGeneralProductosControlador(
-            ServicioInventario servicioInventario, ServicioProductos servicioProductos,
+            ServicioProductos servicioProductos, ServicioInventario servicioInventario,
             EnsambladorDTOProducto ensambladorDTOProducto, EnsambladorDTOInventario ensambladorDTOInventario
     ) {
-        this.servicioInventario = servicioInventario;
         this.servicioProductos = servicioProductos;
+        this.servicioInventario = servicioInventario;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
         this.ensambladorDTOInventario = ensambladorDTOInventario;
+        this.orquestadorProductoInventario = new OrquestadorProductoInventario(servicioProductos, servicioInventario);
     }
 
     //MÉTODOS:
@@ -299,10 +303,10 @@ public class TabGeneralProductosControlador {
 
     @FXML
     public void abrirManejarStock(ActionEvent event) {
-        abrirManejarStock();
+        manejarStock();
     }
 
-    private void abrirManejarStock(){
+    private void manejarStock(){
         ProductoResumenDTO productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
@@ -398,17 +402,16 @@ public class TabGeneralProductosControlador {
         }
         dialog.showAndWait().ifPresent(resultado -> {
             if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                int cantidadFinal = Integer.parseInt(txtCantidad.getText().trim());
+                int cantidadAManejar = Integer.parseInt(txtCantidad.getText().trim());
                 boolean esRepocision = btnReponer.isSelected();
                 try {
                     if (esRepocision) {
-                        this.servicioInventario.verificarEspacioDisponible(this.idInventario, cantidadFinal);
-                        this.servicioProductos.aumentarStockDeProductoDeInventario(
-                                this.idInventario, productoSeleccionado.codigoProducto(), cantidadFinal
+                        this.orquestadorProductoInventario.validarEspacioInventarioYAumentarStockProducto(
+                                this.idInventario, cantidadAManejar, productoSeleccionado.codigoProducto()
                         );
                     } else {
                         this.servicioProductos.reducirStockDeProductoDeInventario(
-                                this.idInventario, productoSeleccionado.codigoProducto(), cantidadFinal);
+                                this.idInventario, productoSeleccionado.codigoProducto(), cantidadAManejar);
                     }
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Stock se ha Actualizado Correctamente.");
@@ -428,6 +431,10 @@ public class TabGeneralProductosControlador {
 
     @FXML
     public void abrirMoverAOtroInventario(ActionEvent event) {
+        moverAOtroInventario();
+    }
+
+    private void moverAOtroInventario(){
         ProductoResumenDTO productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Atención",
@@ -441,12 +448,11 @@ public class TabGeneralProductosControlador {
         }
         dialog.setTitle("Mover Producto de Inventario");
         dialog.setHeaderText("Mover: " + productoSeleccionado.nombre());
-        Label lblInfo = new Label("Se moverá la referencia completa y sus "
-                + productoSeleccionado.stock() + " unidades disponibles.");
+        Label lblInfo = new Label("Se moverá la referencia completa y sus " + productoSeleccionado.stock() + " unidades disponibles.");
         lblInfo.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-        Label lblDestino = new Label("Seleccione el Inventario de destino:");
+        Label lblDestino = new Label("Seleccione el Inventario de Destino:");
         ComboBox<InventarioDTO> comboInventarios = new ComboBox<>();
-        comboInventarios.setPromptText("Elegir inventario...");
+        comboInventarios.setPromptText("Elegir Inventario...");
         comboInventarios.getStyleClass().add("combo-box-personalizado");
         comboInventarios.setPrefWidth(250);
         try {
@@ -489,14 +495,12 @@ public class TabGeneralProductosControlador {
             if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                 InventarioDTO inventarioDestino = comboInventarios.getValue();
                 try {
-                    this.servicioInventario.verificarEspacioDisponible(
-                            inventarioDestino.idInventario(), productoSeleccionado.stock()
-                    );
-                    this.servicioProductos.moverProductoAInventario(
-                            this.idInventario, inventarioDestino.idInventario(), productoSeleccionado.codigoProducto()
+                    this.orquestadorProductoInventario.validarEspacioInventarioYMoverProducto(
+                            this.idInventario, inventarioDestino.idInventario(),
+                            productoSeleccionado.codigoProducto(), productoSeleccionado.stock()
                     );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Producto ha sido Movido Exitosamente al Inventario: " + inventarioDestino.nombre()); // Ajusta según tu DTO
+                            "El Producto ha sido Movido Exitosamente al Inventario: " + inventarioDestino.nombre());
                     cargarDatosTabla();
                 } catch (CapacidadInventarioExcedidaException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida",
