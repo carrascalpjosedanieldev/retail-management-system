@@ -1,4 +1,4 @@
-package ProyectoPropio1.servicios.ensambladores;
+package ProyectoPropio1.servicios.aplicacion.ensambladores;
 
 import ProyectoPropio1.dominio.Producto;
 import ProyectoPropio1.dominio.ProductoPerecedero;

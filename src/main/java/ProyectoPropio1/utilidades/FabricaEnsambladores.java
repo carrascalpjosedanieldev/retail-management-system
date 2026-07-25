@@ -1,6 +1,6 @@
 package ProyectoPropio1.utilidades;
 
-import ProyectoPropio1.servicios.ensambladores.*;
+import ProyectoPropio1.servicios.aplicacion.ensambladores.*;
 
 public class FabricaEnsambladores {
 

@@ -1,4 +1,4 @@
-package ProyectoPropio1.servicios.aplicacion;
+package ProyectoPropio1.servicios.aplicacion.servicios;
 
 import ProyectoPropio1.dominio.*;
 import ProyectoPropio1.excepciones.CarritoVacioException;

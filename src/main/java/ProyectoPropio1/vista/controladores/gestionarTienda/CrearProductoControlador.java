@@ -7,7 +7,8 @@ import ProyectoPropio1.dto.DescuentoDTO;
 import ProyectoPropio1.dto.ImpuestoDTO;
 import ProyectoPropio1.dto.PoliticaVencimientoDTO;
 import ProyectoPropio1.excepciones.CapacidadInventarioExcedidaException;
-import ProyectoPropio1.servicios.aplicacion.*;
+import ProyectoPropio1.servicios.aplicacion.fabricas.FabricaProductos;
+import ProyectoPropio1.servicios.aplicacion.servicios.*;
 import ProyectoPropio1.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;

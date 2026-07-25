@@ -2,7 +2,7 @@ package ProyectoPropio1.utilidades;
 
 import ProyectoPropio1.dominio.puertos.*;
 import ProyectoPropio1.infraestructura.*;
-import ProyectoPropio1.servicios.aplicacion.*;
+import ProyectoPropio1.servicios.aplicacion.servicios.*;
 
 public class FabricaServicios {
 

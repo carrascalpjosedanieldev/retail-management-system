@@ -1,8 +1,8 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dto.DescuentoDTO;
-import ProyectoPropio1.servicios.aplicacion.ServicioDescuentos;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTODescuento;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioDescuentos;
+import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTODescuento;
 import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;

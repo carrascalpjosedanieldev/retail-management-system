@@ -1,4 +1,4 @@
-package ProyectoPropio1.servicios.ensambladores;
+package ProyectoPropio1.servicios.aplicacion.ensambladores;
 
 import ProyectoPropio1.dominio.Descuento;
 import ProyectoPropio1.dto.DescuentoDTO;

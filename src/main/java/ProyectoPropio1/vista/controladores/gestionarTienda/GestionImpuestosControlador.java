@@ -1,8 +1,8 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dto.ImpuestoDTO;
-import ProyectoPropio1.servicios.aplicacion.ServicioImpuestos;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOImpuesto;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioImpuestos;
+import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOImpuesto;
 import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;

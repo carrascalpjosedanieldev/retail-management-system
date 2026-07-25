@@ -1,8 +1,8 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dto.DatosTotalesProductoPerecederoDTO;
-import ProyectoPropio1.servicios.aplicacion.ServicioProductos;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOProducto;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioProductos;
+import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOProducto;
 import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.FormateadorNumeros;
 import ProyectoPropio1.utilidades.RutasVista;

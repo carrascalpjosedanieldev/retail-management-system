@@ -1,7 +1,10 @@
-package ProyectoPropio1.servicios.aplicacion;
+package ProyectoPropio1.servicios.aplicacion.fabricas;
 
 import ProyectoPropio1.dominio.*;
 import ProyectoPropio1.dominio.enums.Talla;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioDescuentos;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioImpuestos;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioPoliticaVencimiento;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

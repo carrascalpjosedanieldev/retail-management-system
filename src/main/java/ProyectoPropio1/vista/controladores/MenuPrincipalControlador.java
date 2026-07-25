@@ -1,6 +1,6 @@
 package ProyectoPropio1.vista.controladores;
 
-import ProyectoPropio1.servicios.aplicacion.ServicioConfiguraciones;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioConfiguraciones;
 import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.RutasVista;
 

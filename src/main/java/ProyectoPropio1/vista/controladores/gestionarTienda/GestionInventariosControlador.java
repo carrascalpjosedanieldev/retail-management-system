@@ -1,8 +1,8 @@
 package ProyectoPropio1.vista.controladores.gestionarTienda;
 
 import ProyectoPropio1.dto.InventarioDTO;
-import ProyectoPropio1.servicios.aplicacion.ServicioInventario;
-import ProyectoPropio1.servicios.ensambladores.EnsambladorDTOInventario;
+import ProyectoPropio1.servicios.aplicacion.servicios.ServicioInventario;
+import ProyectoPropio1.servicios.aplicacion.ensambladores.EnsambladorDTOInventario;
 import ProyectoPropio1.utilidades.CargadorVistas;
 import ProyectoPropio1.utilidades.RutasVista;
 
