@@ -9,6 +9,10 @@ out/
 .kotlin
 *.iml
 
+### Usuario Dase de Datos MySQL ###
+
+src/main/resources/application.properties
+
 ### Eclipse ###
 .apt_generated
 .classpath
