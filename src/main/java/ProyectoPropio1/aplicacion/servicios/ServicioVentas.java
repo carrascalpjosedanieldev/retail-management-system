@@ -27,7 +27,8 @@ public class ServicioVentas {
 
     //CONTRUCTOR:
 
-    public ServicioVentas(ServicioProductos servicioProductos, ServicioServicios servicioServicios, ServicioFacturas servicioFacturas) {
+    public ServicioVentas(ServicioProductos servicioProductos, ServicioServicios servicioServicios,
+                          ServicioFacturas servicioFacturas) {
         this.servicioProductos = servicioProductos;
         this.servicioServicios = servicioServicios;
         this.servicioFacturas = servicioFacturas;

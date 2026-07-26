@@ -6,7 +6,7 @@ public class RutasVista {
 
     public static final String NOMBRE_TIENDA_CLAVE = "NombreProyectoPropioOriginal";
 
-    public static final String MENU_PRINCIPAL_VIEW = "/vista/gestionarTienda/MenuPrincipal.fxml";
+    public static final String MENU_PRINCIPAL_VIEW = "/vista/MenuPrincipal.fxml";
     public static final String ESTILOS_CSS_MENU_PRINCIPAL = "/css/gestionarTienda/estilosCssMenuPrincipal.css";
 
     public static final String GESTIONAR_TIENDA_VIEW = "/vista/gestionarTienda/GestionarTienda.fxml";
