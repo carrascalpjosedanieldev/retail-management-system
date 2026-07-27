@@ -66,6 +66,10 @@ public class HistorialVentasControlador {
 
     @FXML
     public void generarReporte(ActionEvent event) {
+        generarReporte();
+    }
+
+    private void generarReporte(){
         LocalDate fechaInicio = dpFechaInicio.getValue();
         LocalDate fechaFin = dpFechaFin.getValue();
         if (fechaInicio == null || fechaFin == null) {
@@ -84,8 +88,9 @@ public class HistorialVentasControlador {
             );
             actualizarTarjetas(reporte);
         } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR,"Error de consulta",
-                    "Hubo un problema al generar el reporte: " + e.getMessage());
+            mostrarAlerta(Alert.AlertType.ERROR,"Error de Consulta",
+                    "Hubo un Problema al Generar el Reporte\n" +
+                            "Error:  " + e.getMessage());
         }
     }
 

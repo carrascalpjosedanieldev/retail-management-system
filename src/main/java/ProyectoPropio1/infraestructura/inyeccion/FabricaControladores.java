@@ -105,7 +105,8 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == PanelDeControlControlador.class){
             return new PanelDeControlControlador(
-                    FabricaServicios.obtenerServicioFacturas()
+                    FabricaServicios.obtenerServicioFacturas(),
+                    FabricaEnsambladores.obtenerEnsambladorDTOFactura()
             );
         }
         if (claseControlador == HistorialVentasControlador.class){

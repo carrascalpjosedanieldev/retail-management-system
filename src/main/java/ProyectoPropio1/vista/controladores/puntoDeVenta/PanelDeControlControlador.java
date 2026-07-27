@@ -1,7 +1,8 @@
 package ProyectoPropio1.vista.controladores.puntoDeVenta;
 
+import ProyectoPropio1.aplicacion.dto.ResumenVentaDiaDTO;
+import ProyectoPropio1.aplicacion.ensambladores.EnsambladorDTOFactura;
 import ProyectoPropio1.aplicacion.servicios.ServicioFacturas;
-import ProyectoPropio1.dominio.entidades.ResumenVentaDia;
 import ProyectoPropio1.vista.utilidades.CargadorVistas;
 import ProyectoPropio1.vista.utilidades.FormateadorNumeros;
 import ProyectoPropio1.vista.utilidades.RutasVista;
@@ -40,10 +41,13 @@ public class PanelDeControlControlador {
 
     private final ServicioFacturas servicioFacturas;
 
+    private final EnsambladorDTOFactura ensambladorDTOFactura;
+
     //CONTROLADOR:
 
-    public PanelDeControlControlador(ServicioFacturas servicioFacturas) {
+    public PanelDeControlControlador(ServicioFacturas servicioFacturas, EnsambladorDTOFactura ensambladorDTOFactura) {
         this.servicioFacturas = servicioFacturas;
+        this.ensambladorDTOFactura = ensambladorDTOFactura;
     }
 
     //MÉTODOS:
@@ -55,15 +59,11 @@ public class PanelDeControlControlador {
         alerta.setContentText(mensaje);
         DialogPane pane = alerta.getDialogPane();
         pane.setMinHeight(Region.USE_PREF_SIZE);
-        aplicarCSS(pane);
-        alerta.showAndWait();
-    }
-
-    private void aplicarCSS(DialogPane panel) {
         URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
         if (urlCss != null) {
-            panel.getStylesheets().add(urlCss.toExternalForm());
+            pane.getStylesheets().add(urlCss.toExternalForm());
         }
+        alerta.showAndWait();
     }
 
 
@@ -92,15 +92,17 @@ public class PanelDeControlControlador {
 
     private void cargarMetricasDelDia() {
         try {
-            ResumenVentaDia resumen = this.servicioFacturas.obtenerResumenHoy();
-            lblCantidadFacturas.setText(String.valueOf(resumen.getCantidadFacturas()));
-            lblTotalVentasHoy.setText(FormateadorNumeros.formatoMoneda(resumen.getTotalVentas()));
-            lblUltimaVenta.setText(FormateadorNumeros.formatoMoneda(resumen.getUltimaVenta()));
+            ResumenVentaDiaDTO resumen = this.ensambladorDTOFactura.ensamblarResumenVentaDia(
+                    this.servicioFacturas.obtenerResumenHoy()
+            );
+            lblCantidadFacturas.setText(String.valueOf(resumen.cantidadFacturas()));
+            lblTotalVentasHoy.setText(FormateadorNumeros.formatoMoneda(resumen.totalVentas()));
+            lblUltimaVenta.setText(FormateadorNumeros.formatoMoneda(resumen.ultimaVenta()));
         } catch (Exception e) {
             lblCantidadFacturas.setText("0");
             lblTotalVentasHoy.setText("$ 0.00");
             lblUltimaVenta.setText("$ 0.00");
-            mostrarAlerta(Alert.AlertType.WARNING, "Error al Cargar las Métricas",
+            mostrarAlerta(Alert.AlertType.ERROR, "Error al Cargar las Métricas",
                     "Error:  " + e.getMessage());
         }
     }
