@@ -49,5 +49,8 @@ public class RutasVista {
     public static final String PANEL_DE_CONTROL_POS_VIEW = "/vista/puntoDeVenta/PanelDeControl.fxml";
     public static final String ESTILOS_CSS_PANEL_DE_CONTROL_POS = "/css/puntoDeVenta/estilosCssPanelDeControl.css";
 
+    public static final String HISTORIAL_VENTAS_VIEW = "/vista/puntoDeVenta/HistorialVentas.fxml";
+    public static final String ESTILOS_CSS_HISTORIAL_VENTAS = "/css/puntoDeVenta/estilosCssHistorialVentas.css";
+
 }
 

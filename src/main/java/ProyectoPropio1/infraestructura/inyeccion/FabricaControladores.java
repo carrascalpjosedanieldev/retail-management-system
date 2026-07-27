@@ -4,6 +4,7 @@ import ProyectoPropio1.aplicacion.orquestadores.OrquestadorProductoInventario;
 import ProyectoPropio1.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import ProyectoPropio1.vista.controladores.gestionarTienda.*;
 
+import ProyectoPropio1.vista.controladores.puntoDeVenta.HistorialVentasControlador;
 import ProyectoPropio1.vista.controladores.puntoDeVenta.PanelDeControlControlador;
 import javafx.util.Callback;
 
@@ -105,6 +106,12 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == PanelDeControlControlador.class){
             return new PanelDeControlControlador(
                     FabricaServicios.obtenerServicioFacturas()
+            );
+        }
+        if (claseControlador == HistorialVentasControlador.class){
+            return new HistorialVentasControlador(
+                    FabricaServicios.obtenerServicioFacturas(),
+                    FabricaEnsambladores.obtenerEnsambladorDTOFactura()
             );
         }
         try {

@@ -12,9 +12,13 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -56,7 +60,7 @@ public class PanelDeControlControlador {
     }
 
     private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_INVENTARIOS);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
         if (urlCss != null) {
             panel.getStylesheets().add(urlCss.toExternalForm());
         }
@@ -110,7 +114,32 @@ public class PanelDeControlControlador {
 
     @FXML
     public void abrirHistorialVentas(ActionEvent event) {
-
+        try {
+            Parent root = CargadorVistas.cargarVista(RutasVista.HISTORIAL_VENTAS_VIEW);
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Generar Reporte de Recaudo");
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.initStyle(StageStyle.DECORATED);
+            Scene scene = new Scene(root);
+            modalStage.setScene(scene);
+            modalStage.showAndWait();
+        } catch (Exception e) {
+            Alert alerta = new Alert(Alert.AlertType.ERROR);
+            alerta.setTitle("Error de Navegación");
+            alerta.setHeaderText("NO se pudo Cargar la Pantalla");
+            alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
+                    "Ruta Solicitada: " + RutasVista.HISTORIAL_VENTAS_VIEW + "\n" +
+                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
+            DialogPane panelAlerta = alerta.getDialogPane();
+            panelAlerta.setPrefSize(500, 280);
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
+            if (urlCss != null) {
+                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+            } else {
+                panelAlerta.setPrefSize(500, 180);
+            }
+            alerta.showAndWait();
+        }
     }
 
 
@@ -128,7 +157,7 @@ public class PanelDeControlControlador {
                     "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
             DialogPane panelAlerta = alerta.getDialogPane();
             panelAlerta.setPrefSize(500, 280);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_GESTIONAR_TIENDA);
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
             if (urlCss != null) {
                 panelAlerta.getStylesheets().add(urlCss.toExternalForm());
             } else {

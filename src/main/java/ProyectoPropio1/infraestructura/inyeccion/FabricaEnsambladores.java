@@ -61,5 +61,14 @@ public class FabricaEnsambladores {
         return ensambladorDTOProducto;
     }
 
+    private static EnsambladorDTOFactura ensambladorDTOFactura;
+
+    public static EnsambladorDTOFactura obtenerEnsambladorDTOFactura(){
+        if (ensambladorDTOFactura == null){
+            ensambladorDTOFactura = new EnsambladorDTOFactura();
+        }
+        return ensambladorDTOFactura;
+    }
+
 }//===================================================================================================================//
 

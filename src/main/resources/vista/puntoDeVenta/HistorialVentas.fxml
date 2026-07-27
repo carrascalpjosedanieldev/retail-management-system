@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" prefHeight="450.0" prefWidth="500.0" spacing="25.0" styleClass="fondo-modal" stylesheets="@../../css/puntoDeVenta/estilosCssHistorialVentas.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.puntoDeVenta.HistorialVentasControlador">
+
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+
+    <Label styleClass="titulo-modal" text="Generar Reporte de Recaudo" />
+
+    <HBox alignment="CENTER" spacing="25.0">
+        <VBox spacing="5.0">
+            <Label styleClass="label-fecha" text="Fecha Inicio:"/>
+            <DatePicker fx:id="dpFechaInicio" prefWidth="180.0" promptText="Seleccione fecha..."/>
+        </VBox>
+        <VBox spacing="5.0">
+            <Label styleClass="label-fecha" text="Fecha Fin:"/>
+            <DatePicker fx:id="dpFechaFin" prefWidth="180.0" promptText="Seleccione fecha..."/>
+        </VBox>
+    </HBox>
+
+    <HBox alignment="CENTER" spacing="20.0">
+        <Button fx:id="btnGenerar" mnemonicParsing="false" onAction="#generarReporte" styleClass="btn-generar"
+                text="Generar Reporte"/>
+        <Button fx:id="btnCerrar" mnemonicParsing="false" onAction="#cerrarModal" styleClass="btn-cerrar"
+                text="Cerrar"/>
+    </HBox>
+    <VBox prefHeight="1.0" styleClass="separador">
+        <VBox.margin>
+            <Insets bottom="5.0" top="5.0" />
+        </VBox.margin>
+    </VBox>
+
+    <GridPane alignment="CENTER" hgap="20.0" vgap="20.0">
+        <VBox alignment="CENTER" prefHeight="85.0" prefWidth="200.0" styleClass="tarjeta-resultado"
+              GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label styleClass="titulo-resultado" text="Facturas Emitidas"/>
+            <Label fx:id="lblCantidad" styleClass="valor-cantidad" text="0"/>
+        </VBox>
+
+        <VBox alignment="CENTER" prefHeight="85.0" prefWidth="200.0" styleClass="tarjeta-resultado"
+              GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label styleClass="titulo-resultado" text="Subtotal Recaudado"/>
+            <Label fx:id="lblSubtotal" styleClass="valor-dinero" text="\$ 0.00"/>
+        </VBox>
+
+        <VBox alignment="CENTER" prefHeight="85.0" prefWidth="200.0" styleClass="tarjeta-resultado"
+              GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label styleClass="titulo-resultado" text="Total Impuestos"/>
+            <Label fx:id="lblImpuestos" styleClass="valor-impuesto" text="\$ 0.00"/>
+        </VBox>
+
+        <VBox alignment="CENTER" prefHeight="85.0" prefWidth="200.0" styleClass="tarjeta-resultado, tarjeta-total"
+              GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label styleClass="titulo-resultado-total" text="Total General"/>
+            <Label fx:id="lblTotalGeneral" styleClass="valor-total" text="\$ 0.00"/>
+        </VBox>
+    </GridPane>
+</VBox>
+
