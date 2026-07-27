@@ -36,10 +36,10 @@
 
     <TableView fx:id="tablaProductos" prefHeight="400.0" prefWidth="860.0" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="colCodigo" prefWidth="256.8000431060791" style="-fx-alignment: CENTER;" text="Código" />
-            <TableColumn fx:id="colNombre" prefWidth="217.60003662109375" style="-fx-alignment: CENTER;" text="Nombre del Producto" />
-            <TableColumn fx:id="colValor" prefWidth="144.00003051757812" style="-fx-alignment: CENTER;" text="Valor Venta" />
-            <TableColumn fx:id="colStock" prefWidth="82.39996337890625" style="-fx-alignment: CENTER;" text="Stock" />
+            <TableColumn fx:id="colCodigo" prefWidth="256.8" style="-fx-alignment: CENTER;" text="Código" />
+            <TableColumn fx:id="colNombre" prefWidth="217.6" style="-fx-alignment: CENTER;" text="Nombre del Producto" />
+            <TableColumn fx:id="colValor" prefWidth="144.0" style="-fx-alignment: CENTER;" text="Valor Venta" />
+            <TableColumn fx:id="colStock" prefWidth="82.4" style="-fx-alignment: CENTER;" text="Stock" />
             <TableColumn fx:id="colEstado" prefWidth="152.0" style="-fx-alignment: CENTER;" text="Estado" />
         </columns>
         <columnResizePolicy>
@@ -49,8 +49,11 @@
 
     <HBox alignment="CENTER_LEFT" spacing="15.0">
         <Button mnemonicParsing="false" onAction="#abrirSelectorNuevoProducto" prefHeight="31.0" prefWidth="174.0" styleClass="btn-accion, btn-nuevo" text="+ Nuevo Producto" />
-      <Button mnemonicParsing="false" onAction="#abrirManejarStock" prefHeight="31.0" prefWidth="178.0" styleClass="btn-accion" text="Manejar Stock" />
-      <Button mnemonicParsing="false" onAction="#abrirMoverAOtroInventario" prefHeight="31.0" prefWidth="221.0" styleClass="btn-accion" text="Mover a otro Inventario" />
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <Button mnemonicParsing="false" onAction="#abrirManejarStock" prefHeight="31.0" prefWidth="178.0" styleClass="btn-accion" text="Manejar Stock" />
+        <Button mnemonicParsing="false" onAction="#abrirMoverAOtroInventario" prefHeight="31.0" prefWidth="221.0" styleClass="btn-accion" text="Mover a otro Inventario" />
         <Button mnemonicParsing="false" onAction="#cambiarEstadoProducto" styleClass="btn-accion, btn-secundario" text="Cambiar Estado (Disp / No Disp)" />
     </HBox>
 </VBox>

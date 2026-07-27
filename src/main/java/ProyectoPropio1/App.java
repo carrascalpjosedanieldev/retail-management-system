@@ -6,7 +6,7 @@ package ProyectoPropio1;
 import ProyectoPropio1.vista.utilidades.CargadorVistas;
 import ProyectoPropio1.vista.utilidades.RutasVista;
 
-import ProyectoPropio1.vista.controladores.MenuPrincipalControlador;
+import ProyectoPropio1.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

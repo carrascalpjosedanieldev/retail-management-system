@@ -1,7 +1,7 @@
 package ProyectoPropio1.infraestructura.inyeccion;
 
 import ProyectoPropio1.aplicacion.orquestadores.OrquestadorProductoInventario;
-import ProyectoPropio1.vista.controladores.MenuPrincipalControlador;
+import ProyectoPropio1.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import ProyectoPropio1.vista.controladores.gestionarTienda.*;
 
 import javafx.util.Callback;

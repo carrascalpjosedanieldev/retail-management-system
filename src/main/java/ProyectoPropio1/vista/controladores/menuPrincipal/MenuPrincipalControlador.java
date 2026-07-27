@@ -1,4 +1,4 @@
-package ProyectoPropio1.vista.controladores;
+package ProyectoPropio1.vista.controladores.menuPrincipal;
 
 import ProyectoPropio1.aplicacion.servicios.ServicioConfiguraciones;
 import ProyectoPropio1.vista.utilidades.CargadorVistas;
