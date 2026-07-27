@@ -3,18 +3,26 @@ package ProyectoPropio1.aplicacion.servicios;
 import ProyectoPropio1.dominio.entidades.Factura;
 import ProyectoPropio1.dominio.entidades.ItemVendido;
 import ProyectoPropio1.dominio.entidades.ReporteRecaudo;
+import ProyectoPropio1.dominio.entidades.ResumenVentaDia;
 import ProyectoPropio1.dominio.puertos.RepositorioFacturas;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 public class ServicioFacturas {
 
+    //ATRIBUTOS:
+
     private final RepositorioFacturas repositorioFacturas;
+
+    //CONSTRUCTOR:
 
     public ServicioFacturas(RepositorioFacturas repositorioFacturas) {
         this.repositorioFacturas = repositorioFacturas;
     }
+
+    //MÉTODOS:
 
     public Factura registrarVentaYObtenerFactura(List<ItemVendido> itemsDelCarrito) {
         if (itemsDelCarrito == null || itemsDelCarrito.isEmpty()) {
@@ -34,5 +42,14 @@ public class ServicioFacturas {
         return this.repositorioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin);
     }
 
-}
+    public ResumenVentaDia obtenerResumenHoy() {
+        LocalDate hoy = LocalDate.now();
+        ReporteRecaudo reporteHoy = this.obtenerReporteRecaudo(hoy, hoy);
+        int cantidadFacturas = reporteHoy.getCantidadFacturasEmitidas();
+        BigDecimal totalVentas = reporteHoy.getTotalRecaudo();
+        BigDecimal ultimaVenta = this.repositorioFacturas.obtenerTotalUltimaVenta(hoy);
+        return ResumenVentaDia.reconstruirDesdeBD(totalVentas, cantidadFacturas, ultimaVenta);
+    }
+
+}//===================================================================================================================//
 

@@ -189,10 +189,32 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             throw new RuntimeException("Error al generar el reporte de recaudo", e);
         }
 
-        return ReporteRecaudo.reconstruirDesdeBD(fechaInicio, fechaFin, 0, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+        return ReporteRecaudo.reconstruirDesdeBD(
+                fechaInicio, fechaFin, 0, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
+        );
+    }
+
+    @Override
+    public BigDecimal obtenerTotalUltimaVenta(LocalDate fecha) {
+        String sql = "SELECT total_general FROM facturas WHERE DATE(fecha) = ? ORDER BY fecha DESC LIMIT 1";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(fecha));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal("total_general");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al buscar la última venta del día", e);
+        }
+
+        return BigDecimal.ZERO;
     }
 
 
-
-}
+}//===================================================================================================================//
 

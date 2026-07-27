@@ -47,8 +47,8 @@ public class ReporteRecaudo {
 
     //CONSTRUCTORES:
 
-    private ReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin, int cantidadFacturasEmitidas, BigDecimal subTotal,
-                          BigDecimal totalImpuestos, BigDecimal totalRecaudo) {
+    private ReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin, int cantidadFacturasEmitidas,
+                           BigDecimal subTotal, BigDecimal totalImpuestos, BigDecimal totalRecaudo) {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.cantidadFacturasEmitidas = cantidadFacturasEmitidas;
@@ -57,9 +57,14 @@ public class ReporteRecaudo {
         this.totalRecaudo = totalRecaudo;
     }
 
-    public static ReporteRecaudo reconstruirDesdeBD(LocalDate fechaInicio, LocalDate fechaFin, int cantidadFacturasEmitidas,
-                                                    BigDecimal subTotal, BigDecimal totalImpuestos, BigDecimal totalRecaudo){
-        return new ReporteRecaudo(fechaInicio, fechaFin, cantidadFacturasEmitidas, subTotal, totalImpuestos, totalRecaudo);
+    public static ReporteRecaudo reconstruirDesdeBD(
+            LocalDate fechaInicio, LocalDate fechaFin, int cantidadFacturasEmitidas,
+            BigDecimal subTotal, BigDecimal totalImpuestos, BigDecimal totalRecaudo
+    ){
+        return new ReporteRecaudo(
+                fechaInicio, fechaFin, cantidadFacturasEmitidas, subTotal, totalImpuestos, totalRecaudo
+        );
     }
 
-}
+}//===================================================================================================================//
+

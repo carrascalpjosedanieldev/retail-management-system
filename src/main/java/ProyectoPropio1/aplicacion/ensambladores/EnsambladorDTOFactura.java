@@ -3,7 +3,7 @@ package ProyectoPropio1.aplicacion.ensambladores;
 import ProyectoPropio1.dominio.entidades.Factura;
 import ProyectoPropio1.dominio.entidades.ItemVendido;
 import ProyectoPropio1.dominio.entidades.ReporteRecaudo;
-import ProyectoPropio1.aplicacion.dto.DatosItemVendidoFacturaDTO;
+import ProyectoPropio1.aplicacion.dto.ItemVendidoFacturaDTO;
 import ProyectoPropio1.aplicacion.dto.FacturaDTO;
 import ProyectoPropio1.aplicacion.dto.ReporteRecaudoDTO;
 
@@ -16,9 +16,9 @@ public class EnsambladorDTOFactura {
     }
 
     public FacturaDTO ensamblarFactura(Factura factura){
-        List<DatosItemVendidoFacturaDTO> datosItemsFactura = new ArrayList<>();
+        List<ItemVendidoFacturaDTO> datosItemsFactura = new ArrayList<>();
         for (ItemVendido itemVendido : factura.getItemsFinales()){
-            DatosItemVendidoFacturaDTO datosItem = new DatosItemVendidoFacturaDTO(itemVendido.getTipoItem().name(),
+            ItemVendidoFacturaDTO datosItem = new ItemVendidoFacturaDTO(itemVendido.getTipoItem().name(),
                     itemVendido.getCodigo(), itemVendido.getNombre(), itemVendido.getCantidad(), itemVendido.getPrecioUnitario(),
                     itemVendido.getSubtotalNeto(), itemVendido.getPorcentajeImpuesto(), itemVendido.getMontoImpuesto(),
                     itemVendido.getTotalLinea());

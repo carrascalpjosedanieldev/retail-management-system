@@ -82,5 +82,15 @@ public class FabricaServicios {
         return servicioConfiguraciones;
     }
 
+    private static ServicioFacturas servicioFacturas;
+
+    public static ServicioFacturas obtenerServicioFacturas(){
+        if (servicioFacturas == null){
+            RepositorioFacturas repositorioFacturas = new RepositorioFacturasMySQL();
+            servicioFacturas = new ServicioFacturas(repositorioFacturas);
+        }
+        return servicioFacturas;
+    }
+
 }
 

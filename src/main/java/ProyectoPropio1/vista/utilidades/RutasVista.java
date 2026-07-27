@@ -2,12 +2,14 @@ package ProyectoPropio1.vista.utilidades;
 
 public class RutasVista {
 
-    //GESTIONAR TIENDA:
+    //MENU PRINCIPAL:
 
     public static final String NOMBRE_TIENDA_CLAVE = "NombreProyectoPropioOriginal";
 
     public static final String MENU_PRINCIPAL_VIEW = "/vista/menuPrincipal/MenuPrincipal.fxml";
     public static final String ESTILOS_CSS_MENU_PRINCIPAL = "/css/menuPrincipal/estilosCssMenuPrincipal.css";
+
+    //GESTIONAR TIENDA:
 
     public static final String GESTIONAR_TIENDA_VIEW = "/vista/gestionarTienda/GestionarTienda.fxml";
     public static final String ESTILOS_CSS_GESTIONAR_TIENDA = "/css/gestionarTienda/estilosCssGestionarTienda.css";
@@ -43,6 +45,9 @@ public class RutasVista {
     public static final String ESTILOS_CSS_EDITAR_PERECEDERO = "/css/gestionarTienda/estilosCssEditarRopaOPerecedero.css";
 
     //PUNTO DE VENTA:
+
+    public static final String PANEL_DE_CONTROL_POS_VIEW = "/vista/puntoDeVenta/PanelDeControl.fxml";
+    public static final String ESTILOS_CSS_PANEL_DE_CONTROL_POS = "/css/puntoDeVenta/estilosCssPanelDeControl.css";
 
 }
 

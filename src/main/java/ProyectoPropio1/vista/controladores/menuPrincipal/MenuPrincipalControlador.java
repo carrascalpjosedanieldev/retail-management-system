@@ -102,6 +102,20 @@ public class MenuPrincipalControlador {
 
 
     @FXML
+    public void abrirPuntoDeVenta(ActionEvent event) {
+        try {
+            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
+        } catch (Exception e) {
+            String mensaje = "Ocurrió un Problema al Cargar la Vista de Punto de Venta.\n" +
+                    "Si el Problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.";
+            mostrarAlerta(Alert.AlertType.ERROR, "Error de Navegación",
+                    "NO se pudo Abrir la Pantalla", mensaje, null, true);
+        }
+    }
+
+
+    @FXML
     void abrirGestionarTienda(ActionEvent event) {
         try {
             Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
