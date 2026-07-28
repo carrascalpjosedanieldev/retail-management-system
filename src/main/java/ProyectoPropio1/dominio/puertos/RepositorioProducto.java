@@ -9,8 +9,6 @@ public interface RepositorioProducto {
 
     void insertarProducto(Producto producto, int idInventario);
 
-    void desactivarProductoDeInventario(String codigoProducto, int idInventario);
-
     Producto obtenerProductoDeInventario(int idInventario, String  codigoProducto);
 
     ProductoPerecedero obtenerPerecederoDeInventario(int idInventario, String codigoProducto);
@@ -24,5 +22,9 @@ public interface RepositorioProducto {
     List<Producto> obtenerProductosRopaPorInventario(int idInventario);
 
     List<Producto> obtenerProductosPerecederoPorInventario(int idInventario);
+
+    Producto obtenerProductoActivoSoloPorCodigo(String codigoProducto);
+
+    boolean existeProducto(String codigoProducto);
 
 }

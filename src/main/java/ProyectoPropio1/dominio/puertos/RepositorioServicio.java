@@ -16,4 +16,6 @@ public interface RepositorioServicio {
 
     List<Servicio> obtenerServiciosInactivos();
 
+    boolean existeServicio(String codigoServicio);
+
 }

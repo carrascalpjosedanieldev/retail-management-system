@@ -1,10 +1,12 @@
 package ProyectoPropio1.infraestructura.inyeccion;
 
 import ProyectoPropio1.aplicacion.orquestadores.OrquestadorProductoInventario;
+import ProyectoPropio1.aplicacion.orquestadores.OrquestadorVentas;
 import ProyectoPropio1.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import ProyectoPropio1.vista.controladores.gestionarTienda.*;
 
 import ProyectoPropio1.vista.controladores.puntoDeVenta.HistorialVentasControlador;
+import ProyectoPropio1.vista.controladores.puntoDeVenta.MenuDeVentasControlador;
 import ProyectoPropio1.vista.controladores.puntoDeVenta.PanelDeControlControlador;
 import javafx.util.Callback;
 
@@ -113,6 +115,17 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
             return new HistorialVentasControlador(
                     FabricaServicios.obtenerServicioFacturas(),
                     FabricaEnsambladores.obtenerEnsambladorDTOFactura()
+            );
+        }
+        if (claseControlador == MenuDeVentasControlador.class){
+            return new MenuDeVentasControlador(
+                    new OrquestadorVentas(
+                            FabricaServicios.obtenerServicioFacturas(),
+                            FabricaServicios.obtenerServicioCarrito(),
+                            FabricaServicios.obtenerServicioProductos(),
+                            FabricaServicios.obtenerServicioServicios(),
+                            FabricaEnsambladores.obtenerEnsambladorDTOCarrito()
+                    )
             );
         }
         try {

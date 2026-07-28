@@ -35,8 +35,8 @@ public class ServicioCarrito {
         this.carrito = Carrito.crearNueva();
     }
 
-    public void agregarProductoAlCarrito(int idInventario, String codigoProducto, int cantidad, LocalDate fecha){
-        Producto producto = this.servicioProductos.obtenerProductoDeInventario(idInventario, codigoProducto);
+    public void agregarProductoAlCarrito(String codigoProducto, int cantidad, LocalDate fecha){
+        Producto producto = this.servicioProductos.obtenerProductoActivoParaLaVenta(codigoProducto);
         producto.validarEstadoParaVenta(fecha);
         this.carrito.agregarProducto(producto, cantidad);
     }

@@ -29,6 +29,10 @@ public class ServicioServicios {
         return this.repositorioServicio.obtenerServicio(codigoServicio);
     }
 
+    public boolean existeServicio(String codigoServicio){
+        return this.repositorioServicio.existeServicio(codigoServicio);
+    }
+
     public void registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento){
         Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);

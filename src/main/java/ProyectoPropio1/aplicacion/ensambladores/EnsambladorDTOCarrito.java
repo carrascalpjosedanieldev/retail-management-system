@@ -4,6 +4,7 @@ import ProyectoPropio1.dominio.entidades.Carrito;
 import ProyectoPropio1.dominio.entidades.ItemCarrito;
 import ProyectoPropio1.aplicacion.dto.ItemCarritoDTO;
 import ProyectoPropio1.aplicacion.dto.VistaPreviaCarritoDTO;
+import ProyectoPropio1.dominio.entidades.ItemFacturable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,9 +17,16 @@ public class EnsambladorDTOCarrito {
     }
 
     private ItemCarritoDTO ensamblarItemCarritoDTO(ItemCarrito itemCarrito, LocalDate fecha){
-        String nombreArticulo = itemCarrito.getItemFacturable().getNombre();
-        BigDecimal precioUnitario = itemCarrito.getItemFacturable().getValorVenta(fecha);
-        return new ItemCarritoDTO(nombreArticulo, itemCarrito.getCantidad(), precioUnitario, itemCarrito.calcularSubtotal(fecha));
+        ItemFacturable item = itemCarrito.getItemFacturable();
+        String codigoArticulo = item.getCodigo();
+        String tipoArticulo = item.getTipoItem().name();
+        String nombreArticulo = item.getNombre();
+        BigDecimal precioUnitario = item.getValorVenta(fecha);
+        BigDecimal impuesto = item.calcularImpuesto(item.getValorFinalSinImpuesto(fecha), fecha);
+        return new ItemCarritoDTO(
+                codigoArticulo, tipoArticulo, nombreArticulo, itemCarrito.getCantidad(), precioUnitario,
+                itemCarrito.calcularSubtotal(fecha), impuesto
+        );
     }
 
     public VistaPreviaCarritoDTO ensamblarVistaPreviaCarritoDTO(Carrito carrito, LocalDate fecha){

@@ -2,6 +2,7 @@ package ProyectoPropio1.infraestructura.persistencia.mysql;
 
 import ProyectoPropio1.dominio.entidades.*;
 import ProyectoPropio1.dominio.enums.Talla;
+import ProyectoPropio1.dominio.excepciones.ProductoNoDisponibleException;
 import ProyectoPropio1.dominio.puertos.RepositorioProducto;
 import ProyectoPropio1.dominio.excepciones.InventarioNoEncontradoException;
 import ProyectoPropio1.dominio.excepciones.ProductoNoEncontradoException;
@@ -80,28 +81,6 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             pstmt.setDate(2, java.sql.Date.valueOf(perecedero.getFechaVencimiento()));
             pstmt.setInt(3, perecedero.getPoliticaVencimiento().getIdPolitica());
             pstmt.executeUpdate();
-        }
-    }
-
-
-
-    @Override
-    public void desactivarProductoDeInventario(String codigoProducto, int idInventario) {
-        String sql = "UPDATE productos SET activo = false WHERE codigo_producto = ? AND id_inventario = ?";
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, codigoProducto);
-            pstmt.setInt(2, idInventario);
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ProductoNoEncontradoException("No se pudo eliminar: El producto con código -" + codigoProducto + "- no existe en el inventario de ID -" + idInventario + "-.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al intentar Desactivar el Producto: " + codigoProducto, e);
         }
     }
 
@@ -553,5 +532,176 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
 
-}
+
+    @Override
+    public Producto obtenerProductoActivoSoloPorCodigo(String codigoProducto) {
+        String sql =
+                "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, " +
+                        "p.activo, " +
+                        "r.talla, per.fecha_vencimiento, per.id_politica, " +
+                        "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
+                        "i.activo AS impuesto_activo, " +
+                        "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+                        "des.activo AS descuento_activo, " +
+                        "pove.id_politica, pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica, " +
+                        "pove.activa AS politica_activa " +
+                        "FROM productos p " +
+                        "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
+                        "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
+                        "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
+                        "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
+                        "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
+                        "WHERE p.codigo_producto = ? ";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, codigoProducto);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String codigo = rs.getString("codigo_producto");
+                    String nombre = rs.getString("nombre");
+                    BigDecimal valorCompra = rs.getBigDecimal("valor_compra");
+                    BigDecimal porcentajeGanancia = rs.getBigDecimal("porcentaje_ganancia");
+                    int stock = rs.getInt("stock");
+                    boolean activoProd = rs.getBoolean("activo");
+
+                    if (!activoProd) {
+                        throw new ProductoNoDisponibleException("Error de negocio: El Producto con Código -" +
+                                codigoProducto + "- NO esta en Venta");
+                    }
+
+                    int idImpuesto = rs.getInt("id_impuesto");
+                    String nombreImp = rs.getString("nombre_impuesto");
+                    BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
+                    boolean activoImp = rs.getBoolean("impuesto_activo");
+                    Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
+
+                    int idDescuento = rs.getInt("id_descuento");
+                    String nombreDesc = rs.getString("nombre_descuento");
+                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
+                    boolean activoDesc = rs.getBoolean("descuento_activo");
+                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
+
+                    String tallaString = rs.getString("talla");
+                    if (tallaString != null) {
+                        Talla talla = Talla.valueOf(tallaString);
+                        return ProductoRopa.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia, stock,
+                                impuesto, descuento, true, talla);
+                    }
+
+                    Date fechaSql = rs.getDate("fecha_vencimiento");
+
+                    int idPolitica = rs.getInt("id_politica");
+                    String nombrePolitica = rs.getString("nombre_politica");
+                    int diasUmbral = rs.getInt("dias_umbral");
+                    BigDecimal porcentajePolitica = rs.getBigDecimal("porcentaje_politica");
+                    boolean activaPolitica = rs.getBoolean("politica_activa");
+                    PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(idPolitica, nombrePolitica,
+                            diasUmbral, porcentajePolitica, activaPolitica);
+
+                    if (fechaSql != null) {
+                        LocalDate fechaVencimiento = fechaSql.toLocalDate();
+                        return ProductoPerecedero.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia, stock,
+                                impuesto, descuento, true, fechaVencimiento, politicaVencimiento);
+                    }
+
+                    throw new IllegalStateException("Error de integridad: El producto existe pero no tiene un tipo definido.");
+                }
+
+                throw new ProductoNoEncontradoException("El Producto de Código -" + codigoProducto +
+                        "- NO existe");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al obtener el producto: " + codigoProducto, e);
+        }
+    }
+
+
+    @Override
+    public boolean existeProducto(String codigoProducto) {
+        String sql =
+                "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, " +
+                        "p.activo, " +
+                        "r.talla, per.fecha_vencimiento, per.id_politica, " +
+                        "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
+                        "i.activo AS impuesto_activo, " +
+                        "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+                        "des.activo AS descuento_activo, " +
+                        "pove.id_politica, pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica, " +
+                        "pove.activa AS politica_activa " +
+                        "FROM productos p " +
+                        "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
+                        "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
+                        "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
+                        "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
+                        "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
+                        "WHERE p.codigo_producto = ? ";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, codigoProducto);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String codigo = rs.getString("codigo_producto");
+                    String nombre = rs.getString("nombre");
+                    BigDecimal valorCompra = rs.getBigDecimal("valor_compra");
+                    BigDecimal porcentajeGanancia = rs.getBigDecimal("porcentaje_ganancia");
+                    int stock = rs.getInt("stock");
+                    boolean activoProd = rs.getBoolean("activo");
+
+                    int idImpuesto = rs.getInt("id_impuesto");
+                    String nombreImp = rs.getString("nombre_impuesto");
+                    BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
+                    boolean activoImp = rs.getBoolean("impuesto_activo");
+                    Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
+
+                    int idDescuento = rs.getInt("id_descuento");
+                    String nombreDesc = rs.getString("nombre_descuento");
+                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
+                    boolean activoDesc = rs.getBoolean("descuento_activo");
+                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
+
+                    String tallaString = rs.getString("talla");
+                    if (tallaString != null) {
+                        Talla talla = Talla.valueOf(tallaString);
+                        ProductoRopa.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia, stock,
+                                impuesto, descuento, activoProd, talla);
+                        return true;
+                    }
+
+                    Date fechaSql = rs.getDate("fecha_vencimiento");
+
+                    int idPolitica = rs.getInt("id_politica");
+                    String nombrePolitica = rs.getString("nombre_politica");
+                    int diasUmbral = rs.getInt("dias_umbral");
+                    BigDecimal porcentajePolitica = rs.getBigDecimal("porcentaje_politica");
+                    boolean activaPolitica = rs.getBoolean("politica_activa");
+                    PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(idPolitica, nombrePolitica,
+                            diasUmbral, porcentajePolitica, activaPolitica);
+
+                    if (fechaSql != null) {
+                        LocalDate fechaVencimiento = fechaSql.toLocalDate();
+                        ProductoPerecedero.reconstruirDesdeBD(codigo, nombre, valorCompra, porcentajeGanancia, stock,
+                                impuesto, descuento, activoProd, fechaVencimiento, politicaVencimiento);
+                        return true;
+                    }
+
+                    throw new IllegalStateException("Error de integridad: El producto existe pero no tiene un tipo definido.");
+                }
+
+                return false;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al obtener el producto: " + codigoProducto, e);
+        }
+    }
+
+
+}//===================================================================================================================//
 

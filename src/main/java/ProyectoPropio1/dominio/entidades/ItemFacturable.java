@@ -21,6 +21,8 @@ public interface ItemFacturable {
 
     BigDecimal calcularDescuento(BigDecimal valorVenta, LocalDate fecha);
 
+    BigDecimal getValorFinalSinImpuesto(LocalDate fecha);
+
     BigDecimal getValorVenta(LocalDate fecha);
 
 }

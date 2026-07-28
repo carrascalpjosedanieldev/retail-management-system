@@ -102,7 +102,8 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
                 for (ItemVendido item : items) {
                     if (item.getTipoItem() == TipoItem.PRODUCTO){
-                        String sqlUpdateStock = "UPDATE productos SET stock = stock - ? WHERE codigo_producto = ? AND stock >= ?";
+                        String sqlUpdateStock = "UPDATE productos SET stock = stock - ? " +
+                                "WHERE codigo_producto = ? AND stock >= ?";
 
                         try (PreparedStatement psStock = conn.prepareStatement(sqlUpdateStock)) {
                             psStock.setInt(1, item.getCantidad());

@@ -31,6 +31,14 @@ public class ServicioProductos {
         return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
     }
 
+    public Producto obtenerProductoActivoParaLaVenta(String codigoProducto){
+        return this.repositorioProducto.obtenerProductoActivoSoloPorCodigo(codigoProducto);
+    }
+
+    public boolean existeProducto(String codigoProducto){
+        return this.repositorioProducto.existeProducto(codigoProducto);
+    }
+
     public void registrarProducto(int idInventario, Producto producto){
         this.repositorioProducto.insertarProducto(producto, idInventario);
     }

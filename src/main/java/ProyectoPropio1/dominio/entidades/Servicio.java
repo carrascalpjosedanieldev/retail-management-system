@@ -60,6 +60,12 @@ public class Servicio implements ItemFacturable {
         return valorVenta.setScale(6, RoundingMode.HALF_UP);
     }
 
+    @Override
+    public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
+        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase(), fecha);
+        return precioBase.subtract(descuentoAplicado);
+    }
+
     public Impuesto getImpuesto(){
         return this.impuesto;
     }

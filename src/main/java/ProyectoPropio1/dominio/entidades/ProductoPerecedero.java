@@ -83,10 +83,21 @@ public class ProductoPerecedero extends Producto{
     }
 
     @Override
+    public BigDecimal getValorFinalSinImpuesto(LocalDate fechaReferencia) {
+        BigDecimal factorGanancia = getPorcentajeGanancia().divide(CIEN, 6, RoundingMode.HALF_UP);
+        BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
+        BigDecimal precioBase = getValorCompra().add(ganancia);
+        BigDecimal descuentoPolitica = calcularDescuentoPolitica(precioBase, fechaReferencia);
+        BigDecimal descuentoAplicado = calcularDescuento(precioBase, fechaReferencia);
+        return precioBase.subtract(descuentoPolitica).subtract(descuentoAplicado);
+    }
+
+    @Override
     public void validarEstadoParaVenta(LocalDate fechaReferencia){
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
         if (diasRestantes < 0) {
-            throw new ProductoVencidoException("ALERTA: El producto '" + this.getNombre() + "' está vencido. Venta bloqueada.");
+            throw new ProductoVencidoException("ALERTA: El Producto -" + this.getNombre() +
+                    "- está vencido. Venta bloqueada.");
         }
     }
 

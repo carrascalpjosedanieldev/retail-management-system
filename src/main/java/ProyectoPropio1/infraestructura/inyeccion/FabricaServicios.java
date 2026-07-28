@@ -92,5 +92,14 @@ public class FabricaServicios {
         return servicioFacturas;
     }
 
+    private static ServicioCarrito servicioCarrito;
+
+    public static ServicioCarrito obtenerServicioCarrito(){
+        if (servicioCarrito == null){
+            servicioCarrito = new ServicioCarrito(obtenerServicioProductos(), obtenerServicioServicios());
+        }
+        return servicioCarrito;
+    }
+
 }
 

@@ -70,5 +70,14 @@ public class FabricaEnsambladores {
         return ensambladorDTOFactura;
     }
 
+    private static EnsambladorDTOCarrito ensambladorDTOCarrito;
+
+    public static EnsambladorDTOCarrito obtenerEnsambladorDTOCarrito(){
+        if (ensambladorDTOCarrito == null){
+            ensambladorDTOCarrito = new EnsambladorDTOCarrito();
+        }
+        return ensambladorDTOCarrito;
+    }
+
 }//===================================================================================================================//
 

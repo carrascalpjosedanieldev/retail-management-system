@@ -52,5 +52,8 @@ public class RutasVista {
     public static final String HISTORIAL_VENTAS_VIEW = "/vista/puntoDeVenta/HistorialVentas.fxml";
     public static final String ESTILOS_CSS_HISTORIAL_VENTAS = "/css/puntoDeVenta/estilosCssHistorialVentas.css";
 
+    public static final String MENU_DE_VENTAS_VIEW = "/vista/puntoDeVenta/MenuDeVentas.fxml";
+    public static final String ESTILOS_CSS_MENU_DE_VENTAS = "/css/puntoDeVenta/estilosCssMenuDeVentas.css";
+
 }
 

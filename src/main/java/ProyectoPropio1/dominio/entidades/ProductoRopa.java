@@ -58,6 +58,15 @@ public class ProductoRopa extends Producto{
     }
 
     @Override
+    public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
+        BigDecimal factorGanancia = getPorcentajeGanancia().divide(CIEN, 6, RoundingMode.HALF_UP);
+        BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
+        BigDecimal precioBase = getValorCompra().add(ganancia);
+        BigDecimal descuentoAplicado = calcularDescuento(precioBase, fecha);
+        return precioBase.subtract(descuentoAplicado);
+    }
+
+    @Override
     public void validarEstadoParaVenta(LocalDate fecha) {}
 
     @Override
