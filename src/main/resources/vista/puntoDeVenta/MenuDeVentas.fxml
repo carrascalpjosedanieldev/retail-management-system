@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="720.0" prefWidth="1280.0" styleClass="fondo-dashboard" stylesheets="@../../css/puntoDeVenta/estilosCssMenuDeVentas.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.puntoDeVenta.MenuDeVentasControlador">
+<BorderPane prefHeight="720.0" prefWidth="1280.0" styleClass="fondo-dashboard" stylesheets="@../../css/puntoDeVenta/estilosCssMenuDeVentas.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.puntoDeVenta.MenuDeVentasControlador">
 
     <top>
         <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="cabecera" BorderPane.alignment="CENTER">

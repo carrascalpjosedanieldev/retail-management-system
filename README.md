@@ -458,7 +458,7 @@ Basada en la separación de responsabilidades y el desacoplamiento entre la lóg
 src/
 main/
 java/
-SistemaDeGestionMinorista
+RetailManagementSystem
 │
 ├── aplicacion 
 │   ├── dto

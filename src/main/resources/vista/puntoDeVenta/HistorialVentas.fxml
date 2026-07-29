@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" prefHeight="450.0" prefWidth="500.0" spacing="25.0" styleClass="fondo-modal" stylesheets="@../../css/puntoDeVenta/estilosCssHistorialVentas.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.puntoDeVenta.HistorialVentasControlador">
+<VBox alignment="TOP_CENTER" prefHeight="450.0" prefWidth="500.0" spacing="25.0" styleClass="fondo-modal" stylesheets="@../../css/puntoDeVenta/estilosCssHistorialVentas.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.puntoDeVenta.HistorialVentasControlador">
 
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />

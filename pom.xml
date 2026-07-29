@@ -56,7 +56,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>ProyectoPropio1.Ejecutable</mainClass>
+                    <mainClass>RetailManagementSystem.Ejecutable</mainClass>
                 </configuration>
             </plugin>
         </plugins>

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../css/gestionarTienda/estilosCssPoliticasVencimiento.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ProyectoPropio1.vista.controladores.gestionarTienda.GestionPoliticasVencimientoControlador">
+<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../css/gestionarTienda/estilosCssPoliticasVencimiento.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.GestionPoliticasVencimientoControlador">
 
     <VBox style="-fx-padding: 40; -fx-spacing: 20;" styleClass="label-busqueda" HBox.hgrow="ALWAYS">
         <Label styleClass="titulo-principal" text="Gestión de Politicas de Vencimiento" />
