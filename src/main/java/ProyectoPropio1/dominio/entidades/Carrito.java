@@ -27,7 +27,7 @@ public class Carrito {
         return new Carrito();
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     public void agregarProducto(Producto producto, int cantidad){
         if (this.carritoFinal.containsKey(producto.getCodigo())){
@@ -88,5 +88,5 @@ public class Carrito {
         this.carritoFinal.clear();
     }
 
-}
+}//===================================================================================================================//
 

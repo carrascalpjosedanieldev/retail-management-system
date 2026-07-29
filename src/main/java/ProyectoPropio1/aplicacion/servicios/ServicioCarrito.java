@@ -71,7 +71,7 @@ public class ServicioCarrito {
     }
 
     public void cancelarCompraTotal(){
-        this.carrito.getItems().clear();
+        this.carrito.vaciarCarrito();
     }
 
 

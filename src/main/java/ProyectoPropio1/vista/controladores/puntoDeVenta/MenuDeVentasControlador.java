@@ -58,7 +58,7 @@ public class MenuDeVentasControlador {
         this.orquestadorVentas = orquestadorVentas;
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     private LocalDate obtenerFecha(){
         return LocalDate.now();
@@ -187,7 +187,7 @@ public class MenuDeVentasControlador {
 
 
     @FXML
-    public void agregarItem(javafx.event.ActionEvent event) {
+    public void agregarItem(ActionEvent event) {
         agregarItem();
     }
 
@@ -228,6 +228,10 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void eliminarItemSeleccionado(ActionEvent event) {
+        eliminarItemSeleccionado();
+    }
+
+    private void eliminarItemSeleccionado(){
         ItemCarritoDTO itemSeleccionado = tablaCarrito.getSelectionModel().getSelectedItem();
         if (itemSeleccionado == null) {
             return;
@@ -262,7 +266,39 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void cancelarVenta(ActionEvent event) {
+        cancelarVenta();
+    }
 
+    private void cancelarVenta(){
+        if (listaCarrito == null || listaCarrito.isEmpty()) {
+            return;
+        }
+        Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        alertaConfirmacion.setTitle("Cancelar Venta");
+        alertaConfirmacion.setHeaderText("¿Desea Cancelar Toda la Venta?");
+        alertaConfirmacion.setContentText("Se Eliminarán Todos los Productos del Carrito. Esta Acción NO se puede Deshacer.");
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
+        if (urlCss != null) {
+            alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        }
+        Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                this.orquestadorVentas.cancelarCompraTotal();
+                actualizarTablaYTotales();
+                mostrarAlertaError(Alert.AlertType.INFORMATION, "Venta Cancelada",
+                        "Se ha Cancelado la Venta y vaciado el Carrito con Éxito.");
+
+            } catch (Exception e) {
+                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Cancelar la Venta.";
+                mostrarAlertaError(Alert.AlertType.WARNING, "Error al Cancelar", mensaje);
+            } finally {
+                txtCodigo.clear();
+                txtCodigo.requestFocus();
+            }
+        } else {
+            txtCodigo.requestFocus();
+        }
     }
 
 
