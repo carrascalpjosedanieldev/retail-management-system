@@ -55,7 +55,19 @@ public class OrquestadorVentas {
             return;
         }
         if (this.servicioServicios.existeServicio(codigoItem)){
-            this.servicioCarrito.agregarServicioAlCarrito(codigoItem);
+            this.servicioCarrito.agregarServicioAlCarrito(codigoItem, 1);
+            return;
+        }
+        throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
+    }
+
+    public void aumentarCantidadItem(String codigoItem, int cantidad, LocalDate fecha){
+        if (this.servicioCarrito.productoEstaEnElCarrito(codigoItem)){
+            this.servicioCarrito.agregarProductoAlCarrito(codigoItem, cantidad, fecha);
+            return;
+        }
+        if (this.servicioCarrito.servicioEstaEnElCarrito(codigoItem)){
+            this.servicioCarrito.agregarServicioAlCarrito(codigoItem, cantidad);
             return;
         }
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");

@@ -31,6 +31,12 @@ public class ItemCarrito {
     //CONSTRUCTORES:
 
     private ItemCarrito(ItemFacturable itemFacturable, int cantidad) {
+        if (itemFacturable == null){
+            throw new IllegalArgumentException("Debe Haber un Item Valido para Agregar al Carrito");
+        }
+        if (cantidad<=0){
+            throw new IllegalArgumentException("La Cantidad del Item Carrito Debe Ser Positiva");
+        }
         this.itemFacturable = itemFacturable;
         this.cantidad = cantidad;
     }

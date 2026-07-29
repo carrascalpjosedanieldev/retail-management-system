@@ -310,7 +310,48 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void aumentarCantidadSeleccionada(ActionEvent event) {
+        aumentarCantidadSeleccionada();
+    }
 
+    private void aumentarCantidadSeleccionada(){
+        ItemCarritoDTO itemSeleccionado = tablaCarrito.getSelectionModel().getSelectedItem();
+        if (itemSeleccionado == null) {
+            return;
+        }
+        TextInputDialog dialogo = new TextInputDialog("1");
+        dialogo.setTitle("Aumentar Cantidad");
+        dialogo.setHeaderText("Aumentar unidades de: " + itemSeleccionado.nombreArticulo());
+        dialogo.setContentText("Ingrese la cantidad adicional a agregar:");
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
+        if (urlCss != null) {
+            dialogo.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        }
+        Optional<String> resultado = dialogo.showAndWait();
+        if (resultado.isPresent()) {
+            String entrada = resultado.get().trim();
+            try {
+                int cantidadAAumentar = Integer.parseInt(entrada);
+                if (cantidadAAumentar <= 0) {
+                    mostrarAlertaError(Alert.AlertType.WARNING, "Cantidad Inválida",
+                            "La Cantidad a Aumentar debe ser Mayor a Cero (0).");
+                    return;
+                }
+                this.orquestadorVentas.aumentarCantidadItem(
+                        itemSeleccionado.codigoArticulo(), cantidadAAumentar, obtenerFecha()
+                );
+                actualizarTablaYTotales();
+            } catch (NumberFormatException e) {
+                mostrarAlertaError(Alert.AlertType.WARNING, "Entrada Inválida",
+                        "Por favor, Ingrese un Número Entero Válido.");
+            } catch (Exception e) {
+                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Aumentar la Cantidad.";
+                mostrarAlertaError(Alert.AlertType.WARNING, "Error al Aumentar", mensaje);
+            } finally {
+                txtCodigo.requestFocus();
+            }
+        } else {
+            txtCodigo.requestFocus();
+        }
     }
 
 

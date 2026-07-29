@@ -1,5 +1,7 @@
 package ProyectoPropio1.dominio.entidades;
 
+import ProyectoPropio1.dominio.excepciones.StockInsuficienteException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -31,8 +33,18 @@ public class Carrito {
 
     public void agregarProducto(Producto producto, int cantidad){
         if (this.carritoFinal.containsKey(producto.getCodigo())){
+            int cantidadTotalSolicitada = this.carritoFinal.get(producto.getCodigo()).getCantidad() + cantidad;
+            if (cantidadTotalSolicitada > producto.getStock()){
+                throw new StockInsuficienteException("Stock del Producto -" + producto.getNombre() + "- Insuficiente\n" +
+                        "Cantidad Solicitada:  " + cantidadTotalSolicitada + ", Cantidad Existente:  " +
+                        producto.getStock());
+            }
             this.carritoFinal.get(producto.getCodigo()).aumentarCantidad(cantidad);
             return;
+        }
+        if (cantidad > producto.getStock()){
+            throw new StockInsuficienteException("Stock del Producto -" + producto.getNombre() + "- Insuficiente\n" +
+                    "Cantidad Solicitada:  " + cantidad + ", Cantidad Existente:  " + producto.getStock());
         }
         ItemCarrito itemCarrito = ItemCarrito.crearNuevo(producto, cantidad);
         this.carritoFinal.put(producto.getCodigo(), itemCarrito);
@@ -52,12 +64,12 @@ public class Carrito {
         this.carritoFinal.remove(codigoProducto);
     }
 
-    public void agregarServicio(Servicio servicio){
+    public void agregarServicio(Servicio servicio, int cantidad){
         if (this.carritoFinal.containsKey(servicio.getCodigo())){
-            this.carritoFinal.get(servicio.getCodigo()).aumentarCantidad(1);
+            this.carritoFinal.get(servicio.getCodigo()).aumentarCantidad(cantidad);
             return;
         }
-        ItemCarrito itemCarrito = ItemCarrito.crearNuevo(servicio, 1);
+        ItemCarrito itemCarrito = ItemCarrito.crearNuevo(servicio, cantidad);
         this.carritoFinal.put(servicio.getCodigo(), itemCarrito);
     }
 

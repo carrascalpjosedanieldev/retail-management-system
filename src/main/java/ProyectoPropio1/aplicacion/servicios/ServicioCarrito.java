@@ -3,6 +3,7 @@ package ProyectoPropio1.aplicacion.servicios;
 import ProyectoPropio1.dominio.entidades.Carrito;
 import ProyectoPropio1.dominio.entidades.Producto;
 import ProyectoPropio1.dominio.entidades.Servicio;
+import ProyectoPropio1.dominio.enums.TipoItem;
 
 import java.time.LocalDate;
 
@@ -46,16 +47,19 @@ public class ServicioCarrito {
     }
 
     public boolean productoEstaEnElCarrito(String codigoProducto){
-        return this.carrito.getItems().containsKey(codigoProducto);
+        if (this.carrito.getItems().containsKey(codigoProducto)){
+            return this.carrito.getItems().get(codigoProducto).getItemFacturable().getTipoItem() == TipoItem.PRODUCTO;
+        }
+        return false;
     }
 
     public void eliminarProductoAlCarrito(String codigoProducto){
         this.carrito.eliminarProducto(codigoProducto);
     }
 
-    public void agregarServicioAlCarrito(String codigoServicio){
+    public void agregarServicioAlCarrito(String codigoServicio, int cantidad){
         Servicio servicio = this.servicioServicios.obtenerServicio(codigoServicio);
-        this.carrito.agregarServicio(servicio);
+        this.carrito.agregarServicio(servicio, cantidad);
     }
 
     public void reducirCantidadServicio(String codigoServicio, int cantidadAReducir){
@@ -63,7 +67,10 @@ public class ServicioCarrito {
     }
 
     public boolean servicioEstaEnElCarrito(String codigoServicio){
-        return this.carrito.getItems().containsKey(codigoServicio);
+        if (this.carrito.getItems().containsKey(codigoServicio)){
+            return this.carrito.getItems().get(codigoServicio).getItemFacturable().getTipoItem() == TipoItem.SERVICIO;
+        }
+        return false;
     }
 
     public void eliminarServicioAlCarrito(String codigoServicio){

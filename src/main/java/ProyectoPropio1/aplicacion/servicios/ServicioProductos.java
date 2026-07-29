@@ -117,5 +117,5 @@ public class ServicioProductos {
         return this.repositorioProducto.obtenerProductosPerecederoPorInventario(idInventario);
     }
 
-}
+}//===================================================================================================================//
 
