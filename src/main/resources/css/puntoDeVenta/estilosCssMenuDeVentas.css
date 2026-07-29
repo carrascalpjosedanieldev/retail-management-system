@@ -218,3 +218,121 @@
     -fx-table-cell-border-color: transparent;
 }
 
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1px;
+}
+
+.dialog-pane .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-font-smoothing-type: lcd;
+}
+
+.dialog-pane:header .header-panel {
+    -fx-background-color: #ffffff;
+    -fx-padding: 15px 20px;
+}
+
+.dialog-pane:header .header-panel .label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #0f172a;
+}
+
+.dialog-pane > .content.label {
+    -fx-padding: 15px 20px;
+    -fx-font-weight: normal;
+    -fx-wrap-text: true;
+}
+
+.dialog-pane .text-field {
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-padding: 8;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-font-smoothing-type: lcd;
+}
+
+.dialog-pane .text-field:hover {
+    -fx-border-color: #94a3b8;
+}
+
+.dialog-pane .text-field:focused {
+    -fx-border-color: #475569;
+    -fx-effect: dropshadow(three-pass-box, rgba(71, 85, 105, 0.15), 4, 0.0, 0, 1);
+}
+
+.dialog-pane .combo-box {
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.dialog-pane .combo-box:hover {
+    -fx-border-color: #94a3b8;
+}
+
+.dialog-pane .combo-box:focused {
+    -fx-border-color: #475569;
+}
+
+.dialog-pane > .button-bar > .container {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 15px;
+}
+
+.dialog-pane .button {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 18px;
+    -fx-background-radius: 6;
+    -fx-border-color: #0f172a;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 6, 0.0, 0, 2);
+    -fx-font-smoothing-type: lcd;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #34495e;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
+}
+
+.dialog-pane .button:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0.0, 0, 0);
+}
+
+.dialog-pane .button:cancel {
+    -fx-background-color: #64748b;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #475569;
+    -fx-border-width: 2px;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 6, 0.0, 0, 2);
+}
+
+.dialog-pane .button:cancel:hover {
+    -fx-background-color: #475569;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
+}
+
+.dialog-pane .button:cancel:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0.0, 0, 0);
+}
+

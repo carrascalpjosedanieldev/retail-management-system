@@ -45,6 +45,10 @@ public class ServicioCarrito {
         this.carrito.reducirCantidadProducto(codigoProducto, cantidadAreducir);
     }
 
+    public boolean productoEstaEnElCarrito(String codigoProducto){
+        return this.carrito.getItems().containsKey(codigoProducto);
+    }
+
     public void eliminarProductoAlCarrito(String codigoProducto){
         this.carrito.eliminarProducto(codigoProducto);
     }
@@ -56,6 +60,10 @@ public class ServicioCarrito {
 
     public void reducirCantidadServicio(String codigoServicio, int cantidadAReducir){
         this.carrito.reducirCantidadServicio(codigoServicio, cantidadAReducir);
+    }
+
+    public boolean servicioEstaEnElCarrito(String codigoServicio){
+        return this.carrito.getItems().containsKey(codigoServicio);
     }
 
     public void eliminarServicioAlCarrito(String codigoServicio){

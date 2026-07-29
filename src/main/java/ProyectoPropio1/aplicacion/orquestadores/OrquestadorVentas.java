@@ -43,6 +43,12 @@ public class OrquestadorVentas {
         this.servicioCarrito.abrirCarritoSesion();
     }
 
+    public VistaPreviaCarritoDTO obtenerVistaPreviaCarrito(LocalDate fecha){
+        return this.ensambladorDTOCarrito.ensamblarVistaPreviaCarritoDTO(
+                this.servicioCarrito.getCarrito(), fecha
+        );
+    }
+
     public void agregarItemAlCarrito(String codigoItem, LocalDate fecha){
         if (this.servicioProductos.existeProducto(codigoItem)){
             this.servicioCarrito.agregarProductoAlCarrito(codigoItem, 1, fecha);
@@ -55,10 +61,20 @@ public class OrquestadorVentas {
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
     }
 
-    public VistaPreviaCarritoDTO obtenerVistaPreviaCarrito(LocalDate fecha){
-        return this.ensambladorDTOCarrito.ensamblarVistaPreviaCarritoDTO(
-                this.servicioCarrito.getCarrito(), fecha
-        );
+    public void eliminarItemDelCarrito(String codigoItem){
+        if (this.servicioCarrito.productoEstaEnElCarrito(codigoItem)){
+            this.servicioCarrito.eliminarProductoAlCarrito(codigoItem);
+            return;
+        }
+        if (this.servicioCarrito.servicioEstaEnElCarrito(codigoItem)){
+            this.servicioCarrito.eliminarServicioAlCarrito(codigoItem);
+            return;
+        }
+        throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
+    }
+
+    public void cancelarCompraTotal(){
+        this.servicioCarrito.cancelarCompraTotal();
     }
 
     public Factura procesarVentaYObtenerFactura(Carrito carrito, LocalDate fecha){

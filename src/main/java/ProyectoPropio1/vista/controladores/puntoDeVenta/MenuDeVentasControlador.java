@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class MenuDeVentasControlador {
 
@@ -62,6 +63,19 @@ public class MenuDeVentasControlador {
     private LocalDate obtenerFecha(){
         return LocalDate.now();
     }
+
+    private void mostrarAlertaError(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
+        if (urlCss != null) {
+            alert.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        }
+        alert.showAndWait();
+    }
+
 
     @FXML
     public void initialize() {
@@ -127,6 +141,28 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void volverAlMenu(ActionEvent event) {
+        if (listaCarrito != null && !listaCarrito.isEmpty()) {
+            Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            alertaConfirmacion.setTitle("Venta en Curso");
+            alertaConfirmacion.setHeaderText("¿Está Seguro de que desea Salir?");
+            alertaConfirmacion.setContentText("""
+                    Tiene ítems en el Carrito. Si sale Ahora, se Cancelará la Venta y Perderá Todo el Progreso.
+                    
+                    ¿Desea Continuar y Salir?""");
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
+            if (urlCss != null) {
+                alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+            }
+            Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
+            if (resultado.isEmpty() || resultado.get() != ButtonType.OK) {
+                return;
+            }
+            try {
+                orquestadorVentas.cancelarCompraTotal();
+            } catch (Exception e) {
+                System.out.println("No se pudo limpiar el carrito en el backend: " + e.getMessage());
+            }
+        }
         try {
             Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
             CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
@@ -152,6 +188,10 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void agregarItem(javafx.event.ActionEvent event) {
+        agregarItem();
+    }
+
+    private void agregarItem(){
         String codigo = txtCodigo.getText().trim();
         if (codigo.isEmpty()) {
             return;
@@ -161,7 +201,7 @@ public class MenuDeVentasControlador {
             actualizarTablaYTotales();
             txtCodigo.clear();
         } catch (Exception e) {
-            mostrarAlertaError("Error al agregar", e.getMessage());
+            mostrarAlertaError(Alert.AlertType.WARNING, "Error al agregar", e.getMessage());
             txtCodigo.selectAll();
         } finally {
             txtCodigo.requestFocus();
@@ -169,13 +209,13 @@ public class MenuDeVentasControlador {
     }
 
     private void actualizarTablaYTotales() {
-        List<ItemCarritoDTO> itemsDelDominio = this.orquestadorVentas
+        List<ItemCarritoDTO> itemsDelCarrito = this.orquestadorVentas
                 .obtenerVistaPreviaCarrito(obtenerFecha())
                 .carritoItems();
-        listaCarrito.setAll(itemsDelDominio);
+        listaCarrito.setAll(itemsDelCarrito);
         BigDecimal subtotalVenta = BigDecimal.ZERO;
         BigDecimal impuestos = BigDecimal.ZERO;
-        for (ItemCarritoDTO item : itemsDelDominio) {
+        for (ItemCarritoDTO item : itemsDelCarrito) {
             subtotalVenta = subtotalVenta.add(item.subtotal());
             impuestos = impuestos.add(item.impuestos());
         }
@@ -185,38 +225,58 @@ public class MenuDeVentasControlador {
         lblTotalGeneral.setText(FormateadorNumeros.formatoMoneda(totalGeneral));
     }
 
-    private void mostrarAlertaError(String titulo, String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        alert.showAndWait();
-    }
-
-
-
-
-
 
     @FXML
     public void eliminarItemSeleccionado(ActionEvent event) {
-
+        ItemCarritoDTO itemSeleccionado = tablaCarrito.getSelectionModel().getSelectedItem();
+        if (itemSeleccionado == null) {
+            return;
+        }
+        Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        alertaConfirmacion.setTitle("Confirmar Eliminación");
+        alertaConfirmacion.setHeaderText("¿Eliminar ítem?");
+        alertaConfirmacion.setContentText("¿Está seguro de que desea retirar -" + itemSeleccionado.nombreArticulo() +
+                "- del carrito?");
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
+        if (urlCss != null) {
+            alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        }
+        Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
+        if (resultado.isEmpty() || resultado.get() != ButtonType.OK) {
+            txtCodigo.requestFocus();
+            return;
+        }
+        try {
+            this.orquestadorVentas.eliminarItemDelCarrito(itemSeleccionado.codigoArticulo());
+            mostrarAlertaError(Alert.AlertType.INFORMATION, "Éxito",
+                    "Item Eliminado del Carrito con Éxito ");
+            actualizarTablaYTotales();
+        } catch (Exception e) {
+            String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Eliminar el ítem.";
+            mostrarAlertaError(Alert.AlertType.WARNING, "Error al Eliminar", mensaje);
+        } finally {
+            txtCodigo.requestFocus();
+        }
     }
+
 
     @FXML
     public void cancelarVenta(ActionEvent event) {
 
     }
 
+
     @FXML
     public void procesarVenta(ActionEvent event) {
 
     }
 
+
     @FXML
     public void aumentarCantidadSeleccionada(ActionEvent event) {
 
     }
+
 
     @FXML
     public void reducirCantidadSeleccionada(ActionEvent event) {
