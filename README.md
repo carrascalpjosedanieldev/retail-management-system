@@ -426,3 +426,108 @@ Para más comodidad las instrucciones también están en text application.proper
 ### 4. Ejecutar el proyecto
 
 Abre el proyecto con tu IDE preferido compatible con Maven (IntelliJ IDEA), espera a que Maven descargue las dependencias y ejecuta la clase principal de la aplicación.
+
+
+## Arquitectura
+
+### Descripción General
+
+El sistema está organizado siguiendo una arquitectura por capas, donde cada componente posee una responsabilidad claramente definida. La interfaz gráfica se encarga exclusivamente de la interacción con el usuario, la lógica de negocio se concentra en la capa de servicios y el acceso a los datos se encuentra desacoplado mediante puertos e implementaciones específicas para MySQL.
+
+Esta organización favorece la separación de responsabilidades, facilita el mantenimiento del código y permite modificar o reemplazar componentes sin afectar el resto de la aplicación.
+
+### Arquitectura por capas
+
+Basada en la separación de responsabilidades y el desacoplamiento entre la lógica de negocio, la persistencia y la interfaz gráfica.
+
+<p>
+  <img src="docs/images/Diagrama_Arquitectura_de_Capas.png" alt="Arquitectura por capas" width="404">
+</p>
+
+**Figura 1.** Arquitectura general del sistema organizada por capas. Cada capa depende únicamente de la inmediatamente inferior, favoreciendo el desacoplamiento entre la interfaz de usuario, la lógica de negocio y la infraestructura de persistencia.
+
+|                                                                                                                                      Flujo de una petición                                                                                                                                      |                                                                                                                                Flujo de una respuesta                                                                                                                                 |
+|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|                                                                                                                 <img src="docs/images/Diagrama_Flujo_Peticion.png" width="340">                                                                                                                 |                                                                                                           <img src="docs/images/Diagrama_Flujo_Respuesta.png" width="340">                                                                                                            |
+| **Figura 2.** Flujo de una petición desde la interacción del usuario hasta la ejecución de una operación en la base de datos. Cada capa realiza únicamente las responsabilidades que le corresponden, manteniendo el desacoplamiento entre la interfaz, la lógica de negocio y la persistencia. | **Figura 3.** Flujo de una respuesta desde la persistencia hasta la interfaz de usuario. Antes de llegar a la capa de presentación, las entidades del dominio son transformadas en DTO mediante ensambladores para evitar que la interfaz manipule directamente el modelo de dominio. |
+
+### Estructura de paquetes
+
+**Código Fuente**
+```text
+src/
+main/
+java/
+SistemaDeGestionMinorista
+│
+├── aplicacion 
+│   ├── dto
+│   ├── ensambladores
+│   ├── fabricas
+│   ├── orquestadores
+│   └── servicios
+│
+├── dominio
+│   ├── entidades
+│   ├── enums
+│   ├── excepciones
+│   └── puertos
+│
+├── infraestructura
+│   ├── inyeccion
+│   └── persistencia.mysql
+│
+├── vista
+│   ├── controladores
+│   │   ├── gestionarTienda
+│   │   ├── menuPrincipal
+│   │   └── puntoDeVenta
+│   └── utilidades
+│
+├── App
+└── Ejecutable
+```
+
+**Recursos**
+```text
+src/
+main/
+resources
+│
+├── vista
+│   ├── gestionarTienda
+│   ├── menuPrincipal
+│   └── puntoDeVenta
+│
+├── css
+│   ├── gestionarTienda
+│   ├── menuPrincipal
+│   └── puntoDeVenta
+│
+├── application.properties
+└── application.example.properties
+```
+
+La estructura del proyecto está organizada siguiendo una arquitectura por capas. Cada paquete agrupa componentes con una responsabilidad específica, favoreciendo la separación de responsabilidades y el desacoplamiento entre la interfaz de usuario, la lógica de negocio, el dominio y la infraestructura.
+
+| Paquete              | Responsabilidad                                                                                                       |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------|
+| `aplicacion`         | Contiene los servicios, orquestadores, DTO, ensambladores y fábricas que coordinan los casos de uso de la aplicación. |
+| `dominio`            | Define las entidades, puertos, enumeraciones y excepciones del dominio.                                               |
+| `infraestructura`    | Implementa la persistencia mediante JDBC/MySQL y la configuración técnica de la aplicación.                           |
+| `vista`              | Contiene los controladores JavaFX y las utilidades relacionadas con la interfaz gráfica.                              |
+
+
+## Tecnologías Utilizadas
+
+| Tecnología    | Uso                                                  |
+|---------------|------------------------------------------------------|
+| Java 26       | Lenguaje principal del proyecto.                     |
+| JavaFX        | Interfaz gráfica de usuario.                         |
+| JDBC          | Persistencia de datos y acceso a la base de datos.   |
+| MySQL         | Sistema gestor de base de datos.                     |
+| Maven         | Gestión de dependencias y construcción del proyecto. |
+| CSS           | Personalización de la interfaz JavaFX.               |
+| IntelliJ IDEA | Entorno de desarrollo utilizado.                     |
+| Git / GitHub  | Control de versiones y alojamiento del código.       |
+
