@@ -73,6 +73,19 @@ public class OrquestadorVentas {
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
     }
 
+    public void reducirCantidadItem(String codigoItem, int cantidadAReducir){
+        if (this.servicioCarrito.productoEstaEnElCarrito(codigoItem)){
+            this.servicioCarrito.reducirCantidadProducto(codigoItem, cantidadAReducir);
+            return;
+        }
+        if (this.servicioCarrito.servicioEstaEnElCarrito(codigoItem)){
+            this.servicioCarrito.reducirCantidadServicio(codigoItem, cantidadAReducir);
+            return;
+        }
+        throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
+
+    }
+
     public void eliminarItemDelCarrito(String codigoItem){
         if (this.servicioCarrito.productoEstaEnElCarrito(codigoItem)){
             this.servicioCarrito.eliminarProductoAlCarrito(codigoItem);
@@ -89,7 +102,8 @@ public class OrquestadorVentas {
         this.servicioCarrito.cancelarCompraTotal();
     }
 
-    public Factura procesarVentaYObtenerFactura(Carrito carrito, LocalDate fecha){
+    public Factura procesarVentaYObtenerFactura(LocalDate fecha){
+        Carrito carrito = this.servicioCarrito.getCarrito();
         if (carrito.getItems().isEmpty()){
             throw new CarritoVacioException("No se puede Procesar una Venta con un Carrito Vacío");
         }

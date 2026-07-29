@@ -357,7 +357,48 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void reducirCantidadSeleccionada(ActionEvent event) {
+        reducirCantidadSeleccionada();
+    }
 
+    private void reducirCantidadSeleccionada(){
+        ItemCarritoDTO itemSeleccionado = tablaCarrito.getSelectionModel().getSelectedItem();
+        if (itemSeleccionado == null) {
+            return;
+        }
+        TextInputDialog dialogo = new TextInputDialog("1");
+        dialogo.setTitle("Reducir Cantidad");
+        dialogo.setHeaderText("Reducir unidades de: " + itemSeleccionado.nombreArticulo());
+        dialogo.setContentText("Ingrese la cantidad a reducir:");
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
+        if (urlCss != null) {
+            dialogo.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        }
+        Optional<String> resultado = dialogo.showAndWait();
+        if (resultado.isPresent()) {
+            String entrada = resultado.get().trim();
+            try {
+                int cantidadAReducir = Integer.parseInt(entrada);
+                if (cantidadAReducir <= 0) {
+                    mostrarAlertaError(Alert.AlertType.WARNING, "Cantidad Inválida",
+                            "La cantidad a reducir debe ser mayor a cero (0).");
+                    return;
+                }
+                this.orquestadorVentas.reducirCantidadItem(
+                        itemSeleccionado.codigoArticulo(), cantidadAReducir
+                );
+                actualizarTablaYTotales();
+            } catch (NumberFormatException e) {
+                mostrarAlertaError(Alert.AlertType.WARNING, "Entrada Inválida",
+                        "Por favor, ingrese un número entero válido.");
+            } catch (Exception e) {
+                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al intentar reducir la cantidad.";
+                mostrarAlertaError(Alert.AlertType.WARNING, "Error al Reducir", mensaje);
+            } finally {
+                txtCodigo.requestFocus();
+            }
+        } else {
+            txtCodigo.requestFocus();
+        }
     }
 
 

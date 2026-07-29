@@ -66,7 +66,7 @@ public class ItemCarrito {
         }
         int cantidadTotal = getCantidad() - cantidadAReducir;
         if (cantidadTotal <= 0){
-            throw new StockInsuficienteException("La Cantidad de Producto a Reducir es Mayor o Igual a la Cantidad Existente");
+            throw new StockInsuficienteException("La Cantidad a Reducir es Mayor o Igual a la Cantidad Existente");
         }
         setCantidad(cantidadTotal);
     }
