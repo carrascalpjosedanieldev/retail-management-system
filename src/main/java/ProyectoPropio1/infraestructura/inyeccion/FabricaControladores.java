@@ -124,6 +124,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                             FabricaServicios.obtenerServicioCarrito(),
                             FabricaServicios.obtenerServicioProductos(),
                             FabricaServicios.obtenerServicioServicios(),
+                            FabricaEnsambladores.obtenerEnsambladorDTOFactura(),
                             FabricaEnsambladores.obtenerEnsambladorDTOCarrito()
                     )
             );

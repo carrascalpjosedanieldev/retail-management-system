@@ -2,6 +2,7 @@ package ProyectoPropio1.vista.controladores.puntoDeVenta;
 
 import ProyectoPropio1.aplicacion.dto.ItemCarritoDTO;
 import ProyectoPropio1.aplicacion.orquestadores.OrquestadorVentas;
+import ProyectoPropio1.dominio.entidades.SesionVenta;
 import ProyectoPropio1.vista.utilidades.CargadorVistas;
 import ProyectoPropio1.vista.utilidades.FormateadorNumeros;
 import ProyectoPropio1.vista.utilidades.RutasVista;
@@ -51,6 +52,8 @@ public class MenuDeVentasControlador {
     private final OrquestadorVentas orquestadorVentas;
 
     private ObservableList<ItemCarritoDTO> listaCarrito;
+
+    private SesionVenta sesionVenta;
 
     //CONSTRUCTOR:
 
@@ -128,7 +131,7 @@ public class MenuDeVentasControlador {
             }
         });
         Platform.runLater(() -> txtCodigo.requestFocus());
-        this.orquestadorVentas.abrirCarritoSesion();
+        this.sesionVenta = this.orquestadorVentas.abrirVentaSesion();
         actualizarTotales();
     }
 
@@ -158,7 +161,7 @@ public class MenuDeVentasControlador {
                 return;
             }
             try {
-                orquestadorVentas.cancelarCompraTotal();
+                orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
             } catch (Exception e) {
                 System.out.println("No se pudo limpiar el carrito en el backend: " + e.getMessage());
             }
@@ -197,7 +200,7 @@ public class MenuDeVentasControlador {
             return;
         }
         try {
-            this.orquestadorVentas.agregarItemAlCarrito(codigo, obtenerFecha());
+            this.orquestadorVentas.agregarItemAlCarrito(this.sesionVenta, codigo, obtenerFecha());
             actualizarTablaYTotales();
             txtCodigo.clear();
         } catch (Exception e) {
@@ -210,7 +213,7 @@ public class MenuDeVentasControlador {
 
     private void actualizarTablaYTotales() {
         List<ItemCarritoDTO> itemsDelCarrito = this.orquestadorVentas
-                .obtenerVistaPreviaCarrito(obtenerFecha())
+                .obtenerVistaPreviaCarrito(this.sesionVenta, obtenerFecha())
                 .carritoItems();
         listaCarrito.setAll(itemsDelCarrito);
         BigDecimal subtotalVenta = BigDecimal.ZERO;
@@ -251,7 +254,7 @@ public class MenuDeVentasControlador {
             return;
         }
         try {
-            this.orquestadorVentas.eliminarItemDelCarrito(itemSeleccionado.codigoArticulo());
+            this.orquestadorVentas.eliminarItemDelCarrito(this.sesionVenta, itemSeleccionado.codigoArticulo());
             mostrarAlertaError(Alert.AlertType.INFORMATION, "Éxito",
                     "Item Eliminado del Carrito con Éxito ");
             actualizarTablaYTotales();
@@ -284,7 +287,7 @@ public class MenuDeVentasControlador {
         Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             try {
-                this.orquestadorVentas.cancelarCompraTotal();
+                this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
                 actualizarTablaYTotales();
                 mostrarAlertaError(Alert.AlertType.INFORMATION, "Venta Cancelada",
                         "Se ha Cancelado la Venta y vaciado el Carrito con Éxito.");
@@ -299,12 +302,6 @@ public class MenuDeVentasControlador {
         } else {
             txtCodigo.requestFocus();
         }
-    }
-
-
-    @FXML
-    public void procesarVenta(ActionEvent event) {
-
     }
 
 
@@ -337,7 +334,7 @@ public class MenuDeVentasControlador {
                     return;
                 }
                 this.orquestadorVentas.aumentarCantidadItem(
-                        itemSeleccionado.codigoArticulo(), cantidadAAumentar, obtenerFecha()
+                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidadAAumentar, obtenerFecha()
                 );
                 actualizarTablaYTotales();
             } catch (NumberFormatException e) {
@@ -384,7 +381,7 @@ public class MenuDeVentasControlador {
                     return;
                 }
                 this.orquestadorVentas.reducirCantidadItem(
-                        itemSeleccionado.codigoArticulo(), cantidadAReducir
+                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidadAReducir
                 );
                 actualizarTablaYTotales();
             } catch (NumberFormatException e) {
@@ -399,6 +396,12 @@ public class MenuDeVentasControlador {
         } else {
             txtCodigo.requestFocus();
         }
+    }
+
+
+    @FXML
+    public void procesarVenta(ActionEvent event) {
+
     }
 
 

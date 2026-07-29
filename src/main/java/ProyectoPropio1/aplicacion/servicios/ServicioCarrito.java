@@ -15,14 +15,6 @@ public class ServicioCarrito {
 
     private final ServicioServicios servicioServicios;
 
-    private Carrito carrito;
-
-    //GETTERS Y SETTERS:
-
-    public Carrito getCarrito() {
-        return carrito;
-    }
-
     //CONSTRUCTOR:
 
     public ServicioCarrito(ServicioProductos servicioProductos, ServicioServicios servicioServicios) {
@@ -32,53 +24,49 @@ public class ServicioCarrito {
 
     //MÉTODOS:
 
-    public void abrirCarritoSesion(){
-        this.carrito = Carrito.crearNueva();
-    }
-
-    public void agregarProductoAlCarrito(String codigoProducto, int cantidad, LocalDate fecha){
+    public void agregarProductoAlCarrito(Carrito carrito, String codigoProducto, int cantidad, LocalDate fecha){
         Producto producto = this.servicioProductos.obtenerProductoActivoParaLaVenta(codigoProducto);
         producto.validarEstadoParaVenta(fecha);
-        this.carrito.agregarProducto(producto, cantidad);
+        carrito.agregarProducto(producto, cantidad);
     }
 
-    public void reducirCantidadProducto(String codigoProducto, int cantidadAreducir){
-        this.carrito.reducirCantidadProducto(codigoProducto, cantidadAreducir);
+    public void reducirCantidadProducto(Carrito carrito, String codigoProducto, int cantidadAreducir){
+        carrito.reducirCantidadProducto(codigoProducto, cantidadAreducir);
     }
 
-    public boolean productoEstaEnElCarrito(String codigoProducto){
-        if (this.carrito.getItems().containsKey(codigoProducto)){
-            return this.carrito.getItems().get(codigoProducto).getItemFacturable().getTipoItem() == TipoItem.PRODUCTO;
+    public boolean productoEstaEnElCarrito(Carrito carrito, String codigoProducto){
+        if (carrito.getItems().containsKey(codigoProducto)){
+            return carrito.getItems().get(codigoProducto).getItemFacturable().getTipoItem() == TipoItem.PRODUCTO;
         }
         return false;
     }
 
-    public void eliminarProductoAlCarrito(String codigoProducto){
-        this.carrito.eliminarProducto(codigoProducto);
+    public void eliminarProductoAlCarrito(Carrito carrito, String codigoProducto){
+        carrito.eliminarProducto(codigoProducto);
     }
 
-    public void agregarServicioAlCarrito(String codigoServicio, int cantidad){
+    public void agregarServicioAlCarrito(Carrito carrito, String codigoServicio, int cantidad){
         Servicio servicio = this.servicioServicios.obtenerServicio(codigoServicio);
-        this.carrito.agregarServicio(servicio, cantidad);
+        carrito.agregarServicio(servicio, cantidad);
     }
 
-    public void reducirCantidadServicio(String codigoServicio, int cantidadAReducir){
-        this.carrito.reducirCantidadServicio(codigoServicio, cantidadAReducir);
+    public void reducirCantidadServicio(Carrito carrito, String codigoServicio, int cantidadAReducir){
+        carrito.reducirCantidadServicio(codigoServicio, cantidadAReducir);
     }
 
-    public boolean servicioEstaEnElCarrito(String codigoServicio){
-        if (this.carrito.getItems().containsKey(codigoServicio)){
-            return this.carrito.getItems().get(codigoServicio).getItemFacturable().getTipoItem() == TipoItem.SERVICIO;
+    public boolean servicioEstaEnElCarrito(Carrito carrito, String codigoServicio){
+        if (carrito.getItems().containsKey(codigoServicio)){
+            return carrito.getItems().get(codigoServicio).getItemFacturable().getTipoItem() == TipoItem.SERVICIO;
         }
         return false;
     }
 
-    public void eliminarServicioAlCarrito(String codigoServicio){
-        this.carrito.eliminarServicio(codigoServicio);
+    public void eliminarServicioAlCarrito(Carrito carrito, String codigoServicio){
+        carrito.eliminarServicio(codigoServicio);
     }
 
-    public void cancelarCompraTotal(){
-        this.carrito.vaciarCarrito();
+    public void cancelarCompraTotal(Carrito carrito){
+        carrito.vaciarCarrito();
     }
 
 
