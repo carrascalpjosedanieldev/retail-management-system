@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+
+<AnchorPane prefHeight="775.0" prefWidth="486.0" styleClass="fondo-oscuro" stylesheets="@../../css/puntoDeVenta/estilosCssFacturaGenerada.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.puntoDeVenta.FacturaGeneradaControlador">
+
+    <VBox styleClass="ticket-papel" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
+        <VBox alignment="CENTER" spacing="5.0">
+            <VBox.margin>
+                <Insets bottom="10.0" top="10.0" />
+            </VBox.margin>
+            <Label fx:id="lblNombreTienda" styleClass="txt-titulo-empresa" text="Cargando..." />
+            <Label styleClass="txt-info-empresa" text="Comprobante de Venta" />
+            <Label styleClass="txt-info-empresa" text="Gracias por comprar" />
+            <Line endX="300.0" stroke="#cbd5e1" strokeDashArray="5, 5" />
+        </VBox>
+
+        <VBox spacing="2.0">
+            <HBox>
+                <Label styleClass="txt-negrita" text="Factura N°:" />
+                <Label fx:id="lblNumeroFactura" styleClass="txt-normal" text="000000" />
+            </HBox>
+            <HBox>
+                <Label styleClass="txt-negrita" text="Fecha:" />
+                <Label fx:id="lblFechaFactura" styleClass="txt-normal" text="DD/MM/YYYY HH:MM" />
+            </HBox>
+            <Line endX="372.09295654296875" endY="0.8929107785224915" stroke="#cbd5e1" strokeDashArray="5, 5" />
+        </VBox>
+
+        <TableView fx:id="tablaDetalle" prefHeight="250.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colCant" prefWidth="40.0" text="Cant" />
+                <TableColumn fx:id="colDesc" prefWidth="160.0" text="Descripción" />
+                <TableColumn fx:id="colPrecio" text="Precio" />
+                <TableColumn fx:id="colTotal" prefWidth="90.0" text="Total" />
+            </columns>
+        </TableView>
+
+        <Line endX="381.6929016113281" endY="0.5928810238838196" stroke="#cbd5e1" strokeDashArray="5, 5" />
+
+        <VBox alignment="TOP_RIGHT" spacing="5.0">
+            <VBox.margin>
+                <Insets bottom="15.0" top="10.0" />
+            </VBox.margin>
+            <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                <Label styleClass="txt-normal" text="Subtotal:" />
+                <Label fx:id="lblSubtotal" styleClass="txt-normal" text="0.00" />
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                <Label styleClass="txt-normal" text="Impuestos:" />
+                <Label fx:id="lblImpuestos" styleClass="txt-normal" text="0.00" />
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="15.0">
+                <Label styleClass="txt-total-grande" text="TOTAL:" />
+                <Label fx:id="lblTotal" styleClass="txt-total-grande" text="0.00" />
+            </HBox>
+        </VBox>
+
+        <VBox alignment="CENTER" spacing="15.0">
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+            <Label styleClass="txt-agradecimiento" text="¡Gracias por su compra!" />
+            <Button mnemonicParsing="false" onAction="#cerrarFactura" styleClass="btn-accion" text="Cerrar y Continuar" />
+        </VBox>
+
+    </VBox>
+</AnchorPane>

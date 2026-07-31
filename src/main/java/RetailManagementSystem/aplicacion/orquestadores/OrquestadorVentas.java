@@ -121,6 +121,7 @@ public class OrquestadorVentas {
             );
             itemsProcesadosConExito.add(itemVendido);
         }
+        sesionVenta.getCarrito().vaciarCarrito();
         return this.ensambladorDTOFactura.ensamblarFactura(
                 this.servicioFacturas.registrarVentaYObtenerFactura(itemsProcesadosConExito)
         );

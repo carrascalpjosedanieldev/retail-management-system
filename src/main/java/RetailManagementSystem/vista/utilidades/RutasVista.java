@@ -55,5 +55,8 @@ public class RutasVista {
     public static final String MENU_DE_VENTAS_VIEW = "/vista/puntoDeVenta/MenuDeVentas.fxml";
     public static final String ESTILOS_CSS_MENU_DE_VENTAS = "/css/puntoDeVenta/estilosCssMenuDeVentas.css";
 
+    public static final String FACTURA_GENERADA_VIEW = "/vista/puntoDeVenta/FacturaGenerada.fxml";
+    public static final String ESTILOS_CSS_FACTURA_GENERADA = "/css/puntoDeVenta/estilosCssFacturaGenerada.css";
+
 }
 

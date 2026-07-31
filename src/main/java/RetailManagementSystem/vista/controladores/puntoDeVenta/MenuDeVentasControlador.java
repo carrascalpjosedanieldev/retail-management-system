@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
+import RetailManagementSystem.aplicacion.dto.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.dominio.entidades.SesionVenta;
@@ -15,9 +16,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.beans.binding.Bindings;
 
@@ -67,7 +72,7 @@ public class MenuDeVentasControlador {
         return LocalDate.now();
     }
 
-    private void mostrarAlertaError(Alert.AlertType tipo, String titulo, String mensaje) {
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titulo);
         alert.setHeaderText(null);
@@ -204,7 +209,7 @@ public class MenuDeVentasControlador {
             actualizarTablaYTotales();
             txtCodigo.clear();
         } catch (Exception e) {
-            mostrarAlertaError(Alert.AlertType.WARNING, "Error al agregar", e.getMessage());
+            mostrarAlerta(Alert.AlertType.WARNING, "Error al agregar", e.getMessage());
             txtCodigo.selectAll();
         } finally {
             txtCodigo.requestFocus();
@@ -255,12 +260,12 @@ public class MenuDeVentasControlador {
         }
         try {
             this.orquestadorVentas.eliminarItemDelCarrito(this.sesionVenta, itemSeleccionado.codigoArticulo());
-            mostrarAlertaError(Alert.AlertType.INFORMATION, "Éxito",
+            mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                     "Item Eliminado del Carrito con Éxito ");
             actualizarTablaYTotales();
         } catch (Exception e) {
             String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Eliminar el ítem.";
-            mostrarAlertaError(Alert.AlertType.WARNING, "Error al Eliminar", mensaje);
+            mostrarAlerta(Alert.AlertType.WARNING, "Error al Eliminar", mensaje);
         } finally {
             txtCodigo.requestFocus();
         }
@@ -289,12 +294,12 @@ public class MenuDeVentasControlador {
             try {
                 this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
                 actualizarTablaYTotales();
-                mostrarAlertaError(Alert.AlertType.INFORMATION, "Venta Cancelada",
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Venta Cancelada",
                         "Se ha Cancelado la Venta y vaciado el Carrito con Éxito.");
 
             } catch (Exception e) {
                 String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Cancelar la Venta.";
-                mostrarAlertaError(Alert.AlertType.WARNING, "Error al Cancelar", mensaje);
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Cancelar", mensaje);
             } finally {
                 txtCodigo.clear();
                 txtCodigo.requestFocus();
@@ -329,7 +334,7 @@ public class MenuDeVentasControlador {
             try {
                 int cantidadAAumentar = Integer.parseInt(entrada);
                 if (cantidadAAumentar <= 0) {
-                    mostrarAlertaError(Alert.AlertType.WARNING, "Cantidad Inválida",
+                    mostrarAlerta(Alert.AlertType.WARNING, "Cantidad Inválida",
                             "La Cantidad a Aumentar debe ser Mayor a Cero (0).");
                     return;
                 }
@@ -338,11 +343,11 @@ public class MenuDeVentasControlador {
                 );
                 actualizarTablaYTotales();
             } catch (NumberFormatException e) {
-                mostrarAlertaError(Alert.AlertType.WARNING, "Entrada Inválida",
+                mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
                         "Por favor, Ingrese un Número Entero Válido.");
             } catch (Exception e) {
                 String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Aumentar la Cantidad.";
-                mostrarAlertaError(Alert.AlertType.WARNING, "Error al Aumentar", mensaje);
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Aumentar", mensaje);
             } finally {
                 txtCodigo.requestFocus();
             }
@@ -376,7 +381,7 @@ public class MenuDeVentasControlador {
             try {
                 int cantidadAReducir = Integer.parseInt(entrada);
                 if (cantidadAReducir <= 0) {
-                    mostrarAlertaError(Alert.AlertType.WARNING, "Cantidad Inválida",
+                    mostrarAlerta(Alert.AlertType.WARNING, "Cantidad Inválida",
                             "La cantidad a reducir debe ser mayor a cero (0).");
                     return;
                 }
@@ -385,11 +390,11 @@ public class MenuDeVentasControlador {
                 );
                 actualizarTablaYTotales();
             } catch (NumberFormatException e) {
-                mostrarAlertaError(Alert.AlertType.WARNING, "Entrada Inválida",
+                mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
                         "Por favor, ingrese un número entero válido.");
             } catch (Exception e) {
                 String mensaje = e.getMessage() != null ? e.getMessage() : "Error al intentar reducir la cantidad.";
-                mostrarAlertaError(Alert.AlertType.WARNING, "Error al Reducir", mensaje);
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Reducir", mensaje);
             } finally {
                 txtCodigo.requestFocus();
             }
@@ -401,7 +406,62 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void procesarVenta(ActionEvent event) {
+        procesarVenta();
+    }
 
+    private void procesarVenta(){
+        if (listaCarrito == null || listaCarrito.isEmpty()) {
+            return;
+        }
+        Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        alertaConfirmacion.setTitle("Confirmar Venta");
+        alertaConfirmacion.setHeaderText("¿Finalizar y registrar la venta?");
+        String total = lblTotalGeneral.getText();
+        alertaConfirmacion.setContentText("Se registrará la venta por un total de " + total + ".\n¿Está seguro de continuar?");
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
+        if (urlCss != null) {
+            alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        }
+        Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try {
+                FacturaDTO facturaGenerada = this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha());
+                mostrarVentanaFactura(facturaGenerada);
+                actualizarTablaYTotales();
+            } catch (Exception e) {
+                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al intentar procesar la venta.";
+                mostrarAlerta(Alert.AlertType.WARNING, "Error al Procesar", mensaje);
+            } finally {
+                txtCodigo.clear();
+                txtCodigo.requestFocus();
+            }
+        } else {
+            txtCodigo.requestFocus();
+        }
+    }
+
+    private void mostrarVentanaFactura(FacturaDTO factura) {
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.FACTURA_GENERADA_VIEW);
+            Parent root = loader.load();
+            FacturaGeneradaControlador controlador = loader.getController();
+            controlador.cargarFactura(factura);
+            Stage stageFactura = new Stage();
+            stageFactura.setTitle("Factura Generada - " + factura.numeroFactura());
+            stageFactura.initModality(Modality.APPLICATION_MODAL);
+            stageFactura.setResizable(false);
+            Scene escenaFactura = new Scene(root);
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_FACTURA_GENERADA);
+            if (urlCss != null) {
+                escenaFactura.getStylesheets().add(urlCss.toExternalForm());
+            }
+            stageFactura.setScene(escenaFactura);
+            stageFactura.showAndWait();
+        } catch (Exception e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Error al Mostrar Factura",
+                    "La Venta se registró Exitosamente, pero NO se pudo Generar la Vista Previa de la Factura.\n" +
+                            "Error: " + e.getMessage());
+        }
     }
 
 

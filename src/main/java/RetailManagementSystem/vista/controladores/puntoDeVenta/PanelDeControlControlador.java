@@ -52,16 +52,20 @@ public class PanelDeControlControlador {
 
     //MÉTODOS:
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
+    private void mostrarAlertaErrorNavegacion(String rutaSolicitada) {
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
+        alerta.setTitle("Error de Navegación");
+        alerta.setHeaderText("NO se pudo Cargar la Pantalla");
+        alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
+                "Ruta Solicitada: " + rutaSolicitada + "\n" +
+                "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
+        DialogPane panelAlerta = alerta.getDialogPane();
+        panelAlerta.setPrefSize(500, 280);
         URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
         if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        } else {
+            panelAlerta.setPrefSize(500, 180);
         }
         alerta.showAndWait();
     }
@@ -102,8 +106,17 @@ public class PanelDeControlControlador {
             lblCantidadFacturas.setText("0");
             lblTotalVentasHoy.setText("$ 0.00");
             lblUltimaVenta.setText("$ 0.00");
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al Cargar las Métricas",
-                    "Error:  " + e.getMessage());
+            Alert alerta = new Alert(Alert.AlertType.ERROR);
+            alerta.setTitle("Error al Cargar las Métricas");
+            alerta.setHeaderText(null);
+            alerta.setContentText("Error:  " + e.getMessage());
+            DialogPane pane = alerta.getDialogPane();
+            pane.setMinHeight(Region.USE_PREF_SIZE);
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
+            if (urlCss != null) {
+                pane.getStylesheets().add(urlCss.toExternalForm());
+            }
+            alerta.showAndWait();
         }
     }
 
@@ -114,21 +127,7 @@ public class PanelDeControlControlador {
             Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
             CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_DE_VENTAS_VIEW);
         } catch (Exception e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error de Navegación");
-            alerta.setHeaderText("NO se pudo Cargar la Pantalla");
-            alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
-                    "Ruta Solicitada: " + RutasVista.MENU_DE_VENTAS_VIEW + "\n" +
-                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
-            DialogPane panelAlerta = alerta.getDialogPane();
-            panelAlerta.setPrefSize(500, 280);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
-            if (urlCss != null) {
-                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            } else {
-                panelAlerta.setPrefSize(500, 180);
-            }
-            alerta.showAndWait();
+            mostrarAlertaErrorNavegacion(RutasVista.MENU_DE_VENTAS_VIEW);
         }
     }
 
@@ -145,21 +144,7 @@ public class PanelDeControlControlador {
             modalStage.setScene(scene);
             modalStage.showAndWait();
         } catch (Exception e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error de Navegación");
-            alerta.setHeaderText("NO se pudo Cargar la Pantalla");
-            alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
-                    "Ruta Solicitada: " + RutasVista.HISTORIAL_VENTAS_VIEW + "\n" +
-                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
-            DialogPane panelAlerta = alerta.getDialogPane();
-            panelAlerta.setPrefSize(500, 280);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
-            if (urlCss != null) {
-                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            } else {
-                panelAlerta.setPrefSize(500, 180);
-            }
-            alerta.showAndWait();
+            mostrarAlertaErrorNavegacion(RutasVista.HISTORIAL_VENTAS_VIEW);
         }
     }
 
@@ -170,21 +155,7 @@ public class PanelDeControlControlador {
             Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
             CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_PRINCIPAL_VIEW);
         } catch (Exception e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error de Navegación");
-            alerta.setHeaderText("NO se pudo Cargar la Pantalla");
-            alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
-                    "Ruta Solicitada: " + RutasVista.MENU_PRINCIPAL_VIEW + "\n" +
-                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
-            DialogPane panelAlerta = alerta.getDialogPane();
-            panelAlerta.setPrefSize(500, 280);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
-            if (urlCss != null) {
-                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            } else {
-                panelAlerta.setPrefSize(500, 180);
-            }
-            alerta.showAndWait();
+            mostrarAlertaErrorNavegacion(RutasVista.MENU_PRINCIPAL_VIEW);
         }
     }
 

@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.*;
 
+import RetailManagementSystem.vista.controladores.puntoDeVenta.FacturaGeneradaControlador;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.HistorialVentasControlador;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.MenuDeVentasControlador;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.PanelDeControlControlador;
@@ -127,6 +128,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                             FabricaEnsambladores.obtenerEnsambladorDTOFactura(),
                             FabricaEnsambladores.obtenerEnsambladorDTOCarrito()
                     )
+            );
+        }
+        if (claseControlador == FacturaGeneradaControlador.class){
+            return new FacturaGeneradaControlador(
+                    FabricaServicios.obtenerServicioConfiguraciones()
             );
         }
         try {
