@@ -334,7 +334,83 @@ The project structure is organized following a layered architecture. Each packag
 
 ---
 
-...
+## Screenshots
+
+### 1. Main Menu
+
+<p>
+    <img src="docs/images/spanish/Menu_Principal.png" alt="Main Menu" width="1605">
+</p>
+
+Entry point of the application. Provides centralized navigation to the main modules of the system, including store management and the point-of-sale module.
+
+### 2. Store Management
+
+<p>
+    <img src="docs/images/spanish/Gestion_Tienda.png" alt="Store Management" width="1611">
+</p>
+
+Central administration panel that provides access to the different management modules of the system. It allows independent management of configurations, inventories, services, taxes, discounts, and expiration policies from a single interface.
+
+### 3. Inventory Management
+
+<p>
+    <img src="docs/images/spanish/Gestion_Inventarios.png" alt="Inventory Management" width="1603">
+</p>
+
+Allows the management of the store's inventories by displaying their maximum capacity, occupied stock, and available space. From this module, users can create new inventories, modify existing ones, and manage the products stored in each inventory.
+
+### 4. Product Management
+
+<p>
+    <img src="docs/images/spanish/Gestion_Productos.png" alt="Product Management" width="1603">
+</p>
+
+Allows the management of the products stored in an inventory through both a general view and specialized views for each product type. Includes search, availability filters, stock management, inventory transfers, and logical activation/deactivation without compromising historical data.
+
+### 5. Service Management
+
+<p>
+    <img src="docs/images/spanish/Gestion_Servicios.png" alt="Service Management" width="1607">
+</p>
+
+Allows the management of the store's service catalog, including base prices, taxes, discounts, and availability status. Unlike products, services are not stored in inventories or managed through stock, while still participating in the same billing process.
+
+### 6. Commercial configurations
+
+<p>
+    <img src="docs/images/spanish/Configuraciones_Comerciales.png" alt="Commercial configurations" width="1605">
+</p>
+
+Module responsible for managing the business rules used throughout the system. It allows administrators to configure taxes, discounts, and expiration policies that are automatically applied during product and service management as well as the sales process, ensuring consistent calculations and business rules.
+
+### 7. POS (Point of Sale) Control Panel
+
+<p>
+    <img src="docs/images/spanish/Panel_De_Control_POS.png" alt="POS Control Panel" width="1607">
+</p>
+
+Main screen of the point-of-sale module. It displays a summary of the day's activity, including sales made, the number of invoices issued, and the value of the last sale. It also allows quick access to create a new sale and viewing the sales history.
+
+### 8. Customer Service (New Sale)
+
+<p>
+    <img src="docs/images/spanish/Atencion_Al_Cliente_Nueva_Venta.png" alt="Customer Service" width="1606">
+</p>
+
+Main point-of-sale screen used to process a new sale. It allows products to be added by their code, item quantities to be adjusted, products to be removed from the cart, and the subtotal, taxes, and total amount due to be updated in real time. From this interface, the cashier can also cancel the sale or complete the purchase to finalize the transaction.
+
+### 9. Collection Report
+
+<p>
+    <img src="docs/images/spanish/Reporte_Recaudo.png" alt="Reporte Recaudo" width="1607">
+</p>
+
+Revenue reporting window accessible from the Point of Sale module. It allows selecting a date range to calculate the number of issued invoices, collected subtotal, generated taxes, and total sales for the selected period.
+
+---
+
+## ...
 
 ---
 
@@ -666,4 +742,81 @@ La estructura del proyecto está organizada siguiendo una arquitectura por capas
 
 ---
 
-...
+## Capturas de Pantalla
+
+### 1. Menu Principal
+
+<p>
+  <img src="docs/images/spanish/Menu_Principal.png" alt="Menu Principal" width="1605">
+</p>
+
+Punto de entrada de la aplicación. Centraliza la navegación hacia los diferentes módulos del sistema y proporciona acceso a las funcionalidades principales de gestión y ventas.
+
+### 2. Gestion de la Tienda
+
+<p>
+  <img src="docs/images/spanish/Gestion_Tienda.png" alt="Gestion de la Tienda" width="1611">
+</p>
+
+Panel central de administración desde el que se accede a los diferentes módulos de gestión del sistema. Permite administrar configuraciones, inventarios, servicios, impuestos, descuentos y políticas de vencimiento desde una única interfaz.
+
+### 3. Gestion de Inventarios
+
+<p>
+  <img src="docs/images/spanish/Gestion_Inventarios.png" alt="Gestion de Inventarios" width="1603">
+</p>
+
+Permite administrar los inventarios de la tienda, consultar su capacidad máxima, el stock ocupado y el espacio disponible. Desde este módulo es posible crear nuevos inventarios, modificar su información y acceder a la gestión de los productos almacenados en cada uno.
+
+### 4. Gestion de Productos
+
+<p>
+  <img src="docs/images/spanish/Gestion_Productos.png" alt="Gestion de Productos" width="1603">
+</p>
+
+Permite administrar los productos de un inventario mediante una vista general y vistas especializadas por tipo de producto. Incluye búsqueda, filtros por disponibilidad, control de stock, transferencia entre inventarios y cambio de estado sin eliminar el historial de la información.
+
+### 5. Gestion de Servicios
+
+<p>
+  <img src="docs/images/spanish/Gestion_Servicios.png" alt="Gestion de Servicios" width="1607">
+</p>
+
+Permite administrar el catálogo de servicios ofrecidos por la tienda. Incluye la configuración de precios, impuestos, descuentos y estado de disponibilidad, manteniendo un proceso de facturación consistente con el de los productos.
+
+### 6. Configuraciones comerciales
+
+<p>
+  <img src="docs/images/spanish/Configuraciones_Comerciales.png" alt="Configuraciones comerciales" width="1605">
+</p>
+
+Módulo encargado de administrar las reglas comerciales utilizadas por el sistema. Permite gestionar impuestos, descuentos y políticas de vencimiento que se aplican automáticamente durante la administración de productos, servicios y el proceso de venta, garantizando la consistencia de los cálculos y las reglas de negocio.
+
+### 7. Panel de control POS (Punto de Venta)
+
+<p>
+  <img src="docs/images/spanish/Panel_De_Control_POS.png" alt="Panel de Control POS" width="1607">
+</p>
+
+Pantalla principal del módulo de punto de venta. Presenta un resumen de la actividad del día, incluyendo las ventas realizadas, el número de facturas emitidas y el valor de la última venta. Además, permite acceder rápidamente a la creación de una nueva venta y consultar el historial de ventas registradas.
+
+### 8. Atención al Cliente (Nueva Venta)
+
+<p>
+  <img src="docs/images/spanish/Atencion_Al_Cliente_Nueva_Venta.png" alt="Atención al cliente" width="1606">
+</p>
+
+Pantalla principal del proceso de venta. Permite agregar productos mediante su código, administrar las cantidades de cada artículo, eliminar productos del carrito y visualizar en tiempo real el subtotal, los impuestos y el total a pagar. Desde esta interfaz también es posible cancelar la venta o finalizar la compra para generar la transacción.
+
+### 9. Reporte de Recaudo
+
+<p>
+  <img src="docs/images/spanish/Reporte_Recaudo.png" alt="Reporte Recaudo" width="1607">
+</p>
+
+Ventana de generación de reportes de recaudo accesible desde el módulo Punto de Venta. Permite seleccionar un rango de fechas para calcular las facturas emitidas, el subtotal recaudado, los impuestos generados y el total de ventas correspondiente al período seleccionado.
+
+---
+
+## ...
+
