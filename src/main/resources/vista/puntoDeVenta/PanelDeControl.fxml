@@ -76,10 +76,9 @@
             <Label styleClass="texto-estado" text="|" />
             <Label styleClass="texto-estado" text="🖥 Terminal: Caja Principal 01" />
 
-            <!-- Este Region vacío con hgrow=ALWAYS empuja la versión hacia la derecha -->
             <Region HBox.hgrow="ALWAYS" />
 
-            <Label styleClass="texto-estado" text="Versión 1.0.0" />
+            <Label fx:id="lblVersion" styleClass="texto-estado" text="Cargando Version ..." />
         </HBox>
     </bottom>
 

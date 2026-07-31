@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 import RetailManagementSystem.aplicacion.dto.ResumenVentaDiaDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
 import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
+import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -38,6 +39,7 @@ public class PanelDeControlControlador {
     @FXML public Label lblCantidadFacturas;
     @FXML public Label lblTotalVentasHoy;
     @FXML public Label lblReloj;
+    @FXML public Label lblVersion;
 
     private final ServicioFacturas servicioFacturas;
 
@@ -75,6 +77,7 @@ public class PanelDeControlControlador {
     public void initialize() {
         iniciarReloj();
         cargarMetricasDelDia();
+        cargarVersionTienda();
     }
 
     private void iniciarReloj() {
@@ -115,6 +118,25 @@ public class PanelDeControlControlador {
             URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
             if (urlCss != null) {
                 pane.getStylesheets().add(urlCss.toExternalForm());
+            }
+            alerta.showAndWait();
+        }
+    }
+
+    private void cargarVersionTienda(){
+        try {
+            String version = InformacionAplicacion.obtenerVersion();
+            lblVersion.setText("Mi Tienda " + version);
+        } catch (Exception e) {
+            lblVersion.setText("Versión --");
+            Alert alerta = new Alert(Alert.AlertType.ERROR);
+            alerta.setTitle("Error de Carga");
+            alerta.setHeaderText("Error al Cargar la Version");
+            alerta.setContentText("NO se pudo Cargar la Versión en la Vista: " + e.getMessage());
+            DialogPane panelAlerta = alerta.getDialogPane();
+            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
+            if (urlCss != null) {
+                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
             }
             alerta.showAndWait();
         }

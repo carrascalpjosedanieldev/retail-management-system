@@ -1,6 +1,7 @@
 package RetailManagementSystem.vista.controladores.menuPrincipal;
 
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
+import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -25,6 +26,7 @@ public class MenuPrincipalControlador {
     //ATRIBUTOS:
 
     @FXML public Button btnSalir;
+    @FXML public Label lblVersion;
     @FXML private Label lblReloj;
     @FXML private Label lblNombreTienda;
 
@@ -67,6 +69,19 @@ public class MenuPrincipalControlador {
     public void initialize() {
         iniciarReloj();
         cargarNombreTienda();
+        cargarVersionTienda();
+    }
+
+    private void cargarVersionTienda(){
+        try {
+            String version = InformacionAplicacion.obtenerVersion();
+            lblVersion.setText("Mi Tienda " + version);
+        } catch (Exception e) {
+            lblVersion.setText("Mi Tienda Versión --");
+            mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga", "Error al Cargar la Version",
+                    "NO se pudo Cargar la Versión en la Vista: " + e.getMessage(),
+                    null, false);
+        }
     }
 
     private void iniciarReloj() {
@@ -94,7 +109,9 @@ public class MenuPrincipalControlador {
                 .exceptionally(ex -> {
                     Platform.runLater(() -> {
                         lblNombreTienda.setText("Tienda (Modo Offline)");
-                        System.err.println("Error al Cargar el Nombre de la Tienda: " + ex.getMessage());
+                        mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga", "Error al cargar el nombre de la Tienda",
+                                "NO se pudo Cargar el Nombre de la Tienda en la Vista: " + ex.getMessage(),
+                                null, false);
                     });
                     return null;
                 });
