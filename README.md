@@ -27,18 +27,18 @@ This project began as a console application with the goal of learning object-ori
 
 ## 🚧 Project status
 
-**Current Version:** Pre-release
+**Current Version:** 1.0.0
 
 | Module           | Status            |
 |------------------|-------------------|
 | Store Management | ✅ Completed       |
-| Point of Sale    | 🚧 In Development |
+| Point of Sale    | ✅ Completed       |
 | Documentation    | 🚧 In Development |
-| Version 1.0      | ⏳ Pending         |
+| Version 1.0.0    | ✅ Completed       |
 
 ### Next Goal
 
-Release version **1.0.0**, which will include the fully completed management module along with the point of sale system.
+Finish the **ReadMe** and the project documentation
 
 ---
 
@@ -274,6 +274,7 @@ RetailManagementSystem
 │ └── ports
 │
 ├── infrastructure
+│ ├── configuration
 │ ├── injection
 │ └── persistence.mysql
 │
@@ -305,7 +306,8 @@ resources
 │ └── pointOfSale
 │
 ├── application.properties
-└── application.example.properties
+├── application.example.properties
+└── version.properties
 ```
 
 The project structure is organized following a layered architecture. Each package groups components with a specific responsibility, promoting separation of responsibilities and decoupling between the user interface, business logic, domain, and infrastructure.
@@ -317,20 +319,6 @@ The project structure is organized following a layered architecture. Each packag
 | `infrastructure`  | Implements persistence using JDBC/MySQL and the application's technical configuration.                             |
 | `view`            | Contains the JavaFX drivers and utilities related to the graphical interface.                                      |
 
----
-
-## Technologies Used
-
-| Technology    | Use                                      |
-|---------------|------------------------------------------|
-| Java 26       | Main language of the project.            |
-| JavaFX        | Graphical user interface.                |
-| JDBC          | Data persistence and database access.    |
-| MySQL         | Database management system.              |
-| Maven         | Dependency management and project build. |
-| CSS           | Customization of the JavaFX interface.   |
-| IntelliJ IDEA | Development environment used.            |
-| Git / GitHub  | Version control and code hosting.        |
 
 ---
 
@@ -408,9 +396,50 @@ Main point-of-sale screen used to process a new sale. It allows products to be a
 
 Revenue reporting window accessible from the Point of Sale module. It allows selecting a date range to calculate the number of issued invoices, collected subtotal, generated taxes, and total sales for the selected period.
 
+### 10. Generated Invoice
+
+<p> 
+<img src="docs/images/spanish/Factura_Generada.png" alt="Invoice Generated" width="1610">
+</p>
+
+Once a sale is completed, the system automatically generates an invoice containing the details of the purchased products and services, quantities, prices, taxes, subtotal, and total amount. The invoice summarizes the transaction and confirms the successful completion of the sale.
+
 ---
 
-## ...
+## 🗺️ Roadmap
+
+The following features are planned for future versions of the system:
+
+- 🔐 Implement user authentication via login.
+
+- 👥 Incorporate a system of roles and permissions to control access to the different modules.
+
+- 🌐 Add support for multiple languages (Spanish and English).
+
+- 📄 Enable the export and printing of invoices and reports in PDF and Excel formats.
+
+- 💻 Expand the system catalog with a new category of technology products.
+
+- 📊 Incorporate indicators and statistics for the control panel.
+
+- ⚙️ Complete the system configuration module with advanced customization options.
+
+---
+
+## Author
+
+Jose Daniel Carrascal Pineda
+
+Systems Engineering Student
+
+2026
+
+---
+
+## License
+
+This project is distributed under the MIT license.
+
 
 ---
 
@@ -434,18 +463,18 @@ Este proyecto comenzó como una aplicación de consola con el objetivo de aprend
 
 ## 🚧 Estado del proyecto
 
-**Versión actual:** Pre-lanzamiento
+**Versión actual:** 1.0.0
 
 | Módulo               | Estado           |
 |----------------------|------------------|
 | Gestión de la tienda | ✅ Finalizado     |
-| Punto de venta       | 🚧 En desarrollo |
+| Punto de venta       | ✅ Finalizado     |
 | Documentación        | 🚧 En desarrollo |
-| Versión 1.0          | ⏳ Pendiente      |
+| Versión 1.0.0        | ✅ Finalizado     |
 
 ### Proximo Objetivo
 
-Publicar la version **1.0.0**, que incluirá el módulo de gestion completamente terminado junto con el punto de venta.
+Terminar el **ReadMe** y la Documentación del proyecto.
 
 ---
 
@@ -682,6 +711,7 @@ RetailManagementSystem
 │   └── puertos
 │
 ├── infraestructura
+│   ├── configuracion
 │   ├── inyeccion
 │   └── persistencia.mysql
 │
@@ -713,7 +743,8 @@ resources
 │   └── puntoDeVenta
 │
 ├── application.properties
-└── application.example.properties
+├── application.example.properties
+└── version.properties
 ```
 
 La estructura del proyecto está organizada siguiendo una arquitectura por capas. Cada paquete agrupa componentes con una responsabilidad específica, favoreciendo la separación de responsabilidades y el desacoplamiento entre la interfaz de usuario, la lógica de negocio, el dominio y la infraestructura.
@@ -727,22 +758,7 @@ La estructura del proyecto está organizada siguiendo una arquitectura por capas
 
 ---
 
-## Tecnologías Utilizadas
-
-| Tecnología    | Uso                                                  |
-|---------------|------------------------------------------------------|
-| Java 26       | Lenguaje principal del proyecto.                     |
-| JavaFX        | Interfaz gráfica de usuario.                         |
-| JDBC          | Persistencia de datos y acceso a la base de datos.   |
-| MySQL         | Sistema gestor de base de datos.                     |
-| Maven         | Gestión de dependencias y construcción del proyecto. |
-| CSS           | Personalización de la interfaz JavaFX.               |
-| IntelliJ IDEA | Entorno de desarrollo utilizado.                     |
-| Git / GitHub  | Control de versiones y alojamiento del código.       |
-
----
-
-## Capturas de Pantalla
+##  
 
 ### 1. Menu Principal
 
@@ -816,7 +832,41 @@ Pantalla principal del proceso de venta. Permite agregar productos mediante su c
 
 Ventana de generación de reportes de recaudo accesible desde el módulo Punto de Venta. Permite seleccionar un rango de fechas para calcular las facturas emitidas, el subtotal recaudado, los impuestos generados y el total de ventas correspondiente al período seleccionado.
 
+### 10. Factura
+
+<p>
+  <img src="docs/images/spanish/Factura_Generada.png" alt="Factura Generada" width="1610">
+</p>
+
+Al finalizar una venta, el sistema genera automáticamente un comprobante con el detalle de los productos y servicios vendidos, cantidades, precios, impuestos, subtotal y total de la transacción. Esta factura resume la operación realizada y permite confirmar el cierre exitoso de la venta.
+
 ---
 
-## ...
+## 🗺️ Roadmap
+
+Las siguientes funcionalidades están planificadas para futuras versiones del sistema:
+
+- 🔐 Implementar autenticación de usuarios mediante inicio de sesión (Login).
+- 👥 Incorporar un sistema de roles y permisos para controlar el acceso a los diferentes módulos.
+- 🌐 Agregar soporte para múltiples idiomas (Español e Inglés).
+- 📄 Permitir la exportación e impresión de facturas y reportes en formatos PDF y Excel.
+- 💻 Ampliar el catálogo del sistema con una nueva categoría de productos tecnológicos.
+- 📊 Incorporar indicadores y estadísticas para el panel de control.
+- ⚙️ Completar el módulo de configuración del sistema con opciones avanzadas de personalización.
+
+---
+
+## Autor
+
+Jose Daniel Carrascal Pineda
+
+Estudiante de Ing. de Sistemas
+
+2026
+
+---
+
+## Licencia
+
+Este proyecto se distribuye bajo la licencia MIT.
 
