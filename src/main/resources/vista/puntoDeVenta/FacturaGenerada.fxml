@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane prefHeight="775.0" prefWidth="486.0" styleClass="fondo-oscuro" stylesheets="@../../css/puntoDeVenta/estilosCssFacturaGenerada.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.puntoDeVenta.FacturaGeneradaControlador">
+<AnchorPane prefHeight="720.0" prefWidth="485.0" styleClass="fondo-oscuro" stylesheets="@../../css/puntoDeVenta/estilosCssFacturaGenerada.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.puntoDeVenta.FacturaGeneradaControlador">
 
     <VBox styleClass="ticket-papel" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
         <VBox alignment="CENTER" spacing="5.0">

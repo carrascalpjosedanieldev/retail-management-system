@@ -27,14 +27,14 @@ This project began as a console application with the goal of learning object-ori
 
 ## 🚧 Project status
 
-**Current Version:** 1.0.0
+**Current Version:** 1.0.1
 
 | Module           | Status            |
 |------------------|-------------------|
 | Store Management | ✅ Completed       |
 | Point of Sale    | ✅ Completed       |
 | Documentation    | 🚧 In Development |
-| Version 1.0.0    | ✅ Completed       |
+| Version 1.0.1    | ✅ Completed       |
 
 ### Next Goal
 
@@ -375,7 +375,7 @@ Module responsible for managing the business rules used throughout the system. I
 ### 7. POS (Point of Sale) Control Panel
 
 <p>
-    <img src="docs/images/spanish/Panel_De_Control_POS.png" alt="POS Control Panel" width="1607">
+    <img src="docs/images/spanish/Panel_De_Control_POS.png" alt="POS Control Panel" width="1606">
 </p>
 
 Main screen of the point-of-sale module. It displays a summary of the day's activity, including sales made, the number of invoices issued, and the value of the last sale. It also allows quick access to create a new sale and viewing the sales history.
@@ -399,7 +399,7 @@ Revenue reporting window accessible from the Point of Sale module. It allows sel
 ### 10. Generated Invoice
 
 <p> 
-<img src="docs/images/spanish/Factura_Generada.png" alt="Invoice Generated" width="1610">
+<img src="docs/images/spanish/Factura_Generada.png" alt="Invoice Generated" width="1606">
 </p>
 
 Once a sale is completed, the system automatically generates an invoice containing the details of the purchased products and services, quantities, prices, taxes, subtotal, and total amount. The invoice summarizes the transaction and confirms the successful completion of the sale.
@@ -463,14 +463,14 @@ Este proyecto comenzó como una aplicación de consola con el objetivo de aprend
 
 ## 🚧 Estado del proyecto
 
-**Versión actual:** 1.0.0
+**Versión actual:** 1.0.1
 
 | Módulo               | Estado           |
 |----------------------|------------------|
 | Gestión de la tienda | ✅ Finalizado     |
 | Punto de venta       | ✅ Finalizado     |
 | Documentación        | 🚧 En desarrollo |
-| Versión 1.0.0        | ✅ Finalizado     |
+| Versión 1.0.1        | ✅ Finalizado     |
 
 ### Proximo Objetivo
 
@@ -811,7 +811,7 @@ Módulo encargado de administrar las reglas comerciales utilizadas por el sistem
 ### 7. Panel de control POS (Punto de Venta)
 
 <p>
-  <img src="docs/images/spanish/Panel_De_Control_POS.png" alt="Panel de Control POS" width="1607">
+  <img src="docs/images/spanish/Panel_De_Control_POS.png" alt="Panel de Control POS" width="1606">
 </p>
 
 Pantalla principal del módulo de punto de venta. Presenta un resumen de la actividad del día, incluyendo las ventas realizadas, el número de facturas emitidas y el valor de la última venta. Además, permite acceder rápidamente a la creación de una nueva venta y consultar el historial de ventas registradas.
@@ -835,7 +835,7 @@ Ventana de generación de reportes de recaudo accesible desde el módulo Punto d
 ### 10. Factura
 
 <p>
-  <img src="docs/images/spanish/Factura_Generada.png" alt="Factura Generada" width="1610">
+  <img src="docs/images/spanish/Factura_Generada.png" alt="Factura Generada" width="1606">
 </p>
 
 Al finalizar una venta, el sistema genera automáticamente un comprobante con el detalle de los productos y servicios vendidos, cantidades, precios, impuestos, subtotal y total de la transacción. Esta factura resume la operación realizada y permite confirmar el cierre exitoso de la venta.

@@ -4,6 +4,8 @@ import RetailManagementSystem.aplicacion.dto.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.dominio.entidades.SesionVenta;
+import RetailManagementSystem.dominio.excepciones.ProductoNoDisponibleException;
+import RetailManagementSystem.dominio.excepciones.ProductoVencidoException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -208,6 +210,12 @@ public class MenuDeVentasControlador {
             this.orquestadorVentas.agregarItemAlCarrito(this.sesionVenta, codigo, obtenerFecha());
             actualizarTablaYTotales();
             txtCodigo.clear();
+        } catch (ProductoVencidoException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Producto Vencido",
+                    e.getMessage() + " NO sera agregado al Carrito");
+        } catch (ProductoNoDisponibleException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Disponible",
+                    e.getMessage() + " NO sera agregado al Carrito");
         } catch (Exception e) {
             mostrarAlerta(Alert.AlertType.WARNING, "Error al agregar", e.getMessage());
             txtCodigo.selectAll();
@@ -225,9 +233,10 @@ public class MenuDeVentasControlador {
         BigDecimal impuestos = BigDecimal.ZERO;
         for (ItemCarritoDTO item : itemsDelCarrito) {
             subtotalVenta = subtotalVenta.add(item.subtotal());
-            impuestos = impuestos.add(item.impuestos());
+            impuestos = impuestos.add(item.impuestos()).multiply(BigDecimal.valueOf(item.cantidad()));
         }
-        BigDecimal totalGeneral = subtotalVenta.add(impuestos);
+        BigDecimal totalGeneral = subtotalVenta;
+        subtotalVenta = subtotalVenta.subtract(impuestos);
         lblSubtotal.setText(FormateadorNumeros.formatoMoneda(subtotalVenta));
         lblImpuestos.setText(FormateadorNumeros.formatoMoneda(impuestos));
         lblTotalGeneral.setText(FormateadorNumeros.formatoMoneda(totalGeneral));
@@ -345,6 +354,12 @@ public class MenuDeVentasControlador {
             } catch (NumberFormatException e) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
                         "Por favor, Ingrese un Número Entero Válido.");
+            } catch (ProductoNoDisponibleException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Disponible",
+                        e.getMessage() + " NO sera agregado al Carrito");
+            } catch (ProductoVencidoException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Producto Vencido",
+                        e.getMessage() + " NO sera agregado al Carrito");
             } catch (Exception e) {
                 String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Aumentar la Cantidad.";
                 mostrarAlerta(Alert.AlertType.WARNING, "Error al Aumentar", mensaje);
