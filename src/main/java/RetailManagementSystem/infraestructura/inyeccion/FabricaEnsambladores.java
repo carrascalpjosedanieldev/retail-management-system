@@ -13,6 +13,7 @@ public class FabricaEnsambladores {
         return ensambladorDTODescuento;
     }
 
+
     private static EnsambladorDTOImpuesto ensambladorDTOImpuesto;
 
     public static EnsambladorDTOImpuesto obtenerEnsambladorDTOImpuesto(){
@@ -21,6 +22,7 @@ public class FabricaEnsambladores {
         }
         return ensambladorDTOImpuesto;
     }
+
 
     private static EnsambladorDTOServicio ensambladorDTOServicio;
 
@@ -31,6 +33,7 @@ public class FabricaEnsambladores {
         return ensambladorDTOServicio;
     }
 
+
     private static EnsambladorDTOInventario ensambladorDTOInventario;
 
     public static EnsambladorDTOInventario obtenerEnsambladorDTOInventario(){
@@ -40,6 +43,7 @@ public class FabricaEnsambladores {
         return ensambladorDTOInventario;
     }
 
+
     private static EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
 
     public static EnsambladorDTOPoliticaVencimiento obtenerEnsambladorDTOPoliticaVencimiento(){
@@ -48,6 +52,7 @@ public class FabricaEnsambladores {
         }
         return ensambladorDTOPoliticaVencimiento;
     }
+
 
     private static EnsambladorDTOProducto ensambladorDTOProducto;
 
@@ -61,6 +66,7 @@ public class FabricaEnsambladores {
         return ensambladorDTOProducto;
     }
 
+
     private static EnsambladorDTOFactura ensambladorDTOFactura;
 
     public static EnsambladorDTOFactura obtenerEnsambladorDTOFactura(){
@@ -70,6 +76,7 @@ public class FabricaEnsambladores {
         return ensambladorDTOFactura;
     }
 
+
     private static EnsambladorDTOCarrito ensambladorDTOCarrito;
 
     public static EnsambladorDTOCarrito obtenerEnsambladorDTOCarrito(){
@@ -78,6 +85,7 @@ public class FabricaEnsambladores {
         }
         return ensambladorDTOCarrito;
     }
+
 
 }//===================================================================================================================//
 

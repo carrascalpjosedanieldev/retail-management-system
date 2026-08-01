@@ -44,4 +44,5 @@ public class OrquestadorProductoInventario {
         this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);
     }
 
-}
+}//===================================================================================================================//
+

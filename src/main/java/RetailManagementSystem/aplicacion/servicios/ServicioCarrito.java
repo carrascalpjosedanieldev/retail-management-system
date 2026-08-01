@@ -46,7 +46,7 @@ public class ServicioCarrito {
     }
 
     public void agregarServicioAlCarrito(Carrito carrito, String codigoServicio, int cantidad){
-        Servicio servicio = this.servicioServicios.obtenerServicio(codigoServicio);
+        Servicio servicio = this.servicioServicios.obtenerServicoActivoParaLaVenta(codigoServicio);
         carrito.agregarServicio(servicio, cantidad);
     }
 

@@ -11,8 +11,10 @@ import java.util.List;
 
 public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaVencimiento {
 
+    //CREATE:
+
     @Override
-    public PoliticaVencimiento insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
+    public void insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
         String sql = "INSERT INTO politicas_vencimiento (nombre_politica, dias_umbral, porcentaje_descuento) VALUES (?, ?, ?)";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
@@ -31,7 +33,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    return PoliticaVencimiento.reconstruirDesdeBD(idReal, politicaVencimiento.getNombre(),
+                    PoliticaVencimiento.reconstruirDesdeBD(idReal, politicaVencimiento.getNombre(),
                             politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
                             politicaVencimiento.isActiva());
                 } else {
@@ -48,6 +50,9 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                     e.getMessage(), e);
         }
     }
+
+
+    //READ:
 
     @Override
     public PoliticaVencimiento obtenerPoliticaVencimiento(int idPoliticaVencimiento) {
@@ -83,8 +88,68 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
         } catch (SQLException e) {
             throw new RuntimeException("Error de base de datos al obtener la Politica de Vencimiento", e);
         }
-
     }
+
+
+    @Override
+    public List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas() {
+        List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
+
+        String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
+                "FROM politicas_vencimiento WHERE activa = true";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery();){
+
+            while (rs.next()){
+                PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
+                        rs.getInt("id_politica"),
+                        rs.getString("nombre_politica"),
+                        rs.getInt("dias_umbral"),
+                        rs.getBigDecimal("porcentaje_descuento"),
+                        rs.getBoolean("activa")
+                );
+                politicasVencimiento.add(politicaVencimiento);
+            }
+
+        } catch (SQLException e){
+            throw new RuntimeException("Error al listar las Politicas de Vencimiento Activas", e);
+        }
+        return politicasVencimiento;
+    }
+
+
+    @Override
+    public List<PoliticaVencimiento> obtenerPoliticasVencimientoInactivas() {
+        List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
+
+        String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
+                "FROM politicas_vencimiento WHERE activa = false";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery();){
+
+            while (rs.next()){
+                PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
+                        rs.getInt("id_politica"),
+                        rs.getString("nombre_politica"),
+                        rs.getInt("dias_umbral"),
+                        rs.getBigDecimal("porcentaje_descuento"),
+                        rs.getBoolean("activa")
+                );
+                politicasVencimiento.add(politicaVencimiento);
+            }
+
+        } catch (SQLException e){
+            throw new RuntimeException("Error al listar las Politicas de Vencimiento Inactivas", e);
+        }
+        return politicasVencimiento;
+    }
+
+
+    //UPDATE:
 
     @Override
     public void actualizarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
@@ -114,60 +179,6 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
     }
 
-    @Override
-    public List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas() {
-        List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
 
-        String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento WHERE activa = true";
+}//===================================================================================================================//
 
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery();){
-
-            while (rs.next()){
-                PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
-                        rs.getInt("id_politica"),
-                        rs.getString("nombre_politica"),
-                        rs.getInt("dias_umbral"),
-                        rs.getBigDecimal("porcentaje_descuento"),
-                        rs.getBoolean("activa")
-                );
-                politicasVencimiento.add(politicaVencimiento);
-            }
-
-        } catch (SQLException e){
-            throw new RuntimeException("Error al listar las Politicas de Vencimiento Activas", e);
-        }
-        return politicasVencimiento;
-
-    }
-
-    @Override
-    public List<PoliticaVencimiento> obtenerPoliticasVencimientoInactivas() {
-        List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
-
-        String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento WHERE activa = false";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery();){
-
-            while (rs.next()){
-                PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
-                        rs.getInt("id_politica"),
-                        rs.getString("nombre_politica"),
-                        rs.getInt("dias_umbral"),
-                        rs.getBigDecimal("porcentaje_descuento"),
-                        rs.getBoolean("activa")
-                );
-                politicasVencimiento.add(politicaVencimiento);
-            }
-
-        } catch (SQLException e){
-            throw new RuntimeException("Error al listar las Politicas de Vencimiento Inactivas", e);
-        }
-        return politicasVencimiento;
-    }
-}

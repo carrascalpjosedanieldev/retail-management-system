@@ -5,3 +5,4 @@ public class PoliticaVencimientoNoEncontradaException extends RuntimeException {
         super(message);
     }
 }
+

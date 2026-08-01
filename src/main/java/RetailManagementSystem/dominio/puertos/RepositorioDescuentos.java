@@ -6,14 +6,21 @@ import java.util.List;
 
 public interface RepositorioDescuentos {
 
+    //CREATE:
+
     Descuento insertarDescuento(Descuento Descuento);
 
-    Descuento obtenerDescuento(int idDescuento);
+    //READ:
 
-    void actualizarDescuento(Descuento descuento);
+    Descuento obtenerDescuento(int idDescuento);
 
     List<Descuento> obtenerDescuentosActivos();
 
     List<Descuento> obtenerDescuentosInactivos();
 
-}
+    //UPDATE:
+
+    void actualizarDescuento(Descuento descuento);
+
+}//===================================================================================================================//
+

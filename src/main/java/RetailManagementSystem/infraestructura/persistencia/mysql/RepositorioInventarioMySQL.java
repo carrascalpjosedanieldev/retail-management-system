@@ -11,8 +11,10 @@ import java.util.List;
 
 public class RepositorioInventarioMySQL implements RepositorioInventario {
 
+    //CREATE:
+
     @Override
-    public Inventario insertarInventario(Inventario borrador) {
+    public void insertarInventario(Inventario borrador) {
         String sql = "INSERT INTO inventarios (nombre, capacidad_maxima) VALUES (?, ?)";
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -29,7 +31,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    return Inventario.reconstruirDesdeBD(idReal, borrador.getNombre(), borrador.getCapacidadMaxima(), 0);
+                    Inventario.reconstruirDesdeBD(idReal, borrador.getNombre(), borrador.getCapacidadMaxima(), 0);
                 } else {
                     throw new RuntimeException("La inserción fue exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
@@ -40,28 +42,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
         }
     }
 
-    @Override
-    public void eliminarInventario(int idInventario) {
-        String sql = "DELETE FROM inventarios WHERE id_inventario = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmtDelete = conn.prepareStatement(sql)) {
-
-            pstmtDelete.setInt(1, idInventario);
-
-            int filasAfectadas = pstmtDelete.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new InventarioNoEncontradoException("El inventario con ID " + idInventario + " no existe.");
-            }
-
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 1451) {
-                throw new InventarioNoVacioException("No se puede eliminar: El inventario tiene productos asociados.");
-            }
-            throw new RuntimeException("Error crítico al intentar eliminar el inventario.", e);
-        }
-    }
+    //READ:
 
     @Override
     public Inventario obtenerInventario(int idInventario) {
@@ -99,26 +80,6 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
         }
     }
 
-    @Override
-    public void actualizarInventario(Inventario inventario) {
-        String sql = "UPDATE inventarios SET nombre = ?, capacidad_maxima = ? WHERE id_inventario = ?";
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, inventario.getNombre());
-            pstmt.setInt(2, inventario.getCapacidadMaxima());
-            pstmt.setInt(3, inventario.getIdInventario());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new InventarioNoEncontradoException("No se pudo actualizar: El inventario con ID " + inventario.getIdInventario() + " no existe.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al actualizar el inventario", e);
-        }
-    }
 
     @Override
     public List<Inventario> obtenerTodosInventariosConCapacidadOcupada() {
@@ -147,5 +108,56 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
         return inventarios;
     }
 
-}
+
+    //UPDATE:
+
+    @Override
+    public void actualizarInventario(Inventario inventario) {
+        String sql = "UPDATE inventarios SET nombre = ?, capacidad_maxima = ? WHERE id_inventario = ?";
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, inventario.getNombre());
+            pstmt.setInt(2, inventario.getCapacidadMaxima());
+            pstmt.setInt(3, inventario.getIdInventario());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new InventarioNoEncontradoException("No se pudo actualizar: El inventario con ID " + inventario.getIdInventario() + " no existe.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error de base de datos al actualizar el inventario", e);
+        }
+    }
+
+
+    //DELETE:
+
+    @Override
+    public void eliminarInventario(int idInventario) {
+        String sql = "DELETE FROM inventarios WHERE id_inventario = ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmtDelete = conn.prepareStatement(sql)) {
+
+            pstmtDelete.setInt(1, idInventario);
+
+            int filasAfectadas = pstmtDelete.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new InventarioNoEncontradoException("El inventario con ID " + idInventario + " no existe.");
+            }
+
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1451) {
+                throw new InventarioNoVacioException("No se puede eliminar: El inventario tiene productos asociados.");
+            }
+            throw new RuntimeException("Error crítico al intentar eliminar el inventario.", e);
+        }
+    }
+
+
+}//===================================================================================================================//
 

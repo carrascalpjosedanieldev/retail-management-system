@@ -2,7 +2,13 @@ package RetailManagementSystem.dominio.puertos;
 
 public interface RepositorioConfiguracion {
 
+    //READ:
+
     String obtenerValorConfiguracion(String clave);
+
+    String obtenerDescripcionConfiguracion(String clave);
+
+    //UPDATE:
 
     void actualizarValorConfiguracion(String clave, String valor);
 
@@ -10,6 +16,5 @@ public interface RepositorioConfiguracion {
 
     void actualizarValorYDescripcionConfiguracion(String clave, String valor, String descripcion);
 
-    String obtenerDescripcionConfiguracion(String clave);
+}//===================================================================================================================//
 
-}

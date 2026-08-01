@@ -6,14 +6,23 @@ import java.util.List;
 
 public interface RepositorioInventario {
 
-    Inventario insertarInventario(Inventario inventario);
+    //CREATE:
 
-    void eliminarInventario(int idInventario);
+    void insertarInventario(Inventario inventario);
+
+    //READ:
 
     Inventario obtenerInventario(int idInventario);
 
+    List<Inventario> obtenerTodosInventariosConCapacidadOcupada();
+
+    //UPDATE:
+
     void actualizarInventario(Inventario inventario);
 
-    List<Inventario> obtenerTodosInventariosConCapacidadOcupada();
-}
+    //DELETE:
+
+    void eliminarInventario(int idInventario);
+
+}//===================================================================================================================//
 

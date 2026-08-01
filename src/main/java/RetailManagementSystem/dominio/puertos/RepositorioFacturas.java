@@ -10,10 +10,15 @@ import java.util.List;
 
 public interface RepositorioFacturas {
 
+    //CREATE:
+
     Factura insertarFactura(List<ItemVendido> items);
+
+    //READ:
 
     ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin);
 
     BigDecimal obtenerTotalUltimaVenta(LocalDate fecha);
 
-}
+}//===================================================================================================================//
+

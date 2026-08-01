@@ -3,6 +3,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.Descuento;
 import RetailManagementSystem.dominio.entidades.Impuesto;
 import RetailManagementSystem.dominio.entidades.Servicio;
+import RetailManagementSystem.dominio.excepciones.ServicioNoDisponibleExeption;
 import RetailManagementSystem.dominio.puertos.RepositorioServicio;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
@@ -14,6 +15,9 @@ import java.util.List;
 
 public class RepositorioServicioMySQL implements RepositorioServicio {
 
+    //CREATE:
+
+    @Override
     public void insertarServicio(Servicio servicio){
         String sql = "INSERT INTO servicios (codigo_servicio, nombre, precio_base, id_impuesto, id_descuento) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -44,6 +48,8 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
         }
     }
 
+
+    //READ:
 
     @Override
     public Servicio obtenerServicio(String codigoServicio) {
@@ -94,36 +100,6 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
         }
     }
-
-
-
-    @Override
-    public void actualizarServicio(Servicio servicio) {
-        String sql = "UPDATE servicios SET id_impuesto = ?, nombre = ?, precio_base = ?, id_descuento = ?, activo = ? " +
-                "WHERE codigo_servicio = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
-
-            pstmt.setInt(1, servicio.getIdImpuesto());
-            pstmt.setString(2, servicio.getNombre());
-            pstmt.setBigDecimal(3, servicio.getPrecioBase());
-            pstmt.setInt(4, servicio.getIdDescuento());
-            pstmt.setBoolean(5, servicio.isActivo());
-            pstmt.setString(6, servicio.getCodigo());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas==0){
-                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el Codigo -" + servicio.getCodigo() + "- NO existe");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar modificar el Servicio", e);
-        }
-
-    }
-
 
 
     @Override
@@ -223,6 +199,60 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
     }
 
 
+    @Override
+    public Servicio obtenerServicioActivoSoloPorCodigo(String codigoServicio) {
+        String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
+                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+                "des.activo AS descuento_activo " +
+                "FROM servicios s " +
+                "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
+                "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
+                "WHERE s.codigo_servicio = ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, codigoServicio);
+
+            try (ResultSet rs = pstmt.executeQuery()){
+
+                if (rs.next()){
+
+                    String codigo = rs.getString("codigo_servicio");
+                    String  nombre = rs.getString("nombre");
+                    BigDecimal precioBase = rs.getBigDecimal("precio_base");
+                    boolean activo = rs.getBoolean("activo");
+
+                    if (!activo){
+                        throw new ServicioNoDisponibleExeption("Error de negocio: El Servicio con Código -" +
+                                codigoServicio + "- NO esta Disponible");
+                    }
+
+                    int idImpuesto = rs.getInt("id_impuesto");
+                    String  nombreImp = rs.getString("nombre_impuesto");
+                    BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
+                    boolean activoImp = rs.getBoolean("activo_impuesto");
+                    Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
+
+                    int idDescuento = rs.getInt("id_descuento");
+                    String nombreDesc = rs.getString("nombre_descuento");
+                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
+                    boolean activoDesc = rs.getBoolean("descuento_activo");
+                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
+
+                    return Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, true);
+
+                }
+
+                throw new ServicioNoEncontradoException("Error de negocio: El Servicio con código -" + codigoServicio + "- no existe");
+
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+        }
+    }
 
     @Override
     public boolean existeServicio(String codigoServicio) {
@@ -273,6 +303,36 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
         } catch (SQLException e) {
             throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
         }
+    }
+
+
+    //UPDATE:
+
+    @Override
+    public void actualizarServicio(Servicio servicio) {
+        String sql = "UPDATE servicios SET id_impuesto = ?, nombre = ?, precio_base = ?, id_descuento = ?, activo = ? " +
+                "WHERE codigo_servicio = ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setInt(1, servicio.getIdImpuesto());
+            pstmt.setString(2, servicio.getNombre());
+            pstmt.setBigDecimal(3, servicio.getPrecioBase());
+            pstmt.setInt(4, servicio.getIdDescuento());
+            pstmt.setBoolean(5, servicio.isActivo());
+            pstmt.setString(6, servicio.getCodigo());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas==0){
+                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el Codigo -" + servicio.getCodigo() + "- NO existe");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error crítico de infraestructura al intentar modificar el Servicio", e);
+        }
+
     }
 
 

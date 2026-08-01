@@ -32,4 +32,5 @@ public class ServicioConfiguraciones {
         this.repositorioConfiguracion.actualizarValorYDescripcionConfiguracion(claveTienda, nombreNuevo, descripcion);
     }
 
-}
+}//===================================================================================================================//
+

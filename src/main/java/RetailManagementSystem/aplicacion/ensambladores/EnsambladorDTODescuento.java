@@ -32,5 +32,5 @@ public class EnsambladorDTODescuento {
         return detalleDescuentosActivos;
     }
 
-}
+}//===================================================================================================================//
 

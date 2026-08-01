@@ -38,4 +38,9 @@ public class ServicioInventario {
         return new ArrayList<>(this.repositorioInventario.obtenerTodosInventariosConCapacidadOcupada());
     }
 
-}
+    public void eliminarInventarioVacio(int idInventario){
+        this.repositorioInventario.eliminarInventario(idInventario);
+    }
+
+}//===================================================================================================================//
+

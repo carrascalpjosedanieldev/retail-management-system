@@ -232,5 +232,5 @@ public abstract class Producto implements ItemFacturable{
         setActivo(false);
     }
 
-}
+}//===================================================================================================================//
 

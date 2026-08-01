@@ -6,14 +6,21 @@ import java.util.List;
 
 public interface RepositorioPoliticaVencimiento {
 
-    PoliticaVencimiento insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento);
+    //CREATE:
+
+    void insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento);
+
+    //READ
 
     PoliticaVencimiento obtenerPoliticaVencimiento(int idPoliticaVencimiento);
-
-    void actualizarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento);
 
     List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas();
 
     List<PoliticaVencimiento> obtenerPoliticasVencimientoInactivas();
 
-}
+    //UPDATE:
+
+    void actualizarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento);
+
+}//===================================================================================================================//
+

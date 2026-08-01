@@ -5,3 +5,4 @@ public class ServicioNoDisponibleExeption extends RuntimeException {
         super(message);
     }
 }
+

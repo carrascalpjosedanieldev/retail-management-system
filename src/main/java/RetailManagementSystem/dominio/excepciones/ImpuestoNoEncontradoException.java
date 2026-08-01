@@ -5,3 +5,4 @@ public class ImpuestoNoEncontradoException extends RuntimeException {
         super(message);
     }
 }
+

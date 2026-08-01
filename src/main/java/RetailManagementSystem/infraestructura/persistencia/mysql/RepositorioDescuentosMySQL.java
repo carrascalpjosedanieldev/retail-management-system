@@ -11,6 +11,8 @@ import java.util.List;
 
 public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
+    //CREATE:
+
     @Override
     public Descuento insertarDescuento(Descuento descuento) {
         String sql = "INSERT INTO descuentos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
@@ -46,6 +48,8 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     }
 
 
+    //READ:
+
     @Override
     public Descuento obtenerDescuento(int idDescuento) {
         if (idDescuento<=0) {
@@ -77,28 +81,6 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
         }
     }
 
-    @Override
-    public void actualizarDescuento(Descuento descuento) {
-        String sql = "UPDATE descuentos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_descuento = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, descuento.getNombre());
-            pstmt.setBigDecimal(2, descuento.getPorcentaje());
-            pstmt.setBoolean(3, descuento.isActivo());
-            pstmt.setInt(4, descuento.getId());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new DescuentoNoEncontradoExeption("No se pudo actualizar: El Descuento con ID -" + descuento.getId() + "- no existe.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al actualizar el Descuento", e);
-        }
-    }
 
     @Override
     public List<Descuento> obtenerDescuentosActivos() {
@@ -125,6 +107,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
         return descuentos;
     }
 
+
     @Override
     public List<Descuento> obtenerDescuentosInactivos() {
         List<Descuento> descuentos = new ArrayList<>();
@@ -150,5 +133,32 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
         return descuentos;
     }
 
-}
+
+    //UPDATE:
+
+    @Override
+    public void actualizarDescuento(Descuento descuento) {
+        String sql = "UPDATE descuentos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_descuento = ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, descuento.getNombre());
+            pstmt.setBigDecimal(2, descuento.getPorcentaje());
+            pstmt.setBoolean(3, descuento.isActivo());
+            pstmt.setInt(4, descuento.getId());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new DescuentoNoEncontradoExeption("No se pudo actualizar: El Descuento con ID -" + descuento.getId() + "- no existe.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error de base de datos al actualizar el Descuento", e);
+        }
+    }
+
+
+}//===================================================================================================================//
 

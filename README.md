@@ -27,14 +27,14 @@ This project began as a console application with the goal of learning object-ori
 
 ## 🚧 Project status
 
-**Current Version:** 1.0.1
+**Current Version:** 1.0.2
 
 | Module           | Status            |
 |------------------|-------------------|
 | Store Management | ✅ Completed       |
 | Point of Sale    | ✅ Completed       |
 | Documentation    | 🚧 In Development |
-| Version 1.0.1    | ✅ Completed       |
+| Version 1.0.2    | ✅ Completed       |
 
 ### Next Goal
 
@@ -463,14 +463,14 @@ Este proyecto comenzó como una aplicación de consola con el objetivo de aprend
 
 ## 🚧 Estado del proyecto
 
-**Versión actual:** 1.0.1
+**Versión actual:** 1.0.2
 
 | Módulo               | Estado           |
 |----------------------|------------------|
 | Gestión de la tienda | ✅ Finalizado     |
 | Punto de venta       | ✅ Finalizado     |
 | Documentación        | 🚧 En desarrollo |
-| Versión 1.0.1        | ✅ Finalizado     |
+| Versión 1.0.2        | ✅ Finalizado     |
 
 ### Proximo Objetivo
 

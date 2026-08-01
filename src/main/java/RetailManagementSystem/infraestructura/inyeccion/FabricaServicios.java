@@ -16,6 +16,7 @@ public class FabricaServicios {
         return servicioDescuentos;
     }
 
+
     private static ServicioImpuestos servicioImpuestos;
 
     public static ServicioImpuestos obtenerServicioImpuestos() {
@@ -25,6 +26,7 @@ public class FabricaServicios {
         }
         return servicioImpuestos;
     }
+
 
     private static ServicioServicios servicioServicios;
 
@@ -38,6 +40,7 @@ public class FabricaServicios {
         return servicioServicios;
     }
 
+
     private static ServicioInventario servicioInventario;
 
     public static ServicioInventario obtenerServicioInventario() {
@@ -47,6 +50,7 @@ public class FabricaServicios {
         }
         return servicioInventario;
     }
+
 
     private static ServicioProductos servicioProductos;
 
@@ -62,6 +66,7 @@ public class FabricaServicios {
         return servicioProductos;
     }
 
+
     private static ServicioPoliticaVencimiento servicioPoliticaVencimiento;
 
     public static ServicioPoliticaVencimiento obtenerServicioPoliticas() {
@@ -71,6 +76,7 @@ public class FabricaServicios {
         }
         return servicioPoliticaVencimiento;
     }
+
 
     private static ServicioConfiguraciones servicioConfiguraciones;
 
@@ -82,6 +88,7 @@ public class FabricaServicios {
         return servicioConfiguraciones;
     }
 
+
     private static ServicioFacturas servicioFacturas;
 
     public static ServicioFacturas obtenerServicioFacturas(){
@@ -92,6 +99,7 @@ public class FabricaServicios {
         return servicioFacturas;
     }
 
+
     private static ServicioCarrito servicioCarrito;
 
     public static ServicioCarrito obtenerServicioCarrito(){
@@ -101,5 +109,6 @@ public class FabricaServicios {
         return servicioCarrito;
     }
 
-}
+
+}//===================================================================================================================//
 

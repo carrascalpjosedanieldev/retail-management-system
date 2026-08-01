@@ -11,12 +11,14 @@ import java.util.List;
 
 public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
+    //CREATE:
+
     @Override
-    public Impuesto insertarImpuesto(Impuesto impuesto) {
+    public void insertarImpuesto(Impuesto impuesto) {
         String sql = "INSERT INTO impuestos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, impuesto.getNombre());
             pstmt.setBigDecimal(2, impuesto.getPorcentaje());
@@ -31,7 +33,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    return Impuesto.reconstruirDesdeBD(idReal, impuesto.getNombre(), impuesto.getPorcentaje(), impuesto.isActivo());
+                    Impuesto.reconstruirDesdeBD(idReal, impuesto.getNombre(), impuesto.getPorcentaje(), impuesto.isActivo());
                 } else {
                     throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
@@ -46,14 +48,16 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     }
 
 
+    //READ:
+
     @Override
     public Impuesto obtenerImpuesto(int idImpuesto) {
-        if (idImpuesto<=0) {
+        if (idImpuesto <= 0) {
             throw new IllegalStateException("El ID a buscar debe ser un número positivo.");
         }
         String sql = "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE id_impuesto = ?";
         try (Connection conn = AdministradorConexion.obtenerConexion();
-        PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, idImpuesto);
 
@@ -74,30 +78,6 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
         } catch (SQLException e) {
             throw new RuntimeException("Error de base de datos al obtener el Impuesto", e);
-        }
-    }
-
-
-    @Override
-    public void actualizarImpuesto(Impuesto impuesto) {
-        String sql = "UPDATE impuestos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_impuesto = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, impuesto.getNombre());
-            pstmt.setBigDecimal(2, impuesto.getPorcentaje());
-            pstmt.setBoolean(3, impuesto.isActivo());
-            pstmt.setInt(4, impuesto.getId());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ImpuestoNoEncontradoException("No se pudo actualizar: El Impuesto con ID -" + impuesto.getId() + "- no existe.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al actualizar el Impuesto", e);
         }
     }
 
@@ -153,4 +133,32 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     }
 
 
-}
+    //UPDATE:
+
+    @Override
+    public void actualizarImpuesto(Impuesto impuesto) {
+        String sql = "UPDATE impuestos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_impuesto = ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, impuesto.getNombre());
+            pstmt.setBigDecimal(2, impuesto.getPorcentaje());
+            pstmt.setBoolean(3, impuesto.isActivo());
+            pstmt.setInt(4, impuesto.getId());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new ImpuestoNoEncontradoException("No se pudo actualizar: El Impuesto con ID -" +
+                        impuesto.getId() + "- no existe.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error de base de datos al actualizar el Impuesto", e);
+        }
+    }
+
+
+}//===================================================================================================================//
+

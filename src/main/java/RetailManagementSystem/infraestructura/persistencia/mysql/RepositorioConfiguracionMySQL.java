@@ -6,6 +6,8 @@ import java.sql.*;
 
 public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
 
+    //READ:
+
     @Override
     public String obtenerValorConfiguracion(String clave) {
         String sql = "SELECT valor FROM configuraciones_sistema WHERE clave = ?";
@@ -47,6 +49,8 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             throw new RuntimeException("Error al Obtener la Configuración del Sistema", e);
         }
     }
+
+    //UPDATE:
 
     @Override
     public void actualizarValorConfiguracion(String clave, String valor) {
@@ -132,4 +136,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
         }
 
     }
-}
+
+
+}//===================================================================================================================//
+

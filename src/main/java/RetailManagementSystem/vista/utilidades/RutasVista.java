@@ -58,5 +58,5 @@ public class RutasVista {
     public static final String FACTURA_GENERADA_VIEW = "/vista/puntoDeVenta/FacturaGenerada.fxml";
     public static final String ESTILOS_CSS_FACTURA_GENERADA = "/css/puntoDeVenta/estilosCssFacturaGenerada.css";
 
-}
+}//===================================================================================================================//
 

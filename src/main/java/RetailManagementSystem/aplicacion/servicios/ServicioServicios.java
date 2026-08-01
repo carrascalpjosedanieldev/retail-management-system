@@ -29,6 +29,10 @@ public class ServicioServicios {
         return this.repositorioServicio.obtenerServicio(codigoServicio);
     }
 
+    public Servicio obtenerServicoActivoParaLaVenta(String codigoServicio){
+        return this.repositorioServicio.obtenerServicioActivoSoloPorCodigo(codigoServicio);
+    }
+
     public boolean existeServicio(String codigoServicio){
         return this.repositorioServicio.existeServicio(codigoServicio);
     }
@@ -77,4 +81,5 @@ public class ServicioServicios {
         return this.repositorioServicio.obtenerServiciosInactivos();
     }
 
-}
+}//===================================================================================================================//
+

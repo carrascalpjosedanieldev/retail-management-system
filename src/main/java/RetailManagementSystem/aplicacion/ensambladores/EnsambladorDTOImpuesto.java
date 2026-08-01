@@ -33,4 +33,5 @@ public class EnsambladorDTOImpuesto {
         return detalleImpuestosActivos;
     }
 
-}
+}//===================================================================================================================//
+

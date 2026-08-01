@@ -15,6 +15,8 @@ import java.util.List;
 
 public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
+    //CREATE:
+
     private String generarSiguienteNumeroFactura(Connection con) throws SQLException {
         String sqlBloqueo = "SELECT prefijo, siguiente_valor FROM secuencias_factura WHERE prefijo = 'FAC-' FOR UPDATE";
         String sqlUpdate = "UPDATE secuencias_factura SET siguiente_valor = siguiente_valor + 1 WHERE prefijo = 'FAC-'";
@@ -62,7 +64,6 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             }
         }
     }
-
 
     private void agregarLineaDetalleAlBatch(PreparedStatement ps, int idFactura, ItemVendido item) throws SQLException {
         ps.setInt(1, idFactura);
@@ -157,6 +158,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
     }
 
 
+    //READ:
 
     @Override
     public ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin) {
@@ -194,6 +196,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                 fechaInicio, fechaFin, 0, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
         );
     }
+
 
     @Override
     public BigDecimal obtenerTotalUltimaVenta(LocalDate fecha) {

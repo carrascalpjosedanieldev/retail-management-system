@@ -6,14 +6,21 @@ import java.util.List;
 
 public interface RepositorioImpuestos {
 
-    Impuesto insertarImpuesto(Impuesto impuesto);
+    //CREATE:
+
+    void insertarImpuesto(Impuesto impuesto);
+
+    //READ:
 
     Impuesto obtenerImpuesto(int idImpuesto);
-
-    void actualizarImpuesto(Impuesto impuesto);
 
     List<Impuesto> obtenerImpuestosActivos();
 
     List<Impuesto> obtenerImpuestosInactivos();
 
-}
+    //UPDATE:
+
+    void actualizarImpuesto(Impuesto impuesto);
+
+}//===================================================================================================================//
+

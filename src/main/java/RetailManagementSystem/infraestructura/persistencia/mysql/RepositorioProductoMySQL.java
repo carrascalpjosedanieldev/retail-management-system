@@ -15,6 +15,8 @@ import java.util.List;
 
 public class RepositorioProductoMySQL implements RepositorioProducto {
 
+    //CREATE:
+
     @Override
     public void insertarProducto(Producto producto, int idInventario) {
 
@@ -85,6 +87,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
 
+    //READ:
 
     @Override
     public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto) {
@@ -245,82 +248,6 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
 
-
-    @Override
-    public void actualizarProducto(Producto producto, int idInventario) {
-        String sql = "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, stock = ?, " +
-                "id_impuesto = ?, id_descuento = ? , activo = ? " +
-                "WHERE id_inventario = ? AND codigo_producto = ?";
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
-
-            pstmt.setString(1, producto.getNombre());
-            pstmt.setBigDecimal(2, producto.getValorCompra());
-            pstmt.setBigDecimal(3, producto.getPorcentajeGanancia());
-            pstmt.setInt(4, producto.getStock());
-            pstmt.setInt(5, producto.getIdImpuesto());
-            pstmt.setInt(6, producto.getIdDescuento());
-            pstmt.setBoolean(7, producto.isActivo());
-            pstmt.setInt(8, idInventario);
-            pstmt.setString(9, producto.getCodigo());
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ProductoNoEncontradoException("No se pudo actualizar: El producto no existe en este inventario.");
-            }
-
-            if (producto instanceof ProductoPerecedero perecedero) {
-                actualizarProductoPerecedero(conn, perecedero);
-            }
-
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 1452) {
-                throw new IllegalArgumentException("No se puede actualizar el producto: " +
-                        "El Impuesto, el Descuento o el Inventario destino especificado no existen.");
-            }
-            throw new RuntimeException("Error al actualizar el producto: " + producto.getCodigo(), e);
-        }
-    }
-
-    private void actualizarProductoPerecedero(Connection conn, ProductoPerecedero perecedero) throws SQLException {
-        String sqlPerecedero = "UPDATE producto_perecedero SET id_politica = ? " +
-                "WHERE codigo_producto = ? ";
-
-        try (PreparedStatement pstmt = conn.prepareStatement(sqlPerecedero)) {
-            pstmt.setInt(1, perecedero.getPoliticaVencimiento().getIdPolitica());
-            pstmt.setString(2, perecedero.getCodigo());
-
-            pstmt.executeUpdate();
-        }
-    }
-
-
-
-    @Override
-    public void cambiarInventarioProducto(String codigoProducto, int idInventarioOrigen, int idInventarioDestino) {
-        String sql = "UPDATE productos SET id_inventario = ? WHERE id_inventario = ? AND codigo_producto = ?";
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, idInventarioDestino);
-            pstmt.setInt(2, idInventarioOrigen);
-            pstmt.setString(3, codigoProducto);
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new ProductoNoEncontradoException("No se pudo mover: El producto no existe en el inventario de origen.");
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error en la base de datos al mover el producto: " + codigoProducto, e);
-        }
-    }
-
-
-
     @Override
     public List<Producto> obtenerProductosPorInventario(int idInventario) {
         List<Producto> productos = new ArrayList<>();
@@ -460,6 +387,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         return productosRopa;
     }
 
+
     @Override
     public List<Producto> obtenerProductosPerecederoPorInventario(int idInventario) {
         List<Producto> productosPerecederos = new ArrayList<>();
@@ -530,7 +458,6 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         }
         return productosPerecederos;
     }
-
 
 
     @Override
@@ -699,6 +626,81 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
         } catch (SQLException e) {
             throw new RuntimeException("Error al obtener el producto: " + codigoProducto, e);
+        }
+    }
+
+
+    //UPDATE:
+
+    @Override
+    public void actualizarProducto(Producto producto, int idInventario) {
+        String sql = "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, stock = ?, " +
+                "id_impuesto = ?, id_descuento = ? , activo = ? " +
+                "WHERE id_inventario = ? AND codigo_producto = ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
+
+            pstmt.setString(1, producto.getNombre());
+            pstmt.setBigDecimal(2, producto.getValorCompra());
+            pstmt.setBigDecimal(3, producto.getPorcentajeGanancia());
+            pstmt.setInt(4, producto.getStock());
+            pstmt.setInt(5, producto.getIdImpuesto());
+            pstmt.setInt(6, producto.getIdDescuento());
+            pstmt.setBoolean(7, producto.isActivo());
+            pstmt.setInt(8, idInventario);
+            pstmt.setString(9, producto.getCodigo());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new ProductoNoEncontradoException("No se pudo actualizar: El producto no existe en este inventario.");
+            }
+
+            if (producto instanceof ProductoPerecedero perecedero) {
+                actualizarProductoPerecedero(conn, perecedero);
+            }
+
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1452) {
+                throw new IllegalArgumentException("No se puede actualizar el producto: " +
+                        "El Impuesto, el Descuento o el Inventario destino especificado no existen.");
+            }
+            throw new RuntimeException("Error al actualizar el producto: " + producto.getCodigo(), e);
+        }
+    }
+
+    private void actualizarProductoPerecedero(Connection conn, ProductoPerecedero perecedero) throws SQLException {
+        String sqlPerecedero = "UPDATE producto_perecedero SET id_politica = ? " +
+                "WHERE codigo_producto = ? ";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sqlPerecedero)) {
+            pstmt.setInt(1, perecedero.getPoliticaVencimiento().getIdPolitica());
+            pstmt.setString(2, perecedero.getCodigo());
+
+            pstmt.executeUpdate();
+        }
+    }
+
+
+    @Override
+    public void cambiarInventarioProducto(String codigoProducto, int idInventarioOrigen, int idInventarioDestino) {
+        String sql = "UPDATE productos SET id_inventario = ? WHERE id_inventario = ? AND codigo_producto = ?";
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, idInventarioDestino);
+            pstmt.setInt(2, idInventarioOrigen);
+            pstmt.setString(3, codigoProducto);
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new ProductoNoEncontradoException("No se pudo mover: El producto no existe en el inventario de origen.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error en la base de datos al mover el producto: " + codigoProducto, e);
         }
     }
 

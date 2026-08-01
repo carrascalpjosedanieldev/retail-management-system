@@ -5,3 +5,4 @@ public class ProductoNoDisponibleException extends RuntimeException {
         super(message);
     }
 }
+
