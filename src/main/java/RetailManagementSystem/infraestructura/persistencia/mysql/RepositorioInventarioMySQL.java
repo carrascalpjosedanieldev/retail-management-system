@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
-import RetailManagementSystem.dominio.entidades.Inventario;
+import RetailManagementSystem.dominio.entidades.comercial.Inventario;
 import RetailManagementSystem.dominio.puertos.RepositorioInventario;
 import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.InventarioNoVacioException;

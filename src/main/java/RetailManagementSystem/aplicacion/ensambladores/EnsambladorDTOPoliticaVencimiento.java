@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.dominio.entidades.PoliticaVencimiento;
+import RetailManagementSystem.dominio.entidades.comercial.PoliticaVencimiento;
 import RetailManagementSystem.aplicacion.dto.PoliticaVencimientoDTO;
 
 import java.util.ArrayList;

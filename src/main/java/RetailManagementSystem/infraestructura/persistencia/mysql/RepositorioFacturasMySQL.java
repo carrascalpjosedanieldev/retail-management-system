@@ -1,8 +1,8 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
-import RetailManagementSystem.dominio.entidades.Factura;
-import RetailManagementSystem.dominio.entidades.ItemVendido;
-import RetailManagementSystem.dominio.entidades.ReporteRecaudo;
+import RetailManagementSystem.dominio.entidades.ventas.Factura;
+import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
+import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.puertos.RepositorioFacturas;
 import RetailManagementSystem.dominio.excepciones.StockInsuficienteException;

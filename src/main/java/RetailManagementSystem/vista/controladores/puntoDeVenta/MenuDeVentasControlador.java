@@ -3,7 +3,7 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 import RetailManagementSystem.aplicacion.dto.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
-import RetailManagementSystem.dominio.entidades.SesionVenta;
+import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
 import RetailManagementSystem.dominio.excepciones.ProductoNoDisponibleException;
 import RetailManagementSystem.dominio.excepciones.ProductoVencidoException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;

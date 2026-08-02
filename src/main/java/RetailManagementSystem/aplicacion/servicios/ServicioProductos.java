@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
-import RetailManagementSystem.dominio.entidades.*;
+import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
 import RetailManagementSystem.dominio.puertos.RepositorioImpuestos;
 import RetailManagementSystem.dominio.puertos.RepositorioPoliticaVencimiento;

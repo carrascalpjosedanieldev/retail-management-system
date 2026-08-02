@@ -1,10 +1,10 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.dominio.entidades.Carrito;
-import RetailManagementSystem.dominio.entidades.ItemCarrito;
+import RetailManagementSystem.dominio.entidades.ventas.Carrito;
+import RetailManagementSystem.dominio.entidades.ventas.ItemCarrito;
 import RetailManagementSystem.aplicacion.dto.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.dto.VistaPreviaCarritoDTO;
-import RetailManagementSystem.dominio.entidades.ItemFacturable;
+import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

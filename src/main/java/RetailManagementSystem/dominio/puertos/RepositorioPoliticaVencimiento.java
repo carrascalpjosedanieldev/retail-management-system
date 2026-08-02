@@ -1,6 +1,6 @@
 package RetailManagementSystem.dominio.puertos;
 
-import RetailManagementSystem.dominio.entidades.PoliticaVencimiento;
+import RetailManagementSystem.dominio.entidades.comercial.PoliticaVencimiento;
 
 import java.util.List;
 

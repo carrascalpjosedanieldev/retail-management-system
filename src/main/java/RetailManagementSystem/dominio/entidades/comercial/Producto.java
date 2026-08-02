@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.entidades;
+package RetailManagementSystem.dominio.entidades.comercial;
 
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.excepciones.StockInsuficienteException;
@@ -9,7 +9,7 @@ import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.PRODUCTO;
 
-public abstract class Producto implements ItemFacturable{
+public abstract class Producto implements ItemFacturable {
 
     //ATRIBUTOS:
 

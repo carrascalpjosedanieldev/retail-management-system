@@ -3,7 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
 import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
-import RetailManagementSystem.dominio.entidades.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.aplicacion.dto.DescuentoDTO;

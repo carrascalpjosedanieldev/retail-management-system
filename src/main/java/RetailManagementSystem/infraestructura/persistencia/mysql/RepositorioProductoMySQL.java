@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
-import RetailManagementSystem.dominio.entidades.*;
+import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.dominio.excepciones.ProductoNoDisponibleException;
 import RetailManagementSystem.dominio.puertos.RepositorioProducto;

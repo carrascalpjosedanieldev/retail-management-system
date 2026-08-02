@@ -1,9 +1,9 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
 import RetailManagementSystem.aplicacion.dto.*;
-import RetailManagementSystem.dominio.entidades.Producto;
-import RetailManagementSystem.dominio.entidades.ProductoPerecedero;
-import RetailManagementSystem.dominio.entidades.ProductoRopa;
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
+import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
-import RetailManagementSystem.dominio.entidades.Impuesto;
+import RetailManagementSystem.dominio.entidades.comercial.Impuesto;
 import RetailManagementSystem.dominio.puertos.RepositorioImpuestos;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 

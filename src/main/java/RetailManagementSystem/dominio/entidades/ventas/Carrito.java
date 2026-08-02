@@ -1,5 +1,7 @@
-package RetailManagementSystem.dominio.entidades;
+package RetailManagementSystem.dominio.entidades.ventas;
 
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.dominio.excepciones.StockInsuficienteException;
 
 import java.math.BigDecimal;
@@ -11,7 +13,7 @@ public class Carrito {
 
     //ATRIBUTOS:
 
-    private final Map<String,ItemCarrito> carritoFinal;
+    private final Map<String, ItemCarrito> carritoFinal;
 
     //GETTERS Y SETTERS:
 

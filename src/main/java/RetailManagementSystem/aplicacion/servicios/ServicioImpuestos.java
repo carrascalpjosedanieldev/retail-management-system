@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
-import RetailManagementSystem.dominio.entidades.Impuesto;
+import RetailManagementSystem.dominio.entidades.comercial.Impuesto;
 import RetailManagementSystem.dominio.puertos.RepositorioImpuestos;
 
 import java.math.BigDecimal;

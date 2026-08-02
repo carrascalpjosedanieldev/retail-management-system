@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.fabricas;
 
-import RetailManagementSystem.dominio.entidades.*;
+import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;

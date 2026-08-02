@@ -8,7 +8,10 @@ import RetailManagementSystem.aplicacion.servicios.ServicioCarrito;
 import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.servicios.ServicioServicios;
-import RetailManagementSystem.dominio.entidades.*;
+import RetailManagementSystem.dominio.entidades.ventas.Carrito;
+import RetailManagementSystem.dominio.entidades.ventas.ItemCarrito;
+import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
+import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
 import RetailManagementSystem.dominio.excepciones.CarritoVacioException;
 
 import java.time.LocalDate;

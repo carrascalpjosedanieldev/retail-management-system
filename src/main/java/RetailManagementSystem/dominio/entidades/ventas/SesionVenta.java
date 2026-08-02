@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.entidades;
+package RetailManagementSystem.dominio.entidades.ventas;
 
 public class SesionVenta {
 

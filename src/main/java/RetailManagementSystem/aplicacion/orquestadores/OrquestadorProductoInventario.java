@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
-import RetailManagementSystem.dominio.entidades.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
 
 public class OrquestadorProductoInventario {
 

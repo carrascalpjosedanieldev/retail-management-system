@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.dominio.entidades.Servicio;
+import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.aplicacion.dto.ServicioDTO;
 
 import java.time.LocalDate;

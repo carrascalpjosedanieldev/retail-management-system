@@ -1,8 +1,8 @@
 package RetailManagementSystem.aplicacion.servicios;
 
-import RetailManagementSystem.dominio.entidades.Carrito;
-import RetailManagementSystem.dominio.entidades.Producto;
-import RetailManagementSystem.dominio.entidades.Servicio;
+import RetailManagementSystem.dominio.entidades.ventas.Carrito;
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.time.LocalDate;

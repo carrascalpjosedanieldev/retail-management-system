@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
-import RetailManagementSystem.dominio.entidades.Descuento;
-import RetailManagementSystem.dominio.entidades.Impuesto;
+import RetailManagementSystem.dominio.entidades.comercial.Descuento;
+import RetailManagementSystem.dominio.entidades.comercial.Impuesto;
 import RetailManagementSystem.aplicacion.dto.ServicioDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;

@@ -1,5 +1,6 @@
 package RetailManagementSystem.dominio.entidades;
 
+//ELIMINAR EN EL FUTURO Y CONVERTIR EN CONFIGURACION
 public class Tienda {
 
     //ATRIBUTOS:

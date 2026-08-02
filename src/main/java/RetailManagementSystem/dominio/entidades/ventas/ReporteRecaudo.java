@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.entidades;
+package RetailManagementSystem.dominio.entidades.ventas;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
 package RetailManagementSystem.dominio.puertos;
 
-import RetailManagementSystem.dominio.entidades.Producto;
-import RetailManagementSystem.dominio.entidades.ProductoPerecedero;
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 
 import java.util.List;
 

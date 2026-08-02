@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.entidades;
+package RetailManagementSystem.dominio.entidades.comercial;
 
 import RetailManagementSystem.dominio.excepciones.ProductoVencidoException;
 

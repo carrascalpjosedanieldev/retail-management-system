@@ -1,8 +1,8 @@
 package RetailManagementSystem.dominio.puertos;
 
-import RetailManagementSystem.dominio.entidades.Factura;
-import RetailManagementSystem.dominio.entidades.ItemVendido;
-import RetailManagementSystem.dominio.entidades.ReporteRecaudo;
+import RetailManagementSystem.dominio.entidades.ventas.Factura;
+import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
+import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

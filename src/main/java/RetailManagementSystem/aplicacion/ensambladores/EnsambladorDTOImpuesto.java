@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.dominio.entidades.Impuesto;
+import RetailManagementSystem.dominio.entidades.comercial.Impuesto;
 import RetailManagementSystem.aplicacion.dto.ImpuestoDTO;
 
 import java.util.ArrayList;
