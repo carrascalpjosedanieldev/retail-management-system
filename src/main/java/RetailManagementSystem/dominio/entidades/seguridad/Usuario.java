@@ -2,6 +2,7 @@ package RetailManagementSystem.dominio.entidades.seguridad;
 
 import RetailManagementSystem.dominio.excepciones.RolNoDisponibleException;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +21,13 @@ public class Usuario {
 
     private final Set<Rol> roles;
 
-    private transient Set<String> permisosCacheados;
+    private final transient Set<String> permisosCacheados;
+
+    private int intentosFallidos;
+
+    private LocalDateTime bloqueadoHasta;
+
+    private final String hash;
 
     private boolean activo;
 
@@ -55,6 +62,28 @@ public class Usuario {
         return Collections.unmodifiableSet(this.roles);
     }
 
+    public Set<String> getPermisosCacheados() {
+        return Collections.unmodifiableSet(this.permisosCacheados);
+    }
+
+    public int getIntentosFallidos() {
+        return intentosFallidos;
+    }
+    private void setIntentosFallidos(int intentosFallidos) {
+        this.intentosFallidos = intentosFallidos;
+    }
+
+    public LocalDateTime getBloqueadoHasta() {
+        return this.bloqueadoHasta;
+    }
+    private void setBloqueadoHasta(LocalDateTime bloqueadoHasta) {
+        this.bloqueadoHasta = bloqueadoHasta;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
     public boolean isActivo() {
         return activo;
     }
@@ -64,7 +93,10 @@ public class Usuario {
 
     //CONSTRUCTORES:
 
-    private Usuario(Integer idUsuario, String nombre, String apellido, String email, boolean activo) {
+    private Usuario(
+            Integer idUsuario, String nombre, String apellido, String email, int intentosFallidos,
+            LocalDateTime bloqueadoHasta, String hash, boolean activo
+    ) {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Usuario Vacío");
         }
@@ -80,15 +112,21 @@ public class Usuario {
         this.email = email;
         this.roles = new HashSet<>();
         this.permisosCacheados = new HashSet<>();
+        this.intentosFallidos = intentosFallidos;
+        this.bloqueadoHasta = bloqueadoHasta;
+        this.hash = hash;
         this.activo = activo;
     }
 
-    public static Usuario reconstruirDesdeBD(Integer id_usuario, String nombre, String apellido, String email, boolean activo){
-        return new Usuario(id_usuario, nombre, apellido, email, activo);
+    public static Usuario reconstruirDesdeBD(
+            Integer id_usuario, String nombre, String apellido, String email, int intentosFallidos,
+            LocalDateTime bloqueadoHasta, String hash, boolean activo
+    ){
+        return new Usuario(id_usuario, nombre, apellido, email, intentosFallidos, bloqueadoHasta, hash, activo);
     }
 
-    public static Usuario crearNuevo(String nombre, String apellido, String email, boolean activo){
-        return new Usuario(null, nombre, apellido, email, activo);
+    public static Usuario crearNuevo(String nombre, String apellido, String email, String hash, boolean activo){
+        return new Usuario(null, nombre, apellido, email, 0, null, hash, activo);
     }
 
     //MÉTODOS:
@@ -112,6 +150,28 @@ public class Usuario {
             throw new IllegalArgumentException("Email del Usuario Vacío");
         }
         setEmail(emailNuevo);
+    }
+
+    public void registrarIntentoFallido(int maxIntentosFallidos, int minutosDeBloqueo, LocalDateTime fechaReferencia){
+        if (maxIntentosFallidos <= 0) {
+            throw new IllegalArgumentException("El máximo de intentos debe ser mayor a 0");
+        }
+        if (minutosDeBloqueo <= 0) {
+            throw new IllegalArgumentException("Los minutos de bloqueo deben ser mayores a 0");
+        }
+        if (fechaReferencia == null) {
+            throw new IllegalArgumentException("La fecha de referencia no puede ser nula");
+        }
+        setIntentosFallidos(this.intentosFallidos + 1);
+        if (this.intentosFallidos >= maxIntentosFallidos){
+            LocalDateTime bloqueadoHasta = fechaReferencia.plusMinutes(minutosDeBloqueo);
+            setBloqueadoHasta(bloqueadoHasta);
+        }
+    }
+
+    public void limpiarIntentosFallidos(){
+        setIntentosFallidos(0);
+        setBloqueadoHasta(null);
     }
 
     public void anadirRol(Rol rolNuevo){

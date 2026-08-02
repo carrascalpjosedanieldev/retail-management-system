@@ -4,7 +4,7 @@ public class RutasVista {
 
     //MENU PRINCIPAL:
 
-    public static final String NOMBRE_TIENDA_CLAVE = "NombreProyectoPropioOriginal";
+    public static final String NOMBRE_TIENDA_CLAVE = "NOMBRE_PROYECTO_PROPIO_ORIGINAL";
 
     public static final String MENU_PRINCIPAL_VIEW = "/vista/menuPrincipal/MenuPrincipal.fxml";
     public static final String ESTILOS_CSS_MENU_PRINCIPAL = "/css/menuPrincipal/estilosCssMenuPrincipal.css";
