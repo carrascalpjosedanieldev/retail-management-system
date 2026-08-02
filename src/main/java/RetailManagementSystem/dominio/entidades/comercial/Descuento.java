@@ -54,12 +54,8 @@ public class Descuento {
         return new Descuento(id, nombre, porcentaje, activo);
     }
 
-    private Descuento(String nombre, BigDecimal porcentaje, boolean activo) {
-        this(null, nombre, porcentaje, activo);
-    }
-
     public static Descuento crearNuevo(String nombre, BigDecimal porcentaje, boolean activo) {
-        return new Descuento(nombre, porcentaje, activo);
+        return new Descuento(null, nombre, porcentaje, activo);
     }
 
     //METODOS:

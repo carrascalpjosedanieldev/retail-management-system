@@ -69,13 +69,9 @@ public class PoliticaVencimiento {
         return new PoliticaVencimiento(idPolitica, nombrePolitica, diasUmbral, porcentajeDescuento, activa);
     }
 
-    private PoliticaVencimiento(String nombrePolitica, int diasUmbral, BigDecimal porcentajeDescuento, boolean activa) {
-        this(null, nombrePolitica, diasUmbral, porcentajeDescuento, activa);
-    }
-
     public static PoliticaVencimiento crearNuevo(
             String  nombrePolitica, int diasUmbral, BigDecimal porcentajeDescuento, boolean activa){
-        return new PoliticaVencimiento(nombrePolitica, diasUmbral, porcentajeDescuento, activa);
+        return new PoliticaVencimiento(null, nombrePolitica, diasUmbral, porcentajeDescuento, activa);
     }
 
     //MÉTODOS:

@@ -42,24 +42,7 @@ public class Inventario {
 
     //CONSTRUCTORES:
 
-    private Inventario(String nombre, int capacidadMaxima){
-        if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Inventario Invalido");
-        }
-        if (capacidadMaxima<=0){
-            throw new IllegalArgumentException("Capacidad Maxima del Inventario Invalida");
-        }
-        this.nombre = nombre;
-        this.idInventario = null;
-        this.capacidadMaxima = capacidadMaxima;
-        this.capacidadOcupada = 0;
-    }
-
-    public static Inventario crearNuevo(String nombre, int capacidadMaxima) {
-        return new Inventario(nombre, capacidadMaxima);
-    }
-
-    private Inventario(int idInventario, String nombre, int capacidadMaxima, int capacidadOcupada){
+    private Inventario(Integer idInventario, String nombre, int capacidadMaxima, int capacidadOcupada){
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Inventario Invalido");
         }
@@ -74,6 +57,10 @@ public class Inventario {
 
     public static Inventario reconstruirDesdeBD(int idInventario, String nombre, int capacidadMaxima, int capacidadOcupada) {
         return new Inventario(idInventario, nombre, capacidadMaxima, capacidadOcupada);
+    }
+
+    public static Inventario crearNuevo(String nombre, int capacidadMaxima) {
+        return new Inventario(null, nombre, capacidadMaxima, 0);
     }
 
     //METODOS PARA MODIFICAR INVENTARIO:
