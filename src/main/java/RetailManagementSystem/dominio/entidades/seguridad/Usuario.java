@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Usuario {
 
@@ -244,6 +245,18 @@ public class Usuario {
             throw new IllegalArgumentException("NO tienes ese Rol en tu lista de Roles");
         }
         this.roles.remove(rolAQuitar);
+    }
+
+    public Set<String> obtenerPermisosTotales() {
+        Set<String> permisosTotales = new HashSet<>();
+        for (Rol rol : this.roles) {
+            permisosTotales.addAll(rol.obtenerNombresPermisos());
+        }
+        return Collections.unmodifiableSet(permisosTotales);
+    }
+
+    public Set<String> obtenerNombresRoles() {
+        return roles.stream().map(Rol::getNombre).collect(Collectors.toUnmodifiableSet());
     }
 
     //MÉTODOS PARA PREESTABLECER CONTRASEÑA:

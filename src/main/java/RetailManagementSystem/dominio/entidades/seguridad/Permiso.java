@@ -1,5 +1,7 @@
 package RetailManagementSystem.dominio.entidades.seguridad;
 
+import java.util.Objects;
+
 public class Permiso {
 
     //ATRIBUTOS:
@@ -13,7 +15,6 @@ public class Permiso {
     private boolean activo;
 
     //GETTERS Y SETTERS:
-
 
     public Integer getIdPermiso() {
         return idPermiso;
@@ -47,7 +48,7 @@ public class Permiso {
             throw new IllegalArgumentException("La Descripción NO puede ser Nula");
         }
         this.idPermiso = idPermiso;
-        this.nombre = nombre.toUpperCase();
+        this.nombre = nombre.trim().toUpperCase();
         this.descripcion = descripcion;
         this.activo = activo;
     }
@@ -61,6 +62,19 @@ public class Permiso {
     }
 
     //MÉTODOS:
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Permiso permiso = (Permiso) o;
+        return nombre.equalsIgnoreCase(permiso.nombre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre);
+    }
 
     public void cambiarDescripcion(String descripcionNueva){
         if (descripcionNueva == null){

@@ -5,11 +5,14 @@ import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 
 public class EnsambladorDTOUsuario {
 
-    //METODOS:
+    //MÉTODOS:
 
     public UsuarioDTO ensamblarDTOUsuario(Usuario usuario){
-        return null;
+        return new UsuarioDTO(
+                usuario.getIdUsuario(), usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
+                usuario.isActivo(), usuario.isDebeCambiarContrasena(), usuario.obtenerNombresRoles(),
+                usuario.obtenerPermisosTotales());
     }
 
+}//===================================================================================================================//
 
-}
