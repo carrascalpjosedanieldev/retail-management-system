@@ -16,8 +16,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
     public Usuario insertarUsuarioNuevo(Usuario usuario) {
         String sql =
                 "INSERT INTO usuarios (nombre, apellido, email, password_hash, intentos_fallidos, " +
-                "bloqueado_hasta, activo) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                "bloqueado_hasta, activo, debe_cambiar_contrasena) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try(Connection conn = AdministradorConexion.obtenerConexion();
             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -36,6 +36,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
             pstmt.setBoolean(7, usuario.isActivo());
+            pstmt.setBoolean(8, usuario.isDebeCambiarContrasena());
 
             int filasAfectadas = pstmt.executeUpdate();
 
@@ -49,7 +50,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                     return Usuario.reconstruirDesdeBD(
                             idReal, usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
                             usuario.getIntentosFallidos(), usuario.getBloqueadoHasta(), usuario.getHash(),
-                            usuario.isActivo());
+                            usuario.isActivo(), usuario.isDebeCambiarContrasena());
                 } else {
                     throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
@@ -70,7 +71,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
     @Override
     public Usuario obtenerUsuarioPorEmail(String email) {
         String sql =
-                "SELECT id_usuario, nombre, apellido, email, password_hash, intentos_fallidos, bloqueado_hasta, activo " +
+                "SELECT id_usuario, nombre, apellido, email, password_hash, intentos_fallidos, bloqueado_hasta, " +
+                        "activo, debe_cambiar_contrasena " +
                 "FROM usuarios " +
                 "WHERE email = ?";
 
@@ -90,7 +92,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                             rs.getInt("intentos_fallidos"),
                             rs.getTimestamp("bloqueado_hasta").toLocalDateTime(),
                             rs.getString("password_hash"),
-                            rs.getBoolean("activo")
+                            rs.getBoolean("activo"),
+                            rs.getBoolean("debe_cambiar_contrasena")
                     );
                 }
 
@@ -105,7 +108,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
     @Override
     public Usuario obtenerUsuarioPorId(int idUsuario) {
         String sql =
-                "SELECT id_usuario, nombre, apellido, email, password_hash, intentos_fallidos, bloqueado_hasta, activo " +
+                "SELECT id_usuario, nombre, apellido, email, password_hash, intentos_fallidos, bloqueado_hasta, " +
+                        "activo, debe_cambiar_contrasena " +
                         "FROM usuarios " +
                         "WHERE id_usuario = ?";
 
@@ -125,7 +129,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                             rs.getInt("intentos_fallidos"),
                             rs.getTimestamp("bloqueado_hasta").toLocalDateTime(),
                             rs.getString("password_hash"),
-                            rs.getBoolean("activo")
+                            rs.getBoolean("activo"),
+                            rs.getBoolean("debe_cambiar_contrasena")
                     );
                 }
 
@@ -179,6 +184,37 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             pstmt.setString(2, usuario.getApellido());
             pstmt.setString(3, usuario.getEmail());
             pstmt.setBoolean(4, usuario.isActivo());
+            pstmt.setInt(5, usuario.getIdUsuario());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new UsuarioNoEncontradoException("NO se pudo Actualizar: El Usuario con ID -" + usuario.getIdUsuario() + "- NO Existe.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al actualizar la seguridad del usuario", e);
+        }
+    }
+
+    @Override
+    public void actualizarSeguridad(Usuario usuario) {
+        String sql = "UPDATE usuarios SET password_hash = ?, debe_cambiar_contrasena = ?, " +
+                "intentos_fallidos = ?, bloqueado_hasta = ? WHERE id = ?";
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, usuario.getHash());
+            pstmt.setBoolean(2, usuario.isDebeCambiarContrasena());
+            pstmt.setInt(3, usuario.getIntentosFallidos());
+
+            if (usuario.getBloqueadoHasta() != null) {
+                pstmt.setTimestamp(4, Timestamp.valueOf(usuario.getBloqueadoHasta()));
+            } else {
+                pstmt.setNull(4, Types.TIMESTAMP);
+            }
+
             pstmt.setInt(5, usuario.getIdUsuario());
 
             int filasAfectadas = pstmt.executeUpdate();

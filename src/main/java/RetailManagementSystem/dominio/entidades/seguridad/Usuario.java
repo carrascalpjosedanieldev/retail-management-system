@@ -27,9 +27,11 @@ public class Usuario {
 
     private LocalDateTime bloqueadoHasta;
 
-    private final String hash;
+    private String hash;
 
     private boolean activo;
+
+    private boolean debeCambiarContrasena;
 
     //GETTERS Y SETTERS:
 
@@ -83,6 +85,9 @@ public class Usuario {
     public String getHash() {
         return hash;
     }
+    private void setHash(String hash) {
+        this.hash = hash;
+    }
 
     public boolean isActivo() {
         return activo;
@@ -91,11 +96,18 @@ public class Usuario {
         this.activo = activo;
     }
 
+    public boolean isDebeCambiarContrasena() {
+        return debeCambiarContrasena;
+    }
+    private void setDebeCambiarContrasena(boolean debeCambiarContrasena) {
+        this.debeCambiarContrasena = debeCambiarContrasena;
+    }
+
     //CONSTRUCTORES:
 
     private Usuario(
             Integer idUsuario, String nombre, String apellido, String email, int intentosFallidos,
-            LocalDateTime bloqueadoHasta, String hash, boolean activo
+            LocalDateTime bloqueadoHasta, String hash, boolean activo, boolean debeCambiarContrasena
     ) {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Usuario Vacío");
@@ -122,20 +134,23 @@ public class Usuario {
         this.bloqueadoHasta = bloqueadoHasta;
         this.hash = hash;
         this.activo = activo;
+        this.debeCambiarContrasena = debeCambiarContrasena;
     }
 
     public static Usuario reconstruirDesdeBD(
             Integer id_usuario, String nombre, String apellido, String email, int intentosFallidos,
-            LocalDateTime bloqueadoHasta, String hash, boolean activo
+            LocalDateTime bloqueadoHasta, String hash, boolean activo, boolean debeCambiarContrasena
     ){
-        return new Usuario(id_usuario, nombre, apellido, email, intentosFallidos, bloqueadoHasta, hash, activo);
+        return new Usuario(id_usuario, nombre, apellido, email, intentosFallidos, bloqueadoHasta, hash, activo,
+                debeCambiarContrasena);
     }
 
     public static Usuario crearNuevo(String nombre, String apellido, String email, String hash, boolean activo){
-        return new Usuario(null, nombre, apellido, email, 0, null, hash, activo);
+        return new Usuario(null, nombre, apellido, email, 0, null, hash,
+                activo, false);
     }
 
-    //MÉTODOS:
+    //MÉTODOS PARA ACTUALIZAR DATOS:
 
     public void cambiarNombre(String nombreNuevo){
         if (nombreNuevo == null || nombreNuevo.isBlank()){
@@ -158,6 +173,26 @@ public class Usuario {
         setEmail(emailNuevo);
     }
 
+    public void activarUsuario(){
+        if (isActivo()){
+            throw new IllegalStateException("El Usuario ya esta Activo");
+        }
+        setActivo(true);
+    }
+
+    public void desactivarUsuario(){
+        if (!isActivo()){
+            throw new IllegalStateException("El Usuario ya esta Inactivo");
+        }
+        setActivo(false);
+    }
+
+    public void cambiarEstado(boolean estado){
+        setActivo(estado);
+    }
+
+    //MÉTODOS DE VALIDACIÓN LOGIN:
+
     public void registrarIntentoFallido(int maxIntentosFallidos, int minutosDeBloqueo, LocalDateTime fechaReferencia){
         if (maxIntentosFallidos <= 0) {
             throw new IllegalArgumentException("El máximo de intentos debe ser mayor a 0");
@@ -179,6 +214,8 @@ public class Usuario {
         setIntentosFallidos(0);
         setBloqueadoHasta(null);
     }
+
+    //MÉTODOS PARA ROLES Y PERMISOS:
 
     public void anadirRol(Rol rolNuevo){
         if (!rolNuevo.isActivo()){
@@ -209,22 +246,18 @@ public class Usuario {
         this.roles.remove(rolAQuitar);
     }
 
-    public void activarUsuario(){
-        if (isActivo()){
-            throw new IllegalStateException("El Usuario ya esta Activo");
-        }
-        setActivo(true);
+    //MÉTODOS PARA PREESTABLECER CONTRASEÑA:
+
+    public void asignarContrasenaTemporal(String nuevoHash) {
+        setHash(nuevoHash);
+        setDebeCambiarContrasena(true);
+        setIntentosFallidos(0);
+        setBloqueadoHasta(null);
     }
 
-    public void desactivarUsuario(){
-        if (!isActivo()){
-            throw new IllegalStateException("El Usuario ya esta Inactivo");
-        }
-        setActivo(false);
-    }
-
-    public void cambiarEstado(boolean estado){
-        setActivo(estado);
+    public void establecerContrasenaDefinitiva(String nuevoHash) {
+        setHash(nuevoHash);
+        setDebeCambiarContrasena(false);
     }
 
 }//===================================================================================================================//

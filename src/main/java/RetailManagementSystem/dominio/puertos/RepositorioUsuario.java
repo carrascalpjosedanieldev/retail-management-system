@@ -20,5 +20,7 @@ public interface RepositorioUsuario {
 
     void actualizarDatosUsuario(Usuario usuario);
 
+    void actualizarSeguridad(Usuario usuario);
+
 }
 

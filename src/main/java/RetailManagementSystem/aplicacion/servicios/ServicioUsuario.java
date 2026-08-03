@@ -9,6 +9,7 @@ import RetailManagementSystem.dominio.excepciones.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.UsuarioInactivoException;
 import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -105,6 +106,41 @@ public class ServicioUsuario {
         usuario.cambiarEmail(nuevoEmail);
         usuario.cambiarEstado(activo);
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
+    }
+
+    public String restablecerContrasenaPorAdmin(int idUsuario) {
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
+        String caracteresPermitidos = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder claveTemporal = new StringBuilder(6);
+        for (int i = 0; i < 6; i++) {
+            claveTemporal.append(caracteresPermitidos.charAt(random.nextInt(caracteresPermitidos.length())));
+        }
+        char[] clavePlana = claveTemporal.toString().toCharArray();
+        String hashTemporal;
+        try {
+            hashTemporal = this.codificadorContrasenas.codificar(clavePlana);
+        } finally {
+            Arrays.fill(clavePlana, '\0');
+        }
+        usuario.asignarContrasenaTemporal(hashTemporal);
+        this.repositorioUsuario.actualizarSeguridad(usuario);
+        return claveTemporal.toString();
+    }
+
+    public void cambiarContrasenaDefinitiva(int idUsuario, char[] nuevaContrasenaPlana) {
+        if (nuevaContrasenaPlana == null || nuevaContrasenaPlana.length < 8) {
+            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 8 caracteres.");
+        }
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
+        String nuevoHash;
+        try {
+            nuevoHash = this.codificadorContrasenas.codificar(nuevaContrasenaPlana);
+        } finally {
+            Arrays.fill(nuevaContrasenaPlana, '\0');
+        }
+        usuario.establecerContrasenaDefinitiva(nuevoHash);
+        this.repositorioUsuario.actualizarSeguridad(usuario);
     }
 
 }//===================================================================================================================//
