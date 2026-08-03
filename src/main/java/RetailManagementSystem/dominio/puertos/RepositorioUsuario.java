@@ -2,14 +2,19 @@ package RetailManagementSystem.dominio.puertos;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 
-import java.time.LocalDateTime;
-
 public interface RepositorioUsuario {
+
+    //CREATE:
+
+    Usuario insertarUsuarioNuevo(Usuario usuario);
+
+    //READ:
 
     Usuario obtenerUsuarioPorEmail(String email);
 
-    void actualizarUsuario(Usuario usuario);
+    //UPDATE:
 
+    void actualizarUsuario(Usuario usuario);
 
 }
 

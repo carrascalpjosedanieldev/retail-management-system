@@ -106,6 +106,12 @@ public class Usuario {
         if (email == null || email.isBlank()){
             throw new IllegalArgumentException("Email del Usuario Vacío");
         }
+        if (intentosFallidos < 0){
+            throw new IllegalArgumentException("Intentos fallidos invalidos");
+        }
+        if (hash == null || hash.isBlank()){
+            throw new IllegalArgumentException("Hash invalido");
+        }
         this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
