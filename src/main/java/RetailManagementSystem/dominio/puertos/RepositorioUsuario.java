@@ -12,9 +12,13 @@ public interface RepositorioUsuario {
 
     Usuario obtenerUsuarioPorEmail(String email);
 
+    Usuario obtenerUsuarioPorId(int idUsuario);
+
     //UPDATE:
 
-    void actualizarUsuario(Usuario usuario);
+    void actualizarDatosLoginUsuario(Usuario usuario);
+
+    void actualizarDatosUsuario(Usuario usuario);
 
 }
 

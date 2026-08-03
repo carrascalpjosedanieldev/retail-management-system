@@ -107,7 +107,7 @@ public class Usuario {
             throw new IllegalArgumentException("Email del Usuario Vacío");
         }
         if (intentosFallidos < 0){
-            throw new IllegalArgumentException("Intentos fallidos invalidos");
+            throw new IllegalArgumentException("Intentos Fallidos Inválidos");
         }
         if (hash == null || hash.isBlank()){
             throw new IllegalArgumentException("Hash invalido");
@@ -175,7 +175,7 @@ public class Usuario {
         }
     }
 
-    public void limpiarIntentosFallidos(){
+    public void limpiarIntentosFallidosYBloqueo(){
         setIntentosFallidos(0);
         setBloqueadoHasta(null);
     }
@@ -221,6 +221,10 @@ public class Usuario {
             throw new IllegalStateException("El Usuario ya esta Inactivo");
         }
         setActivo(false);
+    }
+
+    public void cambiarEstado(boolean estado){
+        setActivo(estado);
     }
 
 }//===================================================================================================================//

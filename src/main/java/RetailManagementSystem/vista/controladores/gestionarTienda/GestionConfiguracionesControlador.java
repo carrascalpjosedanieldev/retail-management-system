@@ -173,9 +173,7 @@ public class GestionConfiguracionesControlador {
             }
             try {
                 Tienda tienda = Tienda.crearNueva(nombreActual);
-                this.servicioConfiguraciones.cambiarNombreYDescripcionTienda(
-                        RutasVista.NOMBRE_TIENDA_CLAVE, nuevoNombre, tienda, nuevaDescripcion
-                );
+                this.servicioConfiguraciones.cambiarNombreYDescripcionTienda(nuevoNombre, tienda, nuevaDescripcion);
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Cambios Guardados",
                         "La Información de la Tienda se Actualizó con Éxito.");
             } catch (Exception e) {

@@ -5,7 +5,7 @@ import RetailManagementSystem.dominio.puertos.RepositorioConfiguracion;
 
 import java.sql.*;
 
-public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion, ProveedorConfiguracion {
+public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
 
     //READ:
 
@@ -135,19 +135,6 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion, 
         } catch (SQLException e) {
             throw new RuntimeException("Error al Actualizar la Configuración del Sistema", e);
         }
-
-    }
-
-    //CACHE:
-
-    @Override
-    public void invalidarCache(String clave) {
-
-    }
-
-    @Override
-    public void invalidarCacheCompleto() {
-
     }
 
 

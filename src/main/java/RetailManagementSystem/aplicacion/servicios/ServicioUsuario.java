@@ -1,28 +1,39 @@
 package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
+import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.excepciones.CredencialesInvalidasException;
+import RetailManagementSystem.dominio.excepciones.EmailDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.UsuarioInactivoException;
 import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 
 public class ServicioUsuario {
 
     //ATRIBUTOS:
 
+    private static final String CONF_MAX_INTENTOS = "SEGURIDAD_MAX_INTENTOS";
+
+    private static final String CONF_MINUTOS_BLOQUEO = "SEGURIDAD_MINUTOS_BLOQUEO";
+
     private final RepositorioUsuario repositorioUsuario;
 
     private final CodificadorContrasenas codificadorContrasenas;
 
+    private final ProveedorConfiguracion proveedorConfiguracion;
+
     //CONSTRUCTOR:
 
-    public ServicioUsuario(RepositorioUsuario repositorioUsuario, CodificadorContrasenas codificadorContrasenas) {
+    public ServicioUsuario(RepositorioUsuario repositorioUsuario, CodificadorContrasenas codificadorContrasenas,
+                           ProveedorConfiguracion proveedorConfiguracion) {
         this.repositorioUsuario = repositorioUsuario;
         this.codificadorContrasenas = codificadorContrasenas;
+        this.proveedorConfiguracion = proveedorConfiguracion;
     }
 
     //MÉTODOS:
@@ -42,16 +53,59 @@ public class ServicioUsuario {
             long minutosRestantes = ChronoUnit.MINUTES.between(fechaReferencia, bloqueo);
             throw new UsuarioBloqueadoException("Usuario bloqueado. Intenta de nuevo en " + minutosRestantes + " minutos.");
         }
-        boolean claveCorrecta = this.codificadorContrasenas.verificar(contrasenaPlana, usuario.getHash());
+        boolean claveCorrecta;
+        try {
+            claveCorrecta = this.codificadorContrasenas.verificar(contrasenaPlana, usuario.getHash());
+        } finally {
+            Arrays.fill(contrasenaPlana, '\0');
+        }
         if (!claveCorrecta){
-            usuario.registrarIntentoFallido();
-            this.repositorioUsuario.actualizarUsuario(usuario);
+            int maxIntentos = Integer.parseInt(
+                    this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MAX_INTENTOS)
+            );
+            int minutosBloqueo = Integer.parseInt(
+                    this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MINUTOS_BLOQUEO)
+            );
+            usuario.registrarIntentoFallido(maxIntentos, minutosBloqueo, fechaReferencia);
+            this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
             throw new CredencialesInvalidasException("Credenciales Invalidas");
         }
-        usuario.limpiarIntentosFallidos();
-        this.repositorioUsuario.actualizarUsuario(usuario);
+        usuario.limpiarIntentosFallidosYBloqueo();
+        this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
         return usuario;
     }
 
-}
+    public Usuario registrarUsuario(String nombre, String apellido, String email, char[] contrasenaPlana, boolean activo){
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorEmail(email);
+        if (usuario != null){
+            throw new EmailDuplicadoException("El Correo Electrónico " + email + " ya está Registrado.");
+        }
+        String hashNuevo;
+        try {
+            hashNuevo = this.codificadorContrasenas.codificar(contrasenaPlana);
+        } finally {
+            Arrays.fill(contrasenaPlana, '\0');
+        }
+        Usuario usuarioNuevo = Usuario.crearNuevo(nombre, apellido, email, hashNuevo, activo);
+        return this.repositorioUsuario.insertarUsuarioNuevo(usuarioNuevo);
+    }
+
+    public void actualizarDatosUsuario(
+            int idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail, boolean activo
+    ){
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
+        if (!usuario.getEmail().equalsIgnoreCase(nuevoEmail)) {
+            Usuario usuarioExistente = this.repositorioUsuario.obtenerUsuarioPorEmail(nuevoEmail);
+            if (usuarioExistente != null) {
+                throw new EmailDuplicadoException("Ese Correo Electrónico ya está en Uso.");
+            }
+        }
+        usuario.cambiarNombre(nuevoNombre);
+        usuario.cambiarApellido(nuevoApellido);
+        usuario.cambiarEmail(nuevoEmail);
+        usuario.cambiarEstado(activo);
+        this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
+    }
+
+}//===================================================================================================================//
 
