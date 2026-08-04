@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
-import RetailManagementSystem.aplicacion.dto.FacturaDTO;
-import RetailManagementSystem.aplicacion.dto.ItemVendidoFacturaDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.ItemVendidoFacturaDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;

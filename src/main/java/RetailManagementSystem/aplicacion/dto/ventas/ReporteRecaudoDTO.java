@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.dto;
+package RetailManagementSystem.aplicacion.dto.ventas;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

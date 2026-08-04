@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.dto;
+package RetailManagementSystem.aplicacion.dto.seguridad;
 
 import java.util.Set;
 

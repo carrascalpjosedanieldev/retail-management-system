@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
-import RetailManagementSystem.aplicacion.dto.DatosTotalesProductoPerecederoDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerecederoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;

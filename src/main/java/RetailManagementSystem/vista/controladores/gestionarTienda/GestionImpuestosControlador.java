@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
-import RetailManagementSystem.aplicacion.dto.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOImpuesto;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;

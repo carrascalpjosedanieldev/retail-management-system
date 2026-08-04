@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.dto;
+package RetailManagementSystem.aplicacion.dto.comercial;
 
 import java.util.List;
 

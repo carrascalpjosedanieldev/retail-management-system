@@ -1,12 +1,12 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.aplicacion.dto.ResumenVentaDiaDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.ResumenVentaDiaDTO;
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
 import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
-import RetailManagementSystem.aplicacion.dto.ItemVendidoFacturaDTO;
-import RetailManagementSystem.aplicacion.dto.FacturaDTO;
-import RetailManagementSystem.aplicacion.dto.ReporteRecaudoDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.ItemVendidoFacturaDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.ReporteRecaudoDTO;
 import RetailManagementSystem.dominio.entidades.ventas.ResumenVentaDia;
 
 import java.util.ArrayList;

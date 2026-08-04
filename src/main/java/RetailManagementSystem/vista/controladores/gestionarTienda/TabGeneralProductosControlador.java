@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
-import RetailManagementSystem.aplicacion.dto.InventarioDTO;
-import RetailManagementSystem.aplicacion.dto.ProductoResumenDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.dominio.excepciones.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;

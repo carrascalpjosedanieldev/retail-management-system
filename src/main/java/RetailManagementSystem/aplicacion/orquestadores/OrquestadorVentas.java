@@ -1,7 +1,7 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
-import RetailManagementSystem.aplicacion.dto.FacturaDTO;
-import RetailManagementSystem.aplicacion.dto.VistaPreviaCarritoDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.VistaPreviaCarritoDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOCarrito;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
 import RetailManagementSystem.aplicacion.servicios.ServicioCarrito;

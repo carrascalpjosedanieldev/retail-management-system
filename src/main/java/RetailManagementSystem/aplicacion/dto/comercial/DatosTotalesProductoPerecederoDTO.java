@@ -1,12 +1,12 @@
-package RetailManagementSystem.aplicacion.dto;
-
-import RetailManagementSystem.dominio.enums.Talla;
+package RetailManagementSystem.aplicacion.dto.comercial;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
-public record DatosTotalesProductoRopaDTO(
+public record DatosTotalesProductoPerecederoDTO(
         String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
         BigDecimal valorVentaFinal, int stock, ImpuestoDTO datosImpuesto, DescuentoDTO datosDescuento,
-        Talla talla, String disponible
+        LocalDate fechaVencimiento, PoliticaVencimientoDTO datosPoliticaVencimiento, String estaVencido,
+        String disponible
 ) implements DatosTotalesProductoDTO{ }
 

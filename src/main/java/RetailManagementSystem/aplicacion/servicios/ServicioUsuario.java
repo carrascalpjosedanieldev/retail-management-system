@@ -128,7 +128,7 @@ public class ServicioUsuario {
 
     public void cambiarContrasenaDefinitiva(int idUsuario, char[] nuevaContrasenaPlana) {
         if (nuevaContrasenaPlana == null || nuevaContrasenaPlana.length < 8) {
-            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 8 caracteres.");
+            throw new IllegalArgumentException("La Nueva Contraseña debe tener al menos 8 Caracteres.");
         }
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
         String nuevoHash;

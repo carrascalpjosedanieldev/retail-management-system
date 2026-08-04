@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
-import RetailManagementSystem.aplicacion.dto.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;

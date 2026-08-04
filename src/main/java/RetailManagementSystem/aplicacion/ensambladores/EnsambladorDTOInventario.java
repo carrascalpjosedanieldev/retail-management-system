@@ -2,9 +2,9 @@ package RetailManagementSystem.aplicacion.ensambladores;
 
 import RetailManagementSystem.dominio.entidades.comercial.Inventario;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
-import RetailManagementSystem.aplicacion.dto.InventarioDTO;
-import RetailManagementSystem.aplicacion.dto.DatosTotalesProductoDTO;
-import RetailManagementSystem.aplicacion.dto.DetalleInventarioDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.DetalleInventarioDTO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

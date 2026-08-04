@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
-import RetailManagementSystem.aplicacion.dto.ResumenVentaDiaDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.ResumenVentaDiaDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
 import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;

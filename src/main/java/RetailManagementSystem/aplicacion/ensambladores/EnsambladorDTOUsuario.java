@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.aplicacion.dto.UsuarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 
 public class EnsambladorDTOUsuario {

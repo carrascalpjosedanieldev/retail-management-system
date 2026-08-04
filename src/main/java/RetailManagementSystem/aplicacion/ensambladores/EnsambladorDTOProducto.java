@@ -1,6 +1,7 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.aplicacion.dto.*;
+import RetailManagementSystem.aplicacion.dto.comercial.*;
+import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;

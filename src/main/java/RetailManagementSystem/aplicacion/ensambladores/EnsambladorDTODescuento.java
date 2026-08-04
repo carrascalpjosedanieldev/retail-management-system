@@ -1,7 +1,7 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
 import RetailManagementSystem.dominio.entidades.comercial.Descuento;
-import RetailManagementSystem.aplicacion.dto.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.DescuentoDTO;
 
 import java.util.ArrayList;
 import java.util.List;
