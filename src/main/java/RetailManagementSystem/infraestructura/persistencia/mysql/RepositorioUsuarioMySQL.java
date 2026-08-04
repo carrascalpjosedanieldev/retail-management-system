@@ -6,6 +6,7 @@ import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.excepciones.EmailDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.UsuarioNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -66,7 +67,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             if (e.getErrorCode() == 1062) {
                 throw new EmailDuplicadoException("El correo electrónico ya se encuentra registrado en el sistema.");
             }
-            throw new RuntimeException("Error de base de datos al crear el usuario", e);
+            throw new PersistenciaException("Error de base de datos al crear el usuario", e);
         }
     }
 
@@ -156,7 +157,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al buscar el Usuario por email", e);
+            throw new PersistenciaException("Error al buscar el Usuario por email", e);
         }
     }
 
@@ -245,7 +246,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al buscar el Usuario por email", e);
+            throw new PersistenciaException("Error al buscar el Usuario por email", e);
         }
     }
 
@@ -275,7 +276,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al Actualizar la Seguridad del Usuario", e);
+            throw new PersistenciaException("Error al Actualizar la Seguridad del Usuario", e);
         }
     }
 
@@ -299,7 +300,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al actualizar la seguridad del usuario", e);
+            throw new PersistenciaException("Error al actualizar la seguridad del usuario", e);
         }
     }
 
@@ -330,7 +331,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al actualizar la seguridad del usuario", e);
+            throw new PersistenciaException("Error al actualizar la seguridad del usuario", e);
         }
     }
 

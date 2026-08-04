@@ -6,6 +6,7 @@ import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.puertos.RepositorioFacturas;
 import RetailManagementSystem.dominio.excepciones.StockInsuficienteException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -34,7 +35,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
                 return String.format("%s%05d", prefijo, siguienteValor);
             } else {
-                throw new SQLException("Error: No se encontró la secuencia de facturación 'FAC-'");
+                throw new SQLException("Error: NO se encontró la Secuencia de Facturación 'FAC-'");
             }
         }
     }
@@ -144,7 +145,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                     ex.printStackTrace();
                 }
             }
-            throw new RuntimeException("Venta cancelada: " + e.getMessage(), e);
+            throw new PersistenciaException("Venta cancelada: " + e.getMessage(), e);
         } finally {
             if (conn != null) {
                 try {
@@ -162,7 +163,6 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
     @Override
     public ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin) {
-
         String sql = "SELECT " +
                 "COUNT(id_factura) AS cantidad, " +
                 "COALESCE(SUM(subtotal), 0) AS suma_subtotal, " +
@@ -189,7 +189,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al generar el reporte de recaudo", e);
+            throw new PersistenciaException("Error al generar el reporte de recaudo", e);
         }
 
         return ReporteRecaudo.reconstruirDesdeBD(
@@ -213,7 +213,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al buscar la última venta del día", e);
+            throw new PersistenciaException("Error al buscar la última venta del día", e);
         }
 
         return BigDecimal.ZERO;

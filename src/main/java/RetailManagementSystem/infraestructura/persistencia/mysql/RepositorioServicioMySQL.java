@@ -7,6 +7,7 @@ import RetailManagementSystem.dominio.excepciones.ServicioNoDisponibleExeption;
 import RetailManagementSystem.dominio.puertos.RepositorioServicio;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -44,7 +45,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             if (e.getErrorCode() == 1062) {
                 throw new IllegalArgumentException("Violación de integridad: Ya existe un servicio con este código o nombre.");
             }
-            throw new RuntimeException("Error crítico de persistencia al guardar el servicio: " + e.getMessage(), e);
+            throw new PersistenciaException("Error crítico de persistencia al guardar el servicio: " + e.getMessage(), e);
         }
     }
 
@@ -97,7 +98,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
         }
     }
 
@@ -143,9 +144,8 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
         }
-
         return servicios;
     }
 
@@ -192,9 +192,8 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
         }
-
         return servicios;
     }
 
@@ -250,7 +249,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
         }
     }
 
@@ -301,7 +300,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
         }
     }
 
@@ -330,7 +329,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al intentar modificar el Servicio", e);
+            throw new PersistenciaException("Error crítico de infraestructura al intentar modificar el Servicio", e);
         }
 
     }

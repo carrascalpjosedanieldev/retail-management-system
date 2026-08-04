@@ -1,7 +1,7 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
-import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.puertos.RepositorioConfiguracion;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.sql.*;
 
@@ -26,7 +26,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al Obtener la Configuración del Sistema", e);
+            throw new PersistenciaException("Error al Obtener la Configuración del Sistema", e);
         }
     }
 
@@ -47,7 +47,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al Obtener la Configuración del Sistema", e);
+            throw new PersistenciaException("Error al Obtener la Configuración del Sistema", e);
         }
     }
 
@@ -75,7 +75,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al Actualizar la Configuración del Sistema", e);
+            throw new PersistenciaException("Error al Actualizar la Configuración del Sistema", e);
         }
     }
 
@@ -101,7 +101,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al Actualizar la Configuración del Sistema", e);
+            throw new PersistenciaException("Error al Actualizar la Configuración del Sistema", e);
         }
     }
 
@@ -133,7 +133,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al Actualizar la Configuración del Sistema", e);
+            throw new PersistenciaException("Error al Actualizar la Configuración del Sistema", e);
         }
     }
 

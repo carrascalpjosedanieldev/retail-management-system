@@ -3,6 +3,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.comercial.Descuento;
 import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
 import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -43,7 +44,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             if (e.getErrorCode() == 1062) {
                 throw new IllegalArgumentException("Ya existe un Descuento registrado con el nombre: " + descuento.getNombre());
             }
-            throw new RuntimeException("Error crítico de persistencia al guardar el Descuento: " + e.getMessage(), e);
+            throw new PersistenciaException("Error crítico de persistencia al guardar el Descuento: " + e.getMessage(), e);
         }
     }
 
@@ -77,7 +78,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al obtener el Descuento", e);
+            throw new PersistenciaException("Error de base de datos al obtener el Descuento", e);
         }
     }
 
@@ -102,7 +103,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                 descuentos.add(descuento);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al listar los Descuentos Activos", e);
+            throw new PersistenciaException("Error al listar los Descuentos Activos", e);
         }
         return descuentos;
     }
@@ -128,7 +129,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                 descuentos.add(descuento);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al listar los Descuentos Inactivos", e);
+            throw new PersistenciaException("Error al listar los Descuentos Inactivos", e);
         }
         return descuentos;
     }
@@ -155,7 +156,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al actualizar el Descuento", e);
+            throw new PersistenciaException("Error de base de datos al actualizar el Descuento", e);
         }
     }
 

@@ -4,6 +4,7 @@ import RetailManagementSystem.dominio.entidades.comercial.Inventario;
 import RetailManagementSystem.dominio.puertos.RepositorioInventario;
 import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.InventarioNoVacioException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de persistencia al guardar el inventario: " + e.getMessage(), e);
+            throw new PersistenciaException("Error crítico de persistencia al guardar el inventario: " + e.getMessage(), e);
         }
     }
 
@@ -76,7 +77,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al obtener el inventario", e);
+            throw new PersistenciaException("Error de base de datos al obtener el inventario", e);
         }
     }
 
@@ -103,7 +104,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
                 inventarios.add(inv);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error al listar inventarios", e);
+            throw new PersistenciaException("Error al listar inventarios", e);
         }
         return inventarios;
     }
@@ -128,7 +129,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al actualizar el inventario", e);
+            throw new PersistenciaException("Error de base de datos al actualizar el inventario", e);
         }
     }
 
@@ -154,7 +155,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             if (e.getErrorCode() == 1451) {
                 throw new InventarioNoVacioException("No se puede eliminar: El inventario tiene productos asociados.");
             }
-            throw new RuntimeException("Error crítico al intentar eliminar el inventario.", e);
+            throw new PersistenciaException("Error crítico al intentar eliminar el inventario.", e);
         }
     }
 

@@ -6,6 +6,7 @@ import RetailManagementSystem.dominio.excepciones.ProductoNoDisponibleException;
 import RetailManagementSystem.dominio.puertos.RepositorioProducto;
 import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.ProductoNoEncontradoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -63,7 +64,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico de infraestructura al obtener conexión", e);
+            throw new PersistenciaException("Error crítico de infraestructura al obtener conexión", e);
         }
     }
 
@@ -167,7 +168,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener el producto: " + codigoProducto, e);
+            throw new PersistenciaException("Error al obtener el producto: " + codigoProducto, e);
         }
     }
 
@@ -243,7 +244,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener el producto: " + codigoProducto, e);
+            throw new PersistenciaException("Error al obtener el producto: " + codigoProducto, e);
         }
     }
 
@@ -322,7 +323,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico al listar los productos del inventario: " + idInventario, e);
+            throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario, e);
         }
         return productos;
     }
@@ -382,7 +383,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico al listar los productos del inventario: " + idInventario, e);
+            throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario, e);
         }
         return productosRopa;
     }
@@ -454,7 +455,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error crítico al listar los productos del inventario: " + idInventario, e);
+            throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario, e);
         }
         return productosPerecederos;
     }
@@ -542,7 +543,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener el producto: " + codigoProducto, e);
+            throw new PersistenciaException("Error al obtener el producto: " + codigoProducto, e);
         }
     }
 
@@ -625,7 +626,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al obtener el producto: " + codigoProducto, e);
+            throw new PersistenciaException("Error al obtener el producto: " + codigoProducto, e);
         }
     }
 
@@ -666,7 +667,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                 throw new IllegalArgumentException("No se puede actualizar el producto: " +
                         "El Impuesto, el Descuento o el Inventario destino especificado no existen.");
             }
-            throw new RuntimeException("Error al actualizar el producto: " + producto.getCodigo(), e);
+            throw new PersistenciaException("Error al actualizar el producto: " + producto.getCodigo(), e);
         }
     }
 
@@ -700,7 +701,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error en la base de datos al mover el producto: " + codigoProducto, e);
+            throw new PersistenciaException("Error en la base de datos al mover el producto: " + codigoProducto, e);
         }
     }
 

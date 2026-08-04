@@ -3,6 +3,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.comercial.Impuesto;
 import RetailManagementSystem.dominio.puertos.RepositorioImpuestos;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -35,7 +36,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
                     int idReal = gk.getInt(1);
                     Impuesto.reconstruirDesdeBD(idReal, impuesto.getNombre(), impuesto.getPorcentaje(), impuesto.isActivo());
                 } else {
-                    throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new PersistenciaException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
             }
 
@@ -43,7 +44,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             if (e.getErrorCode() == 1062) {
                 throw new IllegalArgumentException("Ya existe un Impuesto registrado con el nombre: " + impuesto.getNombre());
             }
-            throw new RuntimeException("Error crítico de persistencia al guardar el Impuesto: " + e.getMessage(), e);
+            throw new PersistenciaException("Error crítico de persistencia al guardar el Impuesto: " + e.getMessage(), e);
         }
     }
 
@@ -77,7 +78,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al obtener el Impuesto", e);
+            throw new PersistenciaException("Error de base de datos al obtener el Impuesto", e);
         }
     }
 
@@ -102,7 +103,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al listar los Impuestos Activos", e);
+            throw new PersistenciaException("Error al listar los Impuestos Activos", e);
         }
         return impuestos;
     }
@@ -127,7 +128,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al listar los Impuestos Inactivos", e);
+            throw new PersistenciaException("Error al listar los Impuestos Inactivos", e);
         }
         return impuestos;
     }
@@ -155,7 +156,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al actualizar el Impuesto", e);
+            throw new PersistenciaException("Error de base de datos al actualizar el Impuesto", e);
         }
     }
 

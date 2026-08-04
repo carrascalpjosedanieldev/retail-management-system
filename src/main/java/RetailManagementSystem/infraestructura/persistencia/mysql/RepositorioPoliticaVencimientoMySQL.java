@@ -3,6 +3,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.comercial.PoliticaVencimiento;
 import RetailManagementSystem.dominio.puertos.RepositorioPoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -43,10 +44,10 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
         } catch (SQLException e) {
             if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Ya existe una Politica de Vencimiento registrado con el nombre: " +
+                throw new IllegalArgumentException("Ya existe una Política de Vencimiento registrado con el nombre: " +
                         politicaVencimiento.getNombre());
             }
-            throw new RuntimeException("Error crítico de persistencia al guardar la Politica de Vencimiento: " +
+            throw new PersistenciaException("Error crítico de persistencia al guardar la Política de Vencimiento: " +
                     e.getMessage(), e);
         }
     }
@@ -86,7 +87,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al obtener la Politica de Vencimiento", e);
+            throw new PersistenciaException("Error de base de datos al obtener la Politica de Vencimiento", e);
         }
     }
 
@@ -114,7 +115,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             }
 
         } catch (SQLException e){
-            throw new RuntimeException("Error al listar las Politicas de Vencimiento Activas", e);
+            throw new PersistenciaException("Error al listar las Políticas de Vencimiento Activas", e);
         }
         return politicasVencimiento;
     }
@@ -143,7 +144,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             }
 
         } catch (SQLException e){
-            throw new RuntimeException("Error al listar las Politicas de Vencimiento Inactivas", e);
+            throw new PersistenciaException("Error al listar las Políticas de Vencimiento Inactivas", e);
         }
         return politicasVencimiento;
     }
@@ -169,12 +170,12 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new PoliticaVencimientoNoEncontradaException("No se pudo actualizar: La Politica de " +
+                throw new PoliticaVencimientoNoEncontradaException("No se pudo actualizar: La Política de " +
                         " Vencimiento con ID -" + politicaVencimiento.getIdPolitica() + "- no existe.");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error de base de datos al actualizar la Politica de Vencimiento", e);
+            throw new PersistenciaException("Error de base de datos al actualizar la Política de Vencimiento", e);
         }
 
     }

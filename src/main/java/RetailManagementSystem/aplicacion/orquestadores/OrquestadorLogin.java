@@ -25,9 +25,17 @@ public class OrquestadorLogin {
 
     //MÉTODOS:
 
-    public UsuarioDTO autenticar(String email, char[] contrasenaPlana, LocalDateTime fechaReferencia){
+    public UsuarioDTO autenticar(String email, char[] contrasenaPlana){
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("El Correo Electrónico NO puede estar Vacío.");
+        }
+        if (contrasenaPlana == null || contrasenaPlana.length == 0) {
+            throw new IllegalArgumentException("La Contraseña NO puede estar Vacía.");
+        }
         try {
-            Usuario usuario = this.servicioUsuario.validarYObtenerUsuarioValido(email, contrasenaPlana, fechaReferencia);
+            Usuario usuario = this.servicioUsuario.validarYObtenerUsuarioValido(
+                    email.trim(), contrasenaPlana, LocalDateTime.now()
+            );
             return this.ensambladorDTOUsuario.ensamblarDTOUsuario(usuario);
         } finally {
             Arrays.fill(contrasenaPlana, '\0');
