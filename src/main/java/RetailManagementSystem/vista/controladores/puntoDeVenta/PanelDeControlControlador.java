@@ -6,24 +6,24 @@ import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -54,25 +54,6 @@ public class PanelDeControlControlador {
 
     //MÉTODOS:
 
-    private void mostrarAlertaErrorNavegacion(String rutaSolicitada) {
-        Alert alerta = new Alert(Alert.AlertType.ERROR);
-        alerta.setTitle("Error de Navegación");
-        alerta.setHeaderText("NO se pudo Cargar la Pantalla");
-        alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
-                "Ruta Solicitada: " + rutaSolicitada + "\n" +
-                "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
-        DialogPane panelAlerta = alerta.getDialogPane();
-        panelAlerta.setPrefSize(500, 280);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
-        if (urlCss != null) {
-            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-        } else {
-            panelAlerta.setPrefSize(500, 180);
-        }
-        alerta.showAndWait();
-    }
-
-
     @FXML
     public void initialize() {
         iniciarReloj();
@@ -98,87 +79,77 @@ public class PanelDeControlControlador {
     }
 
     private void cargarMetricasDelDia() {
-        try {
-            ResumenVentaDiaDTO resumen = this.ensambladorDTOFactura.ensamblarResumenVentaDia(
-                    this.servicioFacturas.obtenerResumenHoy()
-            );
+        lblCantidadFacturas.setText("...");
+        lblTotalVentasHoy.setText("Calculando...");
+        lblUltimaVenta.setText("Cargando...");
+        Task<ResumenVentaDiaDTO> tareaMetricas = new Task<>() {
+            @Override
+            protected ResumenVentaDiaDTO call() throws Exception {
+                return ensambladorDTOFactura.ensamblarResumenVentaDia(
+                        servicioFacturas.obtenerResumenHoy()
+                );
+            }
+        };
+        tareaMetricas.setOnSucceeded(evento -> {
+            ResumenVentaDiaDTO resumen = tareaMetricas.getValue();
             lblCantidadFacturas.setText(String.valueOf(resumen.cantidadFacturas()));
             lblTotalVentasHoy.setText(FormateadorNumeros.formatoMoneda(resumen.totalVentas()));
             lblUltimaVenta.setText(FormateadorNumeros.formatoMoneda(resumen.ultimaVenta()));
-        } catch (Exception e) {
+        });
+        tareaMetricas.setOnFailed(evento -> {
             lblCantidadFacturas.setText("0");
             lblTotalVentasHoy.setText("$ 0.00");
             lblUltimaVenta.setText("$ 0.00");
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error al Cargar las Métricas");
-            alerta.setHeaderText(null);
-            alerta.setContentText("Error:  " + e.getMessage());
-            DialogPane pane = alerta.getDialogPane();
-            pane.setMinHeight(Region.USE_PREF_SIZE);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
-            if (urlCss != null) {
-                pane.getStylesheets().add(urlCss.toExternalForm());
-            }
-            alerta.showAndWait();
-        }
+            Throwable errorReal = tareaMetricas.getException();
+            GestorAlertas.mostrarError(
+                    "Error de Conexión", "No se pudieron cargar las métricas de hoy",
+                    "Se asignaron valores en cero. Se ha registrado el error: " +
+                            errorReal.getClass().getSimpleName()
+            );
+        });
+        Thread hilo = new Thread(tareaMetricas);
+        hilo.setDaemon(true);
+        hilo.start();
     }
 
     private void cargarVersionTienda(){
         try {
             String version = InformacionAplicacion.obtenerVersion();
             lblVersion.setText("Mi Tienda " + version);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             lblVersion.setText("Versión --");
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error de Carga");
-            alerta.setHeaderText("Error al Cargar la Version");
-            alerta.setContentText("NO se pudo Cargar la Versión en la Vista: " + e.getMessage());
-            DialogPane panelAlerta = alerta.getDialogPane();
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
-            if (urlCss != null) {
-                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            }
-            alerta.showAndWait();
+            GestorAlertas.mostrarError(
+                    "Error de Carga", "Error al Cargar la Version",
+                    "No se pudo cargar la versión de la tienda. Contacte a soporte."
+            );
         }
     }
 
 
     @FXML
     public void abrirNuevaVenta(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_DE_VENTAS_VIEW);
-        } catch (Exception e) {
-            mostrarAlertaErrorNavegacion(RutasVista.MENU_DE_VENTAS_VIEW);
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_DE_VENTAS_VIEW);
     }
 
 
     @FXML
     public void abrirHistorialVentas(ActionEvent event) {
-        try {
-            Parent root = CargadorVistas.cargarVista(RutasVista.HISTORIAL_VENTAS_VIEW);
-            Stage modalStage = new Stage();
-            modalStage.setTitle("Generar Reporte de Recaudo");
-            modalStage.initModality(Modality.APPLICATION_MODAL);
-            modalStage.initStyle(StageStyle.DECORATED);
-            Scene scene = new Scene(root);
-            modalStage.setScene(scene);
-            modalStage.showAndWait();
-        } catch (Exception e) {
-            mostrarAlertaErrorNavegacion(RutasVista.HISTORIAL_VENTAS_VIEW);
-        }
+        Parent root = CargadorVistas.cargarVista(RutasVista.HISTORIAL_VENTAS_VIEW);
+        Stage modalStage = new Stage();
+        modalStage.setTitle("Generar Reporte de Recaudo");
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.initStyle(StageStyle.DECORATED);
+        Scene scene = new Scene(root);
+        modalStage.setScene(scene);
+        modalStage.showAndWait();
     }
 
 
     @FXML
     public void volverAlMenu(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_PRINCIPAL_VIEW);
-        } catch (Exception e) {
-            mostrarAlertaErrorNavegacion(RutasVista.MENU_PRINCIPAL_VIEW);
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_PRINCIPAL_VIEW);
     }
 
 

@@ -29,7 +29,7 @@ public class ServicioServicios {
         return this.repositorioServicio.obtenerServicio(codigoServicio);
     }
 
-    public Servicio obtenerServicoActivoParaLaVenta(String codigoServicio){
+    public Servicio obtenerServicioActivoParaLaVenta(String codigoServicio){
         return this.repositorioServicio.obtenerServicioActivoSoloPorCodigo(codigoServicio);
     }
 

@@ -8,10 +8,7 @@ import RetailManagementSystem.aplicacion.servicios.ServicioCarrito;
 import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.servicios.ServicioServicios;
-import RetailManagementSystem.dominio.entidades.ventas.Carrito;
-import RetailManagementSystem.dominio.entidades.ventas.ItemCarrito;
-import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
-import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
+import RetailManagementSystem.dominio.entidades.ventas.*;
 import RetailManagementSystem.dominio.excepciones.CarritoVacioException;
 
 import java.time.LocalDate;
@@ -124,10 +121,11 @@ public class OrquestadorVentas {
             );
             itemsProcesadosConExito.add(itemVendido);
         }
-        sesionVenta.getCarrito().vaciarCarrito();
-        return this.ensambladorDTOFactura.ensamblarFactura(
+        FacturaDTO facturaGenerada = this.ensambladorDTOFactura.ensamblarFactura(
                 this.servicioFacturas.registrarVentaYObtenerFactura(itemsProcesadosConExito)
         );
+        sesionVenta.getCarrito().vaciarCarrito();
+        return facturaGenerada;
     }
 
 

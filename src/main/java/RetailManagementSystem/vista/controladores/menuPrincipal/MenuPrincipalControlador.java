@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.menuPrincipal;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.animation.KeyFrame;
@@ -42,7 +43,7 @@ public class MenuPrincipalControlador {
 
     private Optional<ButtonType> mostrarAlerta(
             Alert.AlertType tipo, String titulo, String cabecera, String contenido,
-            Node iconoPersonalizado, boolean esAlertaError
+            Node iconoPersonalizado
     ) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -52,14 +53,9 @@ public class MenuPrincipalControlador {
             alerta.setGraphic(iconoPersonalizado);
         }
         DialogPane panelAlerta = alerta.getDialogPane();
-        if (esAlertaError) {
-            panelAlerta.setPrefSize(500, 250);
-        }
         URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_PRINCIPAL);
         if (urlCss != null) {
             panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-        } else if (esAlertaError) {
-            panelAlerta.setPrefSize(500, 180);
         }
         return alerta.showAndWait();
     }
@@ -76,11 +72,12 @@ public class MenuPrincipalControlador {
         try {
             String version = InformacionAplicacion.obtenerVersion();
             lblVersion.setText("Mi Tienda " + version);
-        } catch (Exception e) {
-            lblVersion.setText("Mi Tienda Versión --");
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga", "Error al Cargar la Version",
-                    "NO se pudo Cargar la Versión en la Vista: " + e.getMessage(),
-                    null, false);
+        } catch (RuntimeException e) {
+            lblVersion.setText("Versión --");
+            GestorAlertas.mostrarError(
+                    "Error de Carga", "Error al Cargar la Version",
+                    "No se pudo cargar la versión de la tienda. Contacte a soporte."
+            );
         }
     }
 
@@ -109,9 +106,10 @@ public class MenuPrincipalControlador {
                 .exceptionally(ex -> {
                     Platform.runLater(() -> {
                         lblNombreTienda.setText("Tienda (Modo Offline)");
-                        mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga", "Error al cargar el nombre de la Tienda",
+                        mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
+                                "Error al cargar el nombre de la Tienda",
                                 "NO se pudo Cargar el Nombre de la Tienda en la Vista: " + ex.getMessage(),
-                                null, false);
+                                null);
                     });
                     return null;
                 });
@@ -120,29 +118,15 @@ public class MenuPrincipalControlador {
 
     @FXML
     public void abrirPuntoDeVenta(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
-        } catch (Exception e) {
-            String mensaje = "Ocurrió un Problema al Cargar la Vista de Punto de Venta.\n" +
-                    "Si el Problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.";
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Navegación",
-                    "NO se pudo Abrir la Pantalla", mensaje, null, true);
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
     }
 
 
     @FXML
     void abrirGestionarTienda(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
-        } catch (Exception e) {
-            String mensaje = "Ocurrió un Problema al Cargar la Vista de Gestión de Tienda.\n" +
-                    "Si el Problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.";
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Navegación",
-                    "NO se pudo Abrir la Pantalla", mensaje, null, true);
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 
@@ -157,7 +141,7 @@ public class MenuPrincipalControlador {
         Optional<ButtonType> respuesta = mostrarAlerta(
                 Alert.AlertType.CONFIRMATION, "Confirmar Salida",
                 null, "¿Estás Seguro de que deseas Salir del Sistema?",
-                iconoAmigable, false
+                iconoAmigable
         );
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             Platform.exit();

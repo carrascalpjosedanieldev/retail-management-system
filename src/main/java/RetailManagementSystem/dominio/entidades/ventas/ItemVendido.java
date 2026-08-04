@@ -69,6 +69,21 @@ public class ItemVendido {
 
     private ItemVendido(TipoItem tipoItem, String codigo, String nombre, int cantidad, BigDecimal precioUnitario,
                         BigDecimal porcentajeImpuesto) {
+        if (nombre == null || nombre.isBlank()){
+            throw new IllegalArgumentException("El Nombre del Item de Código -" + codigo + "- NO puede estar Vacío.");
+        }
+        if (codigo == null || codigo.isBlank()){
+            throw new IllegalArgumentException("El Código del Item -" + nombre + "- NO puede estar Vacío.");
+        }
+        if (cantidad <= 0){
+            throw new IllegalArgumentException("La Cantidad del Item -" + nombre + "- es Invalida.");
+        }
+        if (precioUnitario.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("El Precio Unitario del Item -" + nombre + "- es Invalido.");
+        }
+        if (porcentajeImpuesto.compareTo(BigDecimal.ZERO) < 0){
+            throw new IllegalArgumentException("El Porcentaje de Impuesto del Item -" + nombre + "- es Invalido.");
+        }
         this.tipoItem = tipoItem;
         this.codigo = codigo;
         this.nombre = nombre;

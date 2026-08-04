@@ -535,7 +535,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                                 impuesto, descuento, true, fechaVencimiento, politicaVencimiento);
                     }
 
-                    throw new IllegalStateException("Error de integridad: El producto existe pero no tiene un tipo definido.");
+                    throw new IllegalStateException("Error de integridad: El Producto Existe pero NO tiene un Tipo Definido.");
                 }
 
                 throw new ProductoNoEncontradoException("El Producto de Código -" + codigoProducto +

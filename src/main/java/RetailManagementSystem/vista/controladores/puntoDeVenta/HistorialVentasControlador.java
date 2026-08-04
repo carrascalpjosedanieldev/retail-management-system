@@ -42,8 +42,8 @@ public class HistorialVentasControlador {
 
     //MÉTODOS:
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
+    private void mostrarAlerta(String titulo, String mensaje) {
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
         alerta.setTitle(titulo);
         alerta.setHeaderText("");
         alerta.setContentText(mensaje);
@@ -73,12 +73,12 @@ public class HistorialVentasControlador {
         LocalDate fechaInicio = dpFechaInicio.getValue();
         LocalDate fechaFin = dpFechaFin.getValue();
         if (fechaInicio == null || fechaFin == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Campos incompletos",
+            mostrarAlerta("Campos incompletos",
                     "Por favor, seleccione ambas fechas.");
             return;
         }
         if (fechaInicio.isAfter(fechaFin)) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Rango inválido",
+            mostrarAlerta("Rango inválido",
                     "La Fecha de Inicio NO puede ser Mayor a la Fecha de Fin.");
             return;
         }
@@ -87,8 +87,8 @@ public class HistorialVentasControlador {
                     servicioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin)
             );
             actualizarTarjetas(reporte);
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR,"Error de Consulta",
+        } catch (IllegalArgumentException e) {
+            mostrarAlerta("Error en los Datos Ingresados",
                     "Hubo un Problema al Generar el Reporte\n" +
                             "Error:  " + e.getMessage());
         }

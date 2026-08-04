@@ -3,6 +3,7 @@ package RetailManagementSystem;
 // PARA EXPORTAR EL PROYECTO FÁCILMENTE:
 // Get-ChildItem -Recurse -Filter *.java | Get-Content | Out-File proyecto_completo.txt
 
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -22,6 +23,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stagePrincipal){
+        ConfiguradorExcepciones.inicializarManejadorGlobal();
         try {
             FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.MENU_PRINCIPAL_VIEW);
             Parent root = loader.load();

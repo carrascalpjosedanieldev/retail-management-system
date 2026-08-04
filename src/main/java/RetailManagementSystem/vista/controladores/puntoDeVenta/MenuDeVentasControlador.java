@@ -4,8 +4,8 @@ import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
-import RetailManagementSystem.dominio.excepciones.ProductoNoDisponibleException;
-import RetailManagementSystem.dominio.excepciones.ProductoVencidoException;
+import RetailManagementSystem.dominio.excepciones.*;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -28,6 +28,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.beans.binding.Bindings;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
@@ -167,11 +168,7 @@ public class MenuDeVentasControlador {
             if (resultado.isEmpty() || resultado.get() != ButtonType.OK) {
                 return;
             }
-            try {
-                orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
-            } catch (Exception e) {
-                System.out.println("No se pudo limpiar el carrito en el backend: " + e.getMessage());
-            }
+            this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
         }
         try {
             Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -213,12 +210,18 @@ public class MenuDeVentasControlador {
         } catch (ProductoVencidoException e) {
             mostrarAlerta(Alert.AlertType.WARNING, "Producto Vencido",
                     e.getMessage() + " NO sera agregado al Carrito");
-        } catch (ProductoNoDisponibleException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Disponible",
+        } catch (StockInsuficienteException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
+                    "Error:  " + e.getMessage());
+        } catch (ProductoNoDisponibleException | ServicioNoDisponibleExeption e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Item NO Disponible",
                     e.getMessage() + " NO sera agregado al Carrito");
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Error al agregar", e.getMessage());
-            txtCodigo.selectAll();
+        } catch (ProductoNoEncontradoException | ServicioNoEncontradoException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Item NO Encontrado",
+                    "Error:  " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos Ingresados",
+                    "Error:  " + e.getMessage());
         } finally {
             txtCodigo.requestFocus();
         }
@@ -272,9 +275,9 @@ public class MenuDeVentasControlador {
             mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                     "Item Eliminado del Carrito con Éxito ");
             actualizarTablaYTotales();
-        } catch (Exception e) {
-            String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Eliminar el ítem.";
-            mostrarAlerta(Alert.AlertType.WARNING, "Error al Eliminar", mensaje);
+        } catch (IllegalArgumentException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Error en el Proceso",
+                    "Error:  " + e.getMessage());
         } finally {
             txtCodigo.requestFocus();
         }
@@ -306,9 +309,6 @@ public class MenuDeVentasControlador {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Venta Cancelada",
                         "Se ha Cancelado la Venta y vaciado el Carrito con Éxito.");
 
-            } catch (Exception e) {
-                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Cancelar la Venta.";
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Cancelar", mensaje);
             } finally {
                 txtCodigo.clear();
                 txtCodigo.requestFocus();
@@ -354,15 +354,18 @@ public class MenuDeVentasControlador {
             } catch (NumberFormatException e) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
                         "Por favor, Ingrese un Número Entero Válido.");
-            } catch (ProductoNoDisponibleException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Disponible",
+            } catch (StockInsuficienteException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
+                        "Error:  " + e.getMessage());
+            } catch (ProductoNoDisponibleException | ServicioNoDisponibleExeption e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Item NO Disponible",
                         e.getMessage() + " NO sera agregado al Carrito");
             } catch (ProductoVencidoException e) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Producto Vencido",
                         e.getMessage() + " NO sera agregado al Carrito");
-            } catch (Exception e) {
-                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al Intentar Aumentar la Cantidad.";
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Aumentar", mensaje);
+            } catch (ProductoNoEncontradoException | ServicioNoEncontradoException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Item NO Encontrado",
+                        "Error:  " + e.getMessage());
             } finally {
                 txtCodigo.requestFocus();
             }
@@ -407,9 +410,12 @@ public class MenuDeVentasControlador {
             } catch (NumberFormatException e) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
                         "Por favor, ingrese un número entero válido.");
-            } catch (Exception e) {
-                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al intentar reducir la cantidad.";
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Reducir", mensaje);
+            } catch (StockInsuficienteException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
+                        "Error:  " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos Ingresados",
+                        "Error:  " + e.getMessage());
             } finally {
                 txtCodigo.requestFocus();
             }
@@ -443,9 +449,14 @@ public class MenuDeVentasControlador {
                 FacturaDTO facturaGenerada = this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha());
                 mostrarVentanaFactura(facturaGenerada);
                 actualizarTablaYTotales();
-            } catch (Exception e) {
-                String mensaje = e.getMessage() != null ? e.getMessage() : "Error al intentar procesar la venta.";
-                mostrarAlerta(Alert.AlertType.WARNING, "Error al Procesar", mensaje);
+            } catch (CarritoVacioException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Carrito Vacío",
+                        "Error:  " + e.getMessage());
+            } catch (StockInsuficienteException e) {
+                mostrarAlerta(Alert.AlertType.ERROR, "Stock Insuficiente",
+                        "Lo Sentimos, volviendo a Verificar el Stock por seguridad nos dimos cuenta de esto:\n" +
+                                e.getMessage() + "\n" +
+                                "No te preocupes el carrito esta intacto");
             } finally {
                 txtCodigo.clear();
                 txtCodigo.requestFocus();
@@ -456,8 +467,9 @@ public class MenuDeVentasControlador {
     }
 
     private void mostrarVentanaFactura(FacturaDTO factura) {
+        String rutaFxml = RutasVista.FACTURA_GENERADA_VIEW;
         try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.FACTURA_GENERADA_VIEW);
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
             Parent root = loader.load();
             FacturaGeneradaControlador controlador = loader.getController();
             controlador.cargarFactura(factura);
@@ -472,10 +484,8 @@ public class MenuDeVentasControlador {
             }
             stageFactura.setScene(escenaFactura);
             stageFactura.showAndWait();
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Error al Mostrar Factura",
-                    "La Venta se registró Exitosamente, pero NO se pudo Generar la Vista Previa de la Factura.\n" +
-                            "Error: " + e.getMessage());
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
         }
     }
 

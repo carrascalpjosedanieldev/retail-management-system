@@ -115,7 +115,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                             int filasAfectadas = psStock.executeUpdate();
 
                             if (filasAfectadas == 0) {
-                                throw new StockInsuficienteException("No hay Stock suficiente para el Producto " + item.getCodigo() + ". Requerido: " + item.getCantidad());
+                                throw new StockInsuficienteException("NO hay Stock suficiente para el Producto " + item.getCodigo() + ". Requerido: " + item.getCantidad());
                             }
                         }
                     }

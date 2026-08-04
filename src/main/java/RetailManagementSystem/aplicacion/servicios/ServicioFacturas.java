@@ -26,7 +26,7 @@ public class ServicioFacturas {
 
     public Factura registrarVentaYObtenerFactura(List<ItemVendido> itemsDelCarrito) {
         if (itemsDelCarrito == null || itemsDelCarrito.isEmpty()) {
-            throw new IllegalArgumentException("No se puede registrar una venta vacía.");
+            throw new IllegalArgumentException("NO se puede Registrar una Venta Vacía.");
         }
         return this.repositorioFacturas.insertarFactura(itemsDelCarrito);
     }

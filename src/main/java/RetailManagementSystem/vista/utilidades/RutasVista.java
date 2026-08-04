@@ -2,6 +2,10 @@ package RetailManagementSystem.vista.utilidades;
 
 public class RutasVista {
 
+    //ALERTAS:
+
+    public static final String ESTILOS_CSS_ALERTA_DE_NAVEGACION = "/css/alertas/estilosCssAlertaDeNavegacion.css";
+
     //MENU PRINCIPAL:
 
     public static final String NOMBRE_TIENDA_CLAVE = "NOMBRE_PROYECTO_PROPIO_ORIGINAL";
