@@ -1,5 +1,7 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
+import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
+import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.excepciones.EmailDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.UsuarioNoEncontradoException;
@@ -7,6 +9,10 @@ import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
 
 public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
@@ -65,16 +71,21 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
     }
 
 
-
     //READ:
 
     @Override
-    public Usuario obtenerUsuarioPorEmail(String email) {
+    public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
         String sql =
-                "SELECT id_usuario, nombre, apellido, email, password_hash, intentos_fallidos, bloqueado_hasta, " +
-                        "activo, debe_cambiar_contrasena " +
-                "FROM usuarios " +
-                "WHERE email = ?";
+                "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
+                        "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
+                        "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo " +
+                        "FROM usuarios u " +
+                        "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
+                        "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
+                        "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
+                        "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
+                        "WHERE u.email = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -82,36 +93,86 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             stmt.setString(1, email);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
 
-                    return Usuario.reconstruirDesdeBD(
-                            rs.getInt("id"),
-                            rs.getString("nombre"),
-                            rs.getString("apellido"),
-                            rs.getString("email"),
-                            rs.getInt("intentos_fallidos"),
-                            rs.getTimestamp("bloqueado_hasta").toLocalDateTime(),
-                            rs.getString("password_hash"),
-                            rs.getBoolean("activo"),
-                            rs.getBoolean("debe_cambiar_contrasena")
-                    );
+                Usuario usuario = null;
+                Map<Integer, Rol> rolesMap = new HashMap<>();
+
+                while (rs.next()) {
+
+                    if (usuario == null) {
+                        Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
+                        LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
+                        usuario = Usuario.reconstruirDesdeBD(
+                                rs.getInt("id_usuario"),
+                                rs.getString("nombre"),
+                                rs.getString("apellido"),
+                                rs.getString("email"),
+                                rs.getInt("intentos_fallidos"),
+                                fechaBloqueo,
+                                rs.getString("password_hash"),
+                                rs.getBoolean("activo"),
+                                rs.getBoolean("debe_cambiar_contrasena")
+                        );
+                    }
+
+                    Integer idRol = (Integer) rs.getObject("rol_id_rol");
+                    if (idRol != null){
+
+                        Rol rol = rolesMap.get(idRol);
+                        if (rol == null) {
+                            rol = Rol.reconstruirDesdeBD(
+                                    idRol,
+                                    rs.getString("nombre_rol"),
+                                    new HashSet<>(),
+                                    rs.getBoolean("rol_activo")
+                            );
+                            rolesMap.put(idRol, rol);
+                        }
+
+                        Integer idPermiso = (Integer) rs.getObject("id_permiso");
+                        if (idPermiso != null){
+
+                            Permiso permiso = Permiso.reconstruirDesdeBD(
+                                    idPermiso,
+                                    rs.getString("nombre_permiso"),
+                                    rs.getString("descripcion"),
+                                    rs.getBoolean("permiso_activo")
+                            );
+                            rol.anadirPermiso(permiso);
+
+                        }
+
+                    }
+
                 }
+
+                if (usuario != null){
+                    for (Rol rol:rolesMap.values()){
+                        usuario.anadirRol(rol);
+                    }
+                }
+                return Optional.ofNullable(usuario);
 
             }
 
         } catch (SQLException e) {
             throw new RuntimeException("Error al buscar el Usuario por email", e);
         }
-        return null;
     }
 
     @Override
     public Usuario obtenerUsuarioPorId(int idUsuario) {
         String sql =
-                "SELECT id_usuario, nombre, apellido, email, password_hash, intentos_fallidos, bloqueado_hasta, " +
-                        "activo, debe_cambiar_contrasena " +
-                        "FROM usuarios " +
-                        "WHERE id_usuario = ?";
+                "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
+                        "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
+                        "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo " +
+                        "FROM usuarios u " +
+                        "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
+                        "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
+                        "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
+                        "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
+                        "WHERE u.id_usuario = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -119,22 +180,67 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             stmt.setInt(1, idUsuario);
 
             try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
 
-                    return Usuario.reconstruirDesdeBD(
-                            rs.getInt("id"),
-                            rs.getString("nombre"),
-                            rs.getString("apellido"),
-                            rs.getString("email"),
-                            rs.getInt("intentos_fallidos"),
-                            rs.getTimestamp("bloqueado_hasta").toLocalDateTime(),
-                            rs.getString("password_hash"),
-                            rs.getBoolean("activo"),
-                            rs.getBoolean("debe_cambiar_contrasena")
-                    );
+                Usuario usuario = null;
+                Map<Integer, Rol> rolesMap = new HashMap<>();
+
+                while (rs.next()) {
+
+                    if (usuario == null) {
+                        Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
+                        LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
+                        usuario = Usuario.reconstruirDesdeBD(
+                                rs.getInt("id_usuario"),
+                                rs.getString("nombre"),
+                                rs.getString("apellido"),
+                                rs.getString("email"),
+                                rs.getInt("intentos_fallidos"),
+                                fechaBloqueo,
+                                rs.getString("password_hash"),
+                                rs.getBoolean("activo"),
+                                rs.getBoolean("debe_cambiar_contrasena")
+                        );
+                    }
+
+                    Integer idRol = (Integer) rs.getObject("rol_id_rol");
+                    if (idRol != null){
+
+                        Rol rol = rolesMap.get(idRol);
+                        if (rol == null) {
+                            rol = Rol.reconstruirDesdeBD(
+                                    idRol,
+                                    rs.getString("nombre_rol"),
+                                    new HashSet<>(),
+                                    rs.getBoolean("rol_activo")
+                            );
+                            rolesMap.put(idRol, rol);
+                        }
+
+                        Integer idPermiso = (Integer) rs.getObject("id_permiso");
+                        if (idPermiso != null){
+
+                            Permiso permiso = Permiso.reconstruirDesdeBD(
+                                    idPermiso,
+                                    rs.getString("nombre_permiso"),
+                                    rs.getString("descripcion"),
+                                    rs.getBoolean("permiso_activo")
+                            );
+                            rol.anadirPermiso(permiso);
+
+                        }
+
+                    }
+
                 }
 
-                throw new UsuarioNoEncontradoException("El Usuario de ID -" + idUsuario + "- NO existe.");
+                if (usuario != null){
+                    for (Rol rol:rolesMap.values()){
+                        usuario.anadirRol(rol);
+                    }
+                    return usuario;
+                }
+
+                throw new UsuarioNoEncontradoException("El Usuario de ID -" + idUsuario + "- NO Existe.");
 
             }
 

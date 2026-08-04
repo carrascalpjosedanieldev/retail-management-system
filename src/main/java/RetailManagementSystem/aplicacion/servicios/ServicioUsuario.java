@@ -40,10 +40,8 @@ public class ServicioUsuario {
     //MÉTODOS:
 
     public Usuario validarYObtenerUsuarioValido(String email, char[] contrasenaPlana, LocalDateTime fechaReferencia) {
-        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorEmail(email);
-        if (usuario == null){
-            throw new CredencialesInvalidasException("Credenciales Invalidas");
-        }
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorEmail(email)
+                .orElseThrow(() -> new CredencialesInvalidasException("Credenciales Inválidas."));
         if (!usuario.isActivo()){
             throw new UsuarioInactivoException(
                     "Lo sentimos, NO puedes Ingresar porque NO estas Activo. Para mas información habla con el Administrador"
@@ -77,10 +75,10 @@ public class ServicioUsuario {
     }
 
     public Usuario registrarUsuario(String nombre, String apellido, String email, char[] contrasenaPlana, boolean activo){
-        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorEmail(email);
-        if (usuario != null){
-            throw new EmailDuplicadoException("El Correo Electrónico " + email + " ya está Registrado.");
-        }
+        this.repositorioUsuario.obtenerUsuarioPorEmail(email)
+                .ifPresent(u -> {
+                    throw new EmailDuplicadoException("El correo electrónico " + email + " ya está registrado.");
+                });
         String hashNuevo;
         try {
             hashNuevo = this.codificadorContrasenas.codificar(contrasenaPlana);
@@ -96,10 +94,10 @@ public class ServicioUsuario {
     ){
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
         if (!usuario.getEmail().equalsIgnoreCase(nuevoEmail)) {
-            Usuario usuarioExistente = this.repositorioUsuario.obtenerUsuarioPorEmail(nuevoEmail);
-            if (usuarioExistente != null) {
-                throw new EmailDuplicadoException("Ese Correo Electrónico ya está en Uso.");
-            }
+            this.repositorioUsuario.obtenerUsuarioPorEmail(nuevoEmail)
+                    .ifPresent(u -> {
+                        throw new EmailDuplicadoException("El Correo Electrónico -" + nuevoApellido + "- Ya está Registrado.");
+                    });
         }
         usuario.cambiarNombre(nuevoNombre);
         usuario.cambiarApellido(nuevoApellido);

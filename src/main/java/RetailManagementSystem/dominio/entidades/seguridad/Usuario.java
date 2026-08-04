@@ -107,8 +107,9 @@ public class Usuario {
     //CONSTRUCTORES:
 
     private Usuario(
-            Integer idUsuario, String nombre, String apellido, String email, int intentosFallidos,
-            LocalDateTime bloqueadoHasta, String hash, boolean activo, boolean debeCambiarContrasena
+            Integer idUsuario, String nombre, String apellido, String email,
+            int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, boolean activo,
+            boolean debeCambiarContrasena
     ) {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Usuario Vacío");
@@ -139,14 +140,17 @@ public class Usuario {
     }
 
     public static Usuario reconstruirDesdeBD(
-            Integer id_usuario, String nombre, String apellido, String email, int intentosFallidos,
-            LocalDateTime bloqueadoHasta, String hash, boolean activo, boolean debeCambiarContrasena
+            Integer id_usuario, String nombre, String apellido, String email,
+            int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, boolean activo,
+            boolean debeCambiarContrasena
     ){
         return new Usuario(id_usuario, nombre, apellido, email, intentosFallidos, bloqueadoHasta, hash, activo,
                 debeCambiarContrasena);
     }
 
-    public static Usuario crearNuevo(String nombre, String apellido, String email, String hash, boolean activo){
+    public static Usuario crearNuevo(
+            String nombre, String apellido, String email, String hash, boolean activo
+    ){
         return new Usuario(null, nombre, apellido, email, 0, null, hash,
                 activo, false);
     }

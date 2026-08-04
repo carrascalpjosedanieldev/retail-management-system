@@ -55,8 +55,8 @@ public class Rol {
         this.activo = activo;
     }
 
-    public static Rol reconstruirDesdeBD(Integer id_rol, String nombre, Set<Permiso> permisosCargados, boolean activo){
-        return new Rol(id_rol, nombre, permisosCargados, activo);
+    public static Rol reconstruirDesdeBD(Integer id_rol, String nombre, Set<Permiso> permisos, boolean activo){
+        return new Rol(id_rol, nombre, permisos, activo);
     }
 
     public static Rol crearNuevo(String nombre, boolean activo){
