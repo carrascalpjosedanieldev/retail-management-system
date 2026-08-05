@@ -1,5 +1,8 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
+import RetailManagementSystem.dominio.entidades.gestion.Descuento;
+import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
+import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.ProductoVencidoException;
 
 import java.math.BigDecimal;

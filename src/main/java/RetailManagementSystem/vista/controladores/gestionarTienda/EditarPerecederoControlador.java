@@ -1,9 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerecederoDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.DescuentoDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.ImpuestoDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
 import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;

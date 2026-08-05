@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
-import RetailManagementSystem.dominio.entidades.comercial.PoliticaVencimiento;
+import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.puertos.RepositorioPoliticaVencimiento;
 
 import java.math.BigDecimal;

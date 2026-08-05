@@ -1,5 +1,9 @@
 package RetailManagementSystem.aplicacion.dto.comercial;
 
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

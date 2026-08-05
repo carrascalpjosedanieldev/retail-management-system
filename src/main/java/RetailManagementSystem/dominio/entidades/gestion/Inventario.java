@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.entidades.comercial;
+package RetailManagementSystem.dominio.entidades.gestion;
 
 import RetailManagementSystem.dominio.excepciones.CapacidadInventarioExcedidaException;
 

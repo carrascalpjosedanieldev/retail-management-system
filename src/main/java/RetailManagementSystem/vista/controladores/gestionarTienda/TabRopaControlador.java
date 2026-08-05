@@ -2,8 +2,8 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.DescuentoDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;

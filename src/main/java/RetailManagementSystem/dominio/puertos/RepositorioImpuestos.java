@@ -1,6 +1,6 @@
 package RetailManagementSystem.dominio.puertos;
 
-import RetailManagementSystem.dominio.entidades.comercial.Impuesto;
+import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 
 import java.util.List;
 

@@ -1,4 +1,6 @@
-package RetailManagementSystem.aplicacion.dto.comercial;
+package RetailManagementSystem.aplicacion.dto.gestion;
+
+import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoDTO;
 
 import java.util.List;
 

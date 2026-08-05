@@ -1,7 +1,7 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
-import RetailManagementSystem.aplicacion.dto.comercial.DescuentoDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
 

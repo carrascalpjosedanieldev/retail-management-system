@@ -1,5 +1,7 @@
 package RetailManagementSystem.aplicacion.dto.comercial;
 
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.dominio.enums.Talla;
 
 import java.math.BigDecimal;

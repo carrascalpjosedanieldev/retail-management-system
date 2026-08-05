@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
-import RetailManagementSystem.dominio.entidades.comercial.Inventario;
+import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 import RetailManagementSystem.dominio.puertos.RepositorioInventario;
 import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.InventarioNoVacioException;
@@ -48,7 +48,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
     @Override
     public Inventario obtenerInventario(int idInventario) {
         if (idInventario <= 0) {
-            throw new IllegalArgumentException("El ID a buscar debe ser un número positivo.");
+            throw new IllegalArgumentException("El ID a buscar debe ser un Número Positivo.");
         }
         String sql = "SELECT i.id_inventario, i.nombre, i.capacidad_maxima, COALESCE(SUM(p.stock), 0) AS capacidad_ocupada " +
                 "FROM inventarios i " +

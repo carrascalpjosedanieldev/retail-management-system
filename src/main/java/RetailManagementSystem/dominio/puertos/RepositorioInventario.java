@@ -1,6 +1,6 @@
 package RetailManagementSystem.dominio.puertos;
 
-import RetailManagementSystem.dominio.entidades.comercial.Inventario;
+import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 
 import java.util.List;
 

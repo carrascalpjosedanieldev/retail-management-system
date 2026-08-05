@@ -1,5 +1,7 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
+import RetailManagementSystem.dominio.entidades.gestion.Descuento;
+import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.math.BigDecimal;

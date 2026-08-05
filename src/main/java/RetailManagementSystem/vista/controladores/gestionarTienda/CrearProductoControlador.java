@@ -6,12 +6,13 @@ import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.dominio.enums.TipoProducto;
-import RetailManagementSystem.aplicacion.dto.comercial.DescuentoDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.ImpuestoDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.dominio.excepciones.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
+import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
@@ -228,6 +229,9 @@ public class CrearProductoControlador {
             mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                     "Producto Creado Correctamente.");
             cerrarVentana();
+        } catch (InventarioNoEncontradoException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
+                    "Error:  " + e.getMessage());
         } catch (CapacidadInventarioExcedidaException e) {
             mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida", e.getMessage());
         } catch (NumberFormatException e) {
@@ -236,10 +240,6 @@ public class CrearProductoControlador {
         } catch (IllegalArgumentException e) {
             mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Producto",
                     "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-        } catch (Exception e){
-            mostrarAlerta(Alert.AlertType.ERROR, "Error Critico",
-                    "NO se pudo Guardar el Producto en la Base de Datos\n" +
-                            "Error:  " + e.getMessage());
         }
     }
 

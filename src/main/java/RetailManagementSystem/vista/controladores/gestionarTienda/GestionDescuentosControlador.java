@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
-import RetailManagementSystem.aplicacion.dto.comercial.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTODescuento;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;

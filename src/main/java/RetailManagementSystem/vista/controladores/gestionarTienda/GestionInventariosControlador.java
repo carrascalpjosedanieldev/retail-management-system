@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
-import RetailManagementSystem.aplicacion.dto.comercial.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
