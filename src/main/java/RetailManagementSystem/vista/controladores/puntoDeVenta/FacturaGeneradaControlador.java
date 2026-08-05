@@ -2,11 +2,10 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemVendidoFacturaDTO;
-import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
-import RetailManagementSystem.vista.utilidades.RutasVista;
-import javafx.application.Platform;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,7 +21,6 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.CompletableFuture;
 
 public class FacturaGeneradaControlador {
 
@@ -42,12 +40,12 @@ public class FacturaGeneradaControlador {
 
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    private final ProveedorConfiguracion proveedorConfiguracion;
+    private final ServicioConfiguraciones servicioConfiguraciones;
 
     //CONSTRUCTOR:
 
-    public FacturaGeneradaControlador(ProveedorConfiguracion proveedorConfiguracion) {
-        this.proveedorConfiguracion = proveedorConfiguracion;
+    public FacturaGeneradaControlador(ServicioConfiguraciones servicioConfiguraciones) {
+        this.servicioConfiguraciones = servicioConfiguraciones;
     }
 
     //MÉTODOS:
@@ -105,22 +103,21 @@ public class FacturaGeneradaControlador {
     }
 
     private void cargarNombreTienda() {
-        CompletableFuture.supplyAsync(() -> {
-                    return this.servicioConfiguraciones.obtenerValorConfiguracion(RutasVista.NOMBRE_TIENDA_CLAVE);
-                }).thenAcceptAsync(nombreTienda -> {
-                    if (nombreTienda != null && !nombreTienda.isBlank()) {
-                        lblNombreTienda.setText(nombreTienda);
-                    } else {
-                        lblNombreTienda.setText("Mi Tienda");
-                    }
-                }, Platform::runLater)
-                .exceptionally(ex -> {
-                    Platform.runLater(() -> {
-                        lblNombreTienda.setText("Tienda (Modo Offline)");
-                        System.err.println("Error al Cargar el Nombre de la Tienda: " + ex.getMessage());
-                    });
-                    return null;
-                });
+        try {
+            String nombreTienda = this.servicioConfiguraciones.obtenerNombreTienda();
+            if (nombreTienda != null && !nombreTienda.isBlank()) {
+                lblNombreTienda.setText(nombreTienda);
+            } else {
+                lblNombreTienda.setText("Mi Tienda");
+            }
+        } catch (RuntimeException e) {
+            lblNombreTienda.setText("Tienda (Modo Offline)");
+            GestorAlertas.mostrarError(
+                    "Error de Carga",
+                    "Error al Obtener el Nombre de la Tienda",
+                    "NO se pudo Leer la Configuración Local: " + e.getMessage()
+            );
+        }
     }
 
 

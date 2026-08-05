@@ -8,8 +8,6 @@ public class RutasVista {
 
     //MENU PRINCIPAL:
 
-    public static final String NOMBRE_TIENDA_CLAVE = "NOMBRE_PROYECTO_PROPIO_ORIGINAL";
-
     public static final String MENU_PRINCIPAL_VIEW = "/vista/menuPrincipal/MenuPrincipal.fxml";
     public static final String ESTILOS_CSS_MENU_PRINCIPAL = "/css/menuPrincipal/estilosCssMenuPrincipal.css";
 
@@ -47,6 +45,8 @@ public class RutasVista {
 
     public static final String EDITAR_PERECEDERO_VIEW = "/vista/gestionarTienda/editarPerecedero.fxml";
     public static final String ESTILOS_CSS_EDITAR_PERECEDERO = "/css/gestionarTienda/estilosCssEditarRopaOPerecedero.css";
+
+    public static final String EDITAR_NOMBRE_TIENDA_VIEW = "/vista/gestionarTienda/editarNombreTienda.fxml";
 
     //PUNTO DE VENTA:
 

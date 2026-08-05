@@ -43,11 +43,6 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorRepositorios.getEnsambladorDTODescuento()
             );
         }
-        if (claseControlador == GestionConfiguracionesControlador.class){
-            return new GestionConfiguracionesControlador(
-                    ContenedorRepositorios.getServicioConfiguraciones()
-            );
-        }
         if (claseControlador == GestionDescuentosControlador.class) {
             return new GestionDescuentosControlador(
                     ContenedorRepositorios.getServicioDescuentos(),
@@ -119,7 +114,12 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == FacturaGeneradaControlador.class){
             return new FacturaGeneradaControlador(
-                    ContenedorRepositorios.getProveedorConfiguracion()
+                    ContenedorRepositorios.getServicioConfiguraciones()
+            );
+        }
+        if (claseControlador == EdicionTiendaControlador.class){
+            return new EdicionTiendaControlador(
+                    ContenedorRepositorios.getServicioConfiguraciones()
             );
         }
         try {

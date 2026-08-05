@@ -20,7 +20,6 @@ import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 public class MenuPrincipalControlador {
 
@@ -40,26 +39,6 @@ public class MenuPrincipalControlador {
     }
 
     //MÉTODOS:
-
-    private Optional<ButtonType> mostrarAlerta(
-            Alert.AlertType tipo, String titulo, String cabecera, String contenido,
-            Node iconoPersonalizado
-    ) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(cabecera);
-        alerta.setContentText(contenido);
-        if (iconoPersonalizado != null) {
-            alerta.setGraphic(iconoPersonalizado);
-        }
-        DialogPane panelAlerta = alerta.getDialogPane();
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_PRINCIPAL);
-        if (urlCss != null) {
-            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-        }
-        return alerta.showAndWait();
-    }
-
 
     @FXML
     public void initialize() {
@@ -94,25 +73,21 @@ public class MenuPrincipalControlador {
     }
 
     private void cargarNombreTienda() {
-        CompletableFuture.supplyAsync(() -> {
-                    return this.servicioConfiguraciones.obtenerValorConfiguracion(RutasVista.NOMBRE_TIENDA_CLAVE);
-                }).thenAcceptAsync(nombreTienda -> {
-                    if (nombreTienda != null && !nombreTienda.isBlank()) {
-                        lblNombreTienda.setText(nombreTienda);
-                    } else {
-                        lblNombreTienda.setText("Mi Tienda");
-                    }
-                }, Platform::runLater)
-                .exceptionally(ex -> {
-                    Platform.runLater(() -> {
-                        lblNombreTienda.setText("Tienda (Modo Offline)");
-                        mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
-                                "Error al cargar el nombre de la Tienda",
-                                "NO se pudo Cargar el Nombre de la Tienda en la Vista: " + ex.getMessage(),
-                                null);
-                    });
-                    return null;
-                });
+        try {
+            String nombreTienda = this.servicioConfiguraciones.obtenerNombreTienda();
+            if (nombreTienda != null && !nombreTienda.isBlank()) {
+                lblNombreTienda.setText(nombreTienda);
+            } else {
+                lblNombreTienda.setText("Mi Tienda");
+            }
+        } catch (RuntimeException e) {
+            lblNombreTienda.setText("Tienda (Modo Offline)");
+            GestorAlertas.mostrarError(
+                    "Error de Carga",
+                    "Error al Obtener el Nombre de la Tienda",
+                    "NO se pudo Leer la Configuración Local: " + e.getMessage()
+            );
+        }
     }
 
 
@@ -138,11 +113,17 @@ public class MenuPrincipalControlador {
     public void salirDeSistema(){
         Label iconoAmigable = new Label("👋");
         iconoAmigable.setStyle("-fx-font-size: 45px; -fx-padding: 0 10 0 10;");
-        Optional<ButtonType> respuesta = mostrarAlerta(
-                Alert.AlertType.CONFIRMATION, "Confirmar Salida",
-                null, "¿Estás Seguro de que deseas Salir del Sistema?",
-                iconoAmigable
-        );
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText(null);
+        alerta.setContentText("¿Estás Seguro de que deseas Salir del Sistema?");
+        alerta.setGraphic(iconoAmigable);
+        DialogPane panelAlerta = alerta.getDialogPane();
+        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_PRINCIPAL);
+        if (urlCss != null) {
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        }
+        Optional<ButtonType> respuesta = alerta.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             Platform.exit();
             System.exit(0);

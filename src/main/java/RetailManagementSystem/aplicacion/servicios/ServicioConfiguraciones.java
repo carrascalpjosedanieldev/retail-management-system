@@ -1,7 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
-import RetailManagementSystem.dominio.entidades.Tienda;
 import RetailManagementSystem.dominio.puertos.RepositorioConfiguracion;
 import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguracionImpl;
 
@@ -9,7 +8,7 @@ public class ServicioConfiguraciones {
 
     //ATRIBUTOS:
 
-    private static final String CONF_NOMBRE_TIENDA = "NOMBRE_PROYECTO_PROPIO_ORIGINAL";
+    private static final String CONF_DATOS_TIENDA = "NOMBRE_PROYECTO_PROPIO_ORIGINAL";
 
     private static final String CONF_MAX_INTENTOS = "SEGURIDAD_MAX_INTENTOS";
 
@@ -40,14 +39,28 @@ public class ServicioConfiguraciones {
         this.repositorioConfiguracion.actualizarDescripcionConfiguracion(clave, descripcion);
     }
 
-    public void cambiarNombreYDescripcionTienda(String nombreNuevo, Tienda tienda, String descripcion){
-        tienda.cambiarNombreTienda(nombreNuevo);
-        this.repositorioConfiguracion.actualizarValorYDescripcionConfiguracion(
-                CONF_NOMBRE_TIENDA, nombreNuevo, descripcion
-        );
+    //MÉTODOS ESPECÍFICOS:
+
+    public String obtenerNombreTienda(){
+        return this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_DATOS_TIENDA);
     }
 
-    //MÉTODOS ESPECÍFICOS:
+    public String obtenerDescripcionTienda(){
+        return this.repositorioConfiguracion.obtenerDescripcionConfiguracion(CONF_DATOS_TIENDA);
+    }
+
+    public void cambiarNombreYDescripcionTienda(String nombreNuevo, String descripcion){
+        if (nombreNuevo == null || nombreNuevo.isBlank()){
+            throw new IllegalArgumentException("El Nombre de la Tienda NO puede estar Vacío.");
+        }
+        if (descripcion == null){
+            throw new IllegalArgumentException("La Description NO puede ser Nula");
+        }
+        this.repositorioConfiguracion.actualizarValorYDescripcionConfiguracion(
+                CONF_DATOS_TIENDA, nombreNuevo, descripcion
+        );
+        this.proveedorConfiguracion.invalidarCache(CONF_DATOS_TIENDA);
+    }
 
     public void actualizarMaxIntentos(int nuevoMaximo) {
         this.repositorioConfiguracion.actualizarValorConfiguracion(
