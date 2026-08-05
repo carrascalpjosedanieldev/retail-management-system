@@ -12,7 +12,7 @@ import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguraci
 import RetailManagementSystem.infraestructura.persistencia.mysql.*;
 import RetailManagementSystem.infraestructura.seguridad.Argon2CodificadorAdapter;
 
-public class ContenedorRepositorios {
+public class ContenedorDependencias {
 
     //DEPENDENCIAS:
 
