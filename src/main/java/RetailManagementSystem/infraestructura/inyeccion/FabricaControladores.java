@@ -1,14 +1,9 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
-import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
+import RetailManagementSystem.vista.controladores.menuPrincipal.*;
 import RetailManagementSystem.vista.controladores.gestionarTienda.*;
+import RetailManagementSystem.vista.controladores.puntoDeVenta.*;
 
-import RetailManagementSystem.vista.controladores.puntoDeVenta.FacturaGeneradaControlador;
-import RetailManagementSystem.vista.controladores.puntoDeVenta.HistorialVentasControlador;
-import RetailManagementSystem.vista.controladores.puntoDeVenta.MenuDeVentasControlador;
-import RetailManagementSystem.vista.controladores.puntoDeVenta.PanelDeControlControlador;
 import javafx.util.Callback;
 
 public class FabricaControladores implements Callback<Class<?>, Object> {
@@ -17,122 +12,114 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
     public Object call(Class<?> claseControlador) {
         if (claseControlador == MenuPrincipalControlador.class) {
             return new MenuPrincipalControlador(
-                    FabricaServicios.obtenerServicioConfiguraciones()
+                    ContenedorRepositorios.getServicioConfiguraciones()
             );
         }
         if (claseControlador == CrearProductoControlador.class) {
             return new CrearProductoControlador(
-                    FabricaServicios.obtenerServicioImpuestos(),
-                    FabricaServicios.obtenerServicioDescuentos(),
-                    FabricaServicios.obtenerServicioPoliticas(),
-                    new OrquestadorProductoInventario(
-                            FabricaServicios.obtenerServicioProductos(),
-                            FabricaServicios.obtenerServicioInventario()
-                    )
+                    ContenedorRepositorios.getServicioImpuestos(),
+                    ContenedorRepositorios.getServicioDescuentos(),
+                    ContenedorRepositorios.getServicioPoliticaVencimiento(),
+                    ContenedorRepositorios.getOrquestadorProductoInventario()
             );
         }
         if (claseControlador == EditarPerecederoControlador.class){
             return new EditarPerecederoControlador(
-                    FabricaServicios.obtenerServicioImpuestos(),
-                    FabricaServicios.obtenerServicioDescuentos(),
-                    FabricaServicios.obtenerServicioPoliticas(),
-                    FabricaServicios.obtenerServicioProductos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOImpuesto(),
-                    FabricaEnsambladores.obtenerEnsambladorDTODescuento(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOPoliticaVencimiento()
+                    ContenedorRepositorios.getServicioImpuestos(),
+                    ContenedorRepositorios.getServicioDescuentos(),
+                    ContenedorRepositorios.getServicioPoliticaVencimiento(),
+                    ContenedorRepositorios.getServicioProductos(),
+                    ContenedorRepositorios.getEnsambladorDTOImpuesto(),
+                    ContenedorRepositorios.getEnsambladorDTODescuento(),
+                    ContenedorRepositorios.getEnsambladorDTOPoliticaVencimiento()
             );
         }
         if (claseControlador == EditarRopaControlador.class){
             return new EditarRopaControlador(
-                    FabricaServicios.obtenerServicioImpuestos(),
-                    FabricaServicios.obtenerServicioDescuentos(),
-                    FabricaServicios.obtenerServicioProductos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOImpuesto(),
-                    FabricaEnsambladores.obtenerEnsambladorDTODescuento()
+                    ContenedorRepositorios.getServicioImpuestos(),
+                    ContenedorRepositorios.getServicioDescuentos(),
+                    ContenedorRepositorios.getServicioProductos(),
+                    ContenedorRepositorios.getEnsambladorDTOImpuesto(),
+                    ContenedorRepositorios.getEnsambladorDTODescuento()
             );
         }
         if (claseControlador == GestionConfiguracionesControlador.class){
-            return new GestionConfiguracionesControlador(FabricaServicios.obtenerServicioConfiguraciones());
+            return new GestionConfiguracionesControlador(
+                    ContenedorRepositorios.getServicioConfiguraciones()
+            );
         }
         if (claseControlador == GestionDescuentosControlador.class) {
             return new GestionDescuentosControlador(
-                    FabricaServicios.obtenerServicioDescuentos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTODescuento()
+                    ContenedorRepositorios.getServicioDescuentos(),
+                    ContenedorRepositorios.getEnsambladorDTODescuento()
             );
         }
         if (claseControlador == GestionImpuestosControlador.class) {
             return new GestionImpuestosControlador(
-                    FabricaServicios.obtenerServicioImpuestos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOImpuesto()
+                    ContenedorRepositorios.getServicioImpuestos(),
+                    ContenedorRepositorios.getEnsambladorDTOImpuesto()
             );
         }
         if (claseControlador == GestionPoliticasVencimientoControlador.class){
             return new GestionPoliticasVencimientoControlador(
-                    FabricaServicios.obtenerServicioPoliticas(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOPoliticaVencimiento()
+                    ContenedorRepositorios.getServicioPoliticaVencimiento(),
+                    ContenedorRepositorios.getEnsambladorDTOPoliticaVencimiento()
             );
         }
         if (claseControlador == GestionInventariosControlador.class){
             return new GestionInventariosControlador(
-                    FabricaServicios.obtenerServicioInventario(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOInventario()
+                    ContenedorRepositorios.getServicioInventario(),
+                    ContenedorRepositorios.getEnsambladorDTOInventario()
             );
         }
         if (claseControlador == GestionServiciosControlador.class) {
             return new GestionServiciosControlador(
-                    FabricaServicios.obtenerServicioServicios(),
-                    FabricaServicios.obtenerServicioImpuestos(),
-                    FabricaServicios.obtenerServicioDescuentos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOServicio()
+                    ContenedorRepositorios.getServicioServicios(),
+                    ContenedorRepositorios.getServicioImpuestos(),
+                    ContenedorRepositorios.getServicioDescuentos(),
+                    ContenedorRepositorios.getEnsambladorDTOServicio()
             );
         }
         if (claseControlador == TabGeneralProductosControlador.class){
             return new TabGeneralProductosControlador(
-                    FabricaServicios.obtenerServicioProductos(),
-                    FabricaServicios.obtenerServicioInventario(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOProducto(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOInventario()
+                    ContenedorRepositorios.getServicioProductos(),
+                    ContenedorRepositorios.getServicioInventario(),
+                    ContenedorRepositorios.getEnsambladorDTOProducto(),
+                    ContenedorRepositorios.getEnsambladorDTOInventario()
             );
         }
         if (claseControlador == TabPerecederosControlador.class){
             return new TabPerecederosControlador(
-                    FabricaServicios.obtenerServicioProductos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOProducto()
+                    ContenedorRepositorios.getServicioProductos(),
+                    ContenedorRepositorios.getEnsambladorDTOProducto()
             );
         }
         if (claseControlador == TabRopaControlador.class){
             return new TabRopaControlador(
-                    FabricaServicios.obtenerServicioProductos(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOProducto()
+                    ContenedorRepositorios.getServicioProductos(),
+                    ContenedorRepositorios.getEnsambladorDTOProducto()
             );
         }
         if (claseControlador == PanelDeControlControlador.class){
             return new PanelDeControlControlador(
-                    FabricaServicios.obtenerServicioFacturas(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOFactura()
+                    ContenedorRepositorios.getServicioFacturas(),
+                    ContenedorRepositorios.getEnsambladorDTOFactura()
             );
         }
         if (claseControlador == HistorialVentasControlador.class){
             return new HistorialVentasControlador(
-                    FabricaServicios.obtenerServicioFacturas(),
-                    FabricaEnsambladores.obtenerEnsambladorDTOFactura()
+                    ContenedorRepositorios.getServicioFacturas(),
+                    ContenedorRepositorios.getEnsambladorDTOFactura()
             );
         }
         if (claseControlador == MenuDeVentasControlador.class){
             return new MenuDeVentasControlador(
-                    new OrquestadorVentas(
-                            FabricaServicios.obtenerServicioFacturas(),
-                            FabricaServicios.obtenerServicioCarrito(),
-                            FabricaServicios.obtenerServicioProductos(),
-                            FabricaServicios.obtenerServicioServicios(),
-                            FabricaEnsambladores.obtenerEnsambladorDTOFactura(),
-                            FabricaEnsambladores.obtenerEnsambladorDTOCarrito()
-                    )
+                    ContenedorRepositorios.getOrquestadorVentas()
             );
         }
         if (claseControlador == FacturaGeneradaControlador.class){
             return new FacturaGeneradaControlador(
-                    FabricaServicios.obtenerServicioConfiguraciones()
+                    ContenedorRepositorios.getProveedorConfiguracion()
             );
         }
         try {

@@ -2,6 +2,7 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemVendidoFacturaDTO;
+import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -41,12 +42,12 @@ public class FacturaGeneradaControlador {
 
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    private final ServicioConfiguraciones servicioConfiguraciones;
+    private final ProveedorConfiguracion proveedorConfiguracion;
 
     //CONSTRUCTOR:
 
-    public FacturaGeneradaControlador(ServicioConfiguraciones servicioConfiguraciones) {
-        this.servicioConfiguraciones = servicioConfiguraciones;
+    public FacturaGeneradaControlador(ProveedorConfiguracion proveedorConfiguracion) {
+        this.proveedorConfiguracion = proveedorConfiguracion;
     }
 
     //MÉTODOS:

@@ -5,6 +5,11 @@ import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 
 public class EnsambladorDTOUsuario {
 
+    //CONSTRUCTOR:
+
+    public EnsambladorDTOUsuario() {
+    }
+
     //MÉTODOS:
 
     public UsuarioDTO ensamblarDTOUsuario(Usuario usuario){
