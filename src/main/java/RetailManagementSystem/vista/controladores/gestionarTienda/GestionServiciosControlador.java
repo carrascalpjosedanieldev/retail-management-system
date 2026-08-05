@@ -192,10 +192,10 @@ public class GestionServiciosControlador {
     private void inicializar(){
         colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigo()));
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colPrecioBase.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioBase())); // ¡Esta faltaba!
-        colImpuesto.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombreImpuesto()));
-        colDescuento.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombreDescuento()));
-        colPrecioFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioFinal())); // ¡Esta faltaba!
+        colPrecioBase.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioBase()));
+        colImpuesto.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().datosImpuesto().nombre()));
+        colDescuento.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().datosDescuento().nombre()));
+        colPrecioFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioFinal()));
         colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
         configurarColumnaMoneda(colPrecioBase);
         configurarColumnaMoneda(colPrecioFinal);
@@ -275,9 +275,9 @@ public class GestionServiciosControlador {
         configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
                 desc -> desc.getNombre() + " (" + desc.getPorcentaje() + "%)");
         listaImpuestos.stream().filter(imp ->
-                imp.getId() == seleccionado.idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
+                imp.getId() == seleccionado.datosImpuesto().idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
         listaDescuentos.stream().filter(desc ->
-                desc.getId() == seleccionado.idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
+                desc.getId() == seleccionado.datosDescuento().idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
         GridPane grid = crearGridPane(txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
         dialog.getDialogPane().setContent(grid);
         validarCampos(dialog, txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);

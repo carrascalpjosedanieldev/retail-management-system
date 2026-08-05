@@ -85,7 +85,7 @@ public class ContenedorDependencias {
         );
         ensambladorDTOInventario = new EnsambladorDTOInventario(ensambladorDTOProducto);
         ensambladorDTOServicio = new EnsambladorDTOServicio(
-
+                ensambladorDTOImpuesto, ensambladorDTODescuento
         );
         ensambladorDTOUsuario = new EnsambladorDTOUsuario();
 
