@@ -3,6 +3,8 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
+import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -46,8 +48,9 @@ public class GestionInventariosControlador {
 
     //CONSTRUCTOR:
 
-    public GestionInventariosControlador(ServicioInventario servicioInventario,
-                                         EnsambladorDTOInventario ensambladorDTOInventario) {
+    public GestionInventariosControlador(
+            ServicioInventario servicioInventario, EnsambladorDTOInventario ensambladorDTOInventario
+    ) {
         this.servicioInventario = servicioInventario;
         this.ensambladorDTOInventario = ensambladorDTOInventario;
     }
@@ -210,10 +213,12 @@ public class GestionInventariosControlador {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Inventario ha sido Actualizado Correctamente.");
                 cargarDatosTabla();
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "NO se pudo Actualizar el Inventario:\n" +
-                                "Error:  " + e.getMessage());
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "La Acción NO fue Completada",
+                        "Error:  " + e.getMessage());
+            } catch (InventarioNoEncontradoException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
+                        "Error:  " + e.getMessage());
             }
         }
     }
@@ -277,10 +282,9 @@ public class GestionInventariosControlador {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Inventario ha sido Creado Correctamente.");
                 cargarDatosTabla();
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "NO se pudo Registrar el Inventario en la Base de Datos:\n" +
-                                "Error:  " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos",
+                        "Error:  " + e.getMessage());
             }
         }
     }
@@ -294,34 +298,24 @@ public class GestionInventariosControlador {
                     "Selecciona un Inventario para ver sus Productos.");
             return;
         }
+        String rutaFxml = RutasVista.GESTIONAR_PRODUCTOS_VIEW;
         try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.GESTIONAR_PRODUCTOS_VIEW);
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
             Parent root = loader.load();
             GestionProductosControlador controlador = loader.getController();
             controlador.inicializarConInventario(seleccionado.idInventario());
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.getScene().setRoot(root);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Navegación",
-                    "NO se pudo Cargar la Vista de Productos.\n" +
-                            "Detalle: " + e.getMessage());
+        } catch (IOException | IllegalStateException e) {
+            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
         }
     }
 
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
-        } catch (Exception e) {
-            mostrarAlerta(
-                    Alert.AlertType.ERROR,
-                    "Error de Navegación",
-                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
-                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
-            );
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

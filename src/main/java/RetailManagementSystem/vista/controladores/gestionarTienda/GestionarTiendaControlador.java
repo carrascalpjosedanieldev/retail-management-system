@@ -19,26 +19,8 @@ public class GestionarTiendaControlador {
     private Button btnSalir;
 
     private void cambiarVentana(ActionEvent event, String ruta){
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, ruta);
-        } catch (Exception e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error de Navegación");
-            alerta.setHeaderText("NO se pudo Cargar la Pantalla");
-            alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
-                    "Ruta Solicitada: " + ruta + "\n" +
-                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
-            DialogPane panelAlerta = alerta.getDialogPane();
-            panelAlerta.setPrefSize(500, 280);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_GESTIONAR_TIENDA);
-            if (urlCss != null) {
-                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            } else {
-                panelAlerta.setPrefSize(500, 180);
-            }
-            alerta.showAndWait();
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, ruta);
     }
 
     @FXML

@@ -67,10 +67,10 @@ public class Inventario {
 
     public void cambiarNombreInventario(String nuevoNombre){
         if (nuevoNombre==null || nuevoNombre.isBlank()){
-            throw new IllegalArgumentException("Nombre de Inventario Vacio");
+            throw new IllegalArgumentException("Nombre de Inventario Vacío");
         }
         if (nuevoNombre.length() > 100) {
-            throw new IllegalArgumentException("El Nombre no puede superar los 50 Caracteres.");
+            throw new IllegalArgumentException("El Nombre NO puede superar los 50 Caracteres.");
         }
         setNombre(nuevoNombre);
     }

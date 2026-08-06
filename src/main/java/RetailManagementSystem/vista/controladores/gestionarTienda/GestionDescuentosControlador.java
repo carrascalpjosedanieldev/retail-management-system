@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTODescuento;
+import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -222,12 +223,15 @@ public class GestionDescuentosControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El descuento se ha actualizado correctamente.");
                     cargarDatosTabla();
-                } catch (IllegalArgumentException e) {
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
+                            "Error:  " + e.getMessage());
+                } catch (DescuentoNoEncontradoExeption e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Descuento NO Encontrado",
+                            "Error:  " + e.getMessage());
+                } catch (IllegalArgumentException | IllegalStateException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Descuento",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Actualizar el Descuento en la Base de Datos.");
                 }
             }
         });
@@ -268,13 +272,12 @@ public class GestionDescuentosControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El descuento se ha guardado correctamente.");
                     cargarDatosTabla();
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
+                            "Error:  " + e.getMessage());
                 } catch (IllegalArgumentException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Descuento",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "No se pudo guardar el descuento en la base de datos\n" +
-                                    "Error:  " + e.getMessage());
                 }
             }
         });
@@ -306,9 +309,12 @@ public class GestionDescuentosControlador {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                        "NO se pudo cambiar el Estado: " + e.getMessage());
+            } catch (IllegalStateException | IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "La Acción NO fue Completada",
+                        "Error:  " + e.getMessage());
+            } catch (DescuentoNoEncontradoExeption e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Descuento NO Encontrado",
+                        "Error:  " + e.getMessage());
             }
         }
     }
@@ -316,17 +322,8 @@ public class GestionDescuentosControlador {
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
-        } catch (Exception e) {
-            mostrarAlerta(
-                    Alert.AlertType.ERROR,
-                    "Error de Navegación",
-                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
-                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
-            );
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

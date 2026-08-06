@@ -2,12 +2,13 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
-import RetailManagementSystem.dominio.excepciones.CapacidadInventarioExcedidaException;
+import RetailManagementSystem.dominio.excepciones.*;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -36,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
@@ -244,8 +246,9 @@ public class TabGeneralProductosControlador {
 
     @FXML
     void abrirSelectorNuevoProducto(ActionEvent event) {
+        String rutaFxml = RutasVista.CREAR_PRODUCTO_VIEW;
         try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.CREAR_PRODUCTO_VIEW);
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
             Parent root = loader.load();
             CrearProductoControlador controlador = loader.getController();
             controlador.recibirIdInventario(this.idInventario);
@@ -257,9 +260,8 @@ public class TabGeneralProductosControlador {
             modalStage.initOwner(ventanaPadre);
             modalStage.showAndWait();
             cargarDatosTabla();
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "NO se pudo Abrir la Ventana de Creación de Producto.");
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
         }
     }
 
@@ -292,9 +294,12 @@ public class TabGeneralProductosControlador {
                 try {
                     this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigoProducto());
                     cargarDatosTabla();
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                            "NO se pudo Cambiar el Estado: " + e.getMessage());
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
+                            "Error:  " + e.getMessage());
+                } catch (ProductoNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
+                            "Error:  " + e.getMessage());
                 }
             }
         });
@@ -358,7 +363,10 @@ public class TabGeneralProductosControlador {
         };
         txtCantidad.textProperty().addListener((obs, old, newValue) -> actualizarVistaPrevia.run());
         grupoAccion.selectedToggleProperty().addListener((obs, old, newValue) -> actualizarVistaPrevia.run());
-        VBox contenido = new VBox(15, new Label("Seleccione la acción:"), boxBotones, new Label("Cantidad a ajustar:"), txtCantidad, lblVistaPrevia);
+        VBox contenido = new VBox(
+                15, new Label("Seleccione la acción:"), boxBotones, new Label("Cantidad a ajustar:"),
+                txtCantidad, lblVistaPrevia
+        );
         contenido.setPadding(new Insets(20));
         dialog.getDialogPane().setContent(contenido);
         ButtonType btnGuardar = new ButtonType("Guardar Cambios", ButtonBar.ButtonData.OK_DONE);
@@ -411,18 +419,27 @@ public class TabGeneralProductosControlador {
                         );
                     } else {
                         this.servicioProductos.reducirStockDeProductoDeInventario(
-                                this.idInventario, productoSeleccionado.codigoProducto(), cantidadAManejar);
+                                this.idInventario, productoSeleccionado.codigoProducto(), cantidadAManejar
+                        );
                     }
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Stock se ha Actualizado Correctamente.");
                     cargarDatosTabla();
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
+                            "Error:  " + e.getMessage());
+                } catch (InventarioNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
+                            "Error:  " + e.getMessage());
+                } catch (ProductoNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
+                            "Error:  " + e.getMessage());
                 } catch (CapacidadInventarioExcedidaException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida",
                             "Error:  " + e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Actualizar el Stock en la Base de Datos.\n" +
-                                    "Error: " + e.getMessage());
+                } catch (StockInsuficienteException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
+                            "Error:  " + e.getMessage());
                 }
             }
         });
@@ -502,13 +519,19 @@ public class TabGeneralProductosControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Producto ha sido Movido Exitosamente al Inventario: " + inventarioDestino.nombre());
                     cargarDatosTabla();
+                } catch (IllegalArgumentException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Accion",
+                            "Error:  " + e.getMessage());
+                } catch (InventarioNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
+                            "Error:  " + e.getMessage());
+                } catch (ProductoNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
+                            "Error:  " + e.getMessage());
                 } catch (CapacidadInventarioExcedidaException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida",
                             "El Inventario -" + inventarioDestino.nombre() + "- NO puede recibir esa Cantidad.\n" +
                                     e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Mover el Producto.\n" + e.getMessage());
                 }
             }
         });

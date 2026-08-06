@@ -6,8 +6,11 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
+import RetailManagementSystem.dominio.excepciones.ProductoNoEncontradoException;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.beans.property.SimpleIntegerProperty;
@@ -32,6 +35,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
@@ -100,11 +104,16 @@ public class TabRopaControlador {
             );
             listaObservable.clear();
             listaObservable.setAll(listaRopa);
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al Cargar Datos",
-                    "NO se pudo Cargar la Lista de Ropa.\n" +
-                            "Detalle: " + e.getMessage()
+        } catch (RuntimeException e) {
+            GestorAlertas.mostrarError(
+                    "Error Crítico de Carga",
+                    "No se pudieron cargar los datos del inventario.",
+                    "Ocurrió un error al cargar los productos ropa. La ventana se cerrará por seguridad.\nDetalle: " + e.getMessage()
             );
+            if (tablaRopa != null && tablaRopa.getScene() != null) {
+                Stage stageActual = (Stage) tablaRopa.getScene().getWindow();
+                stageActual.close();
+            }
         }
     }
 
@@ -274,8 +283,9 @@ public class TabRopaControlador {
                     "Por favor, Seleccione una Prenda de Ropa en la Tabla para Editarla.");
             return;
         }
+        String rutaFxml = RutasVista.EDITAR_ROPA_VIEW;
         try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.EDITAR_ROPA_VIEW);
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
             Parent root = loader.load();
             EditarRopaControlador controladorEditor = loader.getController();
             controladorEditor.cargarDatosProducto(productoSeleccionado, this.idInventario);
@@ -288,9 +298,8 @@ public class TabRopaControlador {
             stageEditor.setResizable(false);
             stageEditor.showAndWait();
             cargarDatosTabla();
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Interfaz",
-                    "NO se pudo Abrir la Ventana de Edición.\nError: " + e.getMessage());
+        } catch (IOException | IllegalStateException e) {
+            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
         }
     }
 
@@ -328,10 +337,12 @@ public class TabRopaControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Estado Actualizado",
                             "El Estado del Producto se Actualizó Correctamente.");
                     cargarDatosTabla();
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error en la Actualización",
-                            "Ocurrió un Error al Intentar cambiar el Estado del Producto.\n" +
-                                    "Error: " + e.getMessage());
+                } catch (IllegalArgumentException | IllegalStateException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
+                            "Error:  " + e.getMessage());
+                } catch (ProductoNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
+                            "Error:  " + e.getMessage());
                 }
             }
         });

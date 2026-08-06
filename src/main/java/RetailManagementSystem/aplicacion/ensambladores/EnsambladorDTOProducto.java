@@ -85,7 +85,8 @@ public class EnsambladorDTOProducto {
         return datosProductosRopa;
     }
 
-    public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(List<Producto> productosRopa, LocalDate fecha){
+    public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(List<Producto> productosRopa){
+        LocalDate fecha = LocalDate.now();
         List<DatosTotalesProductoPerecederoDTO> datosProductosRopa = new ArrayList<>();
         for (Producto producto:productosRopa){
             DatosTotalesProductoPerecederoDTO productoResumen = (DatosTotalesProductoPerecederoDTO) this.ensamblarDatosTotalesProducto(producto, fecha);

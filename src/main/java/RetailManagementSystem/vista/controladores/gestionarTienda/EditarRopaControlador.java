@@ -8,6 +8,11 @@ import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTODescuento;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOImpuesto;
+import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
+import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
+import RetailManagementSystem.dominio.excepciones.ProductoNoEncontradoException;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
@@ -101,10 +106,12 @@ public class EditarRopaControlador {
             );
             cbImpuesto.setItems(FXCollections.observableArrayList(listaImpuestos));
             cbDescuento.setItems(FXCollections.observableArrayList(listaDescuentos));
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
-                    "NO se pudieron Cargar las Listas de Impuestos o Descuentos.\n" +
-                            "Error:  " + e.getMessage());
+        } catch (RuntimeException e) {
+            GestorAlertas.mostrarError(
+                    "Error de Conexión",
+                    "Faltan Datos Obligatorios para Operar.",
+                    "No se pudieron cargar las listas desplegables desde la base de datos: " + e.getMessage()
+            );
         }
     }
 
@@ -190,9 +197,16 @@ public class EditarRopaControlador {
             mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa",
                     "La Prenda se ha Actualizado Correctamente.");
             cerrarVentana();
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al Actualizar",
-                    "NO se pudo Guardar la Información en la Base de Datos.\nDetalle: " + e.getMessage());
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos",
+                    "Error:  " + e.getMessage());
+        } catch (ProductoNoEncontradoException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
+                    "Error:  " + e.getMessage());
+        } catch (ImpuestoNoEncontradoException | DescuentoNoEncontradoExeption |
+                 PoliticaVencimientoNoEncontradaException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Dato Critico NO Encontrado",
+                    "Error:  " + e.getMessage());
         }
     }
 

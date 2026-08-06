@@ -14,6 +14,8 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 
 public class GestionConfiguracionesControlador {
 
@@ -36,7 +38,7 @@ public class GestionConfiguracionesControlador {
             dialogStage.setResizable(false);
             dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();
-        } catch (Exception e) {
+        } catch (IOException | IllegalStateException e) {
             throw new CargarVistaException(rutaFxml, "Fallo al abrir ventana de edición", e);
         }
     }

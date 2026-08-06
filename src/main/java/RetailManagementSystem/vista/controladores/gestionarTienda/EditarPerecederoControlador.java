@@ -11,6 +11,11 @@ import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTODescuento;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOImpuesto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
+import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
+import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
+import RetailManagementSystem.dominio.excepciones.ProductoNoEncontradoException;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.event.ActionEvent;
@@ -69,7 +74,7 @@ public class EditarPerecederoControlador {
         this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
@@ -124,15 +129,30 @@ public class EditarPerecederoControlador {
 
     private void cargarListasDesplegables() {
         try {
-            List<ImpuestoDTO> listaImpuestos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(servicioImpuesto.obtenerImpuestosActivos());
-            if (listaImpuestos != null) cbImpuesto.getItems().setAll(listaImpuestos);
-            List<DescuentoDTO> listaDescuentos = ensambladorDTODescuento.ensamblarDetalleDescuentos(servicioDescuento.obtenerDescuentosActivos());
-            if (listaDescuentos != null) cbDescuento.getItems().setAll(listaDescuentos);
-            List<PoliticaVencimientoDTO> listaPoliticas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas());
-            if (listaPoliticas != null) cbPoliticaVencimiento.getItems().setAll(listaPoliticas);
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error de Carga",
-                    "NO se Pudieron Cargar las Listas.\nError:  " + e.getMessage());
+            List<ImpuestoDTO> listaImpuestos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+                    servicioImpuesto.obtenerImpuestosActivos()
+            );
+            if (listaImpuestos != null) {
+                cbImpuesto.getItems().setAll(listaImpuestos);
+            }
+            List<DescuentoDTO> listaDescuentos = ensambladorDTODescuento.ensamblarDetalleDescuentos(
+                    servicioDescuento.obtenerDescuentosActivos()
+            );
+            if (listaDescuentos != null) {
+                cbDescuento.getItems().setAll(listaDescuentos);
+            }
+            List<PoliticaVencimientoDTO> listaPoliticas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(
+                    servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas()
+            );
+            if (listaPoliticas != null) {
+                cbPoliticaVencimiento.getItems().setAll(listaPoliticas);
+            }
+        } catch (RuntimeException e) {
+            GestorAlertas.mostrarError(
+                    "Error de Conexión",
+                    "Faltan Datos Obligatorios para Operar.",
+                    "No se pudieron cargar las listas desplegables desde la base de datos: " + e.getMessage()
+            );
         }
     }
 
@@ -199,8 +219,7 @@ public class EditarPerecederoControlador {
         }
         try {
             servicioProductos.actualizarProductoPerecederoDeInventario(
-                    this.idInventario,
-                    this.productoOriginal.codigo(),
+                    this.idInventario, this.productoOriginal.codigo(),
                     nombreNuevo,
                     valorCompra,
                     porcentajeGanancia,
@@ -211,9 +230,16 @@ public class EditarPerecederoControlador {
             mostrarAlerta(Alert.AlertType.INFORMATION, "Actualización Exitosa",
                     "El Producto Perecedero se ha Actualizado Correctamente.");
             cerrarVentana();
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error al Actualizar",
-                    "NO se pudo Guardar la Información en la Base de Datos.\nError:  " + e.getMessage());
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos",
+                    "Error:  " + e.getMessage());
+        } catch (ProductoNoEncontradoException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
+                    "Error:  " + e.getMessage());
+        } catch (ImpuestoNoEncontradoException | DescuentoNoEncontradoExeption |
+                 PoliticaVencimientoNoEncontradaException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Dato Critico NO Encontrado",
+                    "Error:  " + e.getMessage());
         }
     }
 

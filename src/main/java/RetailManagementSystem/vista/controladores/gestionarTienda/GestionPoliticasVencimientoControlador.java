@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
+import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -48,8 +49,10 @@ public class GestionPoliticasVencimientoControlador {
 
     //CONSTRUCTOR:
 
-    public GestionPoliticasVencimientoControlador(ServicioPoliticaVencimiento servicioPoliticaVencimiento,
-                                                  EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento) {
+    public GestionPoliticasVencimientoControlador(
+            ServicioPoliticaVencimiento servicioPoliticaVencimiento,
+            EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento
+    ) {
         this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
         this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
     }
@@ -243,13 +246,15 @@ public class GestionPoliticasVencimientoControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "La Política de Vencimiento se ha Actualizado Correctamente.");
                     cargarDatosTabla();
-                } catch (IllegalArgumentException e) {
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Datos Numéricos Inválidos",
+                            "Error:  " + e.getMessage());
+                } catch (IllegalArgumentException | IllegalStateException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar la Política de Vencimiento",
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Actualizar la Política de Vencimiento en la Base de Datos.\n" +
-                                    "Error:  " + e.getMessage());
+                            "Error:  " + e.getMessage());
+                } catch (PoliticaVencimientoNoEncontradaException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Política de Vencimiento NO Encontrada",
+                            "Error:  " + e.getMessage());
                 }
             }
         });
@@ -292,12 +297,12 @@ public class GestionPoliticasVencimientoControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "La Política de Vencimiento se ha Guardado Correctamente.");
                     cargarDatosTabla();
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Datos Numéricos Inválidos",
+                            "Error:  " + e.getMessage());
                 } catch (IllegalArgumentException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar la Política de Vencimiento",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "No se pudo Registrar la Política de Vencimiento en la Base de Datos.");
                 }
             }
         });
@@ -335,9 +340,12 @@ public class GestionPoliticasVencimientoControlador {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                        "NO se Pudo Cambiar el Estado: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
+                        "Error:  " + e.getMessage());
+            } catch (PoliticaVencimientoNoEncontradaException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Política de Vencimiento NO Encontrada",
+                        "Error:  " + e.getMessage());
             }
         }
     }
@@ -345,17 +353,8 @@ public class GestionPoliticasVencimientoControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
-        } catch (Exception e) {
-            mostrarAlerta(
-                    Alert.AlertType.ERROR,
-                    "Error de Navegación",
-                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
-                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
-            );
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

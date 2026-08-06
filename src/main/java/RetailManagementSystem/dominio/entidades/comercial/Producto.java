@@ -208,14 +208,14 @@ public abstract class Producto implements ItemFacturable {
 
     public void cambiarImpuesto(Impuesto impuesto){
         if (!impuesto.isActivo()){
-            throw new IllegalArgumentException("El Impuesto que le quieres poner al Producto esta Inactivo");
+            throw new IllegalStateException("El Impuesto que le quieres poner al Producto esta Inactivo");
         }
         setImpuesto(impuesto);
     }
 
     public void cambiarDescuento(Descuento descuento){
         if (!descuento.isActivo()){
-            throw new IllegalArgumentException("El Descuento que le quieres poner al Producto esta Inactivo");
+            throw new IllegalStateException("El Descuento que le quieres poner al Producto esta Inactivo");
         }
         setDescuento(descuento);
     }

@@ -7,6 +7,9 @@ import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
 import RetailManagementSystem.aplicacion.servicios.ServicioServicios;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOServicio;
+import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
+import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -129,8 +132,10 @@ public class GestionServiciosControlador {
         return dialog;
     }
 
-    private GridPane crearGridPane(TextField txtNombre, TextField txtPrecioBase,
-                                   ComboBox<Impuesto> cbImpuestos, ComboBox<Descuento> cbDescuentos) {
+    private GridPane crearGridPane(
+            TextField txtNombre, TextField txtPrecioBase,
+            ComboBox<Impuesto> cbImpuestos, ComboBox<Descuento> cbDescuentos
+    ) {
         GridPane grid = new GridPane();
         grid.setHgap(15);
         grid.setVgap(15);
@@ -295,9 +300,15 @@ public class GestionServiciosControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Servicio ha sido Actualizado Correctamente.");
                     cargarDatosTabla();
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Actualizar el Servicio en la Base de Datos.\nError:  " + e.getMessage());
+                } catch (IllegalArgumentException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos Ingresados",
+                            "Error:  " + e.getMessage());
+                } catch (ServicioNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Servicio NO Encontrado",
+                            "Error:  " + e.getMessage());
+                } catch (ImpuestoNoEncontradoException | DescuentoNoEncontradoExeption e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Servicio",
+                            "Error:  " + e.getMessage());
                 }
             }
         });
@@ -384,9 +395,12 @@ public class GestionServiciosControlador {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado del Servicio ha sido Actualizado Correctamente.");
                 cargarDatosTabla();
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                        "NO se pudo Actualizar el Estado en la Base de Datos.");
+            } catch (IllegalArgumentException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
+                        "Error:  " + e.getMessage());
+            } catch (ServicioNoEncontradoException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Servicio NO Encontrado",
+                        "Error:  " + e.getMessage());
             }
         }
     }
@@ -394,16 +408,8 @@ public class GestionServiciosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
-        } catch (Exception e) {
-            mostrarAlerta(
-                    Alert.AlertType.ERROR, "Error de Navegación",
-                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
-                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
-            );
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

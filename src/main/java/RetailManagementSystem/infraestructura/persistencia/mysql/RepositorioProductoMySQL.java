@@ -166,8 +166,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                     throw new IllegalStateException("Error de integridad: El producto existe pero no tiene un tipo definido.");
                 }
 
-                throw new ProductoNoEncontradoException("Error de negocio: El producto con código '" + codigoProducto +
-                                "' no existe en el inventario con ID " + idInventario);
+                throw new ProductoNoEncontradoException("Error de negocio: El Producto con Código -" + codigoProducto +
+                                "- NO existe en el Inventario con ID " + idInventario);
             }
 
         } catch (SQLException e) {

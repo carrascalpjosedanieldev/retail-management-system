@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOImpuesto;
+import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -127,7 +128,6 @@ public class GestionImpuestosControlador {
                 activos != null ? activos.stream() : Stream.empty(),
                 inactivos != null ? inactivos.stream() : Stream.empty()
         ).toList();
-
         listaObservableImpuestos.setAll(todosLosImpuestos);
     }
 
@@ -218,13 +218,15 @@ public class GestionImpuestosControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Impuesto se ha Actualizado Correctamente.");
                     cargarDatosTabla();
-                } catch (IllegalArgumentException e) {
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
+                            "Error:  " + e.getMessage());
+                } catch (IllegalArgumentException | IllegalStateException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Impuesto",
                             "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Actualizar el Impuesto en la Base de Datos.\n" +
-                                    "Error:  " + e.getMessage());
+                } catch (ImpuestoNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Encontrado",
+                            "Error:  " + e.getMessage());
                 }
             }
         });
@@ -261,12 +263,15 @@ public class GestionImpuestosControlador {
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Impuesto se ha Guardado Correctamente.");
                     cargarDatosTabla();
-                } catch (IllegalArgumentException e) {
+                } catch (NumberFormatException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
+                            "Error:  " + e.getMessage());
+                } catch (IllegalArgumentException | IllegalStateException e) {
                     mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Impuesto",
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "No se pudo Registrar el Impuesto en la Base de Datos.");
+                            "Error:  " + e.getMessage());
+                } catch (ImpuestoNoEncontradoException e) {
+                    mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Encontrado",
+                            "Error:  " + e.getMessage());
                 }
             }
         });
@@ -301,9 +306,12 @@ public class GestionImpuestosControlador {
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();
-            } catch (Exception e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                        "NO se Pudo Cambiar el Estado: " + e.getMessage());
+            } catch (IllegalArgumentException | IllegalStateException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "La Acción NO fue Completada",
+                        "Error:  " + e.getMessage());
+            } catch (ImpuestoNoEncontradoException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Encontrado",
+                        "Error:  " + e.getMessage());
             }
         }
     }
@@ -311,17 +319,8 @@ public class GestionImpuestosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
-        } catch (Exception e) {
-            mostrarAlerta(
-                    Alert.AlertType.ERROR,
-                    "Error de Navegación",
-                    "Ocurrió un problema al intentar volver al panel de Gestión.\n" +
-                            "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎."
-            );
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

@@ -16,8 +16,7 @@ public class ServicioDescuentos {
 
     public void registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo){
         Descuento borrador = Descuento.crearNuevo(nombre, porcentaje, activo);
-        Descuento descuento = this.repositorioDescuentos.insertarDescuento(borrador);
-        descuento.getId();
+        this.repositorioDescuentos.insertarDescuento(borrador);
     }
 
     public Descuento obtenerDescuento(int idDescuento){
