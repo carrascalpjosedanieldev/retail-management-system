@@ -21,7 +21,6 @@ public class GestionConfiguracionesControlador {
 
     //MÉTODOS:
 
-
     @FXML
     void abrirConfiguracionNombre(ActionEvent event) {
         abrirConfiguracionNombre();
@@ -42,6 +41,14 @@ public class GestionConfiguracionesControlador {
             throw new CargarVistaException(rutaFxml, "Fallo al abrir ventana de edición", e);
         }
     }
+
+
+    @FXML
+    void abrirConfiguracionRolesYPermisos(ActionEvent event){
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.PERMISOS_VISTA_VIEW);
+    }
+
 
     @FXML
     public void volverPanelGestion(ActionEvent event) {

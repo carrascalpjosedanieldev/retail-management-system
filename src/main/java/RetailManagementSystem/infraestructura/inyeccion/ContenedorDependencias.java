@@ -2,6 +2,7 @@ package RetailManagementSystem.infraestructura.inyeccion;
 
 import RetailManagementSystem.aplicacion.ensambladores.*;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorLogin;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
@@ -26,6 +27,7 @@ public class ContenedorDependencias {
     private static EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
     private static EnsambladorDTOProducto ensambladorDTOProducto;
     private static EnsambladorDTOServicio ensambladorDTOServicio;
+    private static EnsambladorDTOPermiso ensambladorDTOPermiso;
     private static EnsambladorDTOUsuario ensambladorDTOUsuario;
 
         //REPOSITORIOS:
@@ -38,6 +40,7 @@ public class ContenedorDependencias {
     private static RepositorioPoliticaVencimiento repositorioPoliticaVencimiento;
     private static RepositorioProducto repositorioProducto;
     private static RepositorioServicio repositorioServicio;
+    private static RepositorioPermiso repositorioPermiso;
     private static RepositorioUsuario repositorioUsuario;
 
         //UTILIDADES:
@@ -56,11 +59,13 @@ public class ContenedorDependencias {
     private static ServicioPoliticaVencimiento servicioPoliticaVencimiento;
     private static ServicioProductos servicioProductos;
     private static ServicioServicios servicioServicios;
+    private static ServicioPermiso servicioPermiso;
     private static ServicioUsuario servicioUsuario;
 
         //ORQUESTADORES:
 
     private static OrquestadorLogin orquestadorLogin;
+    private static OrquestadorPermisos orquestadorPermisos;
     private static OrquestadorProductoInventario orquestadorProductoInventario;
     private static OrquestadorVentas orquestadorVentas;
 
@@ -87,6 +92,7 @@ public class ContenedorDependencias {
         ensambladorDTOServicio = new EnsambladorDTOServicio(
                 ensambladorDTOImpuesto, ensambladorDTODescuento
         );
+        ensambladorDTOPermiso = new EnsambladorDTOPermiso();
         ensambladorDTOUsuario = new EnsambladorDTOUsuario();
 
         //INSTANCIACIÓN DE REPOSITORIOS:
@@ -99,6 +105,7 @@ public class ContenedorDependencias {
         repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
         repositorioProducto = new RepositorioProductoMySQL();
         repositorioServicio = new RepositorioServicioMySQL();
+        repositorioPermiso = new RepositorioPermisoMySQL();
         repositorioUsuario = new RepositorioUsuarioMySQL();
 
         //INSTANCIACIÓN DE UTILIDADES:
@@ -121,11 +128,13 @@ public class ContenedorDependencias {
         servicioImpuestos = new ServicioImpuestos(repositorioImpuestos);
         servicioInventario = new ServicioInventario(repositorioInventario);
         servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(repositorioPoliticaVencimiento);
+        servicioPermiso = new ServicioPermiso(repositorioPermiso);
         servicioUsuario = new ServicioUsuario(repositorioUsuario, codificadorContrasenas, proveedorConfiguracion);
 
         //INSTANCIACIÓN DE ORQUESTADORES:
 
         orquestadorLogin = new OrquestadorLogin(servicioUsuario, ensambladorDTOUsuario);
+        orquestadorPermisos = new OrquestadorPermisos(ensambladorDTOPermiso, servicioPermiso);
         orquestadorProductoInventario = new OrquestadorProductoInventario(servicioProductos, servicioInventario);
         orquestadorVentas = new OrquestadorVentas(
                 servicioFacturas, servicioCarrito, servicioProductos, servicioServicios,
@@ -183,6 +192,10 @@ public class ContenedorDependencias {
         return ensambladorDTOServicio;
     }
 
+    public static EnsambladorDTOPermiso getEnsambladorDTOPermiso() {
+        return ensambladorDTOPermiso;
+    }
+
     public static EnsambladorDTOUsuario getEnsambladorDTOUsuario() {
         validarInicializado();
         return ensambladorDTOUsuario;
@@ -226,6 +239,10 @@ public class ContenedorDependencias {
     public static RepositorioServicio getRepositorioServicio() {
         validarInicializado();
         return repositorioServicio;
+    }
+
+    public static RepositorioPermiso getRepositorioPermiso() {
+        return repositorioPermiso;
     }
 
     public static RepositorioUsuario getRepositorioUsuario() {
@@ -288,6 +305,10 @@ public class ContenedorDependencias {
         return servicioServicios;
     }
 
+    public static ServicioPermiso getServicioPermiso() {
+        return servicioPermiso;
+    }
+
     public static ServicioUsuario getServicioUsuario() {
         validarInicializado();
         return servicioUsuario;
@@ -295,6 +316,10 @@ public class ContenedorDependencias {
 
     public static OrquestadorLogin getOrquestadorLogin() {
         return orquestadorLogin;
+    }
+
+    public static OrquestadorPermisos getOrquestadorPermisos() {
+        return orquestadorPermisos;
     }
 
     public static OrquestadorProductoInventario getOrquestadorProductoInventario() {

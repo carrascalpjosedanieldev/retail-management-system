@@ -2,14 +2,17 @@ package RetailManagementSystem.vista.controladores.login;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
+import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.RutasVista;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
@@ -53,7 +56,6 @@ public class PermisosVistaControlador {
         configurarColumnas();
         cargarDatosDesdeBD();
         configurarFiltrosReactivos();
-        configurarBotonSalir();
     }
 
     private void configurarColumnas() {
@@ -135,12 +137,13 @@ public class PermisosVistaControlador {
         });
     }
 
-    private void configurarBotonSalir() {
-        btnSalir.setOnAction((ActionEvent event) -> {
-            Stage stage = (Stage) btnSalir.getScene().getWindow();
-            stage.close();
-        });
+
+    @FXML
+    public void accionSalir(ActionEvent event) {
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
     }
+
 
 }//===================================================================================================================//
 

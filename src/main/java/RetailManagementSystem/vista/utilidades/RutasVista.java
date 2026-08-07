@@ -48,6 +48,10 @@ public class RutasVista {
 
     public static final String EDITAR_NOMBRE_TIENDA_VIEW = "/vista/gestionarTienda/editarNombreTienda.fxml";
 
+    //LOGIN:
+
+    public static final String PERMISOS_VISTA_VIEW = "/vista/login/permisosVista.fxml";
+
     //PUNTO DE VENTA:
 
     public static final String PANEL_DE_CONTROL_POS_VIEW = "/vista/puntoDeVenta/PanelDeControl.fxml";

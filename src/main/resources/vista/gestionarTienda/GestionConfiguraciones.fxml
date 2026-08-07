@@ -45,15 +45,15 @@
                   <String fx:value="btn-config" />
                </styleClass></Button>
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="💵 Moneda y Localidad" GridPane.columnIndex="1" />
-
-                <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="📞 Datos de Contacto" GridPane.rowIndex="1" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🖨 Opciones de Impresión" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Roles y Permisos" GridPane.rowIndex="2" />
+                <Button mnemonicParsing="false" onAction="#abrirConfiguracionRolesYPermisos" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Roles y Permisos" GridPane.rowIndex="1" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🎨 Apariencia (Tema)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🔔 Alertas y Notificaciones" GridPane.rowIndex="3" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="💾 Copias de Seguridad" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="📞 Datos de Contacto" GridPane.rowIndex="2" />
             </GridPane>
 
             <Button id="btnSalir" onAction="#volverPanelGestion" prefHeight="55.0" prefWidth="300.0" text="⬅ VOLVER A GESTIÓN" />
