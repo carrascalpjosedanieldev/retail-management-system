@@ -12,6 +12,8 @@ public class Permiso {
 
     private String descripcion;
 
+    private final String modulo;
+
     private boolean activo;
 
     //GETTERS Y SETTERS:
@@ -31,6 +33,10 @@ public class Permiso {
         this.descripcion = descripcion;
     }
 
+    public String getModulo() {
+        return modulo;
+    }
+
     public boolean isActivo() {
         return activo;
     }
@@ -40,7 +46,9 @@ public class Permiso {
 
     //CONSTRUCTORES:
 
-    private Permiso(Integer idPermiso, String nombre, String descripcion, boolean activo) {
+    private Permiso(
+            Integer idPermiso, String nombre, String descripcion, String modulo, boolean activo
+    ) {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Permiso Vacío");
         }
@@ -50,15 +58,18 @@ public class Permiso {
         this.idPermiso = idPermiso;
         this.nombre = nombre.trim().toUpperCase();
         this.descripcion = descripcion;
+        this.modulo = modulo;
         this.activo = activo;
     }
 
-    public static Permiso reconstruirDesdeBD(Integer idPermiso, String nombre, String descripcion, boolean activo){
-        return new Permiso(idPermiso, nombre, descripcion, activo);
+    public static Permiso reconstruirDesdeBD(
+            Integer idPermiso, String nombre, String descripcion, String modulo, boolean activo
+    ){
+        return new Permiso(idPermiso, nombre, descripcion, modulo, activo);
     }
 
-    public static Permiso crearNuevo(String nombre, String descripcion, boolean activo){
-        return new Permiso(null, nombre, descripcion, activo);
+    public static Permiso crearNuevo(String nombre, String descripcion, String modulo, boolean activo){
+        return new Permiso(null, nombre, descripcion, modulo, activo);
     }
 
     //MÉTODOS:

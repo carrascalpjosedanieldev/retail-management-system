@@ -1,0 +1,197 @@
+
+.fondo-panel {
+    -fx-background-color: #F8FAFC;
+}
+
+.titulo-pantalla {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.subtitulo-pantalla {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+}
+
+
+
+.label-filtro {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+.campo-filtro, .combo-filtro {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 10px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+}
+
+.campo-filtro:focused, .combo-filtro:focused {
+    -fx-border-color: #2563EB;
+    -fx-border-width: 1.5px;
+}
+
+.combo-filtro .list-cell {
+    -fx-text-fill: #1E293B;
+}
+
+
+
+.radio-filtro {
+    -fx-font-size: 13px;
+    -fx-text-fill: #334155;
+    -fx-cursor: hand;
+}
+
+.radio-filtro:selected .radio {
+    -fx-border-color: #2563EB;
+}
+.radio-filtro:selected .dot {
+    -fx-background-color: #2563EB;
+}
+
+
+
+.tabla-personalizada {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 0;
+}
+
+.tabla-personalizada .column-header-background {
+    -fx-background-color: #F1F5F9;
+    -fx-background-radius: 8px 8px 0 0;
+}
+
+.tabla-personalizada .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #E2E8F0 transparent transparent;
+    -fx-padding: 12px 10px;
+}
+
+.tabla-personalizada .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+    -fx-alignment: CENTER-LEFT;
+    -fx-font-size: 13px;
+}
+
+.tabla-personalizada .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent transparent #F1F5F9 transparent;
+    -fx-padding: 4px 0;
+}
+
+.tabla-personalizada .table-row-cell:odd {
+    -fx-background-color: #F8FAFC;
+}
+
+.tabla-personalizada .table-row-cell:hover {
+    -fx-background-color: #E0F2FE;
+}
+
+.tabla-personalizada .table-row-cell:selected {
+    -fx-background-color: #DBEAFE;
+}
+
+.tabla-personalizada .table-row-cell:selected .text {
+    -fx-fill: #1E40AF;
+    -fx-font-weight: bold;
+}
+
+.tabla-personalizada .table-cell {
+    -fx-text-fill: #334155;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER-LEFT;
+}
+
+.tabla-personalizada .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-padding: -10;
+}
+
+.placeholder-tabla {
+    -fx-font-size: 14px;
+    -fx-text-fill: #94A3B8;
+    -fx-font-style: italic;
+}
+
+
+
+.toggle-container {
+    -fx-alignment: center-left;
+}
+
+.btn-toggle {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #475569;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 16px;
+    -fx-cursor: hand;
+    -fx-border-color: #CBD5E1;
+}
+
+.btn-toggle:hover {
+    -fx-background-color: #F8FAFC;
+}
+
+.btn-toggle:selected {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #2563EB;
+}
+
+.btn-toggle-izq {
+    -fx-background-radius: 6px 0 0 6px;
+    -fx-border-radius: 6px 0 0 6px;
+    -fx-border-width: 1px 0.5px 1px 1px;
+}
+
+.btn-toggle-centro {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 1px 0.5px 1px 0.5px;
+}
+
+.btn-toggle-der {
+    -fx-background-radius: 0 6px 6px 0;
+    -fx-border-radius: 0 6px 6px 0;
+    -fx-border-width: 1px 1px 1px 0.5px;
+}
+
+
+
+.btn-salir {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 20 10 20;
+    -fx-cursor: hand;
+    -fx-border-color: #c0392b;
+    -fx-border-width: 2.5px;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 6, 0.0, 0, 2);
+}
+
+.btn-salir:hover {
+    -fx-background-color: #ff6b6b;
+    -fx-border-color: #ff4757;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
+}
+
+.btn-salir:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 2, 0.0, 0, 0);
+}

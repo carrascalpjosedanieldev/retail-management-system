@@ -80,7 +80,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                 "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
                         "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
                         "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
-                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo " +
+                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.modulo, p.activo AS permiso_activo " +
                         "FROM usuarios u " +
                         "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
                         "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
@@ -137,6 +137,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                                     idPermiso,
                                     rs.getString("nombre_permiso"),
                                     rs.getString("descripcion"),
+                                    rs.getString("modulo"),
                                     rs.getBoolean("permiso_activo")
                             );
                             rol.anadirPermiso(permiso);
@@ -167,7 +168,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                 "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
                         "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
                         "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
-                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo " +
+                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p,modulo, p.activo AS permiso_activo " +
                         "FROM usuarios u " +
                         "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
                         "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
@@ -224,6 +225,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                                     idPermiso,
                                     rs.getString("nombre_permiso"),
                                     rs.getString("descripcion"),
+                                    rs.getString("modulo"),
                                     rs.getBoolean("permiso_activo")
                             );
                             rol.anadirPermiso(permiso);
