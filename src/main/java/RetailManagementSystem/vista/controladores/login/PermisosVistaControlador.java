@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.login;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioPermiso;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -34,16 +34,16 @@ public class PermisosVistaControlador {
     @FXML private TableColumn<PermisoDTO, String> colDescripcion;
     @FXML private TableColumn<PermisoDTO, String> colEstado;
 
-    private final ServicioPermiso servicioPermiso;
+    private final OrquestadorPermisos orquestadorPermisos;
 
-    private ObservableList<PermisoDTO> listaMaestraPermisos = FXCollections.observableArrayList();
+    private final ObservableList<PermisoDTO> listaMaestraPermisos = FXCollections.observableArrayList();
 
     private FilteredList<PermisoDTO> listaFiltrada;
 
     //CONSTRUCTOR:
 
-    public PermisosVistaControlador(ServicioPermiso servicioPermiso) {
-        this.servicioPermiso = servicioPermiso;
+    public PermisosVistaControlador(OrquestadorPermisos orquestadorPermisos) {
+        this.orquestadorPermisos = orquestadorPermisos;
     }
 
     //MÉTODOS:
@@ -69,7 +69,7 @@ public class PermisosVistaControlador {
 
     private void cargarDatosDesdeBD() {
         try {
-            List<PermisoDTO> datosBD = servicioPermiso.obtenerTodosLosPermisos();
+            List<PermisoDTO> datosBD = this.orquestadorPermisos.obtenerTodosLosPermisos();
             listaMaestraPermisos.clear();
             if (datosBD != null && !datosBD.isEmpty()) {
                 listaMaestraPermisos.addAll(datosBD);

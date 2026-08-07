@@ -43,5 +43,7 @@ public class EnsambladorDTOPermiso {
         return this.ensamblarDetallePermisos(permisos, detallePermisosInactivos);
     }
 
+
+
 }//===================================================================================================================//
 

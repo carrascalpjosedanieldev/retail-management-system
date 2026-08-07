@@ -1,6 +1,10 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.puertos.RepositorioPermiso;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServicioPermiso {
 
@@ -16,7 +20,13 @@ public class ServicioPermiso {
 
     //MÉTODOS:
 
+    public List<Permiso> obtenerPermisosActivos(){
+        return new ArrayList<>(this.repositorioPermiso.obtenerPermisosActivos());
+    }
 
+    public List<Permiso> obtenerPermisosInactivos(){
+        return new ArrayList<>(this.repositorioPermiso.obtenerPermisosInactivos());
+    }
 
 }//===================================================================================================================//
 
