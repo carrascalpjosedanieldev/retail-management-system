@@ -18,16 +18,15 @@ import java.util.List;
 
 public class PermisosVistaControlador {
 
+    //ATRIBUTO:
+
     @FXML private TextField txtBuscar;
     @FXML private ComboBox<String> cbFiltroModulo;
-
     @FXML private ToggleGroup tgEstado;
     @FXML private ToggleButton btnFiltroTodos;
     @FXML private ToggleButton btnFiltroActivos;
     @FXML private ToggleButton btnFiltroInactivos;
-
     @FXML private Button btnSalir;
-
     @FXML private TableView<PermisoDTO> tablaPermisos;
     @FXML private TableColumn<PermisoDTO, Integer> colId;
     @FXML private TableColumn<PermisoDTO, String> colNombre;
@@ -35,25 +34,19 @@ public class PermisosVistaControlador {
     @FXML private TableColumn<PermisoDTO, String> colDescripcion;
     @FXML private TableColumn<PermisoDTO, String> colEstado;
 
-    // =================================================================================
-    // 2. DEPENDENCIAS Y ESTADO
-    // =================================================================================
     private final ServicioPermiso servicioPermiso;
 
-    // Las listas observables que conectan los datos con la tabla
-    private ObservableList<PermisoDTO> listaMaestraPermisos;
+    private ObservableList<PermisoDTO> listaMaestraPermisos = FXCollections.observableArrayList();
 
     private FilteredList<PermisoDTO> listaFiltrada;
 
-    /**
-     * Constructor para la Inyección de Dependencias.
-     * Este controlador debe ser instanciado por tu ContenedorDependencias.
-     */
+    //CONSTRUCTOR:
+
     public PermisosVistaControlador(ServicioPermiso servicioPermiso) {
         this.servicioPermiso = servicioPermiso;
-        this.listaMaestraPermisos = FXCollections.observableArrayList();
     }
 
+    //MÉTODOS:
 
     @FXML
     public void initialize() {
@@ -63,16 +56,11 @@ public class PermisosVistaControlador {
         configurarBotonSalir();
     }
 
-    // =================================================================================
-    // 4. CONFIGURACIÓN DE LA INTERFAZ
-    // =================================================================================
     private void configurarColumnas() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         colModulo.setCellValueFactory(new PropertyValueFactory<>("modulo"));
         colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
-
-        // Columna personalizada: Convertimos el booleano 'activo' a texto legible
         colEstado.setCellValueFactory(cellData -> {
             boolean estaActivo = cellData.getValue().activo();
             return new SimpleStringProperty(estaActivo ? "Activo" : "Inactivo");
@@ -102,7 +90,6 @@ public class PermisosVistaControlador {
                     "No se pudieron cargar los permisos",
                     "Hubo un fallo al conectar con la base de datos: " + e.getMessage()
             );
-            // Evitar pantalla zombie cerrándola
             if (btnSalir != null && btnSalir.getScene() != null) {
                 ((Stage) btnSalir.getScene().getWindow()).close();
             }

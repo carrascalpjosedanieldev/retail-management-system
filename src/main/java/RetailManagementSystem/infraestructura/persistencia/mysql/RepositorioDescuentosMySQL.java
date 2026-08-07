@@ -57,6 +57,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             throw new IllegalStateException("El ID a buscar debe ser un número positivo.");
         }
         String sql = "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE id_descuento = ?";
+
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql)){
 
@@ -73,7 +74,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                     return Descuento.reconstruirDesdeBD(idReal, nombre, porcentaje, activo);
                 }
 
-                throw new DescuentoNoEncontradoExeption("No existe un Descuento con el ID: " + idDescuento);
+                throw new DescuentoNoEncontradoExeption("NO existe un Descuento con el ID: " + idDescuento);
 
             }
 
@@ -90,7 +91,6 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);
-
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -102,6 +102,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                 );
                 descuentos.add(descuento);
             }
+
         } catch (SQLException e) {
             throw new PersistenciaException("Error al listar los Descuentos Activos", e);
         }
