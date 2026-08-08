@@ -25,25 +25,14 @@ public class EnsambladorDTOPermiso {
         );
     }
 
-    private List<PermisoDTO> ensamblarDetallePermisos(List<Permiso> permisos, List<PermisoDTO> detalle){
+    public List<PermisoDTO> ensamblarDetallePermisos(List<Permiso> permisos){
+        List<PermisoDTO> detallePermisos = new ArrayList<>();
         for (Permiso permiso:permisos){
             PermisoDTO datosPermiso = this.ensamblarDatosPermiso(permiso);
-            detalle.add(datosPermiso);
+            detallePermisos.add(datosPermiso);
         }
-        return detalle;
+        return detallePermisos;
     }
-
-    public List<PermisoDTO> ensamblarDetallePermisosActivos(List<Permiso> permisos){
-        List<PermisoDTO> detallePermisosActivos = new ArrayList<>();
-        return this.ensamblarDetallePermisos(permisos, detallePermisosActivos);
-    }
-
-    public List<PermisoDTO> ensamblarDetallePermisosInactivos(List<Permiso> permisos){
-        List<PermisoDTO> detallePermisosInactivos = new ArrayList<>();
-        return this.ensamblarDetallePermisos(permisos, detallePermisosInactivos);
-    }
-
-
 
 }//===================================================================================================================//
 

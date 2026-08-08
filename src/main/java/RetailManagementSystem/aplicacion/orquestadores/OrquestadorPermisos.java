@@ -27,12 +27,12 @@ public class OrquestadorPermisos {
     public List<PermisoDTO> obtenerTodosLosPermisos(){
         List<PermisoDTO> todosLosPermisos = new ArrayList<>();
         todosLosPermisos.addAll(
-                this.ensambladorDTOPermiso.ensamblarDetallePermisosActivos(
+                this.ensambladorDTOPermiso.ensamblarDetallePermisos(
                         this.servicioPermiso.obtenerPermisosActivos()
                 )
         );
         todosLosPermisos.addAll(
-                this.ensambladorDTOPermiso.ensamblarDetallePermisosInactivos(
+                this.ensambladorDTOPermiso.ensamblarDetallePermisos(
                         this.servicioPermiso.obtenerPermisosInactivos()
                 )
         );
