@@ -20,5 +20,6 @@ public class AdministrarPermisosDeRolControlador {
     }
 
     public void volverARoles(ActionEvent event) {
+
     }
 }
