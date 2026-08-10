@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../../../css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssCrearRolNuevo.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.CrearRolNuevoControlador">
+
+    <VBox style="-fx-padding: 30 40 10 40;">
+        <Label styleClass="titulo-principal" text="Crear Nuevo Rol" />
+        <Label styleClass="subtitulo" text="Complete los datos del rol y asigne los permisos necesarios." />
+    </VBox>
+
+    <HBox alignment="CENTER_LEFT" styleClass="panel-seccion" style="-fx-spacing: 40; -fx-padding: 0 40 20 40;">
+        <VBox style="-fx-spacing: 8;">
+            <Label styleClass="label-formulario" text="Nombre del Rol:" />
+            <TextField fx:id="txtNombreRol" prefWidth="350.0" promptText="Ej: Administrador, Cajero, etc." styleClass="campo-texto" />
+        </VBox>
+
+        <VBox alignment="CENTER_LEFT" style="-fx-spacing: 8;">
+            <Label styleClass="label-formulario" text="Estado Inicial:" />
+            <CheckBox fx:id="chkActivo" selected="true" styleClass="check-personalizado" text="Rol Activo" />
+        </VBox>
+    </HBox>
+
+    <Separator style="-fx-padding: 0 40 0 40;" />
+
+    <VBox style="-fx-padding: 20 40 20 40; -fx-spacing: 15;" VBox.vgrow="ALWAYS">
+
+        <HBox alignment="CENTER_LEFT" style="-fx-spacing: 15;">
+            <Label styleClass="label-formulario" text="Filtrar permisos por Módulo:" />
+            <ComboBox fx:id="cbModulos" prefWidth="250.0" promptText="Seleccione un módulo..." styleClass="combo-personalizado" />
+        </HBox>
+
+        <HBox style="-fx-spacing: 30;" VBox.vgrow="ALWAYS">
+
+            <VBox style="-fx-spacing: 10;" HBox.hgrow="ALWAYS">
+                <Label styleClass="titulo-tabla" text="Permisos Disponibles" />
+                <TableView fx:id="tablaPermisosDisponibles" styleClass="tabla-personalizada" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colIdDisp" prefWidth="60.0" text="ID" />
+                        <TableColumn fx:id="colNombreDisp" prefWidth="250.0" text="NOMBRE DEL PERMISO" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                    <placeholder>
+                        <Label text="Seleccione un módulo o no hay permisos disponibles." />
+                    </placeholder>
+                </TableView>
+                <Button onAction="#agregarPermisoAlRol" prefHeight="40.0" styleClass="btn-agregar" text="➡ Agregar Permiso Seleccionado" />
+            </VBox>
+
+            <VBox style="-fx-spacing: 10;" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT">
+                    <Label styleClass="titulo-tabla" text="Permisos Asignados al Rol" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="lblContadorPermisos" styleClass="badge-contador" text="0 asignados" />
+                </HBox>
+                <TableView fx:id="tablaPermisosAgregados" styleClass="tabla-personalizada" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colIdAgreg" prefWidth="60.0" text="ID" />
+                        <TableColumn fx:id="colNombreAgreg" prefWidth="200.0" text="NOMBRE DEL PERMISO" />
+                        <TableColumn fx:id="colModuloAgreg" prefWidth="120.0" text="MÓDULO" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                    <placeholder>
+                        <Label text="Aún no ha agregado ningún permiso al rol." />
+                    </placeholder>
+                </TableView>
+                <Button onAction="#quitarPermisoDelRol" prefHeight="40.0" styleClass="btn-eliminar" text="❌ Quitar Permiso Seleccionado" />
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" style="-fx-padding: 20 40 30 40; -fx-spacing: 20; -fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0 transparent transparent transparent;">
+        <Button onAction="#cancelar" prefHeight="45.0" prefWidth="150.0" styleClass="btn-cancelar" text="Cancelar" />
+        <Button onAction="#guardarCambios" prefHeight="45.0" prefWidth="200.0" styleClass="btn-guardar" text="💾 Guardar Cambios" />
+    </HBox>
+
+</VBox>

@@ -1,9 +1,15 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
-import RetailManagementSystem.vista.controladores.login.GestionRolesControlador;
-import RetailManagementSystem.vista.controladores.login.PermisosVistaControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.*;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.GestionPoliticasVencimientoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.GestionServiciosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.*;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.GestionRolesControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.PermisosVistaControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.*;
-import RetailManagementSystem.vista.controladores.gestionarTienda.*;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.*;
 
 import javafx.util.Callback;

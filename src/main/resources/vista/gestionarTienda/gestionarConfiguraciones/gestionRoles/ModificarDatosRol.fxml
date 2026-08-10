@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="380.0" prefWidth="500.0" styleClass="root" stylesheets="@../../../../css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssModificarDatosRol.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.ModificarDatosRolControlador">
+
+    <VBox styleClass="panel-encabezado">
+        <HBox alignment="CENTER_LEFT" style="-fx-spacing: 10;">
+            <Label styleClass="titulo-principal" text="Editar Rol" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="lblIdRol" styleClass="badge-id" text="ID: #0" />
+        </HBox>
+        <Label styleClass="subtitulo" text="Modifique la información general del rol seleccionado." />
+    </VBox>
+
+    <VBox styleClass="panel-formulario" VBox.vgrow="ALWAYS">
+
+        <VBox style="-fx-spacing: 8;">
+            <Label styleClass="label-formulario" text="Nombre del Rol:" />
+            <TextField fx:id="txtNombreRol" promptText="Ingrese el nuevo nombre del rol..." styleClass="campo-texto" />
+        </VBox>
+
+        <VBox style="-fx-spacing: 8;">
+            <Label styleClass="label-formulario" text="Estado del Rol:" />
+            <CheckBox fx:id="chkActivo" styleClass="check-personalizado" text="Rol Habilitado / Activo" />
+        </VBox>
+
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" styleClass="panel-botones">
+        <Button onAction="#cancelar" prefHeight="40.0" prefWidth="130.0" styleClass="btn-cancelar" text="Cancelar" />
+        <Button onAction="#guardarCambios" prefHeight="40.0" prefWidth="180.0" styleClass="btn-guardar" text="💾 Guardar Cambios" />
+    </HBox>
+
+</VBox>
