@@ -2,18 +2,22 @@ package RetailManagementSystem.vista.controladores.login;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
+import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.RutasVista;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.util.List;
 
@@ -25,7 +29,6 @@ public class GestionRolesControlador {
     @FXML private TableView<RolDTO> tablaRoles;
     @FXML private TableColumn<RolDTO, Integer> colId;
     @FXML private TableColumn<RolDTO, String> colNombre;
-    @FXML private TableColumn<RolDTO, String> colPermisos;
     @FXML private TableColumn<RolDTO, String> colEstado;
 
     private final OrquestadorRoles orquestadorRoles;
@@ -52,7 +55,6 @@ public class GestionRolesControlador {
     private void configurarColumnas() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colPermisos.setCellValueFactory(new PropertyValueFactory<>("permisosAsignados"));
         colEstado.setCellValueFactory(cellData -> {
             boolean estaActivo = cellData.getValue().activo();
             return new SimpleStringProperty(estaActivo ? "Activo" : "Inactivo");
@@ -105,14 +107,15 @@ public class GestionRolesControlador {
 
 
     @FXML
-    private void cambiarEstadoRol(ActionEvent event) {
+    public void administrarPermisosRol(ActionEvent event) {
 
     }
 
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
     }
 
 

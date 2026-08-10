@@ -23,7 +23,6 @@
             <columns>
                 <TableColumn fx:id="colId" prefWidth="70.0" text="ID" />
                 <TableColumn fx:id="colNombre" prefWidth="250.0" text="NOMBRE DEL ROL" />
-                <TableColumn fx:id="colPermisos" prefWidth="450.0" text="PERMISOS ASIGNADOS" />
                 <TableColumn fx:id="colEstado" prefWidth="120.0" text="ESTADO" />
             </columns>
             <columnResizePolicy>
@@ -37,7 +36,7 @@
 
         <Button onAction="#abrirFormularioNuevo" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-nuevo" text="➕ Nuevo Rol" />
         <Button onAction="#abrirFormularioEdicion" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="✏ Modificar Seleccionado" />
-        <Button onAction="#cambiarEstadoRol" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="🔄 Activar / Desactivar" />
+        <Button onAction="#administrarPermisosRol" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="Administrar sus Permisos" />
 
         <VBox VBox.vgrow="ALWAYS" />
 
