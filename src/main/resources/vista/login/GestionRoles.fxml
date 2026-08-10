@@ -36,7 +36,7 @@
 
         <Button onAction="#abrirFormularioNuevo" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-nuevo" text="➕ Nuevo Rol" />
         <Button onAction="#abrirFormularioEdicion" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="✏ Modificar Seleccionado" />
-        <Button onAction="#administrarPermisosRol" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="Administrar sus Permisos" />
+        <Button onAction="#administrarPermisosRol" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="🔑 Administrar sus Permisos" />
 
         <VBox VBox.vgrow="ALWAYS" />
 

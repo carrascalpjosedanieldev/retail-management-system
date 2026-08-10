@@ -1,0 +1,168 @@
+/* ==========================================================================
+   ESTILOS GENERALES
+   ========================================================================== */
+.root {
+    -fx-background-color: #F8FAFC; /* Slate 50 */
+}
+
+.titulo-principal {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.subtitulo {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+    -fx-padding: 5px 0 0 0;
+}
+
+.titulo-tabla {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+/* ==========================================================================
+   FORMULARIO Y CONTROLES (Inputs)
+   ========================================================================== */
+.label-formulario {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+.campo-texto {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1E293B;
+}
+
+.campo-texto:focused {
+    -fx-border-color: #2563EB;
+    -fx-border-width: 1.5px;
+}
+
+.combo-personalizado {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-font-size: 14px;
+}
+
+.check-personalizado {
+    -fx-font-size: 14px;
+    -fx-text-fill: #334155;
+    -fx-cursor: hand;
+}
+
+/* Indicador de conteo de permisos asignados */
+.badge-contador {
+    -fx-background-color: #DBEAFE;
+    -fx-text-fill: #1E40AF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 12px;
+}
+
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+
+/* Botón Agregar (Debajo de la tabla izquierda) - Verde */
+.btn-agregar {
+    -fx-background-color: #10B981;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+.btn-agregar:hover { -fx-background-color: #059669; }
+.btn-agregar:pressed { -fx-background-color: #047857; }
+
+/* Botón Eliminar (Debajo de la tabla derecha) - Rojo */
+.btn-eliminar {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+.btn-eliminar:hover { -fx-background-color: #DC2626; }
+.btn-eliminar:pressed { -fx-background-color: #B91C1C; }
+
+/* Botón Cancelar (Footer) */
+.btn-cancelar {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #475569;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-color: #94A3B8;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+.btn-cancelar:hover { -fx-background-color: #F1F5F9; }
+
+/* Botón Guardar Cambios (Footer) - Azul Principal */
+.btn-guardar {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+.btn-guardar:hover { -fx-background-color: #1D4ED8; }
+.btn-guardar:pressed { -fx-background-color: #1E40AF; }
+
+/* ==========================================================================
+   TABLAS (TableView)
+   ========================================================================== */
+.tabla-personalizada {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.tabla-personalizada .column-header-background {
+    -fx-background-color: #F1F5F9;
+}
+
+.tabla-personalizada .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent #E2E8F0 transparent transparent;
+    -fx-padding: 8px;
+}
+
+.tabla-personalizada .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+.tabla-personalizada .table-row-cell {
+    -fx-padding: 6px 0;
+    -fx-border-color: transparent transparent #F1F5F9 transparent;
+}
+
+.tabla-personalizada .table-row-cell:odd { -fx-background-color: #F8FAFC; }
+.tabla-personalizada .table-row-cell:hover { -fx-background-color: #E0F2FE; }
+.tabla-personalizada .table-row-cell:selected { -fx-background-color: #DBEAFE; }
+
+.tabla-personalizada .table-row-cell:selected .text {
+    -fx-fill: #1E40AF;
+    -fx-font-weight: bold;
+}
+
+
