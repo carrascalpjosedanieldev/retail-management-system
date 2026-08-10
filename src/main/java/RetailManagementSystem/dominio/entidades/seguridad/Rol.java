@@ -3,6 +3,7 @@ package RetailManagementSystem.dominio.entidades.seguridad;
 import RetailManagementSystem.dominio.excepciones.PermisoNoDisponibleExeption;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,22 +46,22 @@ public class Rol {
 
     //CONSTRUCTORES:
 
-    private Rol(Integer idRol, String nombre, Set<Permiso> permisos, boolean activo) {
+    private Rol(Integer idRol, String nombre, boolean activo) {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Rol Vacío");
         }
         this.idRol = idRol;
         this.nombre = nombre;
-        this.permisos = permisos;
+        this.permisos = new HashSet<>();
         this.activo = activo;
     }
 
-    public static Rol reconstruirDesdeBD(Integer id_rol, String nombre, Set<Permiso> permisos, boolean activo){
-        return new Rol(id_rol, nombre, permisos, activo);
+    public static Rol reconstruirDesdeBD(Integer id_rol, String nombre, boolean activo){
+        return new Rol(id_rol, nombre, activo);
     }
 
     public static Rol crearNuevo(String nombre, boolean activo){
-        return new Rol(null, nombre, null, activo);
+        return new Rol(null, nombre, activo);
     }
 
     //MÉTODOS:
@@ -99,10 +100,14 @@ public class Rol {
         this.activo = false;
     }
 
-    public void anadirPermiso(Permiso permiso) {
+    public void anadirPermisoNuevo(Permiso permiso) {
         if (!permiso.isActivo()) {
             throw new PermisoNoDisponibleExeption("El Permiso '" + permiso.getNombre() + "' no está activo.");
         }
+        this.permisos.add(permiso);
+    }
+
+    public void recuperarPermisoDeBD(Permiso permiso){
         this.permisos.add(permiso);
     }
 

@@ -11,7 +11,6 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.Persisten
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -124,7 +123,6 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                             rol = Rol.reconstruirDesdeBD(
                                     idRol,
                                     rs.getString("nombre_rol"),
-                                    new HashSet<>(),
                                     rs.getBoolean("rol_activo")
                             );
                             rolesMap.put(idRol, rol);
@@ -140,7 +138,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                                     rs.getString("modulo"),
                                     rs.getBoolean("permiso_activo")
                             );
-                            rol.anadirPermiso(permiso);
+                            rol.anadirPermisoNuevo(permiso);
 
                         }
 
@@ -177,11 +175,11 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                         "WHERE u.id_usuario = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, idUsuario);
+            pstmt.setInt(1, idUsuario);
 
-            try (ResultSet rs = stmt.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
 
                 Usuario usuario = null;
                 Map<Integer, Rol> rolesMap = new HashMap<>();
@@ -212,7 +210,6 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                             rol = Rol.reconstruirDesdeBD(
                                     idRol,
                                     rs.getString("nombre_rol"),
-                                    new HashSet<>(),
                                     rs.getBoolean("rol_activo")
                             );
                             rolesMap.put(idRol, rol);
@@ -228,7 +225,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                                     rs.getString("modulo"),
                                     rs.getBoolean("permiso_activo")
                             );
-                            rol.anadirPermiso(permiso);
+                            rol.recuperarPermisoDeBD(permiso);
 
                         }
 
