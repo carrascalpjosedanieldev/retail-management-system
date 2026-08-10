@@ -14,11 +14,15 @@ public interface RepositorioRol {
 
     Rol obtenerRol(int idRol);
 
-    List<Rol> obtenerRoles();
+    List<Rol> obtenerRolesActivos();
+
+    List<Rol> obtenerRolesInactivos();
 
     //UPDATE:
 
-    void actualizarRol(Rol rol);
+    void actualizarDatosRol(Rol rol);
+
+    void actualizarPermisosRol(Rol rol);
 
 }//===================================================================================================================//
 
