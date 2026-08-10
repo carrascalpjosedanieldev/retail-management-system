@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.login;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTORol;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -28,7 +28,7 @@ public class GestionRolesControlador {
     @FXML private TableColumn<RolDTO, String> colPermisos;
     @FXML private TableColumn<RolDTO, String> colEstado;
 
-    private final EnsambladorDTORol ensambladorDTORol;
+    private final OrquestadorRoles orquestadorRoles;
 
     private final ObservableList<RolDTO> listaMaestraRoles = FXCollections.observableArrayList();
 
@@ -36,8 +36,8 @@ public class GestionRolesControlador {
 
     //CONSTRUCTOR:
 
-    public GestionRolesControlador(EnsambladorDTORol ensambladorDTORol) {
-        this.ensambladorDTORol = ensambladorDTORol;
+    public GestionRolesControlador(OrquestadorRoles orquestadorRoles) {
+        this.orquestadorRoles = orquestadorRoles;
     }
 
     //MÉTODOS:
@@ -61,7 +61,7 @@ public class GestionRolesControlador {
 
     private void cargarDatosDesdeBD() {
         try {
-            List<RolDTO> datosBD = ;
+            List<RolDTO> datosBD = this.orquestadorRoles.obtenerTodosLosRoles();
             listaMaestraRoles.clear();
             if (datosBD != null && !datosBD.isEmpty()) {
                 listaMaestraRoles.addAll(datosBD);

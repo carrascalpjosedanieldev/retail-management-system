@@ -1,5 +1,6 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
+import RetailManagementSystem.vista.controladores.login.GestionRolesControlador;
 import RetailManagementSystem.vista.controladores.login.PermisosVistaControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.*;
 import RetailManagementSystem.vista.controladores.gestionarTienda.*;
@@ -126,6 +127,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == PermisosVistaControlador.class) {
             return new PermisosVistaControlador(
                     ContenedorDependencias.getOrquestadorPermisos()
+            );
+        }
+        if (claseControlador == GestionRolesControlador.class){
+            return new GestionRolesControlador(
+                    ContenedorDependencias.getOrquestadorRoles()
             );
         }
         try {

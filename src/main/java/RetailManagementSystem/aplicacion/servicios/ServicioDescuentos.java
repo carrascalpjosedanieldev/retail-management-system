@@ -8,11 +8,17 @@ import java.util.List;
 
 public class ServicioDescuentos {
 
+    //ATRIBUTOS:
+
     private final RepositorioDescuentos repositorioDescuentos;
+
+    //CONSTRUCTOR:
 
     public ServicioDescuentos(RepositorioDescuentos repositorioDescuentos) {
         this.repositorioDescuentos = repositorioDescuentos;
     }
+
+    //MÉTODOS:
 
     public void registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo){
         Descuento borrador = Descuento.crearNuevo(nombre, porcentaje, activo);

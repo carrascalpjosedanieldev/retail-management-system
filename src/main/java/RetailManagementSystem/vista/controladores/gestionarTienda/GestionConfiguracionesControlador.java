@@ -44,7 +44,14 @@ public class GestionConfiguracionesControlador {
 
 
     @FXML
-    void abrirConfiguracionRolesYPermisos(ActionEvent event){
+    public void abrirGestionRoles(ActionEvent event) {
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
+    }
+
+
+    @FXML
+    void abrirGestionPermisos(ActionEvent event){
         Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.PERMISOS_VISTA_VIEW);
     }
@@ -55,7 +62,6 @@ public class GestionConfiguracionesControlador {
         Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
-
 
 }//===================================================================================================================//
 

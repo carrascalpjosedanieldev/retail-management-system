@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../css/gestionarTienda/estilosCssConfiguraciones.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.GestionConfiguracionesControlador">
+<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../css/gestionarTienda/estilosCssConfiguraciones.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.GestionConfiguracionesControlador">
 
     <VBox prefHeight="720.0" prefWidth="230.0" styleClass="sidebar-izquierda" />
 
@@ -47,13 +41,13 @@
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="💵 Moneda y Localidad" GridPane.columnIndex="1" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🖨 Opciones de Impresión" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-                <Button mnemonicParsing="false" onAction="#abrirConfiguracionRolesYPermisos" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Roles y Permisos" GridPane.rowIndex="1" />
+                <Button mnemonicParsing="false" onAction="#abrirGestionRoles" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Gestión de Roles" GridPane.rowIndex="1" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🎨 Apariencia (Tema)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🔔 Alertas y Notificaciones" GridPane.rowIndex="3" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="💾 Copias de Seguridad" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
-                <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="📞 Datos de Contacto" GridPane.rowIndex="2" />
+                <Button mnemonicParsing="false" onAction="#abrirGestionPermisos" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Gestión de Permisos" GridPane.rowIndex="2" />
             </GridPane>
 
             <Button id="btnSalir" onAction="#volverPanelGestion" prefHeight="55.0" prefWidth="300.0" text="⬅ VOLVER A GESTIÓN" />

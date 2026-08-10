@@ -41,6 +41,10 @@ public class RepositorioRolMySQL implements RepositorioRol {
                     originalException.addSuppressed(rollbackEx);
                 }
                 throw new RuntimeException("Error en la Transacción de Inserción", originalException);
+            } finally {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ignored) { }
             }
 
         } catch (SQLException e) {
