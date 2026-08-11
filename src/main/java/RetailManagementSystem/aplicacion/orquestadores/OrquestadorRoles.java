@@ -1,9 +1,12 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTORol;
 import RetailManagementSystem.aplicacion.servicios.ServicioRol;
+import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrquestadorRoles {
@@ -27,6 +30,23 @@ public class OrquestadorRoles {
         return this.ensambladorDTORol.ensamblarDetalleRoles(
                 this.servicioRol.obtenerRoles()
         );
+    }
+
+    public void registrarRolNuevo(String nombreRol, boolean activo, List<PermisoDTO> permisos) {
+        List<Permiso> permisosParaELRol = new ArrayList<>();
+        if (!permisos.isEmpty()){
+            for (PermisoDTO permisoDTO:permisos){
+                Permiso permiso = Permiso.reconstruirDesdeBD(
+                        permisoDTO.idPermiso(),
+                        permisoDTO.nombre(),
+                        permisoDTO.descripcion(),
+                        permisoDTO.modulo(),
+                        permisoDTO.activo()
+                );
+                permisosParaELRol.add(permiso);
+            }
+        }
+        this.servicioRol.registrarRol(nombreRol, activo, permisosParaELRol);
     }
 
 }//===================================================================================================================//

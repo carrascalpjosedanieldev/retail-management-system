@@ -97,7 +97,7 @@ public class GestionRolesControlador {
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
         Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.CREAR_ROL_NUEVO_VIEW);
     }
 
 

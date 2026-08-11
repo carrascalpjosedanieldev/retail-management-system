@@ -3,9 +3,13 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConf
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
+import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CrearRolNuevoControlador {
@@ -40,6 +45,8 @@ public class CrearRolNuevoControlador {
 
     private final ObservableList<PermisoDTO> listaMaestraPermisos = FXCollections.observableArrayList();
 
+    private final ObservableList<PermisoDTO> listaPermisosAgregados = FXCollections.observableArrayList();
+
     private FilteredList<PermisoDTO> listaFiltrada;
 
     //CONSTRUCTOR:
@@ -60,6 +67,10 @@ public class CrearRolNuevoControlador {
             cerrarVentanaSeguro();
             return;
         }
+        tablaPermisosAgregados.setItems(listaPermisosAgregados);
+        lblContadorPermisos.textProperty().bind(
+                Bindings.concat(Bindings.size(listaPermisosAgregados), " asignados")
+        );
         configurarFiltroModulos();
     }
 
@@ -94,10 +105,8 @@ public class CrearRolNuevoControlador {
 
     private void cerrarVentanaSeguro() {
         Platform.runLater(() -> {
-            Stage stage = (Stage) cbModulos.getScene().getWindow();
-            if (stage != null) {
-                stage.close();
-            }
+            Stage stageActual = (Stage) cbModulos.getScene().getWindow();
+            CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
         });
     }
 
@@ -126,22 +135,87 @@ public class CrearRolNuevoControlador {
 
     @FXML
     private void agregarPermisoAlRol(ActionEvent event) {
-
+        agregarPermisoAlRol();
     }
 
-    @FXML
-    private void cancelar(ActionEvent event) {
-
+    private void agregarPermisoAlRol(){
+        PermisoDTO permisoSeleccionado = tablaPermisosDisponibles.getSelectionModel().getSelectedItem();
+        if (permisoSeleccionado == null) {
+            return;
+        }
+        boolean yaExiste = listaPermisosAgregados.stream()
+                .anyMatch(p -> p.idPermiso() == permisoSeleccionado.idPermiso());
+        if (yaExiste) {
+            GestorAlertas.mostrarAlerta(
+                    "Permiso Duplicado",
+                    "El Permiso ya fue Agregado",
+                    "El Permiso -" + permisoSeleccionado.nombre() + "- Ya se Encuentra en la Lista de este Rol."
+            );
+            return;
+        }
+        listaPermisosAgregados.add(permisoSeleccionado);
+        tablaPermisosDisponibles.getSelectionModel().clearSelection();
     }
 
-    @FXML
-    private void guardarCambios(ActionEvent event) {
-
-    }
 
     @FXML
     private void quitarPermisoDelRol(ActionEvent event) {
+        quitarPermisoDelRol();
+    }
 
+    private void quitarPermisoDelRol(){
+        PermisoDTO permisoSeleccionado = tablaPermisosAgregados.getSelectionModel().getSelectedItem();
+        if (permisoSeleccionado == null) {
+            return;
+        }
+        listaPermisosAgregados.remove(permisoSeleccionado);
+        tablaPermisosAgregados.getSelectionModel().clearSelection();
+    }
+
+
+    @FXML
+    private void guardarCambios(ActionEvent event) {
+        guardarCambios();
+    }
+
+    private void guardarCambios(){
+        String nombre = txtNombreRol.getText();
+        if (nombre == null || nombre.trim().isEmpty()) {
+            GestorAlertas.mostrarError(
+                    "Error de Validación",
+                    "Nombre de Rol Inválido",
+                    "El nombre del rol no puede estar vacío. Por favor, ingrese un nombre."
+            );
+            return;
+        }
+        String nombreProcesado = nombre.trim();
+        boolean estaActivo = chkActivo.isSelected();
+        List<PermisoDTO> permisosSeleccionados = new ArrayList<>(listaPermisosAgregados);
+        try {
+            this.orquestadorRoles.registrarRolNuevo(nombreProcesado, estaActivo, permisosSeleccionados);
+            GestorAlertas.mostrarInformacion(
+                    "Operación Exitosa",
+                    "Rol Guardado",
+                    "Rol creado correctamente."
+            );
+            cerrarVentanaSeguro();
+        } catch (IllegalArgumentException e) {
+            GestorAlertas.mostrarError(
+                    "Error al Guardar",
+                    "NO se pudo Registrar el Rol",
+                    "Error:  " + e.getMessage()
+            );
+        } catch (PersistenciaException e) {
+            GestorAlertas.mostrarError("Error del Sistema",
+                    "Fallo de Comunicación",
+                    "Hubo un problema guardando en la base de datos. Intente más tarde.");
+        }
+    }
+
+
+    @FXML
+    private void cancelar(ActionEvent event) {
+        cerrarVentanaSeguro();
     }
 
 }//===================================================================================================================//

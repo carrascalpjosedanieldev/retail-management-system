@@ -6,7 +6,6 @@ import RetailManagementSystem.dominio.puertos.RepositorioRol;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ServicioRol {
 
@@ -22,10 +21,12 @@ public class ServicioRol {
 
     //MÉTODOS:
 
-    public void registrarRol(String nombre, boolean activo, Set<Permiso> permisos){
+    public void registrarRol(String nombre, boolean activo, List<Permiso> permisos){
         Rol rolNuevo = Rol.crearNuevo(nombre, activo);
-        for (Permiso permiso:permisos){
-            rolNuevo.anadirPermisoNuevo(permiso);
+        if (!permisos.isEmpty()){
+            for (Permiso permiso:permisos){
+                rolNuevo.anadirPermisoNuevo(permiso);
+            }
         }
         this.repositorioRol.insertarRol(rolNuevo);
     }
