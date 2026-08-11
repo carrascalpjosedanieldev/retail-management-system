@@ -112,7 +112,7 @@ public class FacturaGeneradaControlador {
             }
         } catch (RuntimeException e) {
             lblNombreTienda.setText("Tienda (Modo Offline)");
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Carga",
                     "Error al Obtener el Nombre de la Tienda",
                     "NO se pudo Leer la Configuración Local: " + e.getMessage()

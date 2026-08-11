@@ -107,7 +107,7 @@ public class EditarRopaControlador {
             cbImpuesto.setItems(FXCollections.observableArrayList(listaImpuestos));
             cbDescuento.setItems(FXCollections.observableArrayList(listaDescuentos));
         } catch (RuntimeException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Conexión",
                     "Faltan Datos Obligatorios para Operar.",
                     "No se pudieron cargar las listas desplegables desde la base de datos: " + e.getMessage()

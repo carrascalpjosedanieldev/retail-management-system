@@ -115,6 +115,18 @@
     -fx-effect: dropshadow(three-pass-box, rgba(59, 130, 246, 0.2), 5, 0.0, 0, 0);
 }
 
+.estado-activo {
+    -fx-text-fill: #10b981;
+    -fx-font-weight: bold;
+}
+
+.estado-inactivo {
+    -fx-text-fill: #ef4444;
+    -fx-font-weight: bold;
+}
+
+
+
 .dialog-pane {
     -fx-background-color: #ffffff;
     -fx-font-family: "Segoe UI", "Arial";

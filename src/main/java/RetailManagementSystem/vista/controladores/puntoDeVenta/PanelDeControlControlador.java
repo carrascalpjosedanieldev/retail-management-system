@@ -101,7 +101,7 @@ public class PanelDeControlControlador {
             lblTotalVentasHoy.setText("$ 0.00");
             lblUltimaVenta.setText("$ 0.00");
             Throwable errorReal = tareaMetricas.getException();
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Conexión", "No se pudieron cargar las métricas de hoy",
                     "Se asignaron valores en cero. Se ha registrado el error: " +
                             errorReal.getClass().getSimpleName()
@@ -118,7 +118,7 @@ public class PanelDeControlControlador {
             lblVersion.setText("Mi Tienda " + version);
         } catch (RuntimeException e) {
             lblVersion.setText("Versión --");
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Carga", "Error al Cargar la Version",
                     "No se pudo cargar la versión de la tienda. Contacte a soporte."
             );

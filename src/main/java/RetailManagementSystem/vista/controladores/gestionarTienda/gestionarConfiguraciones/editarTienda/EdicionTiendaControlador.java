@@ -56,7 +56,7 @@ public class EdicionTiendaControlador {
         String nuevoNombre = txtNombre.getText().trim();
         String nuevaDescripcion = txtDescripcion.getText().trim();
         if (nuevoNombre.isEmpty()) {
-            GestorAlertas.mostrarError("Dato Inválido", "Campo Requerido",
+            GestorAlertas.mostrarAlertaError("Dato Inválido", "Campo Requerido",
                     "El Nombre de la Tienda NO puede estar vacío.");
             txtNombre.requestFocus();
             return;

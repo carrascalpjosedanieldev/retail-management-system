@@ -64,6 +64,7 @@ public class ContenedorDependencias {
 
         //ORQUESTADORES:
 
+    private static OrquestadorDescuentos orquestadorDescuentos;
     private static OrquestadorLogin orquestadorLogin;
     private static OrquestadorPermisos orquestadorPermisos;
     private static OrquestadorProductoInventario orquestadorProductoInventario;
@@ -137,6 +138,7 @@ public class ContenedorDependencias {
 
         //INSTANCIACIÓN DE ORQUESTADORES:
 
+        orquestadorDescuentos = new OrquestadorDescuentos(servicioDescuentos, ensambladorDTODescuento);
         orquestadorLogin = new OrquestadorLogin(servicioUsuario, ensambladorDTOUsuario);
         orquestadorPermisos = new OrquestadorPermisos(ensambladorDTOPermiso, servicioPermiso);
         orquestadorProductoInventario = new OrquestadorProductoInventario(servicioProductos, servicioInventario);
@@ -329,6 +331,10 @@ public class ContenedorDependencias {
     public static ServicioUsuario getServicioUsuario() {
         validarInicializado();
         return servicioUsuario;
+    }
+
+    public static OrquestadorDescuentos getOrquestadorDescuentos() {
+        return orquestadorDescuentos;
     }
 
     public static OrquestadorLogin getOrquestadorLogin() {

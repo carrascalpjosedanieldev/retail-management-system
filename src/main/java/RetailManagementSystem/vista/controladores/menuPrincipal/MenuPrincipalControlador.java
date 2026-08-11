@@ -53,7 +53,7 @@ public class MenuPrincipalControlador {
             lblVersion.setText("Mi Tienda " + version);
         } catch (RuntimeException e) {
             lblVersion.setText("Versión --");
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Carga", "Error al Cargar la Version",
                     "No se pudo cargar la versión de la tienda. Contacte a soporte."
             );
@@ -82,7 +82,7 @@ public class MenuPrincipalControlador {
             }
         } catch (RuntimeException e) {
             lblNombreTienda.setText("Tienda (Modo Offline)");
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Carga",
                     "Error al Obtener el Nombre de la Tienda",
                     "NO se pudo Leer la Configuración Local: " + e.getMessage()

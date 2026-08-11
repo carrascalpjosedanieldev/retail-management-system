@@ -75,7 +75,7 @@ public class GestionRolesControlador {
                 listaMaestraRoles.addAll(datosBD);
             }
         } catch (RuntimeException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Carga",
                     "No se pudieron cargar los roles.",
                     "Detalle: " + e.getMessage()

@@ -54,8 +54,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == GestionDescuentosControlador.class) {
             return new GestionDescuentosControlador(
-                    ContenedorDependencias.getServicioDescuentos(),
-                    ContenedorDependencias.getEnsambladorDTODescuento()
+                    ContenedorDependencias.getOrquestadorDescuentos()
             );
         }
         if (claseControlador == GestionImpuestosControlador.class) {

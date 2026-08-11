@@ -148,7 +148,7 @@ public class EditarPerecederoControlador {
                 cbPoliticaVencimiento.getItems().setAll(listaPoliticas);
             }
         } catch (RuntimeException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Conexión",
                     "Faltan Datos Obligatorios para Operar.",
                     "No se pudieron cargar las listas desplegables desde la base de datos: " + e.getMessage()

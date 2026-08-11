@@ -17,10 +17,10 @@ public class ConfiguradorExcepciones {
                     String mensaje = "Ocurrió un Problema al Intentar Abrir la Vista.\n" +
                             "Ruta Solicitada: " + errorVista.getRutaSolicitada() + "\n\n" +
                             "Si el problema persiste, contacte al Creador Original 😎 Jose Daniel 😎.";
-                    GestorAlertas.mostrarError("Error de Navegación",
+                    GestorAlertas.mostrarAlertaError("Error de Navegación",
                             "NO se pudo Cargar la Pantalla", mensaje);
                 } else {
-                    GestorAlertas.mostrarError(
+                    GestorAlertas.mostrarAlertaError(
                             "Error Interno",
                             "Fallo Crítico del Sistema",
                             "Ocurrió un error inesperado al procesar la solicitud.\n" +

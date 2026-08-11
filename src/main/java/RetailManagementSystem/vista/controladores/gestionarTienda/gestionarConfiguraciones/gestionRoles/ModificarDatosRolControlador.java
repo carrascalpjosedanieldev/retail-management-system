@@ -42,7 +42,7 @@ public class ModificarDatosRolControlador {
 
     public void cargarDatosRol(RolDTO rol) {
         if (rol == null) {
-            GestorAlertas.mostrarError("Error",
+            GestorAlertas.mostrarAlertaError("Error",
                     "Datos Inválidos",
                     "No se recibió un rol para editar.");
             cerrarVentanaSeguro();

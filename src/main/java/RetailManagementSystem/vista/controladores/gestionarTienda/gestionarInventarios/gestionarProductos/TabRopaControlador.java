@@ -105,7 +105,7 @@ public class TabRopaControlador {
             listaObservable.clear();
             listaObservable.setAll(listaRopa);
         } catch (RuntimeException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error Crítico de Carga",
                     "No se pudieron cargar los datos del inventario.",
                     "Ocurrió un error al cargar los productos ropa. La ventana se cerrará por seguridad.\nDetalle: " + e.getMessage()

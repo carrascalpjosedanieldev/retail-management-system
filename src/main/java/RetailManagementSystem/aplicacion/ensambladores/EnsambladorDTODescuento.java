@@ -12,14 +12,8 @@ public class EnsambladorDTODescuento {
     }
 
     public DescuentoDTO ensamblarDatosDescuento(Descuento descuento){
-        String estado;
-        if (descuento.isActivo()){
-            estado = "Activo";
-        } else {
-            estado = "Inactivo";
-        }
         return new DescuentoDTO(
-                descuento.getId(), descuento.getNombre(), descuento.getPorcentaje(), estado
+                descuento.getId(), descuento.getNombre(), descuento.getPorcentaje(), descuento.isActivo()
         );
     }
 

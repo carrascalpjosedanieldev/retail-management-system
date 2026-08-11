@@ -1,13 +1,14 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos;
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTODescuento;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -19,17 +20,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableCell;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-import java.net.URL;
-import java.util.List;
 import java.util.Optional;
 import java.math.BigDecimal;
-import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
 
 public class GestionDescuentosControlador {
 
@@ -42,40 +40,17 @@ public class GestionDescuentosControlador {
     @FXML private TableColumn<DescuentoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
-    private final ServicioDescuentos servicioDescuentos;
-
-    private final EnsambladorDTODescuento ensambladorDTODescuento;
+    private final OrquestadorDescuentos orquestadorDescuentos;
 
     private final ObservableList<DescuentoDTO> listaObservableDescuentos = FXCollections.observableArrayList();
 
     //CONSTRUCTOR:
 
-    public GestionDescuentosControlador(ServicioDescuentos servicioDescuentos,
-                                        EnsambladorDTODescuento ensambladorDTODescuento) {
-        this.servicioDescuentos = servicioDescuentos;
-        this.ensambladorDTODescuento = ensambladorDTODescuento;
+    public GestionDescuentosControlador(OrquestadorDescuentos orquestadorDescuentos) {
+        this.orquestadorDescuentos = orquestadorDescuentos;
     }
 
     //MÉTODOS:
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane panelAlerta = alerta.getDialogPane();
-        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        aplicarCSS(panelAlerta);
-        alerta.showAndWait();
-    }
-
-    private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_DESCUENTOS);
-        if (urlCss != null) {
-            panel.getStylesheets().add(urlCss.toExternalForm());
-        }
-    }
-
 
     @FXML
     public void initialize() {
@@ -85,28 +60,40 @@ public class GestionDescuentosControlador {
     }
 
     private void configurarColumnasTabla(){
-        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idDescuento()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
+        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().idDescuento())
+        );
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().nombre())
+        );
+        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().porcentaje())
+        );
+        colEstado.setCellValueFactory(celda -> {
+            boolean esActivo = celda.getValue().activo();
+            String textoEstado = esActivo ? "Activo" : "Inactivo";
+            return new SimpleStringProperty(textoEstado);
+        });
         colEstado.setCellFactory(columna -> new TableCell<DescuentoDTO, String>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
                 if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
                 } else {
                     setText(estado);
-                    String color = estado.equalsIgnoreCase("Activo") ? "#10b981" : "#ef4444";
-                    setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+                    String estiloCss = estado.equalsIgnoreCase("Activo") ? "estado-activo" : "estado-inactivo";
+                    getStyleClass().add(estiloCss);
                 }
             }
         });
     }
 
     private void configurarFiltroBusqueda(){
-        FilteredList<DescuentoDTO> listaFiltrada = new FilteredList<>(listaObservableDescuentos, b -> true);
+        FilteredList<DescuentoDTO> listaFiltrada = new FilteredList<>(
+                listaObservableDescuentos, b -> true
+        );
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
             listaFiltrada.setPredicate(descuento -> {
                 if (valorNuevo == null || valorNuevo.isBlank()) {
@@ -123,17 +110,23 @@ public class GestionDescuentosControlador {
     }
 
     private void cargarDatosTabla() {
-        List<DescuentoDTO> activos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                this.servicioDescuentos.obtenerDescuentosActivos()
-        );
-        List<DescuentoDTO> inactivos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                this.servicioDescuentos.obtenerDescuentosInactivos()
-        );
-        List<DescuentoDTO> todosLosDescuentos = Stream.concat(
-                activos != null ? activos.stream() : Stream.empty(),
-                inactivos != null ? inactivos.stream() : Stream.empty()
-        ).toList();
-        listaObservableDescuentos.setAll(todosLosDescuentos);
+        CompletableFuture.supplyAsync(
+                this.orquestadorDescuentos::obtenerTodosLosDescuentos
+        ).thenAccept(listaDescuentos -> {
+            Platform.runLater(() -> {
+                listaObservableDescuentos.setAll(listaDescuentos);
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                GestorAlertas.mostrarAlertaError("Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" +
+                        ex.getMessage());
+                Stage stageActual = (Stage) tablaDescuentos.getScene().getWindow();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+            });
+            return null;
+        });
     }
 
 
@@ -142,7 +135,7 @@ public class GestionDescuentosControlador {
         dialog.setTitle(titulo);
         dialog.setHeaderText(cabecera);
         DialogPane dialogPane = dialog.getDialogPane();
-        aplicarCSS(dialogPane);
+        //aplicarCSS(dialogPane); Metodo que ya borramos y que me hizo un desorden en el css
         ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
         return dialog;
@@ -165,22 +158,28 @@ public class GestionDescuentosControlador {
             String nombre = campoNombre.getText().trim();
             String porcentajeTexto = campoPorcentaje.getText().trim();
             if (nombre.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Nombre del Descuento NO puede estar Vacío.");
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Validación", null,
+                        "El Nombre del Descuento NO puede estar Vacío."
+                );
                 event.consume();
                 return;
             }
             if (porcentajeTexto.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Porcentaje del Descuento NO puede estar Vacío");
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Validación", null,
+                        "El Porcentaje del Descuento NO puede estar Vacío"
+                );
                 event.consume();
                 return;
             }
             try {
                 FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
             } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
+                GestorAlertas.mostrarAlertaWarning(
+                        "Número Inválido", null,
+                        "Error al Ingresar el Porcentaje:\n" + e.getMessage()
+                );
                 event.consume();
             }
         });
@@ -195,8 +194,10 @@ public class GestionDescuentosControlador {
     private void abrirFormularioEdicion(){
         DescuentoDTO seleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Descuento de la Tabla para Modificarlo.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Descuento de la Tabla para Modificarlo."
+            );
             return;
         }
         Dialog<ButtonType> dialog = crearDialogo("Modificar Descuento",
@@ -219,19 +220,29 @@ public class GestionDescuentosControlador {
                 String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
                 try {
                     BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                    this.servicioDescuentos.actualizarDescuento(seleccionado.idDescuento(), nuevoNombre, nuevoPorcentaje);
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El descuento se ha actualizado correctamente.");
+                    this.orquestadorDescuentos.actualizarDescuento(
+                            seleccionado.idDescuento(), nuevoNombre, nuevoPorcentaje
+                    );
+                    GestorAlertas.mostrarAlertaInformacion(
+                            "Éxito", null,
+                            "El descuento se ha actualizado correctamente."
+                    );
                     cargarDatosTabla();
                 } catch (NumberFormatException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
-                            "Error:  " + e.getMessage());
+                    GestorAlertas.mostrarAlertaError(
+                            "Porcentaje Invalido", null,
+                            "Error:  " + e.getMessage()
+                    );
                 } catch (DescuentoNoEncontradoExeption e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Descuento NO Encontrado",
-                            "Error:  " + e.getMessage());
+                    GestorAlertas.mostrarAlertaError(
+                            "Descuento NO Encontrado", null,
+                            "Error:  " + e.getMessage()
+                    );
                 } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Descuento",
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+                    GestorAlertas.mostrarAlertaError(
+                            "Error al Editar el Descuento", null,
+                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage()
+                    );
                 }
             }
         });
@@ -268,16 +279,22 @@ public class GestionDescuentosControlador {
                 boolean activo = chkActivo.isSelected();
                 try {
                     BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                    this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El descuento se ha guardado correctamente.");
+                    this.orquestadorDescuentos.registrarDescuento(nombre, porcentaje, activo);
+                    GestorAlertas.mostrarAlertaInformacion(
+                            "Éxito", null,
+                            "El descuento se ha guardado correctamente."
+                    );
                     cargarDatosTabla();
                 } catch (NumberFormatException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
-                            "Error:  " + e.getMessage());
+                    GestorAlertas.mostrarAlertaError(
+                            "Porcentaje Invalido", null,
+                            "Error:  " + e.getMessage()
+                    );
                 } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Descuento",
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+                    GestorAlertas.mostrarAlertaError(
+                            "Error al Registrar el Descuento", null,
+                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage()
+                    );
                 }
             }
         });
@@ -292,8 +309,10 @@ public class GestionDescuentosControlador {
     private void cambiarEstadoDescuento(){
         DescuentoDTO descuentoSeleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (descuentoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, selecciona un Descuento de la Tabla para cambiar su Estado.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, selecciona un Descuento de la Tabla para cambiar su Estado."
+            );
             return;
         }
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
@@ -301,20 +320,26 @@ public class GestionDescuentosControlador {
         confirmacion.setHeaderText(null);
         confirmacion.setContentText("¿Estás Seguro de que Deseas Cambiar el Estado del Descuento -" + descuentoSeleccionado.nombre() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
-        aplicarCSS(panelConfirmacion);
+        //aplicarCSS(panelConfirmacion);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
-                this.servicioDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento());
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Estado se ha Actualizado Correctamente.");
+                this.orquestadorDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento());
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Éxito", null,
+                        "El Estado se ha Actualizado Correctamente."
+                );
                 cargarDatosTabla();
             } catch (IllegalStateException | IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "La Acción NO fue Completada",
-                        "Error:  " + e.getMessage());
+                GestorAlertas.mostrarAlertaError(
+                        "La Acción NO fue Completada", null,
+                        "Error:  " + e.getMessage()
+                );
             } catch (DescuentoNoEncontradoExeption e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Descuento NO Encontrado",
-                        "Error:  " + e.getMessage());
+                GestorAlertas.mostrarAlertaError(
+                        "Descuento NO Encontrado", null,
+                        "Error:  " + e.getMessage()
+                );
             }
         }
     }

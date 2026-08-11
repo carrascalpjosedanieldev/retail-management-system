@@ -268,7 +268,7 @@ public class TabPerecederosControlador {
                 listaMaestraPerecederos.addAll(datosBD);
             }
         } catch (RuntimeException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error Crítico de Carga",
                     "No se pudieron cargar los datos del inventario.",
                     "Ocurrió un error al cargar los productos perecederos. La ventana se cerrará por seguridad.\nDetalle: " + e.getMessage()

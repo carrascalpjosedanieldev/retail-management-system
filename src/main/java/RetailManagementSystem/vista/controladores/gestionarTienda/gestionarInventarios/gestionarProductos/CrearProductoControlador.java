@@ -154,7 +154,7 @@ public class CrearProductoControlador {
             .toList();
         cbImpuesto.setItems(FXCollections.observableArrayList(impuestos));
         List<DescuentoDTO> descuentos = servicioDescuentos.obtenerDescuentosActivos().stream()
-                .map(d -> new DescuentoDTO(d.getId(), d.getNombre(), d.getPorcentaje(), "ACTIVO"))
+                .map(d -> new DescuentoDTO(d.getId(), d.getNombre(), d.getPorcentaje(), true))
                 .toList();
         cbDescuento.setItems(FXCollections.observableArrayList(descuentos));
         List<PoliticaVencimientoDTO> politicas = servicioPolitica.obtenerPoliticasVencimientoActivas().stream()

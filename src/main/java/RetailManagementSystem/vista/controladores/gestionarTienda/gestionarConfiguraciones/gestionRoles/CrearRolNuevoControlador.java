@@ -94,7 +94,7 @@ public class CrearRolNuevoControlador {
             }
             return true;
         } catch (RuntimeException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error Crítico",
                     "NO se pudieron Cargar los Permisos",
                     "Hubo un fallo al conectar con la base de datos: " + e.getMessage()
@@ -146,7 +146,7 @@ public class CrearRolNuevoControlador {
         boolean yaExiste = listaPermisosAgregados.stream()
                 .anyMatch(p -> p.idPermiso() == permisoSeleccionado.idPermiso());
         if (yaExiste) {
-            GestorAlertas.mostrarAlerta(
+            GestorAlertas.mostrarAlertaWarning(
                     "Permiso Duplicado",
                     "El Permiso ya fue Agregado",
                     "El Permiso -" + permisoSeleccionado.nombre() + "- Ya se Encuentra en la Lista de este Rol."
@@ -181,7 +181,7 @@ public class CrearRolNuevoControlador {
     private void guardarCambios(){
         String nombre = txtNombreRol.getText();
         if (nombre == null || nombre.trim().isEmpty()) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error de Validación",
                     "Nombre de Rol Inválido",
                     "El nombre del rol no puede estar vacío. Por favor, ingrese un nombre."
@@ -193,20 +193,20 @@ public class CrearRolNuevoControlador {
         List<PermisoDTO> permisosSeleccionados = new ArrayList<>(listaPermisosAgregados);
         try {
             this.orquestadorRoles.registrarRolNuevo(nombreProcesado, estaActivo, permisosSeleccionados);
-            GestorAlertas.mostrarInformacion(
+            GestorAlertas.mostrarAlertaInformacion(
                     "Operación Exitosa",
                     "Rol Guardado",
                     "Rol creado correctamente."
             );
             cerrarVentanaSeguro();
         } catch (IllegalArgumentException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error al Guardar",
                     "NO se pudo Registrar el Rol",
                     "Error:  " + e.getMessage()
             );
         } catch (PersistenciaException e) {
-            GestorAlertas.mostrarError("Error del Sistema",
+            GestorAlertas.mostrarAlertaError("Error del Sistema",
                     "Fallo de Comunicación",
                     "Hubo un problema guardando en la base de datos. Intente más tarde.");
         }

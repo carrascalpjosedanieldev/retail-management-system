@@ -95,7 +95,7 @@ public class PermisosVistaControlador {
             cbFiltroModulo.getItems().addAll(modulosUnicos);
             cbFiltroModulo.getSelectionModel().selectFirst();
         } catch (RuntimeException e) {
-            GestorAlertas.mostrarError(
+            GestorAlertas.mostrarAlertaError(
                     "Error Crítico",
                     "No se pudieron cargar los permisos",
                     "Hubo un fallo al conectar con la base de datos: " + e.getMessage()
