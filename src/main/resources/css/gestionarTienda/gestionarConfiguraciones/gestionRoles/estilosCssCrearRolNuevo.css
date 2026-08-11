@@ -2,167 +2,197 @@
    ESTILOS GENERALES
    ========================================================================== */
 .root {
-    -fx-background-color: #F8FAFC; /* Slate 50 */
+    -fx-background-color: #f8f9fa;
 }
 
 .titulo-principal {
-    -fx-font-size: 28px;
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 32px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1E293B;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-smoothing-type: lcd;
 }
 
 .subtitulo {
-    -fx-font-size: 14px;
     -fx-text-fill: #64748b;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", "Arial";
     -fx-padding: 5px 0 0 0;
+    -fx-font-smoothing-type: lcd;
 }
 
 .titulo-tabla {
+    -fx-text-fill: #334155;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-text-fill: #334155;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-smoothing-type: lcd;
 }
 
 /* ==========================================================================
    FORMULARIO Y CONTROLES (Inputs)
    ========================================================================== */
 .label-formulario {
+    -fx-text-fill: #475569;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-fill: #475569;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-smoothing-type: lcd;
 }
 
 .campo-texto {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-padding: 8px 12px;
+    -fx-font-family: "Segoe UI", "Arial";
     -fx-font-size: 14px;
-    -fx-text-fill: #1E293B;
+    -fx-padding: 8px 12px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-font-smoothing-type: lcd;
+}
+
+.campo-texto:hover {
+    -fx-border-color: #94a3b8;
 }
 
 .campo-texto:focused {
-    -fx-border-color: #2563EB;
-    -fx-border-width: 1.5px;
+    -fx-border-color: #475569;
+    -fx-effect: dropshadow(three-pass-box, rgba(71, 85, 105, 0.15), 4, 0.0, 0, 1);
 }
 
 .combo-personalizado {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CBD5E1;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
+    -fx-font-family: "Segoe UI", "Arial";
     -fx-font-size: 14px;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.combo-personalizado:hover {
+    -fx-border-color: #94a3b8;
+}
+
+.combo-personalizado:focused {
+    -fx-border-color: #475569;
 }
 
 .check-personalizado {
+    -fx-font-family: "Segoe UI", "Arial";
     -fx-font-size: 14px;
     -fx-text-fill: #334155;
     -fx-cursor: hand;
+    -fx-font-smoothing-type: lcd;
 }
 
-/* Indicador de conteo de permisos asignados */
 .badge-contador {
-    -fx-background-color: #DBEAFE;
-    -fx-text-fill: #1E40AF;
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #475569;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", "Arial";
     -fx-padding: 4px 10px;
     -fx-background-radius: 12px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 12px;
+    -fx-font-smoothing-type: lcd;
 }
 
 /* ==========================================================================
    BOTONES
    ========================================================================== */
+.btn-agregar, .btn-eliminar, .btn-cancelar, .btn-action {
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 6, 0.0, 0, 2);
+    -fx-font-smoothing-type: lcd;
+}
 
-/* Botón Agregar (Debajo de la tabla izquierda) - Verde */
+.btn-agregar:pressed, .btn-eliminar:pressed, .btn-cancelar:pressed, .btn-action:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0.0, 0, 0);
+}
+
 .btn-agregar {
-    -fx-background-color: #10B981;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-background-radius: 6px;
-    -fx-cursor: hand;
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-border-color: #047857;
 }
-.btn-agregar:hover { -fx-background-color: #059669; }
-.btn-agregar:pressed { -fx-background-color: #047857; }
+.btn-agregar:hover {
+    -fx-background-color: #34d399;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
+}
 
-/* Botón Eliminar (Debajo de la tabla derecha) - Rojo */
 .btn-eliminar {
-    -fx-background-color: #EF4444;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-background-radius: 6px;
-    -fx-cursor: hand;
+    -fx-background-color: #e3342f;
+    -fx-text-fill: white;
+    -fx-border-color: #cc1f1a;
 }
-.btn-eliminar:hover { -fx-background-color: #DC2626; }
-.btn-eliminar:pressed { -fx-background-color: #B91C1C; }
+.btn-eliminar:hover {
+    -fx-background-color: #ef5753;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
+}
 
-/* Botón Cancelar (Footer) */
-.btn-cancelar {
-    -fx-background-color: #FFFFFF;
-    -fx-text-fill: #475569;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-border-color: #94A3B8;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-cursor: hand;
+.btn-action {
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
+    -fx-border-color: #0f172a;
 }
-.btn-cancelar:hover { -fx-background-color: #F1F5F9; }
-
-/* Botón Guardar Cambios (Footer) - Azul Principal */
-.btn-guardar {
-    -fx-background-color: #2563EB;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-border-color: transparent;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
-    -fx-cursor: hand;
+.btn-action:hover {
+    -fx-background-color: #34495e;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
 }
-.btn-guardar:hover { -fx-background-color: #1D4ED8; }
-.btn-guardar:pressed { -fx-background-color: #1E40AF; }
 
 /* ==========================================================================
-   TABLAS (TableView)
+   TABLAS (TableView - Adaptado a tu estilo)
    ========================================================================== */
 .tabla-personalizada {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
-    -fx-border-radius: 6px;
-    -fx-background-radius: 6px;
+    -fx-background-color: transparent;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1px;
 }
 
 .tabla-personalizada .column-header-background {
-    -fx-background-color: #F1F5F9;
+    -fx-background-color: #f1f5f9;
 }
 
 .tabla-personalizada .column-header {
     -fx-background-color: transparent;
-    -fx-border-color: transparent #E2E8F0 transparent transparent;
-    -fx-padding: 8px;
+    -fx-border-color: transparent #e2e8f0 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-padding: 10px;
 }
 
 .tabla-personalizada .column-header .label {
-    -fx-font-weight: bold;
     -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI", "Arial";
+    -fx-font-size: 14px;
+    -fx-font-smoothing-type: lcd;
 }
 
 .tabla-personalizada .table-row-cell {
-    -fx-padding: 6px 0;
-    -fx-border-color: transparent transparent #F1F5F9 transparent;
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cell-size: 45px;
 }
 
-.tabla-personalizada .table-row-cell:odd { -fx-background-color: #F8FAFC; }
-.tabla-personalizada .table-row-cell:hover { -fx-background-color: #E0F2FE; }
-.tabla-personalizada .table-row-cell:selected { -fx-background-color: #DBEAFE; }
+.tabla-personalizada .table-row-cell:hover {
+    -fx-background-color: #f8fafc;
+}
 
-.tabla-personalizada .table-row-cell:selected .text {
-    -fx-fill: #1E40AF;
+.tabla-personalizada .table-row-cell:selected {
+    -fx-background-color: #e0f2fe;
+}
+
+.tabla-personalizada .table-row-cell:selected .table-cell {
+    -fx-text-fill: #0369a1;
     -fx-font-weight: bold;
 }
-
-

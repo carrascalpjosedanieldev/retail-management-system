@@ -4,8 +4,9 @@ import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import RetailManagementSystem.vista.utilidades.RutasVista;
+
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +15,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -59,10 +59,18 @@ public class PermisosVistaControlador {
     }
 
     private void configurarColumnas() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colModulo.setCellValueFactory(new PropertyValueFactory<>("modulo"));
-        colDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
+        colId.setCellValueFactory(cellData -> {
+            return new ReadOnlyObjectWrapper<>(cellData.getValue().idPermiso());
+        });
+        colNombre.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().nombre());
+        });
+        colModulo.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().modulo());
+        });
+        colDescripcion.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().descripcion());
+        });
         colEstado.setCellValueFactory(cellData -> {
             boolean estaActivo = cellData.getValue().activo();
             return new SimpleStringProperty(estaActivo ? "Activo" : "Inactivo");
@@ -119,10 +127,12 @@ public class PermisosVistaControlador {
             if (textoBusqueda != null && !textoBusqueda.isBlank()) {
                 String filtro = textoBusqueda.toLowerCase();
                 coincideTexto = permiso.nombre().toLowerCase().contains(filtro) ||
-                        permiso.descripcion().toLowerCase().contains(filtro);
+                        permiso.descripcion().toLowerCase().contains(filtro) ||
+                        String.valueOf(permiso.idPermiso()).contains(filtro);
             }
             String moduloSeleccionado = cbFiltroModulo.getValue();
             boolean coincideModulo = true;
+
             if (moduloSeleccionado != null && !moduloSeleccionado.equals("Todos los Módulos")) {
                 coincideModulo = permiso.modulo().equalsIgnoreCase(moduloSeleccionado);
             }
