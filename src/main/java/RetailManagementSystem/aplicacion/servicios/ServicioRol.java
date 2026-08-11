@@ -23,10 +23,8 @@ public class ServicioRol {
 
     public void registrarRol(String nombre, boolean activo, List<Permiso> permisos){
         Rol rolNuevo = Rol.crearNuevo(nombre, activo);
-        if (!permisos.isEmpty()){
-            for (Permiso permiso:permisos){
-                rolNuevo.anadirPermisoNuevo(permiso);
-            }
+        for (Permiso permiso:permisos){
+            rolNuevo.anadirPermisoNuevo(permiso);
         }
         this.repositorioRol.insertarRol(rolNuevo);
     }

@@ -34,19 +34,17 @@ public class OrquestadorRoles {
 
     public void registrarRolNuevo(String nombreRol, boolean activo, List<PermisoDTO> permisos) {
         List<Permiso> permisosParaELRol = new ArrayList<>();
-        if (!permisos.isEmpty()){
-            for (PermisoDTO permisoDTO:permisos){
-                Permiso permiso = Permiso.reconstruirDesdeBD(
-                        permisoDTO.idPermiso(),
-                        permisoDTO.nombre(),
-                        permisoDTO.descripcion(),
-                        permisoDTO.modulo(),
-                        permisoDTO.activo()
-                );
-                permisosParaELRol.add(permiso);
-            }
+        for (PermisoDTO permisoDTO:permisos){
+            Permiso permiso = Permiso.reconstruirDesdeBD(
+                    permisoDTO.idPermiso(),
+                    permisoDTO.nombre(),
+                    permisoDTO.descripcion(),
+                    permisoDTO.modulo(),
+                    permisoDTO.activo()
+            );
+            permisosParaELRol.add(permiso);
         }
-        this.servicioRol.registrarRol(nombreRol, activo, permisosParaELRol);
+        this.servicioRol.registrarRol(nombreRol.toUpperCase(), activo, permisosParaELRol);
     }
 
 }//===================================================================================================================//

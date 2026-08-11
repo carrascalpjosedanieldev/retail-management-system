@@ -2,6 +2,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
+import RetailManagementSystem.dominio.excepciones.RolDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.RolNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.RepositorioRol;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
@@ -48,6 +49,9 @@ public class RepositorioRolMySQL implements RepositorioRol {
             }
 
         } catch (SQLException e) {
+            if (e.getErrorCode() == 1062) {
+                throw new RolDuplicadoException("El Rol ya se encuentra Registrado en el Sistema.");
+            }
             throw new PersistenciaException("Error Crítico de Infraestructura al Obtener Conexión", e);
         }
     }
