@@ -70,8 +70,9 @@ public class RutasVista {
 
     public static final String GESTIONAR_DESCUENTOS_VIEW =
             "/vista/gestionarTienda/gestionarDescuentos/GestionDescuentos.fxml";
-    public static final String ESTILOS_CSS_DESCUENTOS =
-            "/css/gestionarTienda/gestionarDescuentos/estilosCssDescuentos.css";
+
+    public static final String EDITAR_DESCUENTO_VIEW =
+            "/vista/gestionarTienda/gestionarDescuentos/EditarDescuento.fxml";
 
 
         //GESTIONAR IMPUESTOS:

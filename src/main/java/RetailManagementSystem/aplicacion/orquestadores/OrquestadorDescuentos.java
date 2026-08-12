@@ -3,6 +3,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTODescuento;
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
+import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -42,8 +43,9 @@ public class OrquestadorDescuentos {
         this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
     }
 
-    public void actualizarDescuento(int idDescuento, String nombre, BigDecimal porcentaje) {
-        this.servicioDescuentos.actualizarDescuento(idDescuento, nombre, porcentaje);
+    public DescuentoDTO actualizarDescuento(int idDescuento, String nombre, BigDecimal porcentaje) {
+        Descuento descuento = this.servicioDescuentos.actualizarDescuento(idDescuento, nombre, porcentaje);
+        return this.ensambladorDTODescuento.ensamblarDatosDescuento(descuento);
     }
 
     public void cambiarEstadoDescuento(int idDescuento) {

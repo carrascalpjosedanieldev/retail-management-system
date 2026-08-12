@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="420.0" stylesheets="@../../../css/gestionarTienda/gestionarDescuentos/estilosCssEditarDescuento.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefWidth="420.0" stylesheets="@../../../css/gestionarTienda/gestionarDescuentos/estilosCssEditarDescuento.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.EditarDescuentoControlador">
 
     <VBox spacing="15.0" style="-fx-background-color: #ffffff;" styleClass="root">
         <padding>
@@ -47,8 +47,8 @@
         <padding>
             <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
         </padding>
-        <Button fx:id="btnActualizar" mnemonicParsing="false" prefHeight="39.0" prefWidth="120.0" text="Actualizar" />
-        <Button fx:id="btnCancelar" mnemonicParsing="false" prefHeight="39.0" prefWidth="120.0" styleClass="btn-cancelar" text="Cancelar" />
+        <Button mnemonicParsing="false" onAction="#actualizarDescuento" prefHeight="39.0" prefWidth="120.0" text="Actualizar" />
+        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#cancelar" prefHeight="39.0" prefWidth="120.0" styleClass="btn-cancelar" text="Cancelar" />
     </HBox>
 
 </VBox>

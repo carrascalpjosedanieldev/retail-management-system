@@ -29,11 +29,12 @@ public class ServicioDescuentos {
         return this.repositorioDescuentos.obtenerDescuento(idDescuento);
     }
 
-    public void actualizarDescuento(int idDescuento, String nombre, BigDecimal porcentaje){
+    public Descuento actualizarDescuento(int idDescuento, String nombre, BigDecimal porcentaje){
         Descuento descuento = this.obtenerDescuento(idDescuento);
         descuento.cambiarNombre(nombre);
         descuento.cambiarPorcentaje(porcentaje);
         this.repositorioDescuentos.actualizarDescuento(descuento);
+        return descuento;
     }
 
     private void actualizarDescuento(Descuento descuento){

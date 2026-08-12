@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDesc
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -15,16 +16,21 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableCell;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
@@ -188,10 +194,6 @@ public class GestionDescuentosControlador {
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
-        abrirFormularioEdicion();
-    }
-
-    private void abrirFormularioEdicion(){
         DescuentoDTO seleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -200,52 +202,22 @@ public class GestionDescuentosControlador {
             );
             return;
         }
-        Dialog<ButtonType> dialog = crearDialogo("Modificar Descuento",
-                "Editando el descuento: " + seleccionado.nombre(), "Actualizar");
-        TextField txtNombre = new TextField();
-        txtNombre.setPrefWidth(250);
-        TextField txtPorcentaje = new TextField();
-        txtNombre.setText(seleccionado.nombre());
-        txtPorcentaje.setText(seleccionado.porcentaje().toString());
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(txtPorcentaje, 1, 1);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                String nuevoNombre = txtNombre.getText().trim();
-                String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
-                try {
-                    BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                    this.orquestadorDescuentos.actualizarDescuento(
-                            seleccionado.idDescuento(), nuevoNombre, nuevoPorcentaje
-                    );
-                    GestorAlertas.mostrarAlertaInformacion(
-                            "Éxito", null,
-                            "El descuento se ha actualizado correctamente."
-                    );
-                    cargarDatosTabla();
-                } catch (NumberFormatException e) {
-                    GestorAlertas.mostrarAlertaError(
-                            "Porcentaje Invalido", null,
-                            "Error:  " + e.getMessage()
-                    );
-                } catch (DescuentoNoEncontradoExeption e) {
-                    GestorAlertas.mostrarAlertaError(
-                            "Descuento NO Encontrado", null,
-                            "Error:  " + e.getMessage()
-                    );
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    GestorAlertas.mostrarAlertaError(
-                            "Error al Editar el Descuento", null,
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage()
-                    );
-                }
-            }
-        });
+        String rutaFxml = RutasVista.EDITAR_DESCUENTO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            EditarDescuentoControlador controlador = loader.getController();
+            controlador.cargarDatos(seleccionado, listaObservableDescuentos);
+            Stage stageEdicion = new Stage();
+            stageEdicion.setTitle("Editando Descuento");
+            stageEdicion.initModality(Modality.APPLICATION_MODAL);
+            stageEdicion.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageEdicion.setScene(escenaEdicion);
+            stageEdicion.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 
