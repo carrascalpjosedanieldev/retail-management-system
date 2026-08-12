@@ -105,8 +105,9 @@ public class RutasVista {
 
     public static final String GESTIONAR_POLITICAS_V_VIEW =
             "/vista/gestionarTienda/gestionarPoliticasV/GestionPoliticasVencimiento.fxml";
-    public static final String ESTILOS_CSS_POLITICAS_V =
-            "/css/gestionarTienda/gestionarPoliticasV/estilosCssPoliticasVencimiento.css";
+
+    public static final String EDITAR_POLITICA_V_VIEW =
+            "/vista/gestionarTienda/gestionarPoliticasV/EditarPoliticaVencimiento.fxml";
 
 
         //GESTIONAR INVENTARIOS:

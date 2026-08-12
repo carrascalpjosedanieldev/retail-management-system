@@ -163,7 +163,7 @@ public class CrearProductoControlador {
                         p.getNombre(),
                         p.getDiasUmbral(),
                         p.getPorcentajeDescuento(),
-                        "ACTIVO"
+                        true
                 ))
                 .toList();
         cbPolitica.setItems(FXCollections.observableArrayList(politicas));

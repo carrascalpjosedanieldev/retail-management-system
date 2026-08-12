@@ -42,7 +42,7 @@ public class EditarImpuestoControlador {
 
     public void cargarDatos(ImpuestoDTO datosImpuesto, ObservableList<ImpuestoDTO> listaObservable) {
         if (datosImpuesto == null) {
-            throw new IllegalArgumentException("No puedes editar un Descuento Vacío.");
+            throw new IllegalArgumentException("No puedes editar un Impuesto Vacío.");
         }
         this.datosImpuesto = datosImpuesto;
         this.listaObservable = listaObservable;
@@ -93,10 +93,11 @@ public class EditarImpuestoControlador {
             });
         }).exceptionally(ex->{
             Platform.runLater(() -> {
-                GestorAlertas.mostrarAlertaError("Error Critico",
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
                         "NO se pudo Completar la Acción.",
-                        "Notificale al Administrador este Error:\n" +
-                                ex.getMessage());
+                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                );
                 cerrarPantalla();
             });
             return null;

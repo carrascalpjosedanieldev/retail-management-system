@@ -8,6 +8,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpue
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.EditarImpuestoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.*;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.EditarPoliticaVencimientoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.GestionPoliticasVencimientoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.GestionServiciosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
@@ -166,6 +167,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == CrearImpuestoControlador.class){
             return new CrearImpuestoControlador(
                     ContenedorDependencias.getOrquestadorImpuestos()
+            );
+        }
+        if (claseControlador == EditarPoliticaVencimientoControlador.class){
+            return new EditarPoliticaVencimientoControlador(
+                    ContenedorDependencias.getOrquestadorPoliticaVencimiento()
             );
         }
         try {

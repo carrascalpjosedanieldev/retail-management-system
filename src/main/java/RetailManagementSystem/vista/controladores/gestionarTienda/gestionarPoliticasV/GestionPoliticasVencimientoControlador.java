@@ -1,8 +1,11 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV;
 
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.EditarImpuestoControlador;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -17,13 +20,18 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Optional;
@@ -60,15 +68,7 @@ public class GestionPoliticasVencimientoControlador {
         alerta.setContentText(mensaje);
         DialogPane panelAlerta = alerta.getDialogPane();
         panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        aplicarCSS(panelAlerta);
         alerta.showAndWait();
-    }
-
-    private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_POLITICAS_V);
-        if (urlCss != null) {
-            panel.getStylesheets().add(urlCss.toExternalForm());
-        }
     }
 
 
@@ -159,7 +159,6 @@ public class GestionPoliticasVencimientoControlador {
         dialog.setTitle(titulo);
         dialog.setHeaderText(cabecera);
         DialogPane dialogPane = dialog.getDialogPane();
-        aplicarCSS(dialogPane);
         ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
         return dialog;
@@ -227,54 +226,30 @@ public class GestionPoliticasVencimientoControlador {
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
-        abrirFormularioEdicion();
-    }
-
-    private void abrirFormularioEdicion(){
         PoliticaVencimientoDTO seleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona una Política de Vencimiento de la Tabla para Modificarlo.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona una Política de Vencimiento de la Tabla para Modificarlo."
+            );
             return;
         }
-        Dialog<ButtonType> dialog = crearDialogo("Modificar Política Vencimiento",
-                "Editando la Política de Vencimiento: " + seleccionado.nombrePolitica(), "Actualizar");
-        TextField txtNombre = new TextField();
-        txtNombre.setPrefWidth(250);
-        TextField txtPorcentaje = new TextField();
-        txtNombre.setText(seleccionado.nombrePolitica());
-        txtPorcentaje.setText(seleccionado.porcentajeDescuento().toString());
-        TextField txtDiasUmbral = new TextField();
-        txtDiasUmbral.setText(String.valueOf(seleccionado.diasUmbral()));
-        GridPane grid = crearGridPane(txtNombre, txtPorcentaje, txtDiasUmbral);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje, txtDiasUmbral);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                String nuevoNombre = txtNombre.getText().trim();
-                String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
-                String nuevoDiasUmbralTexto = txtDiasUmbral.getText().trim();
-                try {
-                    BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                    int nuevoDiasUmbral = Integer.parseInt(nuevoDiasUmbralTexto);
-                    this.orquestadorPoliticaVencimiento.actualizarPoliticaVencimiento(
-                            seleccionado.idPoliticaVencimiento(), nuevoNombre, nuevoDiasUmbral, nuevoPorcentaje
-                    );
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "La Política de Vencimiento se ha Actualizado Correctamente.");
-                    cargarDatosTabla();
-                } catch (NumberFormatException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Datos Numéricos Inválidos",
-                            "Error:  " + e.getMessage());
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar la Política de Vencimiento",
-                            "Error:  " + e.getMessage());
-                } catch (PoliticaVencimientoNoEncontradaException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Política de Vencimiento NO Encontrada",
-                            "Error:  " + e.getMessage());
-                }
-            }
-        });
+        String rutaFxml = RutasVista.EDITAR_POLITICA_V_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            EditarPoliticaVencimientoControlador controlador = loader.getController();
+            controlador.cargarDatos(seleccionado, listaObservablePoliticasVencimiento);
+            Stage stageEdicion = new Stage();
+            stageEdicion.setTitle("Editando Política de Vencimiento");
+            stageEdicion.initModality(Modality.APPLICATION_MODAL);
+            stageEdicion.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageEdicion.setScene(escenaEdicion);
+            stageEdicion.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 
@@ -347,7 +322,6 @@ public class GestionPoliticasVencimientoControlador {
                 politicaSeleccionado.nombrePolitica() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
         panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
-        aplicarCSS(panelConfirmacion);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
