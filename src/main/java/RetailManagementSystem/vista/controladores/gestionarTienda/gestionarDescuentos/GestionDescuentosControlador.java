@@ -19,7 +19,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.TableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.beans.property.SimpleObjectProperty;
@@ -218,10 +217,11 @@ public class GestionDescuentosControlador {
             });
         }).exceptionally(ex -> {
             Platform.runLater(() -> {
-                GestorAlertas.mostrarAlertaError("Error Critico",
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
                         "NO se pudo Completar la Acción.",
-                        "Notificale al Administrador este Error:\n" +
-                                ex.getMessage());
+                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                );
             });
             return null;
         });

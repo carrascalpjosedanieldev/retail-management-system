@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpu
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
-import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -22,13 +21,11 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionImpuestosControlador {
@@ -53,18 +50,6 @@ public class GestionImpuestosControlador {
     }
 
     //MÉTODOS:
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane panelAlerta = alerta.getDialogPane();
-        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        //aplicarCSS(panelAlerta);
-        alerta.showAndWait();
-    }
-
 
     @FXML
     public void initialize() {
@@ -105,10 +90,14 @@ public class GestionImpuestosControlador {
     }
 
     private void configurarFiltroBusqueda() {
-        FilteredList<ImpuestoDTO> listaFiltrada = new FilteredList<>(listaObservableImpuestos, b -> true);
+        FilteredList<ImpuestoDTO> listaFiltrada = new FilteredList<>(
+                listaObservableImpuestos, b -> true
+        );
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
             listaFiltrada.setPredicate(impuesto -> {
-                if (valorNuevo == null || valorNuevo.isBlank()) return true;
+                if (valorNuevo == null || valorNuevo.isBlank()) {
+                    return true;
+                }
                 String filtro = valorNuevo.toLowerCase();
                 return String.valueOf(impuesto.idImpuesto()).contains(filtro) ||
                         impuesto.nombre().toLowerCase().contains(filtro);
@@ -199,34 +188,43 @@ public class GestionImpuestosControlador {
     private void cambiarEstadoImpuesto(){
         ImpuestoDTO impuestoSeleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (impuestoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Impuesto de la Tabla para Cambiar su Estado.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, selecciona un Impuesto de la Tabla para cambiar su Estado."
+            );
             return;
         }
-        //boolean esActivo = impuestoSeleccionado.activo().equalsIgnoreCase("Activo");
-        //String accion = esActivo ? "Desactivar" : "Activar";
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de activo");
-        confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas " + " el Impuesto -" + impuestoSeleccionado.nombre() + "-?");
-        DialogPane panelConfirmacion = confirmacion.getDialogPane();
-        panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
-        //aplicarCSS(panelConfirmacion);
-        Optional<ButtonType> respuesta = confirmacion.showAndWait();
-        if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
-            try {
-                this.orquestadorImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Estado se ha Actualizado Correctamente.");
-                cargarDatosTabla();
-            } catch (IllegalArgumentException | IllegalStateException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "La Acción NO fue Completada",
-                        "Error:  " + e.getMessage());
-            } catch (ImpuestoNoEncontradoException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Encontrado",
-                        "Error:  " + e.getMessage());
-            }
+        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+                "¿Estás Seguro de Cambiar el Estado del Impuesto?")) {
+            return;
         }
+        CompletableFuture.runAsync(()-> {
+            this.orquestadorImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
+        }).thenRun(()->{
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Éxito", null,
+                        "El Estado se ha Actualizado Correctamente."
+                );
+                ImpuestoDTO actualizado = new ImpuestoDTO(
+                        impuestoSeleccionado.idImpuesto(),
+                        impuestoSeleccionado.nombre(),
+                        impuestoSeleccionado.porcentaje(),
+                        !impuestoSeleccionado.activo()
+                );
+                int indice = listaObservableImpuestos.indexOf(impuestoSeleccionado);
+                listaObservableImpuestos.set(indice, actualizado);
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                );
+            });
+            return null;
+        });
     }
 
 
