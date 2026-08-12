@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDesc
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
-import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -22,7 +21,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -31,7 +29,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
@@ -256,33 +253,36 @@ public class GestionDescuentosControlador {
             );
             return;
         }
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Cambio de Estado");
-        confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás Seguro de que Deseas Cambiar el Estado del Descuento -" + descuentoSeleccionado.nombre() + "-?");
-        DialogPane panelConfirmacion = confirmacion.getDialogPane();
-        //aplicarCSS(panelConfirmacion);
-        Optional<ButtonType> respuesta = confirmacion.showAndWait();
-        if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
-            try {
-                this.orquestadorDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento());
+        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+                "¿Estás Seguro de Cambiar el Estado del Descuento?")) {
+            return;
+        }
+        CompletableFuture.runAsync(()-> {
+            this.orquestadorDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento());
+        }).thenRun(()->{
+            Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
                         "Éxito", null,
                         "El Estado se ha Actualizado Correctamente."
                 );
-                cargarDatosTabla();
-            } catch (IllegalStateException | IllegalArgumentException e) {
-                GestorAlertas.mostrarAlertaError(
-                        "La Acción NO fue Completada", null,
-                        "Error:  " + e.getMessage()
+                DescuentoDTO actualizado = new DescuentoDTO(
+                        descuentoSeleccionado.idDescuento(),
+                        descuentoSeleccionado.nombre(),
+                        descuentoSeleccionado.porcentaje(),
+                        !descuentoSeleccionado.activo()
                 );
-            } catch (DescuentoNoEncontradoExeption e) {
-                GestorAlertas.mostrarAlertaError(
-                        "Descuento NO Encontrado", null,
-                        "Error:  " + e.getMessage()
-                );
-            }
-        }
+                int indice = listaObservableDescuentos.indexOf(descuentoSeleccionado);
+                listaObservableDescuentos.set(indice, actualizado);
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                GestorAlertas.mostrarAlertaError("Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" +
+                                ex.getMessage());
+            });
+            return null;
+        });
     }
 
 

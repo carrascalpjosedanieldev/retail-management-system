@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../../css/gestionarTienda/gestionarDescuentos/estilosCssDescuentos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador">
+<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../../css/gestionarTienda/gestionarDescuentos/estilosCssGestionDescuentos.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador">
 
     <VBox style="-fx-padding: 40; -fx-spacing: 20;" styleClass="label-busqueda" HBox.hgrow="ALWAYS">
         <Label styleClass="titulo-principal" text="Gestión de Descuentos" />
