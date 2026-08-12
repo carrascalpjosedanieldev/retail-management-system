@@ -2,10 +2,8 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoli
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
-import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
-import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -19,19 +17,15 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionPoliticasVencimientoControlador {
@@ -57,17 +51,6 @@ public class GestionPoliticasVencimientoControlador {
     }
 
     //MÉTODOS:
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane panelAlerta = alerta.getDialogPane();
-        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        alerta.showAndWait();
-    }
-
 
     @FXML
     public void initialize() {
@@ -151,76 +134,6 @@ public class GestionPoliticasVencimientoControlador {
     }
 
 
-    private Dialog<ButtonType> crearDialogo(String titulo, String cabecera, String textoBotonAccion) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(titulo);
-        dialog.setHeaderText(cabecera);
-        DialogPane dialogPane = dialog.getDialogPane();
-        ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
-        return dialog;
-    }
-
-    private GridPane crearGridPane(TextField campoNombre, TextField campoPorcentaje, TextField campoDiasUmbral){
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(campoNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(campoPorcentaje, 1, 1);
-        grid.add(new Label("Dias Umbral"), 0 , 2);
-        grid.add(campoDiasUmbral, 1, 2);
-        return grid;
-    }
-
-    private void validarCampos(Dialog<ButtonType> dialog, TextField campoNombre, TextField campoPorcentaje, TextField campoDiasUmbral){
-        ButtonType btnTipoGuardar = dialog.getDialogPane().getButtonTypes().stream()
-                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
-                .findFirst().orElse(null);
-        Button botonFisicoGuardar = (Button) dialog.getDialogPane().lookupButton(btnTipoGuardar);
-        botonFisicoGuardar.addEventFilter(ActionEvent.ACTION, event -> {
-            String nombre = campoNombre.getText().trim();
-            String porcentajeTexto = campoPorcentaje.getText().trim();
-            String diasUmbralTexto = campoDiasUmbral.getText().trim();
-            if (nombre.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Nombre de la Política NO puede estar Vacío.");
-                event.consume();
-                return;
-            }
-            if (porcentajeTexto.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Porcentaje NO puede estar Vacío.");
-                event.consume();
-                return;
-            }
-            if (diasUmbralTexto.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "Los Días Umbral NO pueden estar Vacíos.");
-                event.consume();
-                return;
-            }
-            try {
-                FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
-                event.consume();
-                return;
-            }
-            try {
-                Integer.parseInt(diasUmbralTexto);
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Los Días Umbral deben ser un número entero válido.");
-                event.consume();
-            }
-        });
-    }
-
-
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
         PoliticaVencimientoDTO seleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
@@ -279,36 +192,45 @@ public class GestionPoliticasVencimientoControlador {
     private void cambiarEstadoPoliticaV(){
         PoliticaVencimientoDTO politicaSeleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
         if (politicaSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona una Política de Vencimiento de la Tabla para Cambiar su Estado.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona una Política de Vencimiento de la Tabla para Cambiar su Estado."
+            );
             return;
         }
-        //boolean esActivo = politicaSeleccionado.estado().equalsIgnoreCase("Activo");
-        //String accion = esActivo ? "Desactivar" : "Activar";
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de activo");
-        confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas " + " la Política -" +
-                politicaSeleccionado.nombrePolitica() + "-?");
-        DialogPane panelConfirmacion = confirmacion.getDialogPane();
-        panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
-        Optional<ButtonType> respuesta = confirmacion.showAndWait();
-        if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
-            try {
-                this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(
-                        politicaSeleccionado.idPoliticaVencimiento()
-                );
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Estado se ha Actualizado Correctamente.");
-                cargarDatosTabla();
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
-                        "Error:  " + e.getMessage());
-            } catch (PoliticaVencimientoNoEncontradaException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Política de Vencimiento NO Encontrada",
-                        "Error:  " + e.getMessage());
-            }
+        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+                "¿Estás Seguro de Cambiar el Estado de la Política de Vencimiento?")) {
+            return;
         }
+
+        CompletableFuture.runAsync(()->{
+            this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(politicaSeleccionado.idPoliticaVencimiento());
+        }).thenRun(()->{
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Éxito", null,
+                        "El Estado se ha Actualizado Correctamente."
+                );
+                PoliticaVencimientoDTO actualizado = new PoliticaVencimientoDTO(
+                        politicaSeleccionado.idPoliticaVencimiento(),
+                        politicaSeleccionado.nombrePolitica(),
+                        politicaSeleccionado.diasUmbral(),
+                        politicaSeleccionado.porcentajeDescuento(),
+                        !politicaSeleccionado.activo()
+                );
+                int indice = listaObservablePoliticasVencimiento.indexOf(politicaSeleccionado);
+                listaObservablePoliticasVencimiento.set(indice, actualizado);
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                );
+            });
+            return null;
+        });
     }
 
 
