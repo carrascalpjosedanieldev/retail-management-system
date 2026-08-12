@@ -118,10 +118,11 @@ public class GestionDescuentosControlador {
             });
         }).exceptionally(ex -> {
             Platform.runLater(() -> {
-                GestorAlertas.mostrarAlertaError("Error Critico",
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
                         "NO se pudo Completar la Acción.",
-                        "Notificale al Administrador este Error:\n" +
-                        ex.getMessage());
+                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                );
                 Stage stageActual = (Stage) tablaDescuentos.getScene().getWindow();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
             });

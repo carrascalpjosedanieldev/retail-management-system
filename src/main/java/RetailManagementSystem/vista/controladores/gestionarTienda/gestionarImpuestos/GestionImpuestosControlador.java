@@ -1,13 +1,14 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos;
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOImpuesto;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -25,9 +26,8 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
 
 public class GestionImpuestosControlador {
 
@@ -40,17 +40,14 @@ public class GestionImpuestosControlador {
     @FXML private TableColumn<ImpuestoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
-    private final ServicioImpuestos servicioImpuestos;
-
-    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
+    private final OrquestadorImpuestos orquestadorImpuestos;
 
     private final ObservableList<ImpuestoDTO> listaObservableImpuestos = FXCollections.observableArrayList();
 
     //CONSTRUCTOR:
 
-    public GestionImpuestosControlador(ServicioImpuestos servicioImpuestos, EnsambladorDTOImpuesto ensambladorDTOImpuesto) {
-        this.servicioImpuestos = servicioImpuestos;
-        this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
+    public GestionImpuestosControlador(OrquestadorImpuestos orquestadorImpuestos) {
+        this.orquestadorImpuestos = orquestadorImpuestos;
     }
 
     //MÉTODOS:
@@ -82,9 +79,15 @@ public class GestionImpuestosControlador {
     }
 
     private void configurarColumnasTabla() {
-        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idImpuesto()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
+        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().idImpuesto())
+        );
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().nombre())
+        );
+        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().porcentaje())
+        );
         colEstado.setCellValueFactory(celda -> {
             boolean esActivo = celda.getValue().activo();
             String textoEstado = esActivo ? "Activo" : "Inactivo";
@@ -94,13 +97,13 @@ public class GestionImpuestosControlador {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
                 if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
                 } else {
                     setText(estado);
-                    String color = estado.equalsIgnoreCase("Activo") ? "#10b981" : "#ef4444";
-                    setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+                    String estiloCss = estado.equalsIgnoreCase("Activo") ? "estado-activo" : "estado-inactivo";
+                    getStyleClass().add(estiloCss);
                 }
             }
         });
@@ -122,10 +125,24 @@ public class GestionImpuestosControlador {
     }
 
     private void cargarDatosTabla() {
-        List<ImpuestoDTO> todosLosImpuestos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                servicioImpuestos.obtenerTodosLosImpuestos()
-        );
-        listaObservableImpuestos.setAll(todosLosImpuestos);
+        CompletableFuture.supplyAsync(
+                this.orquestadorImpuestos::obtenerTodosLosImpuestos
+        ).thenAccept(listaImpuestos -> {
+            Platform.runLater(()-> {
+                listaObservableImpuestos.setAll(listaImpuestos);
+            });
+        }).exceptionally(ex ->{
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                );
+                Stage stageActual = (Stage) tablaImpuestos.getScene().getWindow();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+            });
+            return null;
+        });
     }
 
 
@@ -211,7 +228,7 @@ public class GestionImpuestosControlador {
                 String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
                 try {
                     BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                    this.servicioImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
+                    this.orquestadorImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Impuesto se ha Actualizado Correctamente.");
                     cargarDatosTabla();
@@ -256,7 +273,7 @@ public class GestionImpuestosControlador {
                 boolean activo = chkActivo.isSelected();
                 try {
                     BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                    this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
+                    this.orquestadorImpuestos.registrarImpuesto(nombre, porcentaje, activo);
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Impuesto se ha Guardado Correctamente.");
                     cargarDatosTabla();
@@ -299,7 +316,7 @@ public class GestionImpuestosControlador {
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
-                this.servicioImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
+                this.orquestadorImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado se ha Actualizado Correctamente.");
                 cargarDatosTabla();

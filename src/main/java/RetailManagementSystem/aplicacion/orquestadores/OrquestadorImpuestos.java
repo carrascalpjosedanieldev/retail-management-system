@@ -41,7 +41,7 @@ public class OrquestadorImpuestos {
         return this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(impuesto);
     }
 
-    public void cambiarEstadoDescuento(int idImpuesto) {
+    public void cambiarEstadoImpuesto(int idImpuesto) {
         this.servicioImpuestos.cambiarEstadoImpuesto(idImpuesto);
     }
 
