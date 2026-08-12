@@ -1,10 +1,9 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV;
 
-import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
+import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,42 +16,50 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
-public class CrearImpuestoControlador {
+public class CrearPoliticaVencimiento {
 
     //ATRIBUTOS:
 
     @FXML private Button btnCancelar;
     @FXML private CheckBox chkActivo;
+    @FXML private TextField txtDiasUmbral;
     @FXML private TextField txtNombre;
     @FXML private TextField txtPorcentaje;
 
-    private final OrquestadorImpuestos orquestadorImpuestos;
+    private ObservableList<PoliticaVencimientoDTO> listaObservable;
 
-    private ObservableList<ImpuestoDTO> listaObservable;
+    private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
 
     //CONSTRUCTOR:
 
-    public CrearImpuestoControlador(OrquestadorImpuestos orquestadorImpuestos) {
-        this.orquestadorImpuestos = orquestadorImpuestos;
+    public CrearPoliticaVencimiento(OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento) {
+        this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
     }
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<ImpuestoDTO> listaObservable){
+    public void cargarDatos(ObservableList<PoliticaVencimientoDTO> listaObservable){
         this.listaObservable = listaObservable;
     }
 
 
     @FXML
-    void guardarImpuesto(ActionEvent event) {
+    void guardarPoliticaV(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String porcentajeTexto = txtPorcentaje.getText().trim();
+        String diasUmbralTexto = txtDiasUmbral.getText().trim();
         boolean activo = chkActivo.isSelected();
-        if (nombre.isEmpty() || porcentajeTexto.isEmpty()){
+        if (nombre.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos",
-                    "El Nombre y el Porcentaje son Obligatorios.",
-                    "Por favor escribe un Nombre y un Porcentaje Validos."
+                    "Error de Validación", null,
+                    "El Nombre de la Política NO puede estar Vacío."
+            );
+            return;
+        }
+        if (porcentajeTexto.isEmpty() || diasUmbralTexto.isEmpty()) {
+            GestorAlertas.mostrarAlertaWarning(
+                    "Error de Validación", null,
+                    "El Porcentaje y los Dias Umbral NO pueden estar Vacíos."
             );
             return;
         }
@@ -66,11 +73,23 @@ public class CrearImpuestoControlador {
             );
             return;
         }
+        int diasUmbral;
+        try {
+            diasUmbral = Integer.parseInt(diasUmbralTexto);
+        } catch (NumberFormatException e) {
+            GestorAlertas.mostrarAlertaWarning(
+                    "Número Inválido", null,
+                    "Los Días Umbral deben ser un Número Entero válido."
+            );
+            return;
+        }
         CompletableFuture.supplyAsync(()->{
-            return this.orquestadorImpuestos.registrarImpuesto(nombre, porcentaje, activo);
-        }).thenAccept(impuestoRegistrado ->{
-            Platform.runLater(()-> {
-                listaObservable.add(impuestoRegistrado);
+            return this.orquestadorPoliticaVencimiento.registrarPoliticaVencimiento(
+                    nombre, diasUmbral, porcentaje, activo
+            );
+        }).thenAccept(politicaVRegistrada -> {
+            Platform.runLater(()->{
+                listaObservable.add(politicaVRegistrada);
                 cerrarPantalla();
             });
         }).exceptionally(ex->{

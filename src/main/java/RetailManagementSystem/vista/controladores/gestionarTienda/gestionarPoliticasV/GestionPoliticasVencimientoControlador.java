@@ -1,10 +1,8 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV;
 
-import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.EditarImpuestoControlador;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -33,7 +31,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -255,49 +252,22 @@ public class GestionPoliticasVencimientoControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        abrirFormularioNuevo();
-    }
-
-    private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = crearDialogo("Registrar Nueva Política de Vencimiento",
-                "Ingresa los detalles de la Nueva Política de Vencimiento.", "Guardar");
-        TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Ej. Política General 2024");
-        txtNombre.setPrefWidth(250);
-        TextField txtPorcentaje = new TextField();
-        txtPorcentaje.setPromptText("Ej. 15.5");
-        TextField txtDiasUmbral = new TextField();
-        txtDiasUmbral.setPromptText("Ej. 3");
-        CheckBox chkActivo = new CheckBox("¿Política V Activa?");
-        chkActivo.setSelected(true);
-        GridPane grid = crearGridPane(txtNombre, txtPorcentaje, txtDiasUmbral);
-        grid.add(chkActivo, 1, 3);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje, txtDiasUmbral);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                String nombre = txtNombre.getText().trim();
-                String porcentajeTexto = txtPorcentaje.getText().trim();
-                String diasUmbralTexto = txtDiasUmbral.getText().trim();
-                boolean activo = chkActivo.isSelected();
-                try {
-                    BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                    int diasUmbral = Integer.parseInt(diasUmbralTexto);
-                    this.orquestadorPoliticaVencimiento.registrarPoliticaVencimiento(
-                            nombre, diasUmbral, porcentaje, activo
-                    );
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "La Política de Vencimiento se ha Guardado Correctamente.");
-                    cargarDatosTabla();
-                } catch (NumberFormatException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Datos Numéricos Inválidos",
-                            "Error:  " + e.getMessage());
-                } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar la Política de Vencimiento",
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                }
-            }
-        });
+        String rutaFxml = RutasVista.CREAR_POLITiCA_V_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            CrearPoliticaVencimiento controlador = loader.getController();
+            controlador.cargarDatos(listaObservablePoliticasVencimiento);
+            Stage stageEdicion = new Stage();
+            stageEdicion.setTitle("Creando Política de Vencimiento");
+            stageEdicion.initModality(Modality.APPLICATION_MODAL);
+            stageEdicion.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageEdicion.setScene(escenaEdicion);
+            stageEdicion.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 
