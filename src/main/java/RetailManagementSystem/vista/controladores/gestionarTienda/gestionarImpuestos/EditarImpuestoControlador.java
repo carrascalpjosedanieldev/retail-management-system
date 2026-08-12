@@ -1,7 +1,7 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos;
 
-import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -17,38 +17,38 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
-public class EditarDescuentoControlador {
+public class EditarImpuestoControlador {
 
     //ATRIBUTOS:
 
     @FXML private Button btnCancelar;
-    @FXML private Label lblNombreDescuento;
+    @FXML private Label lblNombreImpuesto;
     @FXML private TextField txtNombre;
     @FXML private TextField txtPorcentaje;
 
-    private DescuentoDTO datosDescuento;
+    private ImpuestoDTO datosImpuesto;
 
-    private ObservableList<DescuentoDTO> listaObservable;
+    private ObservableList<ImpuestoDTO> listaObservable;
 
-    private final OrquestadorDescuentos orquestadorDescuentos;
+    private final OrquestadorImpuestos orquestadorImpuestos;
 
     //CONSTRUCTOR:
 
-    public EditarDescuentoControlador(OrquestadorDescuentos orquestadorDescuentos) {
-        this.orquestadorDescuentos = orquestadorDescuentos;
+    public EditarImpuestoControlador(OrquestadorImpuestos orquestadorImpuestos) {
+        this.orquestadorImpuestos = orquestadorImpuestos;
     }
 
     //MÉTODOS:
 
-    public void cargarDatos(DescuentoDTO datosDescuento, ObservableList<DescuentoDTO> listaObservable) {
-        if (datosDescuento == null) {
+    public void cargarDatos(ImpuestoDTO datosImpuesto, ObservableList<ImpuestoDTO> listaObservable) {
+        if (datosImpuesto == null) {
             throw new IllegalArgumentException("No puedes editar un Descuento Vacío.");
         }
-        this.datosDescuento = datosDescuento;
+        this.datosImpuesto = datosImpuesto;
         this.listaObservable = listaObservable;
-        lblNombreDescuento.setText(this.datosDescuento.nombre());
-        txtNombre.setText(this.datosDescuento.nombre());
-        txtPorcentaje.setText(this.datosDescuento.porcentaje().toString());
+        lblNombreImpuesto.setText(this.datosImpuesto.nombre());
+        txtNombre.setText(this.datosImpuesto.nombre());
+        txtPorcentaje.setText(this.datosImpuesto.porcentaje().toString());
         Platform.runLater(() -> {
             btnCancelar.requestFocus();
         });
@@ -56,7 +56,7 @@ public class EditarDescuentoControlador {
 
 
     @FXML
-    void actualizarDescuento(ActionEvent event) {
+    void actualizarImpuesto(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
         if (nombre.isEmpty() || nuevoPorcentajeTexto.isEmpty()){
@@ -77,21 +77,21 @@ public class EditarDescuentoControlador {
             );
             return;
         }
-        CompletableFuture.supplyAsync(()-> {
-            return this.orquestadorDescuentos.actualizarDescuento(
-                    this.datosDescuento.idDescuento(), nombre, porcentaje
+        CompletableFuture.supplyAsync(()->{
+            return this.orquestadorImpuestos.actualizarImpuesto(
+                    this.datosImpuesto.idImpuesto(), nombre, porcentaje
             );
-        }).thenAccept(descuentoActualizado -> {
-            Platform.runLater(() -> {
-                int indice = listaObservable.indexOf(this.datosDescuento);
-                listaObservable.set(indice, descuentoActualizado);
+        }).thenAccept(impuestoActualizado -> {
+            Platform.runLater(()->{
+                int indice = listaObservable.indexOf(this.datosImpuesto);
+                listaObservable.set(indice, impuestoActualizado);
                 GestorAlertas.mostrarAlertaInformacion(
                         "Éxito", null,
-                        "El Descuento se ha Actualizado con Éxito."
+                        "El Impuesto se ha Actualizado con Éxito."
                 );
                 cerrarPantalla();
             });
-        }).exceptionally(ex -> {
+        }).exceptionally(ex->{
             Platform.runLater(() -> {
                 GestorAlertas.mostrarAlertaError("Error Critico",
                         "NO se pudo Completar la Acción.",
@@ -104,7 +104,7 @@ public class EditarDescuentoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) lblNombreDescuento.getScene().getWindow();
+        Stage stageActual = (Stage) lblNombreImpuesto.getScene().getWindow();
         stageActual.close();
     }
 

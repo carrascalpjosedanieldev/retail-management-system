@@ -5,7 +5,6 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
-import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -19,12 +18,10 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -144,104 +141,32 @@ public class GestionImpuestosControlador {
     }
 
 
-    private Dialog<ButtonType> crearDialogo(String titulo, String cabecera, String textoBotonAccion) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(titulo);
-        dialog.setHeaderText(cabecera);
-        DialogPane dialogPane = dialog.getDialogPane();
-        //aplicarCSS(dialogPane);
-        ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
-        return dialog;
-    }
-
-    private GridPane crearGridPane(TextField campoNombre, TextField campoPorcentaje){
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(campoNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(campoPorcentaje, 1, 1);
-        return grid;
-    }
-
-    private void validarCampos(Dialog<ButtonType> dialog, TextField campoNombre, TextField campoPorcentaje){
-        ButtonType btnTipoGuardar = dialog.getDialogPane().getButtonTypes().stream()
-                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
-                .findFirst().orElse(null);
-        Button botonFisicoGuardar = (Button) dialog.getDialogPane().lookupButton(btnTipoGuardar);
-        botonFisicoGuardar.addEventFilter(ActionEvent.ACTION, event -> {
-            String nombre = campoNombre.getText().trim();
-            String porcentajeTexto = campoPorcentaje.getText().trim();
-            if (nombre.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Nombre del Impuesto NO puede estar Vacío.");
-                event.consume();
-                return;
-            }
-            if (porcentajeTexto.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Porcentaje del Impuesto NO puede estar Vacío");
-                event.consume();
-                return;
-            }
-            try {
-                FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage());
-                event.consume();
-            }
-        });
-    }
-
-
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
-        abrirFormularioEdicion();
-    }
-
-    private void abrirFormularioEdicion(){
         ImpuestoDTO seleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Impuesto de la Tabla para Modificarlo.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Impuesto de la Tabla para Modificarlo."
+            );
             return;
         }
-        Dialog<ButtonType> dialog = crearDialogo("Modificar Impuesto",
-                "Editando el impuesto: " + seleccionado.nombre(), "Actualizar");
-        TextField txtNombre = new TextField();
-        txtNombre.setPrefWidth(250);
-        TextField txtPorcentaje = new TextField();
-        txtNombre.setText(seleccionado.nombre());
-        txtPorcentaje.setText(seleccionado.porcentaje().toString());
-        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                String nuevoNombre = txtNombre.getText().trim();
-                String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
-                try {
-                    BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
-                    this.orquestadorImpuestos.actualizarImpuesto(seleccionado.idImpuesto(), nuevoNombre, nuevoPorcentaje);
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Impuesto se ha Actualizado Correctamente.");
-                    cargarDatosTabla();
-                } catch (NumberFormatException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
-                            "Error:  " + e.getMessage());
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Impuesto",
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
-                } catch (ImpuestoNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Encontrado",
-                            "Error:  " + e.getMessage());
-                }
-            }
-        });
+        String rutaFxml = RutasVista.EDITAR_IMPUESTO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            EditarImpuestoControlador controlador = loader.getController();
+            controlador.cargarDatos(seleccionado, listaObservableImpuestos);
+            Stage stageEdicion = new Stage();
+            stageEdicion.setTitle("Editando Impuesto");
+            stageEdicion.initModality(Modality.APPLICATION_MODAL);
+            stageEdicion.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageEdicion.setScene(escenaEdicion);
+            stageEdicion.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 

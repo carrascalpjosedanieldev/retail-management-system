@@ -86,6 +86,8 @@ public class RutasVista {
     public static final String GESTIONAR_IMPUESTOS_VIEW =
             "/vista/gestionarTienda/gestionarImpuestos/GestionImpuestos.fxml";
 
+    public static final String EDITAR_IMPUESTO_VIEW =
+            "/vista/gestionarTienda/gestionarImpuestos/EditarImpuesto.fxml";
 
     public static final String CREAR_IMPUESTO_VIEW =
             "/vista/gestionarTienda/gestionarImpuestos/CrearImpuesto.fxml";
