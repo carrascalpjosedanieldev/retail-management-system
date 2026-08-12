@@ -1,7 +1,7 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos;
 
-import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
-public class CrearDescuentoControlador {
+public class CrearImpuestoControlador {
 
     //ATRIBUTOS:
 
@@ -26,25 +26,25 @@ public class CrearDescuentoControlador {
     @FXML private TextField txtNombre;
     @FXML private TextField txtPorcentaje;
 
-    private final OrquestadorDescuentos orquestadorDescuentos;
+    private final OrquestadorImpuestos orquestadorImpuestos;
 
-    private ObservableList<DescuentoDTO> listaObservable;
+    private ObservableList<ImpuestoDTO> listaObservable;
 
     //CONSTRUCTOR:
 
-    public CrearDescuentoControlador(OrquestadorDescuentos orquestadorDescuentos) {
-        this.orquestadorDescuentos = orquestadorDescuentos;
+    public CrearImpuestoControlador(OrquestadorImpuestos orquestadorImpuestos) {
+        this.orquestadorImpuestos = orquestadorImpuestos;
     }
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<DescuentoDTO> listaObservable){
+    public void cargarDatos(ObservableList<ImpuestoDTO> listaObservable){
         this.listaObservable = listaObservable;
     }
 
 
     @FXML
-    void guardarDescuento(ActionEvent event) {
+    void guardarImpuesto(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String porcentajeTexto = txtPorcentaje.getText().trim();
         boolean activo = chkActivo.isSelected();
@@ -66,15 +66,15 @@ public class CrearDescuentoControlador {
             );
             return;
         }
-        CompletableFuture.supplyAsync(()-> {
-            return this.orquestadorDescuentos.registrarDescuento(nombre, porcentaje, activo);
-        }).thenAccept(descuentoRegistrado -> {
-            Platform.runLater(() -> {
-                listaObservable.add(descuentoRegistrado);
+        CompletableFuture.supplyAsync(()->{
+            return this.orquestadorImpuestos.registrarImpuesto(nombre, porcentaje, activo);
+        }).thenAccept(impuestoRegistrado ->{
+            Platform.runLater(()-> {
+                listaObservable.add(impuestoRegistrado);
                 cerrarPantalla();
             });
-        }).exceptionally(ex -> {
-            Platform.runLater(() -> {
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaError("Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + ex.getMessage());

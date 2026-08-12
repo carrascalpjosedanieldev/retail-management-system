@@ -4,6 +4,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfi
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.CrearDescuentoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.EditarDescuentoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.CrearImpuestoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.*;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.GestionPoliticasVencimientoControlador;
@@ -155,6 +156,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == CrearDescuentoControlador.class){
             return new CrearDescuentoControlador(
                     ContenedorDependencias.getOrquestadorDescuentos()
+            );
+        }
+        if (claseControlador == CrearImpuestoControlador.class){
+            return new CrearImpuestoControlador(
+                    ContenedorDependencias.getOrquestadorImpuestos()
             );
         }
         try {

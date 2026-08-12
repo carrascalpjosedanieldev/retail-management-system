@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpu
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -17,15 +18,19 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -59,15 +64,8 @@ public class GestionImpuestosControlador {
         alerta.setContentText(mensaje);
         DialogPane panelAlerta = alerta.getDialogPane();
         panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        aplicarCSS(panelAlerta);
+        //aplicarCSS(panelAlerta);
         alerta.showAndWait();
-    }
-
-    private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_IMPUESTOS);
-        if (urlCss != null) {
-            panel.getStylesheets().add(urlCss.toExternalForm());
-        }
     }
 
 
@@ -151,7 +149,7 @@ public class GestionImpuestosControlador {
         dialog.setTitle(titulo);
         dialog.setHeaderText(cabecera);
         DialogPane dialogPane = dialog.getDialogPane();
-        aplicarCSS(dialogPane);
+        //aplicarCSS(dialogPane);
         ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
         return dialog;
@@ -249,46 +247,22 @@ public class GestionImpuestosControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        abrirFormularioNuevo();
-    }
-
-    private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = crearDialogo("Registrar Nuevo Impuesto",
-                "Ingresa los detalles del nuevo impuesto.", "Guardar");
-        TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Ej. IVA 2024");
-        txtNombre.setPrefWidth(250);
-        TextField txtPorcentaje = new TextField();
-        txtPorcentaje.setPromptText("Ej. 15.5");
-        CheckBox chkActivo = new CheckBox("¿Impuesto Activo?");
-        chkActivo.setSelected(true);
-        GridPane grid = crearGridPane(txtNombre, txtPorcentaje);
-        grid.add(chkActivo, 1, 2);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                String nombre = txtNombre.getText().trim();
-                String porcentajeTexto = txtPorcentaje.getText().trim();
-                boolean activo = chkActivo.isSelected();
-                try {
-                    BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                    this.orquestadorImpuestos.registrarImpuesto(nombre, porcentaje, activo);
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Impuesto se ha Guardado Correctamente.");
-                    cargarDatosTabla();
-                } catch (NumberFormatException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Porcentaje Invalido",
-                            "Error:  " + e.getMessage());
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Impuesto",
-                            "Error:  " + e.getMessage());
-                } catch (ImpuestoNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Encontrado",
-                            "Error:  " + e.getMessage());
-                }
-            }
-        });
+        String rutaFxml = RutasVista.CREAR_IMPUESTO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            CrearImpuestoControlador controlador = loader.getController();
+            controlador.cargarDatos(listaObservableImpuestos);
+            Stage stageEdicion = new Stage();
+            stageEdicion.setTitle("Creando Impuesto");
+            stageEdicion.initModality(Modality.APPLICATION_MODAL);
+            stageEdicion.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageEdicion.setScene(escenaEdicion);
+            stageEdicion.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 
@@ -312,7 +286,7 @@ public class GestionImpuestosControlador {
         confirmacion.setContentText("¿Estás seguro de que deseas " + " el Impuesto -" + impuestoSeleccionado.nombre() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
         panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
-        aplicarCSS(panelConfirmacion);
+        //aplicarCSS(panelConfirmacion);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {

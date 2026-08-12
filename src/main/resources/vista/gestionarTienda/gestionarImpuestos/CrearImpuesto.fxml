@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="420.0" stylesheets="@../../../css/gestionarTienda/gestionarImpuestos/estilosCssCrearImpuesto.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.CrearImpuestoControlador">
+
+    <VBox spacing="15.0" style="-fx-background-color: #ffffff;">
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        </padding>
+
+        <Label styleClass="titulo-cabecera" text="Ingresa los detalles del nuevo Impuesto." />
+
+        <Separator prefWidth="200.0" />
+
+        <GridPane hgap="10.0" vgap="15.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="120.0" minWidth="10.0" prefWidth="110.0" />
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <VBox.margin>
+                <Insets bottom="10.0" top="5.0" />
+            </VBox.margin>
+            <Label text="Nombre:" />
+            <Label text="Porcentaje (%):" GridPane.rowIndex="1" />
+
+            <TextField fx:id="txtNombre" promptText="Ej. IVA 2024" GridPane.columnIndex="1" />
+            <TextField fx:id="txtPorcentaje" promptText="Ej. 15.5" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <CheckBox fx:id="chkActivo" mnemonicParsing="false" selected="true" text="¿Impuesto Activo?" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        </GridPane>
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="10.0" styleClass="panel-botones">
+        <padding>
+            <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
+        </padding>
+        <Button mnemonicParsing="false" onAction="#guardarImpuesto" prefWidth="100.0" text="Guardar" />
+        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#cancelar" prefWidth="100.0" styleClass="btn-cancelar" text="Cancelar" />
+    </HBox>
+
+</VBox>
