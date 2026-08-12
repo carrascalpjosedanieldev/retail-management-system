@@ -6,12 +6,8 @@ import RetailManagementSystem.vista.utilidades.RutasVista;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.DialogPane;
 import javafx.stage.Stage;
-
-import java.net.URL;
 
 public class GestionarTiendaControlador {
 

@@ -4,17 +4,17 @@ import RetailManagementSystem.aplicacion.dto.ventas.ReporteRecaudoDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
 import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
-import RetailManagementSystem.vista.utilidades.RutasVista;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import java.net.URL;
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 
 public class HistorialVentasControlador {
 
@@ -42,21 +42,6 @@ public class HistorialVentasControlador {
 
     //MÉTODOS:
 
-    private void mostrarAlerta(String titulo, String mensaje) {
-        Alert alerta = new Alert(Alert.AlertType.WARNING);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText("");
-        alerta.setContentText(mensaje);
-        DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_HISTORIAL_VENTAS);
-        if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
-        }
-        alerta.showAndWait();
-    }
-
-
     @FXML
     public void initialize() {
         dpFechaInicio.setValue(LocalDate.now());
@@ -73,25 +58,42 @@ public class HistorialVentasControlador {
         LocalDate fechaInicio = dpFechaInicio.getValue();
         LocalDate fechaFin = dpFechaFin.getValue();
         if (fechaInicio == null || fechaFin == null) {
-            mostrarAlerta("Campos incompletos",
-                    "Por favor, seleccione ambas fechas.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Campos incompletos", null,
+                    "Por favor, Seleccione ambas Fechas."
+            );
             return;
         }
         if (fechaInicio.isAfter(fechaFin)) {
-            mostrarAlerta("Rango inválido",
-                    "La Fecha de Inicio NO puede ser Mayor a la Fecha de Fin.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Rango inválido", null,
+                    "La Fecha de Inicio NO puede ser Mayor a la Fecha de Fin."
+            );
             return;
         }
-        try {
-            ReporteRecaudoDTO reporte = this.ensambladorDTOFactura.ensamblarReporteRecaudo(
+        lblCantidad.setText("...");
+        lblTotalGeneral.setText("Calculando...");
+        btnGenerar.setDisable(true);
+        CompletableFuture.supplyAsync(()->{
+            return this.ensambladorDTOFactura.ensamblarReporteRecaudo(
                     servicioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin)
             );
-            actualizarTarjetas(reporte);
-        } catch (IllegalArgumentException e) {
-            mostrarAlerta("Error en los Datos Ingresados",
-                    "Hubo un Problema al Generar el Reporte\n" +
-                            "Error:  " + e.getMessage());
-        }
+        }).thenAccept(reporteRecaudo ->
+            Platform.runLater(()->{
+                actualizarTarjetas(reporteRecaudo);
+                btnGenerar.setDisable(false);
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error en los Datos Ingresados", null,
+                        "Hubo un Problema al Generar el Reporte\n" + "Error:  " + causa.getMessage()
+                );
+                btnGenerar.setDisable(false);
+            });
+            return null;
+        });
     }
 
     private void actualizarTarjetas(ReporteRecaudoDTO reporte) {
@@ -104,8 +106,7 @@ public class HistorialVentasControlador {
 
     @FXML
     public void cerrarModal(ActionEvent event) {
-        Node node = (Node) event.getSource();
-        Stage stage = (Stage) node.getScene().getWindow();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
 

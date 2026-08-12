@@ -6,7 +6,7 @@ import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
 public class FacturaGeneradaControlador {
 
@@ -52,39 +53,36 @@ public class FacturaGeneradaControlador {
 
     @FXML
     public void initialize() {
-        colCant.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().cantidad()).asObject());
+        colCant.setCellValueFactory(cell -> new SimpleObjectProperty<>(
+                cell.getValue().cantidad())
+        );
         colDesc.setCellValueFactory(cellData -> {
             ItemVendidoFacturaDTO item = cellData.getValue();
             String descripcion = item.tipoItem() + ": " + item.nombreItem();
             return new SimpleStringProperty(descripcion);
         });
-        colPrecio.setCellValueFactory(cellData ->
-                new SimpleObjectProperty<>(cellData.getValue().precioUnitario()));
-        colPrecio.setCellFactory(col -> new TableCell<>() {
+        colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().precioUnitario())
+        );
+        colPrecio.setCellFactory(col -> crearCeldaMoneda());
+        colTotal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().totalLinea())
+        );
+        colTotal.setCellFactory(col -> crearCeldaMoneda());
+    }
+
+    private TableCell<ItemVendidoFacturaDTO, BigDecimal> crearCeldaMoneda() {
+        return new TableCell<>() {
             @Override
-            protected void updateItem(BigDecimal precio, boolean empty) {
-                super.updateItem(precio, empty);
-                if (empty || precio == null) {
+            protected void updateItem(BigDecimal monto, boolean empty) {
+                super.updateItem(monto, empty);
+                if (empty || monto == null) {
                     setText(null);
                 } else {
-                    setText(FormateadorNumeros.formatoMoneda(precio));
+                    setText(FormateadorNumeros.formatoMoneda(monto));
                 }
             }
-        });
-        colTotal.setCellValueFactory(cellData ->
-                new SimpleObjectProperty<>(cellData.getValue().totalLinea()));
-        colTotal.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(BigDecimal total, boolean empty) {
-                super.updateItem(total, empty);
-                if (empty || total == null) {
-                    setText(null);
-                } else {
-                    setText(FormateadorNumeros.formatoMoneda(total));
-                }
-            }
-        });
+        };
     }
 
     public void cargarFactura(FacturaDTO factura) {
@@ -94,7 +92,7 @@ public class FacturaGeneradaControlador {
         if (factura.fechaEmision() != null) {
             lblFechaFactura.setText(factura.fechaEmision().format(FORMATO_FECHA));
         } else {
-            lblFechaFactura.setText("-");
+            lblFechaFactura.setText("--");
         }
         tablaDetalle.setItems(FXCollections.observableArrayList(factura.listaItemsFinales()));
         lblSubtotal.setText(FormateadorNumeros.formatoMoneda(factura.subTotal()));
@@ -103,21 +101,30 @@ public class FacturaGeneradaControlador {
     }
 
     private void cargarNombreTienda() {
-        try {
-            String nombreTienda = this.servicioConfiguraciones.obtenerNombreTienda();
-            if (nombreTienda != null && !nombreTienda.isBlank()) {
-                lblNombreTienda.setText(nombreTienda);
-            } else {
-                lblNombreTienda.setText("Mi Tienda");
-            }
-        } catch (RuntimeException e) {
-            lblNombreTienda.setText("Tienda (Modo Offline)");
-            GestorAlertas.mostrarAlertaError(
-                    "Error de Carga",
-                    "Error al Obtener el Nombre de la Tienda",
-                    "NO se pudo Leer la Configuración Local: " + e.getMessage()
-            );
-        }
+        lblNombreTienda.setText("Cargando...");
+        CompletableFuture.supplyAsync(
+                this.servicioConfiguraciones::obtenerNombreTienda
+        ).thenAccept(nombreTienda -> {
+            Platform.runLater(() -> {
+                if (nombreTienda != null && !nombreTienda.isBlank()) {
+                    lblNombreTienda.setText(nombreTienda);
+                } else {
+                    lblNombreTienda.setText("Mi Tienda");
+                }
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                lblNombreTienda.setText("Tienda (Modo Offline)");
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Carga",
+                        "Error al Obtener el Nombre de la Tienda",
+                        "NO se pudo Leer la Configuración Local: " + causa.getMessage() + "\n" +
+                                "Vertica tu conexión para seguir utilizando la App."
+                );
+            });
+            return null;
+        });
     }
 
 
