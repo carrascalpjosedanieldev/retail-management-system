@@ -6,9 +6,9 @@ package RetailManagementSystem;
 import RetailManagementSystem.infraestructura.inyeccion.ContenedorDependencias;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
-import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,10 +29,9 @@ public class App extends Application {
         try {
             FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.MENU_PRINCIPAL_VIEW);
             Parent root = loader.load();
-            MenuPrincipalControlador controlador = loader.getController();
             stagePrincipal.setOnCloseRequest(event -> {
                 event.consume();
-                controlador.salirDeSistema();
+                GestorAlertas.mostrarAlertaSalirDelSistema();
             });
             Scene escena = new Scene(root, 1280, 720);
             stagePrincipal.setTitle("Sistema de Gestión de Tienda - JavaFX");

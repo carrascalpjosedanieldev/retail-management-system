@@ -10,13 +10,14 @@ public class RutasVista {
     public static final String ESTILOS_CSS_ALERTAS =
             "/css/alertas/estilosCssAlertas.css";
 
+    public static final String ESTILOS_CSS_ALERTA_SALIR_DEL_SISTEMA =
+            "/css/alertas/estilosCssAlertaSalirDelSistema.css";
+
 
     //MENU PRINCIPAL:
 
     public static final String MENU_PRINCIPAL_VIEW =
             "/vista/menuPrincipal/MenuPrincipal.fxml";
-    public static final String ESTILOS_CSS_MENU_PRINCIPAL =
-            "/css/menuPrincipal/estilosCssMenuPrincipal.css";
 
 
     //GESTIONAR TIENDA:

@@ -1,8 +1,7 @@
 package RetailManagementSystem.vista.utilidades;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
+import javafx.application.Platform;
+import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 
 import java.net.URL;
@@ -50,6 +49,31 @@ public class GestorAlertas {
         panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         return respuesta.isPresent() && respuesta.get() == ButtonType.OK;
+    }
+
+
+    public static void mostrarAlertaSalirDelSistema() {
+        Label iconoAmigable = new Label("👋");
+        iconoAmigable.setId("iconoAlerta");
+        Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        alerta.setTitle("Confirmar Salida");
+        alerta.setHeaderText(null);
+        alerta.setContentText("¿Estás Seguro de que deseas Salir del Sistema?");
+        alerta.setGraphic(iconoAmigable);
+        DialogPane panelAlerta = alerta.getDialogPane();
+        URL urlCss = GestorAlertas.class.getResource(RutasVista.ESTILOS_CSS_ALERTA_SALIR_DEL_SISTEMA);
+        if (urlCss != null) {
+            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+        }
+        Button botonAceptar = (Button) panelAlerta.lookupButton(ButtonType.OK);
+        if (botonAceptar != null) {
+            botonAceptar.setId("btnSalir");
+        }
+        Optional<ButtonType> respuesta = alerta.showAndWait();
+        if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
+            Platform.exit();
+            System.exit(0);
+        }
     }
 
 }//===================================================================================================================//
