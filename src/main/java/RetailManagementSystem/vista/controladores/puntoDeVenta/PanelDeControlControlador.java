@@ -12,6 +12,7 @@ import RetailManagementSystem.vista.utilidades.RutasVista;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +28,7 @@ import javafx.util.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public class PanelDeControlControlador {
 
@@ -82,47 +84,51 @@ public class PanelDeControlControlador {
         lblCantidadFacturas.setText("...");
         lblTotalVentasHoy.setText("Calculando...");
         lblUltimaVenta.setText("Cargando...");
-        Task<ResumenVentaDiaDTO> tareaMetricas = new Task<>() {
-            @Override
-            protected ResumenVentaDiaDTO call() throws Exception {
-                return ensambladorDTOFactura.ensamblarResumenVentaDia(
-                        servicioFacturas.obtenerResumenHoy()
+
+        CompletableFuture.supplyAsync(()->
+                ensambladorDTOFactura.ensamblarResumenVentaDia(servicioFacturas.obtenerResumenHoy())
+        ).thenAccept(resumenVentaDia -> {
+            Platform.runLater(()->{
+                lblCantidadFacturas.setText(String.valueOf(resumenVentaDia.cantidadFacturas()));
+                lblTotalVentasHoy.setText(FormateadorNumeros.formatoMoneda(resumenVentaDia.totalVentas()));
+                lblUltimaVenta.setText(FormateadorNumeros.formatoMoneda(resumenVentaDia.ultimaVenta()));
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+                lblCantidadFacturas.setText("0");
+                lblTotalVentasHoy.setText("$ 0.00");
+                lblUltimaVenta.setText("$ 0.00");
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Conexión",
+                        "No se pudieron cargar las métricas de hoy",
+                        "Se asignaron valores en cero. Se ha registrado el error: " + causa.getMessage()
                 );
-            }
-        };
-        tareaMetricas.setOnSucceeded(evento -> {
-            ResumenVentaDiaDTO resumen = tareaMetricas.getValue();
-            lblCantidadFacturas.setText(String.valueOf(resumen.cantidadFacturas()));
-            lblTotalVentasHoy.setText(FormateadorNumeros.formatoMoneda(resumen.totalVentas()));
-            lblUltimaVenta.setText(FormateadorNumeros.formatoMoneda(resumen.ultimaVenta()));
+            });
+            return null;
         });
-        tareaMetricas.setOnFailed(evento -> {
-            lblCantidadFacturas.setText("0");
-            lblTotalVentasHoy.setText("$ 0.00");
-            lblUltimaVenta.setText("$ 0.00");
-            Throwable errorReal = tareaMetricas.getException();
-            GestorAlertas.mostrarAlertaError(
-                    "Error de Conexión", "No se pudieron cargar las métricas de hoy",
-                    "Se asignaron valores en cero. Se ha registrado el error: " +
-                            errorReal.getClass().getSimpleName()
-            );
-        });
-        Thread hilo = new Thread(tareaMetricas);
-        hilo.setDaemon(true);
-        hilo.start();
     }
 
     private void cargarVersionTienda(){
-        try {
-            String version = InformacionAplicacion.obtenerVersion();
-            lblVersion.setText("Mi Tienda " + version);
-        } catch (RuntimeException e) {
-            lblVersion.setText("Versión --");
-            GestorAlertas.mostrarAlertaError(
-                    "Error de Carga", "Error al Cargar la Version",
-                    "No se pudo cargar la versión de la tienda. Contacte a soporte."
-            );
-        }
+        lblVersion.setText("Cargando...");
+        CompletableFuture.supplyAsync(
+                InformacionAplicacion::obtenerVersion
+        ).thenAccept(version->{
+            Platform.runLater(()->{
+                lblVersion.setText("Mi Tienda " + version);
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(() -> {
+                lblVersion.setText("Versión --");
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Carga", "Error al Cargar la Version",
+                        "NO se pudo Cargar la Versión de la Tienda: " + causa.getMessage() + ".\n" +
+                                "Contacte al Administrador o Verifica tu Conexión."
+                );
+            });
+            return null;
+        });
     }
 
 
