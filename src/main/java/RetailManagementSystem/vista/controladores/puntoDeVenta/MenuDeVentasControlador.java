@@ -2,16 +2,17 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.VistaPreviaCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
 import RetailManagementSystem.dominio.excepciones.*;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -34,6 +35,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class MenuDeVentasControlador {
 
@@ -92,36 +94,50 @@ public class MenuDeVentasControlador {
     public void initialize() {
         listaCarrito = FXCollections.observableArrayList();
         tablaCarrito.setItems(listaCarrito);
-        colCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().codigoArticulo()));
+        configurarColumnas();
+        configurarHabilitacionBotones();
+        configurarBarraBusqueda();
+        this.sesionVenta = this.orquestadorVentas.abrirVentaSesion();
+        actualizarTotales();
+    }
+
+    private void configurarColumnas(){
+        colCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(
+                cellData.getValue().codigoArticulo())
+        );
         colDescripcion.setCellValueFactory(cellData -> {
             ItemCarritoDTO item = cellData.getValue();
             String descripcionArmada = item.tipoItem() + ": " + item.nombreArticulo();
             return new SimpleStringProperty(descripcionArmada);
-        });        colCantidad.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().cantidad()).asObject());
-        colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().precioUnitario()));
-        colPrecio.setCellFactory(columna -> new TableCell<>() {
+        });
+        colCantidad.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().cantidad())
+        );
+        colPrecio.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().precioUnitario())
+        );
+        colPrecio.setCellFactory(columna -> crearCeldaMoneda());
+        colSubtotal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().subtotal())
+        );
+        colSubtotal.setCellFactory(columna -> crearCeldaMoneda());
+    }
+
+    private TableCell<ItemCarritoDTO, BigDecimal> crearCeldaMoneda(){
+        return new TableCell<>() {
             @Override
-            protected void updateItem(BigDecimal precio, boolean empty) {
-                super.updateItem(precio, empty);
-                if (empty || precio == null) {
+            protected void updateItem(BigDecimal monto, boolean empty) {
+                super.updateItem(monto, empty);
+                if (empty || monto == null) {
                     setText(null);
                 } else {
-                    setText(FormateadorNumeros.formatoMoneda(precio));
+                    setText(FormateadorNumeros.formatoMoneda(monto));
                 }
             }
-        });
-        colSubtotal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().subtotal()));
-        colSubtotal.setCellFactory(columna -> new TableCell<>() {
-            @Override
-            protected void updateItem(BigDecimal subtotal, boolean empty) {
-                super.updateItem(subtotal, empty);
-                if (empty || subtotal == null) {
-                    setText(null);
-                } else {
-                    setText(FormateadorNumeros.formatoMoneda(subtotal));
-                }
-            }
-        });
+        };
+    }
+
+    private void configurarHabilitacionBotones(){
         btnAumentarCant.setDisable(true);
         btnReducirCant.setDisable(true);
         btnEliminarItem.setDisable(true);
@@ -133,14 +149,15 @@ public class MenuDeVentasControlador {
         });
         btnProcesarVenta.disableProperty().bind(Bindings.isEmpty(listaCarrito));
         btnCancelarVenta.disableProperty().bind(Bindings.isEmpty(listaCarrito));
+    }
+
+    private void configurarBarraBusqueda(){
         txtCodigo.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 agregarItem(null);
             }
         });
         Platform.runLater(() -> txtCodigo.requestFocus());
-        this.sesionVenta = this.orquestadorVentas.abrirVentaSesion();
-        actualizarTotales();
     }
 
     private void actualizarTotales() {
@@ -153,43 +170,21 @@ public class MenuDeVentasControlador {
     @FXML
     public void volverAlMenu(ActionEvent event) {
         if (listaCarrito != null && !listaCarrito.isEmpty()) {
-            Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-            alertaConfirmacion.setTitle("Venta en Curso");
-            alertaConfirmacion.setHeaderText("¿Está Seguro de que desea Salir?");
-            alertaConfirmacion.setContentText("""
+            boolean respuesta = GestorAlertas.mostrarConfirmacion(
+                    "Venta en Curso",
+                    "¿Está Seguro de que desea Salir?",
+                    """
                     Tiene ítems en el Carrito. Si sale Ahora, se Cancelará la Venta y Perderá Todo el Progreso.
                     
-                    ¿Desea Continuar y Salir?""");
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
-            if (urlCss != null) {
-                alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
-            }
-            Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
-            if (resultado.isEmpty() || resultado.get() != ButtonType.OK) {
+                    ¿Desea Continuar y Salir?"""
+            );
+            if (!respuesta) {
                 return;
             }
             this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
         }
-        try {
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
-        } catch (Exception e) {
-            Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.setTitle("Error de Navegación");
-            alerta.setHeaderText("NO se pudo Cargar la Pantalla");
-            alerta.setContentText("Ocurrió un Problema al Intentar Abrir la Vista.\n" +
-                    "Ruta Solicitada: " + RutasVista.PANEL_DE_CONTROL_POS_VIEW + "\n" +
-                    "Si el problema persiste, contacte al Administrador o al Creador Original 😎 Jose Daniel 😎.");
-            DialogPane panelAlerta = alerta.getDialogPane();
-            panelAlerta.setPrefSize(500, 280);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PANEL_DE_CONTROL_POS);
-            if (urlCss != null) {
-                panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            } else {
-                panelAlerta.setPrefSize(500, 180);
-            }
-            alerta.showAndWait();
-        }
+        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
     }
 
 
@@ -203,46 +198,78 @@ public class MenuDeVentasControlador {
         if (codigo.isEmpty()) {
             return;
         }
-        try {
-            this.orquestadorVentas.agregarItemAlCarrito(this.sesionVenta, codigo, obtenerFecha());
-            actualizarTablaYTotales();
-            txtCodigo.clear();
-        } catch (ProductoVencidoException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Producto Vencido",
-                    e.getMessage() + " NO sera agregado al Carrito");
-        } catch (StockInsuficienteException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
-                    "Error:  " + e.getMessage());
-        } catch (ProductoNoDisponibleException | ServicioNoDisponibleExeption e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Item NO Disponible",
-                    e.getMessage() + " NO sera agregado al Carrito");
-        } catch (ProductoNoEncontradoException | ServicioNoEncontradoException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Item NO Encontrado",
-                    "Error:  " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos Ingresados",
-                    "Error:  " + e.getMessage());
-        } finally {
-            txtCodigo.requestFocus();
-        }
+        CompletableFuture.supplyAsync(()->
+            this.orquestadorVentas.agregarItemAlCarrito(this.sesionVenta, codigo, obtenerFecha())
+        ).thenAccept(carritoActualizado -> {
+            Platform.runLater(()->{
+                actualizarTablaYTotales(carritoActualizado.carritoItems());
+                txtCodigo.clear();
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                if (causa instanceof ProductoVencidoException){
+                    GestorAlertas.mostrarAlertaError(
+                            "Producto Vencido", null,
+                            causa.getMessage() + " NO sera agregado al Carrito"
+                    );
+                } else if (causa instanceof StockInsuficienteException){
+                    GestorAlertas.mostrarAlertaError(
+                            "Stock Insuficiente", null,
+                            "Error:  " + causa.getMessage()
+                    );
+                } else if (causa instanceof ProductoNoDisponibleException || causa instanceof ServicioNoDisponibleExeption){
+                    GestorAlertas.mostrarAlertaError(
+                            "Item NO Disponible", null,
+                            causa.getMessage() + " NO sera agregado al Carrito"
+                    );
+                } else if (causa instanceof ProductoNoEncontradoException || causa instanceof ServicioNoEncontradoException) {
+                    GestorAlertas.mostrarAlertaError(
+                            "Item NO Encontrado", null,
+                            "Error:  " + causa.getMessage()
+                    );
+                } else if (causa instanceof IllegalArgumentException){
+                    GestorAlertas.mostrarAlertaError(
+                            "Error en los Datos Ingresados", null,
+                            "Error:  " + causa.getMessage()
+                    );
+                } else {
+                    this.manejarErrorCritico(causa);
+                }
+            });
+            return null;
+        }).whenComplete((resultado, excepcion)->{
+            Platform.runLater(this::restaurarFocoCodigo);
+        });
     }
 
-    private void actualizarTablaYTotales() {
-        List<ItemCarritoDTO> itemsDelCarrito = this.orquestadorVentas
-                .obtenerVistaPreviaCarrito(this.sesionVenta, obtenerFecha())
-                .carritoItems();
+    private void actualizarTablaYTotales(List<ItemCarritoDTO> itemsDelCarrito) {
         listaCarrito.setAll(itemsDelCarrito);
         BigDecimal subtotalVenta = BigDecimal.ZERO;
         BigDecimal impuestos = BigDecimal.ZERO;
         for (ItemCarritoDTO item : itemsDelCarrito) {
             subtotalVenta = subtotalVenta.add(item.subtotal());
-            impuestos = impuestos.add(item.impuestos()).multiply(BigDecimal.valueOf(item.cantidad()));
+            impuestos = impuestos.add(
+                    item.impuestos().multiply(BigDecimal.valueOf(item.cantidad()))
+            );
         }
         BigDecimal totalGeneral = subtotalVenta;
         subtotalVenta = subtotalVenta.subtract(impuestos);
         lblSubtotal.setText(FormateadorNumeros.formatoMoneda(subtotalVenta));
         lblImpuestos.setText(FormateadorNumeros.formatoMoneda(impuestos));
         lblTotalGeneral.setText(FormateadorNumeros.formatoMoneda(totalGeneral));
+    }
+
+    private void manejarErrorCritico(Throwable causa) {
+        GestorAlertas.mostrarAlertaError(
+                "Error Crítico",
+                "NO se pudo Completar la Acción.",
+                "Notifícale al Administrador este Error:\n" + causa.getMessage()
+        );
+    }
+
+    private void restaurarFocoCodigo() {
+        Platform.runLater(() -> txtCodigo.requestFocus());
     }
 
 
@@ -256,31 +283,40 @@ public class MenuDeVentasControlador {
         if (itemSeleccionado == null) {
             return;
         }
-        Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        alertaConfirmacion.setTitle("Confirmar Eliminación");
-        alertaConfirmacion.setHeaderText("¿Eliminar ítem?");
-        alertaConfirmacion.setContentText("¿Está seguro de que desea retirar -" + itemSeleccionado.nombreArticulo() +
-                "- del carrito?");
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
-        if (urlCss != null) {
-            alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
-        }
-        Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
-        if (resultado.isEmpty() || resultado.get() != ButtonType.OK) {
+        boolean respuesta = GestorAlertas.mostrarConfirmacion(
+                "Confirmar Eliminación",
+                "¿Eliminar ítem?",
+                "¿Está seguro de que desea retirar -" + itemSeleccionado.nombreArticulo() +
+                        "- del carrito?"
+        );
+        if (!respuesta) {
             txtCodigo.requestFocus();
             return;
         }
-        try {
-            this.orquestadorVentas.eliminarItemDelCarrito(this.sesionVenta, itemSeleccionado.codigoArticulo());
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                    "Item Eliminado del Carrito con Éxito ");
-            actualizarTablaYTotales();
-        } catch (IllegalArgumentException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Error en el Proceso",
-                    "Error:  " + e.getMessage());
-        } finally {
-            txtCodigo.requestFocus();
-        }
+        CompletableFuture.supplyAsync(()->
+            this.orquestadorVentas.eliminarItemDelCarrito(
+                    this.sesionVenta, itemSeleccionado.codigoArticulo(), obtenerFecha()
+            )
+        ).thenAccept(carritoActualizado->{
+            Platform.runLater(()->{
+                actualizarTablaYTotales(carritoActualizado.carritoItems());
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                if (causa instanceof IllegalArgumentException) {
+                    GestorAlertas.mostrarAlertaError(
+                            "Error en el Proceso", null,
+                            "Error:  " + causa.getMessage()
+                    );
+                } else {
+                    manejarErrorCritico(causa);
+                }
+            });
+            return null;
+        }).whenComplete((resultado, excepcion)->{
+            Platform.runLater(this::restaurarFocoCodigo);
+        });
     }
 
 
@@ -293,29 +329,37 @@ public class MenuDeVentasControlador {
         if (listaCarrito == null || listaCarrito.isEmpty()) {
             return;
         }
-        Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        alertaConfirmacion.setTitle("Cancelar Venta");
-        alertaConfirmacion.setHeaderText("¿Desea Cancelar Toda la Venta?");
-        alertaConfirmacion.setContentText("Se Eliminarán Todos los Productos del Carrito. Esta Acción NO se puede Deshacer.");
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
-        if (urlCss != null) {
-            alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        boolean respuesta = GestorAlertas.mostrarConfirmacion(
+                "Cancelar Venta",
+                "¿Desea Cancelar Toda la Venta?",
+                "Se Eliminarán Todos los Productos del Carrito. Esta Acción NO se puede Deshacer."
+        );
+        if (!respuesta){
+            txtCodigo.requestFocus();
+            return;
         }
-        Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
-        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            try {
-                this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
-                actualizarTablaYTotales();
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Venta Cancelada",
-                        "Se ha Cancelado la Venta y vaciado el Carrito con Éxito.");
-
-            } finally {
+        CompletableFuture.runAsync(()->
+                this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta)
+        ).thenRun(()->{
+            Platform.runLater(()->{
+                actualizarTotales();
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Venta Cancelada", null,
+                        "Se ha Cancelado la Venta y vaciado el Carrito con Éxito."
+                );
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                manejarErrorCritico(causa);
+            });
+            return null;
+        }).whenComplete((resultado, excepcion)->
+            Platform.runLater(()->{
                 txtCodigo.clear();
                 txtCodigo.requestFocus();
-            }
-        } else {
-            txtCodigo.requestFocus();
-        }
+            })
+        );
     }
 
 
@@ -347,10 +391,10 @@ public class MenuDeVentasControlador {
                             "La Cantidad a Aumentar debe ser Mayor a Cero (0).");
                     return;
                 }
-                this.orquestadorVentas.aumentarCantidadItem(
+                VistaPreviaCarritoDTO vistaPreviaCarrito = this.orquestadorVentas.aumentarCantidadItem(
                         this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidadAAumentar, obtenerFecha()
                 );
-                actualizarTablaYTotales();
+                actualizarTablaYTotales(vistaPreviaCarrito.carritoItems());
             } catch (NumberFormatException e) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
                         "Por favor, Ingrese un Número Entero Válido.");
@@ -403,10 +447,10 @@ public class MenuDeVentasControlador {
                             "La cantidad a reducir debe ser mayor a cero (0).");
                     return;
                 }
-                this.orquestadorVentas.reducirCantidadItem(
-                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidadAReducir
+                VistaPreviaCarritoDTO vistaPreviaCarrito = this.orquestadorVentas.reducirCantidadItem(
+                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidadAReducir, obtenerFecha()
                 );
-                actualizarTablaYTotales();
+                actualizarTablaYTotales(vistaPreviaCarrito.carritoItems());
             } catch (NumberFormatException e) {
                 mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
                         "Por favor, ingrese un número entero válido.");
@@ -434,34 +478,32 @@ public class MenuDeVentasControlador {
         if (listaCarrito == null || listaCarrito.isEmpty()) {
             return;
         }
-        Alert alertaConfirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        alertaConfirmacion.setTitle("Confirmar Venta");
-        alertaConfirmacion.setHeaderText("¿Finalizar y registrar la venta?");
-        String total = lblTotalGeneral.getText();
-        alertaConfirmacion.setContentText("Se registrará la venta por un total de " + total + ".\n¿Está seguro de continuar?");
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
-        if (urlCss != null) {
-            alertaConfirmacion.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+
+        int total = 0;
+
+        boolean respuesta = GestorAlertas.mostrarConfirmacion(
+                "Confirmar Venta",
+                "¿Finalizar y registrar la venta?",
+                "Se registrará la venta por un total de " + total + ".\n¿Está seguro de continuar?"
+        );
+        if (!respuesta){
+            txtCodigo.requestFocus();
+            return;
         }
-        Optional<ButtonType> resultado = alertaConfirmacion.showAndWait();
-        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            try {
-                FacturaDTO facturaGenerada = this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha());
-                mostrarVentanaFactura(facturaGenerada);
-                actualizarTablaYTotales();
-            } catch (CarritoVacioException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Carrito Vacío",
-                        "Error:  " + e.getMessage());
-            } catch (StockInsuficienteException e) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Stock Insuficiente",
-                        "Lo Sentimos, volviendo a Verificar el Stock por seguridad nos dimos cuenta de esto:\n" +
-                                e.getMessage() + "\n" +
-                                "No te preocupes el carrito esta intacto");
-            } finally {
-                txtCodigo.clear();
-                txtCodigo.requestFocus();
-            }
-        } else {
+        try {
+            FacturaDTO facturaGenerada = this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha());
+            mostrarVentanaFactura(facturaGenerada);
+            actualizarTotales();
+        } catch (CarritoVacioException e) {
+            mostrarAlerta(Alert.AlertType.WARNING, "Carrito Vacío",
+                    "Error:  " + e.getMessage());
+        } catch (StockInsuficienteException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Stock Insuficiente",
+                    "Lo Sentimos, volviendo a Verificar el Stock por seguridad nos dimos cuenta de esto:\n" +
+                            e.getMessage() + "\n" +
+                            "No te preocupes el carrito esta intacto");
+        } finally {
+            txtCodigo.clear();
             txtCodigo.requestFocus();
         }
     }
@@ -485,7 +527,7 @@ public class MenuDeVentasControlador {
             stageFactura.setScene(escenaFactura);
             stageFactura.showAndWait();
         } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
     }
 

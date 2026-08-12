@@ -54,51 +54,53 @@ public class OrquestadorVentas {
         );
     }
 
-    public void agregarItemAlCarrito(SesionVenta sesionVenta, String codigoItem, LocalDate fecha){
+    public VistaPreviaCarritoDTO agregarItemAlCarrito(SesionVenta sesionVenta, String codigoItem, LocalDate fecha){
         if (this.servicioProductos.existeProducto(codigoItem)){
             this.servicioCarrito.agregarProductoAlCarrito(sesionVenta.getCarrito(), codigoItem, 1, fecha);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         if (this.servicioServicios.existeServicio(codigoItem)){
             this.servicioCarrito.agregarServicioAlCarrito(sesionVenta.getCarrito(), codigoItem, 1);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
     }
 
-    public void aumentarCantidadItem(SesionVenta sesionVenta, String codigoItem, int cantidad, LocalDate fecha){
+    public VistaPreviaCarritoDTO aumentarCantidadItem(SesionVenta sesionVenta, String codigoItem, int cantidad, LocalDate fecha){
         if (this.servicioCarrito.productoEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
             this.servicioCarrito.agregarProductoAlCarrito(sesionVenta.getCarrito(), codigoItem, cantidad, fecha);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         if (this.servicioCarrito.servicioEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
             this.servicioCarrito.agregarServicioAlCarrito(sesionVenta.getCarrito(), codigoItem, cantidad);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
     }
 
-    public void reducirCantidadItem(SesionVenta sesionVenta, String codigoItem, int cantidadAReducir){
+    public VistaPreviaCarritoDTO reducirCantidadItem(
+            SesionVenta sesionVenta, String codigoItem, int cantidadAReducir, LocalDate fecha
+    ){
         if (this.servicioCarrito.productoEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
             this.servicioCarrito.reducirCantidadProducto(sesionVenta.getCarrito(), codigoItem, cantidadAReducir);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         if (this.servicioCarrito.servicioEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
             this.servicioCarrito.reducirCantidadServicio(sesionVenta.getCarrito(), codigoItem, cantidadAReducir);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
 
     }
 
-    public void eliminarItemDelCarrito(SesionVenta sesionVenta, String codigoItem){
+    public VistaPreviaCarritoDTO eliminarItemDelCarrito(SesionVenta sesionVenta, String codigoItem, LocalDate fecha){
         if (this.servicioCarrito.productoEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
             this.servicioCarrito.eliminarProductoAlCarrito(sesionVenta.getCarrito(), codigoItem);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         if (this.servicioCarrito.servicioEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
             this.servicioCarrito.eliminarServicioAlCarrito(sesionVenta.getCarrito(), codigoItem);
-            return;
+            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
         }
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
     }
