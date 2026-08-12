@@ -150,7 +150,7 @@ public class CrearProductoControlador {
 
     private void cargarDatosComboBoxes() {
         List<ImpuestoDTO> impuestos = servicioImpuestos.obtenerImpuestosActivos().stream()
-            .map(i -> new ImpuestoDTO(i.getId(), i.getNombre(), i.getPorcentaje(), "ACTIVO"))
+            .map(i -> new ImpuestoDTO(i.getId(), i.getNombre(), i.getPorcentaje(), true))
             .toList();
         cbImpuesto.setItems(FXCollections.observableArrayList(impuestos));
         List<DescuentoDTO> descuentos = servicioDescuentos.obtenerDescuentosActivos().stream()

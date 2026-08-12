@@ -324,7 +324,7 @@ public class GestionPoliticasVencimientoControlador {
         boolean esActivo = politicaSeleccionado.estado().equalsIgnoreCase("Activo");
         String accion = esActivo ? "Desactivar" : "Activar";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de estado");
+        confirmacion.setTitle("Confirmar cambio de activo");
         confirmacion.setHeaderText(null);
         confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " la Política -" +
                 politicaSeleccionado.nombrePolitica() + "-?");

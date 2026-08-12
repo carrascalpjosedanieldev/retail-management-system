@@ -116,9 +116,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
 
     @Override
-    public List<Descuento> obtenerDescuentosInactivos() {
+    public List<Descuento> obtenerTodosLosDescuentos() {
         List<Descuento> descuentos = new ArrayList<>();
-        String sql = "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE activo = false";
+        String sql = "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos ORDER BY activo DESC, id_descuento ASC";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);

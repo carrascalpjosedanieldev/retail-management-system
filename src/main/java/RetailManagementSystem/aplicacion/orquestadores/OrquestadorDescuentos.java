@@ -6,7 +6,6 @@ import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrquestadorDescuentos {
@@ -27,16 +26,9 @@ public class OrquestadorDescuentos {
     //MÉTODOS:
 
     public List<DescuentoDTO> obtenerTodosLosDescuentos() {
-        List<DescuentoDTO> activos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                this.servicioDescuentos.obtenerDescuentosActivos()
+        return this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
+                this.servicioDescuentos.obtenerTodosLosDescuentos()
         );
-        List<DescuentoDTO> inactivos = this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
-                this.servicioDescuentos.obtenerDescuentosInactivos()
-        );
-        List<DescuentoDTO> todosLosDescuentos = new ArrayList<>();
-        todosLosDescuentos.addAll(activos);
-        todosLosDescuentos.addAll(inactivos);
-        return todosLosDescuentos;
     }
 
     public DescuentoDTO registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo) {

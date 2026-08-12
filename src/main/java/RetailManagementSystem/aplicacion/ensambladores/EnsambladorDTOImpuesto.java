@@ -12,14 +12,8 @@ public class EnsambladorDTOImpuesto {
     }
 
     public ImpuestoDTO ensamblarDatosImpuesto(Impuesto impuesto){
-        String estado;
-        if (impuesto.isActivo()){
-            estado = "Activo";
-        } else {
-            estado = "Inactivo";
-        }
         return new ImpuestoDTO(
-                impuesto.getId(), impuesto.getNombre(), impuesto.getPorcentaje(), estado
+                impuesto.getId(), impuesto.getNombre(), impuesto.getPorcentaje(), impuesto.isActivo()
         );
     }
 

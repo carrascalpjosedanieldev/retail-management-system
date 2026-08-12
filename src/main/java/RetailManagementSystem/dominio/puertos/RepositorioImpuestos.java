@@ -8,7 +8,7 @@ public interface RepositorioImpuestos {
 
     //CREATE:
 
-    void insertarImpuesto(Impuesto impuesto);
+    Impuesto insertarImpuesto(Impuesto impuesto);
 
     //READ:
 
@@ -16,7 +16,7 @@ public interface RepositorioImpuestos {
 
     List<Impuesto> obtenerImpuestosActivos();
 
-    List<Impuesto> obtenerImpuestosInactivos();
+    List<Impuesto> obtenerTodosLosImpuestos();
 
     //UPDATE:
 

@@ -16,7 +16,7 @@ public interface RepositorioDescuentos {
 
     List<Descuento> obtenerDescuentosActivos();
 
-    List<Descuento> obtenerDescuentosInactivos();
+    List<Descuento> obtenerTodosLosDescuentos();
 
     //UPDATE:
 

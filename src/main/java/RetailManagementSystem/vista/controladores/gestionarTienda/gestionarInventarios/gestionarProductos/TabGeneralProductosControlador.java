@@ -280,7 +280,7 @@ public class TabGeneralProductosControlador {
         }
         String textoNuevoEstado = seleccionado.disponible() ? "NO DISPONIBLE" : "DISPONIBLE";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de estado");
+        confirmacion.setTitle("Confirmar cambio de activo");
         confirmacion.setHeaderText("Vas a modificar el producto: " + seleccionado.nombre());
         confirmacion.setContentText("¿Estás Seguro de que Deseas Marcar este Producto como " + textoNuevoEstado + "?");
         DialogPane pane = confirmacion.getDialogPane();

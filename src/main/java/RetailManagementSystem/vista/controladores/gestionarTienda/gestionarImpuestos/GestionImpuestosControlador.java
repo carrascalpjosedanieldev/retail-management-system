@@ -85,7 +85,11 @@ public class GestionImpuestosControlador {
         colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idImpuesto()));
         colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
         colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentaje()));
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
+        colEstado.setCellValueFactory(celda -> {
+            boolean esActivo = celda.getValue().activo();
+            String textoEstado = esActivo ? "Activo" : "Inactivo";
+            return new SimpleStringProperty(textoEstado);
+        });
         colEstado.setCellFactory(columna -> new TableCell<>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
@@ -118,16 +122,9 @@ public class GestionImpuestosControlador {
     }
 
     private void cargarDatosTabla() {
-        List<ImpuestoDTO> activos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                servicioImpuestos.obtenerImpuestosActivos()
+        List<ImpuestoDTO> todosLosImpuestos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+                servicioImpuestos.obtenerTodosLosImpuestos()
         );
-        List<ImpuestoDTO> inactivos = ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
-                servicioImpuestos.obtenerImpuestosInactivos()
-        );
-        List<ImpuestoDTO> todosLosImpuestos = Stream.concat(
-                activos != null ? activos.stream() : Stream.empty(),
-                inactivos != null ? inactivos.stream() : Stream.empty()
-        ).toList();
         listaObservableImpuestos.setAll(todosLosImpuestos);
     }
 
@@ -290,12 +287,12 @@ public class GestionImpuestosControlador {
                     "Por favor, Selecciona un Impuesto de la Tabla para Cambiar su Estado.");
             return;
         }
-        boolean esActivo = impuestoSeleccionado.estado().equalsIgnoreCase("Activo");
-        String accion = esActivo ? "Desactivar" : "Activar";
+        //boolean esActivo = impuestoSeleccionado.activo().equalsIgnoreCase("Activo");
+        //String accion = esActivo ? "Desactivar" : "Activar";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de estado");
+        confirmacion.setTitle("Confirmar cambio de activo");
         confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " el Impuesto -" + impuestoSeleccionado.nombre() + "-?");
+        confirmacion.setContentText("¿Estás seguro de que deseas " + " el Impuesto -" + impuestoSeleccionado.nombre() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
         panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
         aplicarCSS(panelConfirmacion);

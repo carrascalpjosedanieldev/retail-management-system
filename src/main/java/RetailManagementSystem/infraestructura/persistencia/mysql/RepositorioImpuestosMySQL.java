@@ -15,7 +15,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     //CREATE:
 
     @Override
-    public void insertarImpuesto(Impuesto impuesto) {
+    public Impuesto insertarImpuesto(Impuesto impuesto) {
         String sql = "INSERT INTO impuestos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
@@ -34,7 +34,12 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    Impuesto.reconstruirDesdeBD(idReal, impuesto.getNombre(), impuesto.getPorcentaje(), impuesto.isActivo());
+                    return Impuesto.reconstruirDesdeBD(
+                            idReal,
+                            impuesto.getNombre(),
+                            impuesto.getPorcentaje(),
+                            impuesto.isActivo()
+                    );
                 } else {
                     throw new PersistenciaException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
@@ -110,9 +115,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
 
     @Override
-    public List<Impuesto> obtenerImpuestosInactivos() {
+    public List<Impuesto> obtenerTodosLosImpuestos() {
         List<Impuesto> impuestos = new ArrayList<>();
-        String sql = "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE activo = false";
+        String sql = "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos ORDER BY activo DESC, id_impuesto ASC";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);

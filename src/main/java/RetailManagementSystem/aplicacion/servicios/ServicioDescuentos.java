@@ -55,8 +55,8 @@ public class ServicioDescuentos {
         return this.repositorioDescuentos.obtenerDescuentosActivos();
     }
 
-    public List<Descuento> obtenerDescuentosInactivos(){
-        return this.repositorioDescuentos.obtenerDescuentosInactivos();
+    public List<Descuento> obtenerTodosLosDescuentos(){
+        return this.repositorioDescuentos.obtenerTodosLosDescuentos();
     }
 
 }//===================================================================================================================//

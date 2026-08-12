@@ -8,26 +8,33 @@ import java.util.List;
 
 public class ServicioImpuestos {
 
+    //ATRIBUTOS:
+
     private final RepositorioImpuestos repositorioImpuestos;
+
+    //CONSTRUCTOR:
 
     public ServicioImpuestos(RepositorioImpuestos repositorioImpuestos) {
         this.repositorioImpuestos = repositorioImpuestos;
     }
 
-    public void registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo){
+    //MÉTODOS:
+
+    public Impuesto registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo){
         Impuesto impuesto = Impuesto.crearNuevo(nombre, porcentaje, activo);
-        this.repositorioImpuestos.insertarImpuesto(impuesto);
+        return this.repositorioImpuestos.insertarImpuesto(impuesto);
     }
 
     public Impuesto obtenerImpuesto(int idImpuesto){
         return this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
     }
 
-    public void actualizarImpuesto(int idImpuesto, String nombre, BigDecimal porcentaje){
+    public Impuesto actualizarImpuesto(int idImpuesto, String nombre, BigDecimal porcentaje){
         Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
         impuesto.cambiarNombre(nombre);
         impuesto.cambiarPorcentaje(porcentaje);
         this.repositorioImpuestos.actualizarImpuesto(impuesto);
+        return impuesto;
     }
 
     private void actualizarImpuesto(Impuesto impuesto){
@@ -48,8 +55,8 @@ public class ServicioImpuestos {
         return this.repositorioImpuestos.obtenerImpuestosActivos();
     }
 
-    public List<Impuesto> obtenerImpuestosInactivos(){
-        return this.repositorioImpuestos.obtenerImpuestosInactivos();
+    public List<Impuesto> obtenerTodosLosImpuestos(){
+        return this.repositorioImpuestos.obtenerTodosLosImpuestos();
     }
 
 }//===================================================================================================================//
