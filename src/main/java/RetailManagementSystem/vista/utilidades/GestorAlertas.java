@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.utilidades;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
+import javafx.scene.layout.Region;
 
 import java.net.URL;
 import java.util.Optional;
@@ -15,13 +16,11 @@ public class GestorAlertas {
         alerta.setHeaderText(encabezado);
         alerta.setContentText(contenido);
         DialogPane panelAlerta = alerta.getDialogPane();
-        URL urlCss = GestorAlertas.class.getResource(RutasVista.ESTILOS_CSS_ALERTA_DE_NAVEGACION);
+        URL urlCss = GestorAlertas.class.getResource(RutasVista.ESTILOS_CSS_ALERTAS);
         if (urlCss != null) {
             panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            panelAlerta.setPrefSize(500, 280);
-        } else {
-            panelAlerta.setPrefSize(500, 180);
         }
+        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
         alerta.showAndWait();
     }
 
@@ -44,14 +43,11 @@ public class GestorAlertas {
         confirmacion.setHeaderText(encabezado);
         confirmacion.setContentText(contenido);
         DialogPane panelAlerta = confirmacion.getDialogPane();
-        URL urlCss = GestorAlertas.class.getResource(RutasVista.ESTILOS_CSS_ALERTA_DE_NAVEGACION);
+        URL urlCss = GestorAlertas.class.getResource(RutasVista.ESTILOS_CSS_ALERTAS);
         if (urlCss != null) {
             panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-            panelAlerta.setPrefSize(500, 280);
-        } else {
-            panelAlerta.setPrefSize(500, 180);
         }
-        confirmacion.showAndWait();
+        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         return respuesta.isPresent() && respuesta.get() == ButtonType.OK;
     }

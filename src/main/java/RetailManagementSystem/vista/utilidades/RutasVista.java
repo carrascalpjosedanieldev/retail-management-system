@@ -7,6 +7,9 @@ public class RutasVista {
     public static final String ESTILOS_CSS_ALERTA_DE_NAVEGACION =
             "/css/alertas/estilosCssAlertaDeNavegacion.css";
 
+    public static final String ESTILOS_CSS_ALERTAS =
+            "/css/alertas/estilosCssAlertas.css";
+
 
     //MENU PRINCIPAL:
 

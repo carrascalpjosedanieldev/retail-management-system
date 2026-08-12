@@ -4,7 +4,6 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
-import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -20,11 +19,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.scene.control.TableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -129,62 +126,6 @@ public class GestionDescuentosControlador {
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
-        });
-    }
-
-
-    private Dialog<ButtonType> crearDialogo(String titulo, String cabecera, String textoBotonAccion) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(titulo);
-        dialog.setHeaderText(cabecera);
-        DialogPane dialogPane = dialog.getDialogPane();
-        //aplicarCSS(dialogPane); Metodo que ya borramos y que me hizo un desorden en el css
-        ButtonType btnAccion = new ButtonType(textoBotonAccion, ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
-        return dialog;
-    }
-
-    private GridPane crearGridPane(){
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20, 20, 20, 20));
-        return grid;
-    }
-
-    private void validarCampos(Dialog<ButtonType> dialog, TextField campoNombre, TextField campoPorcentaje){
-        ButtonType btnTipoGuardar = dialog.getDialogPane().getButtonTypes().stream()
-                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
-                .findFirst().orElse(null);
-        Button botonFisicoGuardar = (Button) dialog.getDialogPane().lookupButton(btnTipoGuardar);
-        botonFisicoGuardar.addEventFilter(ActionEvent.ACTION, event -> {
-            String nombre = campoNombre.getText().trim();
-            String porcentajeTexto = campoPorcentaje.getText().trim();
-            if (nombre.isEmpty()) {
-                GestorAlertas.mostrarAlertaError(
-                        "Error de Validación", null,
-                        "El Nombre del Descuento NO puede estar Vacío."
-                );
-                event.consume();
-                return;
-            }
-            if (porcentajeTexto.isEmpty()) {
-                GestorAlertas.mostrarAlertaError(
-                        "Error de Validación", null,
-                        "El Porcentaje del Descuento NO puede estar Vacío"
-                );
-                event.consume();
-                return;
-            }
-            try {
-                FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-            } catch (NumberFormatException e) {
-                GestorAlertas.mostrarAlertaWarning(
-                        "Número Inválido", null,
-                        "Error al Ingresar el Porcentaje:\n" + e.getMessage()
-                );
-                event.consume();
-            }
         });
     }
 
