@@ -66,7 +66,9 @@ public class OrquestadorVentas {
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
     }
 
-    public VistaPreviaCarritoDTO aumentarCantidadItem(SesionVenta sesionVenta, String codigoItem, int cantidad, LocalDate fecha){
+    public VistaPreviaCarritoDTO aumentarCantidadItem(
+            SesionVenta sesionVenta, String codigoItem, int cantidad, LocalDate fecha
+    ) {
         if (this.servicioCarrito.productoEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
             this.servicioCarrito.agregarProductoAlCarrito(sesionVenta.getCarrito(), codigoItem, cantidad, fecha);
             return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
@@ -105,8 +107,9 @@ public class OrquestadorVentas {
         throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
     }
 
-    public void cancelarCompraTotal(SesionVenta sesionVenta){
+    public VistaPreviaCarritoDTO cancelarCompraTotal(SesionVenta sesionVenta, LocalDate fecha){
         this.servicioCarrito.cancelarCompraTotal(sesionVenta.getCarrito());
+        return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
     public FacturaDTO procesarVentaYObtenerFactura(SesionVenta sesionVenta, LocalDate fecha){

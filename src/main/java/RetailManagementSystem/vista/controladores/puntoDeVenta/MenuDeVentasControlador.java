@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
-import RetailManagementSystem.aplicacion.dto.ventas.VistaPreviaCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
 import RetailManagementSystem.dominio.excepciones.*;
@@ -31,10 +30,8 @@ import javafx.beans.binding.Bindings;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class MenuDeVentasControlador {
@@ -75,18 +72,6 @@ public class MenuDeVentasControlador {
 
     private LocalDate obtenerFecha(){
         return LocalDate.now();
-    }
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alert = new Alert(tipo);
-        alert.setTitle(titulo);
-        alert.setHeaderText(null);
-        alert.setContentText(mensaje);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
-        if (urlCss != null) {
-            alert.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
-        }
-        alert.showAndWait();
     }
 
 
@@ -181,7 +166,23 @@ public class MenuDeVentasControlador {
             if (!respuesta) {
                 return;
             }
-            this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta);
+            CompletableFuture.supplyAsync(()->
+                    this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta, obtenerFecha())
+            ).thenAccept(carritoActualizado->{
+                Platform.runLater(()->{
+                    actualizarTablaYTotales(carritoActualizado.carritoItems());
+                    GestorAlertas.mostrarAlertaInformacion(
+                            "Venta Cancelada", null,
+                            "Se ha Cancelado la Venta y vaciado el Carrito con Éxito."
+                    );
+                });
+            }).exceptionally(ex->{
+                Platform.runLater(()->{
+                    Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                    manejarErrorCritico(causa);
+                });
+                return null;
+            });
         }
         Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
@@ -244,6 +245,11 @@ public class MenuDeVentasControlador {
     }
 
     private void actualizarTablaYTotales(List<ItemCarritoDTO> itemsDelCarrito) {
+        if (itemsDelCarrito == null || itemsDelCarrito.isEmpty()){
+            listaCarrito.clear();
+            actualizarTotales();
+            return;
+        }
         listaCarrito.setAll(itemsDelCarrito);
         BigDecimal subtotalVenta = BigDecimal.ZERO;
         BigDecimal impuestos = BigDecimal.ZERO;
@@ -338,11 +344,11 @@ public class MenuDeVentasControlador {
             txtCodigo.requestFocus();
             return;
         }
-        CompletableFuture.runAsync(()->
-                this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta)
-        ).thenRun(()->{
+        CompletableFuture.supplyAsync(()->
+                this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta, obtenerFecha())
+        ).thenAccept(carritoActualizado->{
             Platform.runLater(()->{
-                actualizarTotales();
+                actualizarTablaYTotales(carritoActualizado.carritoItems());
                 GestorAlertas.mostrarAlertaInformacion(
                         "Venta Cancelada", null,
                         "Se ha Cancelado la Venta y vaciado el Carrito con Éxito."
@@ -365,106 +371,64 @@ public class MenuDeVentasControlador {
 
     @FXML
     public void aumentarCantidadSeleccionada(ActionEvent event) {
-        aumentarCantidadSeleccionada();
+        gestionarCambioCantidad(true);
     }
-
-    private void aumentarCantidadSeleccionada(){
-        ItemCarritoDTO itemSeleccionado = tablaCarrito.getSelectionModel().getSelectedItem();
-        if (itemSeleccionado == null) {
-            return;
-        }
-        TextInputDialog dialogo = new TextInputDialog("1");
-        dialogo.setTitle("Aumentar Cantidad");
-        dialogo.setHeaderText("Aumentar unidades de: " + itemSeleccionado.nombreArticulo());
-        dialogo.setContentText("Ingrese la cantidad adicional a agregar:");
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
-        if (urlCss != null) {
-            dialogo.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
-        }
-        Optional<String> resultado = dialogo.showAndWait();
-        if (resultado.isPresent()) {
-            String entrada = resultado.get().trim();
-            try {
-                int cantidadAAumentar = Integer.parseInt(entrada);
-                if (cantidadAAumentar <= 0) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Cantidad Inválida",
-                            "La Cantidad a Aumentar debe ser Mayor a Cero (0).");
-                    return;
-                }
-                VistaPreviaCarritoDTO vistaPreviaCarrito = this.orquestadorVentas.aumentarCantidadItem(
-                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidadAAumentar, obtenerFecha()
-                );
-                actualizarTablaYTotales(vistaPreviaCarrito.carritoItems());
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
-                        "Por favor, Ingrese un Número Entero Válido.");
-            } catch (StockInsuficienteException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
-                        "Error:  " + e.getMessage());
-            } catch (ProductoNoDisponibleException | ServicioNoDisponibleExeption e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Item NO Disponible",
-                        e.getMessage() + " NO sera agregado al Carrito");
-            } catch (ProductoVencidoException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Producto Vencido",
-                        e.getMessage() + " NO sera agregado al Carrito");
-            } catch (ProductoNoEncontradoException | ServicioNoEncontradoException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Item NO Encontrado",
-                        "Error:  " + e.getMessage());
-            } finally {
-                txtCodigo.requestFocus();
-            }
-        } else {
-            txtCodigo.requestFocus();
-        }
-    }
-
 
     @FXML
     public void reducirCantidadSeleccionada(ActionEvent event) {
-        reducirCantidadSeleccionada();
+        gestionarCambioCantidad(false);
     }
 
-    private void reducirCantidadSeleccionada(){
+    private void gestionarCambioCantidad(boolean esAumento) {
         ItemCarritoDTO itemSeleccionado = tablaCarrito.getSelectionModel().getSelectedItem();
-        if (itemSeleccionado == null) {
-            return;
-        }
-        TextInputDialog dialogo = new TextInputDialog("1");
-        dialogo.setTitle("Reducir Cantidad");
-        dialogo.setHeaderText("Reducir unidades de: " + itemSeleccionado.nombreArticulo());
-        dialogo.setContentText("Ingrese la cantidad a reducir:");
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_MENU_DE_VENTAS);
-        if (urlCss != null) {
-            dialogo.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
-        }
-        Optional<String> resultado = dialogo.showAndWait();
-        if (resultado.isPresent()) {
-            String entrada = resultado.get().trim();
-            try {
-                int cantidadAReducir = Integer.parseInt(entrada);
-                if (cantidadAReducir <= 0) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Cantidad Inválida",
-                            "La cantidad a reducir debe ser mayor a cero (0).");
-                    return;
-                }
-                VistaPreviaCarritoDTO vistaPreviaCarrito = this.orquestadorVentas.reducirCantidadItem(
-                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidadAReducir, obtenerFecha()
-                );
-                actualizarTablaYTotales(vistaPreviaCarrito.carritoItems());
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Entrada Inválida",
-                        "Por favor, ingrese un número entero válido.");
-            } catch (StockInsuficienteException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
-                        "Error:  " + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos Ingresados",
-                        "Error:  " + e.getMessage());
-            } finally {
-                txtCodigo.requestFocus();
+        if (itemSeleccionado == null) return;
+        String rutaFxml = RutasVista.DIALOGO_CANTIDAD_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            DialogoCantidadControlador controladorDialogo = loader.getController();
+            String titulo = esAumento ? "Aumentar" : "Reducir";
+            controladorDialogo.configurarDialogo(titulo, 1, itemSeleccionado.nombreArticulo());
+            Stage stageModal = new Stage();
+            stageModal.setScene(new Scene(root));
+            stageModal.initModality(Modality.APPLICATION_MODAL);
+            stageModal.showAndWait();
+            if (!controladorDialogo.isConfirmado()) {
+                restaurarFocoCodigo();
+                return;
             }
-        } else {
-            txtCodigo.requestFocus();
+            int cantidad = controladorDialogo.getCantidadFinal();
+            CompletableFuture.supplyAsync(() -> {
+                if (esAumento) {
+                    return this.orquestadorVentas.aumentarCantidadItem(
+                            this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+                } else {
+                    return this.orquestadorVentas.reducirCantidadItem(
+                            this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+                }
+            }).thenAccept(carritoActualizado -> {
+                Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()));
+            }).exceptionally(ex -> {
+                Platform.runLater(() -> {
+                    Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                    if (causa instanceof IllegalArgumentException){
+                        GestorAlertas.mostrarAlertaError(
+                                "Entrada Inválida", null,
+                                "Por favor, Ingrese un Número Entero Válido."
+                        );
+                    } else if (causa instanceof StockInsuficienteException) {
+                        GestorAlertas.mostrarAlertaError(
+                                "Stock Insuficiente", null,
+                                "Error:  " + causa.getMessage()
+                        );
+                    } else {
+                        manejarErrorCritico(causa);
+                    }
+                });
+                return null;
+            }).whenComplete((resultado, excepcion) -> restaurarFocoCodigo());
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
     }
 
@@ -478,34 +442,49 @@ public class MenuDeVentasControlador {
         if (listaCarrito == null || listaCarrito.isEmpty()) {
             return;
         }
-
-        int total = 0;
-
+        String total = lblTotalGeneral.getText().trim();
         boolean respuesta = GestorAlertas.mostrarConfirmacion(
                 "Confirmar Venta",
-                "¿Finalizar y registrar la venta?",
-                "Se registrará la venta por un total de " + total + ".\n¿Está seguro de continuar?"
+                "¿Finalizar y Registrar la Venta?",
+                "Se Registrará la Venta por un Total de " + total + ".\n¿Está seguro de continuar?"
         );
         if (!respuesta){
             txtCodigo.requestFocus();
             return;
         }
-        try {
-            FacturaDTO facturaGenerada = this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha());
-            mostrarVentanaFactura(facturaGenerada);
-            actualizarTotales();
-        } catch (CarritoVacioException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Carrito Vacío",
-                    "Error:  " + e.getMessage());
-        } catch (StockInsuficienteException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Stock Insuficiente",
-                    "Lo Sentimos, volviendo a Verificar el Stock por seguridad nos dimos cuenta de esto:\n" +
-                            e.getMessage() + "\n" +
-                            "No te preocupes el carrito esta intacto");
-        } finally {
+        CompletableFuture.supplyAsync(()->
+                this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha())
+        ).thenAccept(facturaGenerada -> {
+            Platform.runLater(()->{
+                mostrarVentanaFactura(facturaGenerada);
+                actualizarTotales();
+                actualizarTablaYTotales(null);
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                if (causa instanceof CarritoVacioException){
+                    GestorAlertas.mostrarAlertaError(
+                            "Carrito Vacío", null,
+                            "Error:  " + causa.getMessage()
+                    );
+                } else if (causa instanceof StockInsuficienteException){
+                    GestorAlertas.mostrarAlertaError(
+                            "Stock Insuficiente", null,
+                            "Lo Sentimos, volviendo a Verificar el Stock por seguridad nos dimos cuenta de esto:\n" +
+                                    causa.getMessage() + "\n" +
+                                    "No te preocupes el carrito esta Intacto pero debes modificarlo."
+                    );
+                } else {
+                    manejarErrorCritico(causa);
+                }
+            });
+            return null;
+        }).whenComplete((resultado, excepcion)->{
             txtCodigo.clear();
-            txtCodigo.requestFocus();
-        }
+            restaurarFocoCodigo();
+        });
+
     }
 
     private void mostrarVentanaFactura(FacturaDTO factura) {
@@ -520,10 +499,6 @@ public class MenuDeVentasControlador {
             stageFactura.initModality(Modality.APPLICATION_MODAL);
             stageFactura.setResizable(false);
             Scene escenaFactura = new Scene(root);
-            URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_FACTURA_GENERADA);
-            if (urlCss != null) {
-                escenaFactura.getStylesheets().add(urlCss.toExternalForm());
-            }
             stageFactura.setScene(escenaFactura);
             stageFactura.showAndWait();
         } catch (IOException e) {
