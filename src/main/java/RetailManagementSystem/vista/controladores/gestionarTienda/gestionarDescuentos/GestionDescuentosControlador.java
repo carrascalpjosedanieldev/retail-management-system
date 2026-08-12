@@ -223,53 +223,22 @@ public class GestionDescuentosControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        abrirFormularioNuevo();
-    }
-
-    private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = crearDialogo("Registrar Nuevo Descuento",
-                "Ingresa los detalles del nuevo descuento.", "Guardar");
-        TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Ej. Navidad 2024");
-        txtNombre.setPrefWidth(250);
-        TextField txtPorcentaje = new TextField();
-        txtPorcentaje.setPromptText("Ej. 15.5");
-        CheckBox chkActivo = new CheckBox("¿Descuento Activo?");
-        chkActivo.setSelected(true);
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Porcentaje (%):"), 0, 1);
-        grid.add(txtPorcentaje, 1, 1);
-        grid.add(chkActivo, 1, 2);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPorcentaje);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                String nombre = txtNombre.getText().trim();
-                String porcentajeTexto = txtPorcentaje.getText().trim();
-                boolean activo = chkActivo.isSelected();
-                try {
-                    BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
-                    this.orquestadorDescuentos.registrarDescuento(nombre, porcentaje, activo);
-                    GestorAlertas.mostrarAlertaInformacion(
-                            "Éxito", null,
-                            "El descuento se ha guardado correctamente."
-                    );
-                    cargarDatosTabla();
-                } catch (NumberFormatException e) {
-                    GestorAlertas.mostrarAlertaError(
-                            "Porcentaje Invalido", null,
-                            "Error:  " + e.getMessage()
-                    );
-                } catch (IllegalArgumentException e) {
-                    GestorAlertas.mostrarAlertaError(
-                            "Error al Registrar el Descuento", null,
-                            "Hay un Error en los Datos Ingresados:\n" + e.getMessage()
-                    );
-                }
-            }
-        });
+        String rutaFxml = RutasVista.CREAR_DESCUENTO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            CrearDescuentoControlador controlador = loader.getController();
+            controlador.cargarDatos(listaObservableDescuentos);
+            Stage stageEdicion = new Stage();
+            stageEdicion.setTitle("Creando Descuento");
+            stageEdicion.initModality(Modality.APPLICATION_MODAL);
+            stageEdicion.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageEdicion.setScene(escenaEdicion);
+            stageEdicion.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 

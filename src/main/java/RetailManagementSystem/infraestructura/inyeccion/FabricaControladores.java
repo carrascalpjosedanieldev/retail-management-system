@@ -1,6 +1,7 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.CrearRolNuevoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.CrearDescuentoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.EditarDescuentoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
@@ -149,6 +150,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == EditarDescuentoControlador.class){
             return new EditarDescuentoControlador(
+                    ContenedorDependencias.getOrquestadorDescuentos()
+            );
+        }
+        if (claseControlador == CrearDescuentoControlador.class){
+            return new CrearDescuentoControlador(
                     ContenedorDependencias.getOrquestadorDescuentos()
             );
         }

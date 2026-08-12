@@ -39,8 +39,9 @@ public class OrquestadorDescuentos {
         return todosLosDescuentos;
     }
 
-    public void registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo) {
-        this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
+    public DescuentoDTO registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo) {
+        Descuento descuento = this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
+        return this.ensambladorDTODescuento.ensamblarDatosDescuento(descuento);
     }
 
     public DescuentoDTO actualizarDescuento(int idDescuento, String nombre, BigDecimal porcentaje) {

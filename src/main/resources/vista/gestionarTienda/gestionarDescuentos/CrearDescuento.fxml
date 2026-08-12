@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -11,16 +12,14 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="420.0" stylesheets="@../../../css/gestionarTienda/gestionarDescuentos/estilosCssEditarDescuento.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.EditarDescuentoControlador">
+<VBox prefWidth="420.0" stylesheets="@../../../css/gestionarTienda/gestionarDescuentos/estilosCssCrearDescuento.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.CrearDescuentoControlador">
 
-    <VBox spacing="15.0" style="-fx-background-color: #ffffff;" styleClass="root">
+    <VBox spacing="15.0" style="-fx-background-color: #ffffff;">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
         </padding>
-        <HBox spacing="5.0">
-            <Label text="Editando el Descuento:" />
-            <Label fx:id="lblNombreDescuento" text="Cargando Nombre ..." />
-        </HBox>
+
+        <Label styleClass="titulo-cabecera" text="Ingresa los detalles del nuevo descuento." />
 
         <Separator prefWidth="200.0" />
 
@@ -30,16 +29,20 @@
                 <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <VBox.margin>
-                <Insets bottom="10.0" top="10.0" />
+                <Insets bottom="10.0" top="5.0" />
             </VBox.margin>
             <Label text="Nombre:" />
             <Label text="Porcentaje (%):" GridPane.rowIndex="1" />
-            <TextField fx:id="txtNombre" promptText="Cargando nombre ..." GridPane.columnIndex="1" />
-            <TextField fx:id="txtPorcentaje" promptText="Cargando porcentaje ..." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <TextField fx:id="txtNombre" promptText="Ej. Navidad 2024" GridPane.columnIndex="1" />
+            <TextField fx:id="txtPorcentaje" promptText="Ej. 15.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <CheckBox fx:id="chkActivo" mnemonicParsing="false" selected="true" text="¿Descuento Activo?" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         </GridPane>
     </VBox>
 
@@ -47,8 +50,8 @@
         <padding>
             <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
         </padding>
-        <Button mnemonicParsing="false" onAction="#actualizarDescuento" prefHeight="39.0" prefWidth="120.0" text="Actualizar" />
-        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#cancelar" prefHeight="39.0" prefWidth="120.0" styleClass="btn-cancelar" text="Cancelar" />
+        <Button mnemonicParsing="false" onAction="#guardarDescuento" prefWidth="100.0" text="Guardar" />
+        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#cancelar" prefWidth="100.0" styleClass="btn-cancelar" text="Cancelar" />
     </HBox>
 
 </VBox>

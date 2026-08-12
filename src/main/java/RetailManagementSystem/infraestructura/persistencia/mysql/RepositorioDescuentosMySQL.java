@@ -15,7 +15,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     //CREATE:
 
     @Override
-    public void insertarDescuento(Descuento descuento) {
+    public Descuento insertarDescuento(Descuento descuento) {
         String sql = "INSERT INTO descuentos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
@@ -34,7 +34,12 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    Descuento.reconstruirDesdeBD(idReal, descuento.getNombre(), descuento.getPorcentaje(), descuento.isActivo());
+                    return Descuento.reconstruirDesdeBD(
+                            idReal,
+                            descuento.getNombre(),
+                            descuento.getPorcentaje(),
+                            descuento.isActivo()
+                    );
                 } else {
                     throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }

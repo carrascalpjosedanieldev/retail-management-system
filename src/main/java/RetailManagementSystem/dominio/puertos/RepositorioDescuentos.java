@@ -8,7 +8,7 @@ public interface RepositorioDescuentos {
 
     //CREATE:
 
-    void insertarDescuento(Descuento Descuento);
+    Descuento insertarDescuento(Descuento Descuento);
 
     //READ:
 

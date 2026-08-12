@@ -4,62 +4,50 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
-public class EditarDescuentoControlador {
+public class CrearDescuentoControlador {
 
     //ATRIBUTOS:
 
     @FXML private Button btnCancelar;
-    @FXML private Label lblNombreDescuento;
+    @FXML private CheckBox chkActivo;
     @FXML private TextField txtNombre;
     @FXML private TextField txtPorcentaje;
 
-    private DescuentoDTO datosDescuento;
+    private final OrquestadorDescuentos orquestadorDescuentos;
 
     private ObservableList<DescuentoDTO> listaObservable;
 
-    private final OrquestadorDescuentos orquestadorDescuentos;
-
     //CONSTRUCTOR:
 
-    public EditarDescuentoControlador(OrquestadorDescuentos orquestadorDescuentos) {
+    public CrearDescuentoControlador(OrquestadorDescuentos orquestadorDescuentos) {
         this.orquestadorDescuentos = orquestadorDescuentos;
     }
 
     //MÉTODOS:
 
-    public void cargarDatos(DescuentoDTO datosDescuento, ObservableList<DescuentoDTO> listaObservable) {
-        if (datosDescuento == null) {
-            throw new IllegalArgumentException("No puedes editar un Descuento Vacío.");
-        }
-        this.datosDescuento = datosDescuento;
+    public void cargarDatos(ObservableList<DescuentoDTO> listaObservable){
         this.listaObservable = listaObservable;
-        lblNombreDescuento.setText(this.datosDescuento.nombre());
-        txtNombre.setText(this.datosDescuento.nombre());
-        txtPorcentaje.setText(this.datosDescuento.porcentaje().toString());
-        Platform.runLater(() -> {
-            btnCancelar.requestFocus();
-        });
     }
 
 
     @FXML
-    void actualizarDescuento(ActionEvent event) {
+    void guardarDescuento(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
-        String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
-        if (nombre.isEmpty() || nuevoPorcentajeTexto.isEmpty()){
+        String porcentajeTexto = txtPorcentaje.getText().trim();
+        boolean activo = chkActivo.isSelected();
+        if (nombre.isEmpty() || porcentajeTexto.isEmpty()){
             GestorAlertas.mostrarAlertaWarning(
                     "Datos Incompletos",
                     "El Nombre y el Porcentaje son Obligatorios.",
@@ -69,7 +57,7 @@ public class EditarDescuentoControlador {
         }
         BigDecimal porcentaje;
         try {
-            porcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
+            porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
         } catch (IllegalArgumentException e) {
             GestorAlertas.mostrarAlertaWarning(
                     "Número Inválido", null,
@@ -78,13 +66,12 @@ public class EditarDescuentoControlador {
             return;
         }
         CompletableFuture.supplyAsync(()-> {
-            return this.orquestadorDescuentos.actualizarDescuento(
-                    this.datosDescuento.idDescuento(), nombre, porcentaje
+            return this.orquestadorDescuentos.registrarDescuento(
+                    nombre, porcentaje, activo
             );
-        }).thenAccept(descuentoActualizado -> {
+        }).thenAccept(descuentoRegistrado -> {
             Platform.runLater(() -> {
-                int indice = listaObservable.indexOf(this.datosDescuento);
-                listaObservable.set(indice, descuentoActualizado);
+                listaObservable.add(descuentoRegistrado);
                 cerrarPantalla();
             });
         }).exceptionally(ex -> {
@@ -93,14 +80,13 @@ public class EditarDescuentoControlador {
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" +
                                 ex.getMessage());
-                cerrarPantalla();
             });
             return null;
         });
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) lblNombreDescuento.getScene().getWindow();
+        Stage stageActual = (Stage) btnCancelar.getScene().getWindow();
         stageActual.close();
     }
 
@@ -109,6 +95,7 @@ public class EditarDescuentoControlador {
     void cancelar(ActionEvent event) {
         cerrarPantalla();
     }
+
 
 }//===================================================================================================================//
 
