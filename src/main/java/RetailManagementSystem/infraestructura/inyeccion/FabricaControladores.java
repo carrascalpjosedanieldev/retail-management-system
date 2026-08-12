@@ -68,8 +68,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == GestionPoliticasVencimientoControlador.class){
             return new GestionPoliticasVencimientoControlador(
-                    ContenedorDependencias.getServicioPoliticaVencimiento(),
-                    ContenedorDependencias.getEnsambladorDTOPoliticaVencimiento()
+                    ContenedorDependencias.getOrquestadorPoliticaVencimiento()
             );
         }
         if (claseControlador == GestionInventariosControlador.class){

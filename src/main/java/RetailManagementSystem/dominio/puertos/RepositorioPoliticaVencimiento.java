@@ -8,7 +8,7 @@ public interface RepositorioPoliticaVencimiento {
 
     //CREATE:
 
-    void insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento);
+    PoliticaVencimiento insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento);
 
     //READ
 
@@ -16,7 +16,7 @@ public interface RepositorioPoliticaVencimiento {
 
     List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas();
 
-    List<PoliticaVencimiento> obtenerPoliticasVencimientoInactivas();
+    List<PoliticaVencimiento> obtenerTodasLasPoliticasDeVencimiento();
 
     //UPDATE:
 

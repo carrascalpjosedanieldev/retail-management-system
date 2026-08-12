@@ -1,13 +1,14 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -25,9 +26,8 @@ import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.concurrent.CompletableFuture;
 
 public class GestionPoliticasVencimientoControlador {
 
@@ -41,20 +41,14 @@ public class GestionPoliticasVencimientoControlador {
     @FXML private TableColumn<PoliticaVencimientoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
-    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento;
-
-    private final EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
+    private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
 
     private final ObservableList<PoliticaVencimientoDTO> listaObservablePoliticasVencimiento = FXCollections.observableArrayList();
 
     //CONSTRUCTOR:
 
-    public GestionPoliticasVencimientoControlador(
-            ServicioPoliticaVencimiento servicioPoliticaVencimiento,
-            EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento
-    ) {
-        this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
-        this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
+    public GestionPoliticasVencimientoControlador(OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento) {
+        this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
     }
 
     //MÉTODOS:
@@ -86,32 +80,48 @@ public class GestionPoliticasVencimientoControlador {
     }
 
     private void configurarColumnasTabla() {
-        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idPoliticaVencimiento()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombrePolitica()));
-        colDiasUmbral.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().diasUmbral()));
-        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentajeDescuento()));
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
+        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().idPoliticaVencimiento())
+        );
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().nombrePolitica())
+        );
+        colDiasUmbral.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().diasUmbral())
+        );
+        colPorcentaje.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().porcentajeDescuento())
+        );
+        colEstado.setCellValueFactory(celda -> {
+            boolean esActiva = celda.getValue().activo();
+            String textoEstado = esActiva ? "Activa" : "Inactiva";
+            return new SimpleStringProperty(textoEstado);
+        });
         colEstado.setCellFactory(columna -> new TableCell<>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
                 if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
                 } else {
                     setText(estado);
-                    String color = estado.equalsIgnoreCase("Activo") ? "#10b981" : "#ef4444";
-                    setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+                    String estiloCss = estado.equalsIgnoreCase("Activa") ? "estado-activo" : "estado-inactivo";
+                    getStyleClass().add(estiloCss);
                 }
             }
         });
     }
 
     private void configurarFiltroBusqueda() {
-        FilteredList<PoliticaVencimientoDTO> listaFiltrada = new FilteredList<>(listaObservablePoliticasVencimiento, b -> true);
+        FilteredList<PoliticaVencimientoDTO> listaFiltrada = new FilteredList<>(
+                listaObservablePoliticasVencimiento, b -> true
+        );
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
             listaFiltrada.setPredicate(politicaVencimiento -> {
-                if (valorNuevo == null || valorNuevo.isBlank()) return true;
+                if (valorNuevo == null || valorNuevo.isBlank()) {
+                    return true;
+                }
                 String filtro = valorNuevo.toLowerCase();
                 return String.valueOf(politicaVencimiento.idPoliticaVencimiento()).contains(filtro) ||
                         politicaVencimiento.nombrePolitica().toLowerCase().contains(filtro);
@@ -123,17 +133,24 @@ public class GestionPoliticasVencimientoControlador {
     }
 
     private void cargarDatosTabla() {
-        List<PoliticaVencimientoDTO> activas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(
-                servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas()
-        );
-        List<PoliticaVencimientoDTO> inactivas = ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(
-                servicioPoliticaVencimiento.obtenerPoliticasVencimientoInactivas()
-        );
-        List<PoliticaVencimientoDTO> todasLasPoliticasV = Stream.concat(
-                activas != null ? activas.stream() : Stream.empty(),
-                inactivas != null ? inactivas.stream() : Stream.empty()
-        ).toList();
-        listaObservablePoliticasVencimiento.setAll(todasLasPoliticasV);
+        CompletableFuture.supplyAsync(
+                this.orquestadorPoliticaVencimiento::obtenerTodasLasPoliticasV
+        ).thenAccept(listaPoliticasV -> {
+            Platform.runLater(()->{
+                listaObservablePoliticasVencimiento.setAll(listaPoliticasV);
+            });
+        }).exceptionally(ex ->{
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                );
+                Stage stageActual = (Stage) tablaPoliticasVencimiento.getScene().getWindow();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+            });
+            return null;
+        });
     }
 
 
@@ -240,7 +257,7 @@ public class GestionPoliticasVencimientoControlador {
                 try {
                     BigDecimal nuevoPorcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
                     int nuevoDiasUmbral = Integer.parseInt(nuevoDiasUmbralTexto);
-                    this.servicioPoliticaVencimiento.actualizarPoliticaVencimiento(
+                    this.orquestadorPoliticaVencimiento.actualizarPoliticaVencimiento(
                             seleccionado.idPoliticaVencimiento(), nuevoNombre, nuevoDiasUmbral, nuevoPorcentaje
                     );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
@@ -291,7 +308,7 @@ public class GestionPoliticasVencimientoControlador {
                 try {
                     BigDecimal porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
                     int diasUmbral = Integer.parseInt(diasUmbralTexto);
-                    this.servicioPoliticaVencimiento.registrarPoliticaVencimiento(
+                    this.orquestadorPoliticaVencimiento.registrarPoliticaVencimiento(
                             nombre, diasUmbral, porcentaje, activo
                     );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
@@ -321,12 +338,12 @@ public class GestionPoliticasVencimientoControlador {
                     "Por favor, Selecciona una Política de Vencimiento de la Tabla para Cambiar su Estado.");
             return;
         }
-        boolean esActivo = politicaSeleccionado.estado().equalsIgnoreCase("Activo");
-        String accion = esActivo ? "Desactivar" : "Activar";
+        //boolean esActivo = politicaSeleccionado.estado().equalsIgnoreCase("Activo");
+        //String accion = esActivo ? "Desactivar" : "Activar";
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
         confirmacion.setTitle("Confirmar cambio de activo");
         confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Estás seguro de que deseas " + accion + " la Política -" +
+        confirmacion.setContentText("¿Estás seguro de que deseas " + " la Política -" +
                 politicaSeleccionado.nombrePolitica() + "-?");
         DialogPane panelConfirmacion = confirmacion.getDialogPane();
         panelConfirmacion.setMinHeight(Region.USE_PREF_SIZE);
@@ -334,7 +351,7 @@ public class GestionPoliticasVencimientoControlador {
         Optional<ButtonType> respuesta = confirmacion.showAndWait();
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
-                this.servicioPoliticaVencimiento.cambiarEstadoPoliticaDeVencimiento(
+                this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(
                         politicaSeleccionado.idPoliticaVencimiento()
                 );
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",

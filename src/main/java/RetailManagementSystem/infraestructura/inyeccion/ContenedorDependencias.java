@@ -68,6 +68,7 @@ public class ContenedorDependencias {
     private static OrquestadorImpuestos orquestadorImpuestos;
     private static OrquestadorLogin orquestadorLogin;
     private static OrquestadorPermisos orquestadorPermisos;
+    private static OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
     private static OrquestadorProductoInventario orquestadorProductoInventario;
     private static OrquestadorRoles orquestadorRoles;
     private static OrquestadorVentas orquestadorVentas;
@@ -143,6 +144,9 @@ public class ContenedorDependencias {
         orquestadorImpuestos = new OrquestadorImpuestos(servicioImpuestos, ensambladorDTOImpuesto);
         orquestadorLogin = new OrquestadorLogin(servicioUsuario, ensambladorDTOUsuario);
         orquestadorPermisos = new OrquestadorPermisos(ensambladorDTOPermiso, servicioPermiso);
+        orquestadorPoliticaVencimiento= new OrquestadorPoliticaVencimiento(
+                servicioPoliticaVencimiento, ensambladorDTOPoliticaVencimiento
+        );
         orquestadorProductoInventario = new OrquestadorProductoInventario(servicioProductos, servicioInventario);
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorVentas = new OrquestadorVentas(
@@ -349,6 +353,10 @@ public class ContenedorDependencias {
 
     public static OrquestadorPermisos getOrquestadorPermisos() {
         return orquestadorPermisos;
+    }
+
+    public static OrquestadorPoliticaVencimiento getOrquestadorPoliticaVencimiento() {
+        return orquestadorPoliticaVencimiento;
     }
 
     public static OrquestadorProductoInventario getOrquestadorProductoInventario() {

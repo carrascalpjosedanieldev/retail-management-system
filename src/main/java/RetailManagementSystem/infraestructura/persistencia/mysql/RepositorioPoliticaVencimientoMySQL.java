@@ -15,7 +15,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
     //CREATE:
 
     @Override
-    public void insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
+    public PoliticaVencimiento insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
         String sql = "INSERT INTO politicas_vencimiento (nombre_politica, dias_umbral, porcentaje_descuento) VALUES (?, ?, ?)";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
@@ -34,7 +34,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    PoliticaVencimiento.reconstruirDesdeBD(idReal, politicaVencimiento.getNombre(),
+                    return PoliticaVencimiento.reconstruirDesdeBD(idReal, politicaVencimiento.getNombre(),
                             politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
                             politicaVencimiento.isActiva());
                 } else {
@@ -122,11 +122,11 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
 
     @Override
-    public List<PoliticaVencimiento> obtenerPoliticasVencimientoInactivas() {
+    public List<PoliticaVencimiento> obtenerTodasLasPoliticasDeVencimiento() {
         List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
 
         String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento WHERE activa = false";
+                "FROM politicas_vencimiento ORDER BY activa DESC, id_politica ASC";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);

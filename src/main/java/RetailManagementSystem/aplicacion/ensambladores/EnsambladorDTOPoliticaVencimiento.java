@@ -12,15 +12,10 @@ public class EnsambladorDTOPoliticaVencimiento {
     }
 
     public PoliticaVencimientoDTO ensamblarDatosPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
-        String estado;
-        if (politicaVencimiento.isActiva()){
-            estado = "Activo";
-        } else {
-            estado = "Inactivo";
-        }
         return new PoliticaVencimientoDTO(
                 politicaVencimiento.getIdPolitica(), politicaVencimiento.getNombre(),
-                politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(), estado
+                politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
+                politicaVencimiento.isActiva()
         );
     }
 
