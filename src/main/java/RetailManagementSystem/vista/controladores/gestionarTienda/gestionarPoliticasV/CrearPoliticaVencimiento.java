@@ -94,10 +94,11 @@ public class CrearPoliticaVencimiento {
             });
         }).exceptionally(ex->{
             Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
                         "Error Critico",
                         "NO se pudo Completar la Acción.",
-                        "Notificale al Administrador este Error:\n" + ex.getMessage()
+                        "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
             });
             return null;
