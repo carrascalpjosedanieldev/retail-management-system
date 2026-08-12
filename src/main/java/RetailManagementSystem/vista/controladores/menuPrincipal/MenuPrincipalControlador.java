@@ -16,10 +16,9 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.net.URL;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class MenuPrincipalControlador {
 
@@ -48,16 +47,25 @@ public class MenuPrincipalControlador {
     }
 
     private void cargarVersionTienda(){
-        try {
-            String version = InformacionAplicacion.obtenerVersion();
-            lblVersion.setText("Mi Tienda " + version);
-        } catch (RuntimeException e) {
-            lblVersion.setText("Versión --");
-            GestorAlertas.mostrarAlertaError(
-                    "Error de Carga", "Error al Cargar la Version",
-                    "NO se pudo Cargar la Versión de la Tienda. Contacte al Administrador."
-            );
-        }
+        lblVersion.setText("Cargando...");
+        CompletableFuture.supplyAsync(
+                InformacionAplicacion::obtenerVersion
+        ).thenAccept(version->{
+            Platform.runLater(()->{
+                lblVersion.setText("Mi Tienda " + version);
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(() -> {
+                lblVersion.setText("Versión --");
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Carga", "Error al Cargar la Version",
+                        "NO se pudo Cargar la Versión de la Tienda: " + causa.getMessage() + ".\n" +
+                                "Contacte al Administrador o Verifica tu Conexión."
+                );
+            });
+            return null;
+        });
     }
 
     private void iniciarReloj() {
@@ -73,21 +81,30 @@ public class MenuPrincipalControlador {
     }
 
     private void cargarNombreTienda() {
-        try {
-            String nombreTienda = this.servicioConfiguraciones.obtenerNombreTienda();
-            if (nombreTienda != null && !nombreTienda.isBlank()) {
-                lblNombreTienda.setText(nombreTienda);
-            } else {
-                lblNombreTienda.setText("Mi Tienda");
-            }
-        } catch (RuntimeException e) {
-            lblNombreTienda.setText("Tienda (Modo Offline)");
-            GestorAlertas.mostrarAlertaError(
-                    "Error de Carga",
-                    "Error al Obtener el Nombre de la Tienda",
-                    "NO se pudo Leer la Configuración Local: " + e.getMessage()
-            );
-        }
+        lblNombreTienda.setText("Cargando...");
+        CompletableFuture.supplyAsync(
+                this.servicioConfiguraciones::obtenerNombreTienda
+        ).thenAccept(nombreTienda -> {
+            Platform.runLater(() -> {
+                if (nombreTienda != null && !nombreTienda.isBlank()) {
+                    lblNombreTienda.setText(nombreTienda);
+                } else {
+                    lblNombreTienda.setText("Mi Tienda");
+                }
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                lblNombreTienda.setText("Tienda (Modo Offline)");
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Carga",
+                        "Error al Obtener el Nombre de la Tienda",
+                        "NO se pudo Leer la Configuración Local: " + causa.getMessage() + "\n" +
+                                "Vertica tu conexión para seguir utilizando la App."
+                );
+            });
+            return null;
+        });
     }
 
 
