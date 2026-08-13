@@ -7,8 +7,10 @@ import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoExceptio
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.GestionProductosControlador;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -27,7 +29,6 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -65,15 +66,7 @@ public class GestionInventariosControlador {
         alerta.setContentText(mensaje);
         DialogPane pane = alerta.getDialogPane();
         pane.setMinHeight(Region.USE_PREF_SIZE);
-        aplicarCSS(pane);
         alerta.showAndWait();
-    }
-
-    private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_INVENTARIOS);
-        if (urlCss != null) {
-            panel.getStylesheets().add(urlCss.toExternalForm());
-        }
     }
 
 
@@ -85,11 +78,21 @@ public class GestionInventariosControlador {
     }
 
     private void configurarColumnasTabla(){
-        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().idInventario()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colCapacidadMax.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadMaxima()));
-        colCapacidadOcupada.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadOcupada()));
-        colCapacidadLibre.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().capacidadLibre()));
+        colId.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().idInventario())
+        );
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().nombre())
+        );
+        colCapacidadMax.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().capacidadMaxima())
+        );
+        colCapacidadOcupada.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().capacidadOcupada())
+        );
+        colCapacidadLibre.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().capacidadLibre())
+        );
         colCapacidadLibre.setCellFactory(columna -> new TableCell<>() {
             @Override
             protected void updateItem(Integer libre, boolean empty) {
@@ -112,13 +115,14 @@ public class GestionInventariosControlador {
     }
 
     private void configurarFiltroBusqueda(){
-        FilteredList<InventarioDTO> listaFiltrada = new FilteredList<>(listaObservable, b -> true);
+        FilteredList<InventarioDTO> listaFiltrada = new FilteredList<>(listaObservable, inv -> true);
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
+            if (valorNuevo == null || valorNuevo.isBlank()){
+                listaFiltrada.setPredicate(inv -> true);
+                return;
+            }
+            String filtro = valorNuevo.toLowerCase().trim();
             listaFiltrada.setPredicate(inv -> {
-                if (valorNuevo == null || valorNuevo.isBlank()){
-                    return true;
-                }
-                String filtro = valorNuevo.toLowerCase().trim();
                 String idComoTexto = String.valueOf(inv.idInventario());
                 String nombre = inv.nombre() != null ? inv.nombre().toLowerCase() : "";
                 return nombre.contains(filtro) || idComoTexto.contains(filtro);
@@ -130,18 +134,22 @@ public class GestionInventariosControlador {
     }
 
     private void cargarDatosTabla() {
-        CompletableFuture.supplyAsync(() -> {
-                    return this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
-                            this.servicioInventario.obtenerTodosLosInventarios()
-                    );
-                }).thenAcceptAsync(listaObservable::setAll, javafx.application.Platform::runLater)
-                .exceptionally(ex -> {
-                    javafx.application.Platform.runLater(() -> {
-                        mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                                "No se pudieron cargar los inventarios: " + ex.getMessage());
-                    });
-                    return null;
-                });
+        CompletableFuture.supplyAsync(() ->
+            this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
+                    this.servicioInventario.obtenerTodosLosInventarios()
+            )
+        ).thenAcceptAsync(
+                listaObservable::setAll, Platform::runLater
+        ).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error", null,
+                        "No se pudieron cargar los inventarios: " + causa.getMessage()
+                );
+            });
+            return null;
+        });
     }
 
 
@@ -151,7 +159,6 @@ public class GestionInventariosControlador {
         dialog.setHeaderText(cabecera);
         DialogPane dialogPane = dialog.getDialogPane();
         dialogPane.setPrefWidth(ancho);
-        aplicarCSS(dialogPane);
         return dialog;
     }
 
@@ -295,8 +302,10 @@ public class GestionInventariosControlador {
     void editarProductosInventario(ActionEvent event) {
         InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Selecciona un Inventario para ver sus Productos.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Selecciona un Inventario para ver sus Productos."
+            );
             return;
         }
         String rutaFxml = RutasVista.GESTIONAR_PRODUCTOS_VIEW;

@@ -109,8 +109,6 @@ public class RutasVista {
 
     public static final String GESTIONAR_INVENTARIOS_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/GestionInventarios.fxml";
-    public static final String ESTILOS_CSS_INVENTARIOS =
-            "/css/gestionarTienda/gestionarInventarios/estilosCssInventarios.css";
 
 
             //GESTIONAR PRODUCTOS:

@@ -38,9 +38,6 @@ public class Rol {
     public boolean isActivo() {
         return activo;
     }
-    private void setActivo(boolean activo) {
-        this.activo = activo;
-    }
 
     //CONSTRUCTORES:
 
