@@ -180,7 +180,7 @@ public class AdministrarPermisosDeRolControlador {
 
     private void volverAlPanel(){
         Stage stageActual = (Stage) lblNombreRol.getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
     }
 
 

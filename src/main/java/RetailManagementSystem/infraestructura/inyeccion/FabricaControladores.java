@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.CrearRolNuevoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.*;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.CrearDescuentoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.EditarDescuentoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
@@ -14,7 +14,6 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPolit
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.GestionServiciosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.*;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.GestionRolesControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.PermisosVistaControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.*;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.*;
@@ -178,6 +177,21 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == CrearPoliticaVencimiento.class){
             return new CrearPoliticaVencimiento(
                     ContenedorDependencias.getOrquestadorPoliticaVencimiento()
+            );
+        }
+        if (claseControlador == ModificarDatosRolControlador.class){
+            return new ModificarDatosRolControlador(
+                    ContenedorDependencias.getOrquestadorRoles()
+            );
+        }
+        if (claseControlador == AdministrarPermisosDeRolControlador.class){
+            return new AdministrarPermisosDeRolControlador(
+                    ContenedorDependencias.getOrquestadorRoles()
+            );
+        }
+        if (claseControlador == AnadirPermisoAlRolControlador.class){
+            return new AnadirPermisoAlRolControlador(
+                    ContenedorDependencias.getOrquestadorPermisos()
             );
         }
         try {

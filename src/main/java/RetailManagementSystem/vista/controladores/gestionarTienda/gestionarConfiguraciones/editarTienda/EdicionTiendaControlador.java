@@ -31,20 +31,6 @@ public class EdicionTiendaControlador {
 
     //MÉTODOS:
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane panelAlerta = alerta.getDialogPane();
-        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_CONFIGURACIONES);
-        if (urlCss != null) {
-            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-        }
-        alerta.showAndWait();
-    }
-
     @FXML
     public void initialize() {
         txtNombre.setText(this.servicioConfiguraciones.obtenerNombreTienda());
@@ -63,12 +49,16 @@ public class EdicionTiendaControlador {
         }
         try {
             this.servicioConfiguraciones.cambiarNombreYDescripcionTienda(nuevoNombre, nuevaDescripcion);
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Cambios Guardados",
-                    "La Información de la Tienda se Actualizó con Éxito.");
+            GestorAlertas.mostrarAlertaInformacion(
+                    "Cambios Guardados", null,
+                    "La Información de la Tienda se Actualizó con Éxito."
+            );
             cerrarVentana(event);
         } catch (IllegalArgumentException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos",
-                    "Error:  " + e.getMessage());
+            GestorAlertas.mostrarAlertaError(
+                    "Error en los Datos", null,
+                    "Error:  " + e.getMessage()
+            );
         }
     }
 

@@ -43,7 +43,7 @@ public class ServicioRol {
 
     public void actualizarPermisosRol(int idRol, List<Permiso> listaPermisosActualizada){
         Rol rol = this.repositorioRol.obtenerRol(idRol);
-        for (Permiso p:rol.getPermisos()){
+        for (Permiso p:rol.getPermisos().stream().toList()){
             rol.quitarPermiso(p);
         }
         for (Permiso permiso:listaPermisosActualizada){

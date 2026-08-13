@@ -24,16 +24,13 @@ public class RutasVista {
 
     public static final String GESTIONAR_TIENDA_VIEW =
             "/vista/gestionarTienda/GestionarTienda.fxml";
-    public static final String ESTILOS_CSS_GESTIONAR_TIENDA =
-            "/css/gestionarTienda/estilosCssGestionarTienda.css";
 
 
         //GESTIONAR CONFIGURACIONES:
 
     public static final String GESTIONAR_CONFIGURACIONES_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/GestionConfiguraciones.fxml";
-    public static final String ESTILOS_CSS_CONFIGURACIONES =
-            "/css/gestionarTienda/gestionarConfiguraciones/estilosCssConfiguraciones.css";
+
 
              //EDITAR TIENDA:
 
@@ -44,8 +41,7 @@ public class RutasVista {
 
     public static final String PERMISOS_VISTA_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionPermisos/permisosVista.fxml";
-    public static final String ESTILOS_CSS_PERMISOS_VISTA =
-            "/css/gestionarTienda/gestionPermisos/estilosCssPermisosVista.css";
+
 
             //GESTION ROLES:
 
@@ -53,7 +49,7 @@ public class RutasVista {
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/AdministrarPermisosDeRol.fxml";
 
     public static final String ANADIR_PERMISO_AL_ROL_VIEW =
-            "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/AnadirPermisoAlRol.fxml";
+            "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/AnadirPermisoARol.fxml";
 
     public static final String CREAR_ROL_NUEVO_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/CrearRolNuevo.fxml";
@@ -152,23 +148,16 @@ public class RutasVista {
 
     public static final String PANEL_DE_CONTROL_POS_VIEW =
             "/vista/puntoDeVenta/PanelDeControl.fxml";
-    public static final String ESTILOS_CSS_PANEL_DE_CONTROL_POS =
-            "/css/puntoDeVenta/estilosCssPanelDeControl.css";
 
     public static final String HISTORIAL_VENTAS_VIEW =
             "/vista/puntoDeVenta/HistorialVentas.fxml";
-    public static final String ESTILOS_CSS_HISTORIAL_VENTAS =
-            "/css/puntoDeVenta/estilosCssHistorialVentas.css";
 
     public static final String MENU_DE_VENTAS_VIEW =
             "/vista/puntoDeVenta/MenuDeVentas.fxml";
-    public static final String ESTILOS_CSS_MENU_DE_VENTAS =
-            "/css/puntoDeVenta/estilosCssMenuDeVentas.css";
 
     public static final String FACTURA_GENERADA_VIEW =
             "/vista/puntoDeVenta/FacturaGenerada.fxml";
-    public static final String ESTILOS_CSS_FACTURA_GENERADA =
-            "/css/puntoDeVenta/estilosCssFacturaGenerada.css";
+
 
 }//===================================================================================================================//
 

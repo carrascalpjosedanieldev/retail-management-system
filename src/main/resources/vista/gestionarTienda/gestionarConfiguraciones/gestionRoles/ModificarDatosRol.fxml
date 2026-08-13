@@ -34,7 +34,7 @@
     </VBox>
 
     <HBox alignment="CENTER_RIGHT" styleClass="panel-botones">
-        <Button onAction="#cancelar" prefHeight="40.0" prefWidth="130.0" styleClass="btn-cancelar" text="Cancelar" />
+        <Button fx:id="btnCancelar" onAction="#cancelar" prefHeight="40.0" prefWidth="130.0" styleClass="btn-cancelar" text="Cancelar" />
         <Button onAction="#guardarCambios" prefHeight="40.0" prefWidth="180.0" styleClass="btn-guardar" text="💾 Guardar Cambios" />
     </HBox>
 

@@ -1,7 +1,5 @@
 package RetailManagementSystem.dominio.entidades.seguridad;
 
-import RetailManagementSystem.dominio.excepciones.PermisoNoDisponibleExeption;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -71,12 +69,15 @@ public class Rol {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Rol rol = (Rol) o;
-        return nombre.equalsIgnoreCase(rol.nombre);
+        if (this.idRol == null || rol.idRol == null) {
+            return false;
+        }
+        return this.idRol.equals(rol.idRol);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nombre.toLowerCase());
+        return getClass().hashCode();
     }
 
     public void cambiarNombre(String nombreNuevo){
@@ -101,6 +102,7 @@ public class Rol {
     }
 
     public void anadirPermisoNuevo(Permiso permiso) {
+        Objects.requireNonNull(permiso, "El permiso no puede ser nulo");
         this.permisos.add(permiso);
     }
 
@@ -109,9 +111,6 @@ public class Rol {
     }
 
     public void quitarPermiso(Permiso permiso) {
-        if (!this.permisos.contains(permiso)) {
-            return;
-        }
         this.permisos.remove(permiso);
     }
 

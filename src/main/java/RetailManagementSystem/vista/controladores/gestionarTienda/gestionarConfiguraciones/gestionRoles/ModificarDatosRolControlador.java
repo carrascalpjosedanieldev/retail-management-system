@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,6 +20,7 @@ public class ModificarDatosRolControlador {
 
     //ATRIBUTOS:
 
+    @FXML private Button btnCancelar;
     @FXML private Label lblIdRol;
     @FXML private TextField txtNombreRol;
     @FXML private CheckBox chkActivo;
@@ -59,6 +61,7 @@ public class ModificarDatosRolControlador {
         this.txtNombreRol.setText(rol.nombre());
         this.chkActivo.setSelected(rol.activo());
         this.listaObservable = listaObservable;
+        Platform.runLater(()->btnCancelar.requestFocus());
     }
 
     private void cerrarVentanaSeguro(){
