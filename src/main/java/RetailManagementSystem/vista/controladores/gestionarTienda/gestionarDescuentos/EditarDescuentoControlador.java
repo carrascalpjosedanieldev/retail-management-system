@@ -49,9 +49,7 @@ public class EditarDescuentoControlador {
         lblNombreDescuento.setText(this.datosDescuento.nombre());
         txtNombre.setText(this.datosDescuento.nombre());
         txtPorcentaje.setText(this.datosDescuento.porcentaje().toString());
-        Platform.runLater(() -> {
-            btnCancelar.requestFocus();
-        });
+        Platform.runLater(() -> btnCancelar.requestFocus());
     }
 
 

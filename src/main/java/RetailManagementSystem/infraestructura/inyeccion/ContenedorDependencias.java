@@ -147,7 +147,9 @@ public class ContenedorDependencias {
         orquestadorPoliticaVencimiento= new OrquestadorPoliticaVencimiento(
                 servicioPoliticaVencimiento, ensambladorDTOPoliticaVencimiento
         );
-        orquestadorProductoInventario = new OrquestadorProductoInventario(servicioProductos, servicioInventario);
+        orquestadorProductoInventario = new OrquestadorProductoInventario(
+                servicioProductos, servicioInventario, ensambladorDTOInventario
+        );
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorVentas = new OrquestadorVentas(
                 servicioFacturas, servicioCarrito, servicioProductos, servicioServicios,

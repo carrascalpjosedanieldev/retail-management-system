@@ -83,7 +83,9 @@ public class TabGeneralProductosControlador {
         this.servicioInventario = servicioInventario;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
         this.ensambladorDTOInventario = ensambladorDTOInventario;
-        this.orquestadorProductoInventario = new OrquestadorProductoInventario(servicioProductos, servicioInventario);
+        this.orquestadorProductoInventario = new OrquestadorProductoInventario(
+                servicioProductos, servicioInventario, ensambladorDTOInventario
+        );
     }
 
     //MÉTODOS:

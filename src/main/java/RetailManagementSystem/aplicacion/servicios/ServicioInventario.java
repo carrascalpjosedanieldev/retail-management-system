@@ -28,10 +28,11 @@ public class ServicioInventario {
         this.repositorioInventario.insertarInventario(inventario);
     }
 
-    public void actualizarInventario(int idInventario, String nombreNuevo){
+    public Inventario actualizarInventario(int idInventario, String nombreNuevo){
         Inventario inventario = this.repositorioInventario.obtenerInventario(idInventario);
         inventario.cambiarNombreInventario(nombreNuevo);
         this.repositorioInventario.actualizarInventario(inventario);
+        return inventario;
     }
 
     public List<Inventario> obtenerTodosLosInventarios(){

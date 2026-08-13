@@ -1,5 +1,7 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
+import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
+import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
@@ -11,14 +13,17 @@ public class OrquestadorProductoInventario {
     private final ServicioProductos servicioProductos;
     private final ServicioInventario servicioInventario;
 
+    private final EnsambladorDTOInventario ensambladorDTOInventario;
+
     //CONSTRUCTOR:
 
     public OrquestadorProductoInventario(
-            ServicioProductos servicioProductos,
-            ServicioInventario servicioInventario
+            ServicioProductos servicioProductos, ServicioInventario servicioInventario,
+            EnsambladorDTOInventario ensambladorDTOInventario
     ) {
         this.servicioProductos = servicioProductos;
         this.servicioInventario = servicioInventario;
+        this.ensambladorDTOInventario = ensambladorDTOInventario;
     }
 
     //MÉTODOS:
@@ -42,6 +47,12 @@ public class OrquestadorProductoInventario {
     ){
         this.servicioInventario.verificarEspacioDisponible(idInventarioDestino, stockProducto);
         this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);
+    }
+
+    public InventarioDTO actualizarInventario(int idInventario, String nombreNuevo){
+        return this.ensambladorDTOInventario.ensamblarDatosInventario(
+                this.servicioInventario.actualizarInventario(idInventario, nombreNuevo)
+        );
     }
 
 }//===================================================================================================================//

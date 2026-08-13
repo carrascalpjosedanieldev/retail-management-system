@@ -23,12 +23,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -183,51 +186,21 @@ public class GestionInventariosControlador {
                     "Por favor, Selecciona un Inventario de la Tabla para Modificarlo.");
             return;
         }
-        Dialog<ButtonType> dialog = crearDialogoBase("Modificar Inventario",
-                "Editando inventario: " + seleccionado.nombre(), 420);
-        ButtonType btnActualizar = new ButtonType("Actualizar", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnActualizar, ButtonType.CANCEL);
-        TextField txtNombre = new TextField(seleccionado.nombre());
-        txtNombre.setPromptText("Ej: Bodega Principal");
-        txtNombre.setPrefWidth(220);
-        TextField txtCapacidad = new TextField(String.valueOf(seleccionado.capacidadMaxima()));
-        txtCapacidad.setDisable(true);
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Capacidad Máx:"), 0, 1);
-        grid.add(txtCapacidad, 1, 1);
-        Label notaVisual = new Label("(La capacidad no se puede modificar)");
-        notaVisual.setStyle("-fx-font-size: 11px; -fx-text-fill: #94a3b8;");
-        grid.add(notaVisual, 1, 2);
-        dialog.getDialogPane().setContent(grid);
-        Button btnActualizarNode = (Button) dialog.getDialogPane().lookupButton(btnActualizar);
-        btnActualizarNode.addEventFilter(ActionEvent.ACTION, evt -> {
-            String nuevoNombre = txtNombre.getText().trim();
-            if (nuevoNombre.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos",
-                        "El Nombre del Inventario NO puede estar Vacío.");
-                evt.consume();
-            }
-        });
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnActualizar) {
-            String nuevoNombre = txtNombre.getText().trim();
-            try {
-                if (nuevoNombre.equalsIgnoreCase(seleccionado.nombre())) {
-                    return;
-                }
-                this.servicioInventario.actualizarInventario(seleccionado.idInventario(), nuevoNombre);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Inventario ha sido Actualizado Correctamente.");
-                cargarDatosTabla();
-            } catch (IllegalArgumentException | IllegalStateException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "La Acción NO fue Completada",
-                        "Error:  " + e.getMessage());
-            } catch (InventarioNoEncontradoException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
-                        "Error:  " + e.getMessage());
-            }
+        String rutaFxml = RutasVista.EDITAR_INVENTARIO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            EditarInventarioControlador controlador = loader.getController();
+            controlador.cargarDatos(seleccionado, listaObservable);
+            Stage stageEdicion = new Stage();
+            stageEdicion.setTitle("Editando Inventario");
+            stageEdicion.initModality(Modality.APPLICATION_MODAL);
+            stageEdicion.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageEdicion.setScene(escenaEdicion);
+            stageEdicion.showAndWait();
+        } catch (IOException e){
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
     }
 
