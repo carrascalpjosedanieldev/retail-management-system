@@ -29,6 +29,18 @@ public class ServicioRol {
         return this.repositorioRol.insertarRol(rolNuevo);
     }
 
+    public Rol actualzarRol(int idRol, String nombreNuevo, boolean activo){
+        Rol rol = this.repositorioRol.obtenerRol(idRol);
+        rol.cambiarNombre(nombreNuevo);
+        if (rol.isActivo() && !activo){
+            rol.desactivarRol();
+        } else if (!rol.isActivo() && activo){
+            rol.activarRol();
+        }
+        this.repositorioRol.actualizarDatosRol(rol);
+        return rol;
+    }
+
     public List<Rol> obtenerRoles(){
         List<Rol> roles = new ArrayList<>();
         roles.addAll(this.repositorioRol.obtenerRolesActivos());

@@ -137,7 +137,7 @@ public class GestionRolesControlador {
             FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
             Parent root = loader.load();
             ModificarDatosRolControlador controlador = loader.getController();
-            controlador.cargarDatosRol(rolSeleccionado);
+            controlador.cargarDatos(rolSeleccionado, listaMaestraRoles);
             Stage stageEdicion = new Stage();
             stageEdicion.setTitle("Editando Rol -" + rolSeleccionado.nombre() + "-");
             stageEdicion.initModality(Modality.APPLICATION_MODAL);

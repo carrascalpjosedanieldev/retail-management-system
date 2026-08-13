@@ -49,5 +49,11 @@ public class OrquestadorRoles {
         );
     }
 
+    public RolDTO actualizarRol(int idRol, String nombreNuevo, boolean activo){
+        return this.ensambladorDTORol.ensamblarDatosRol(
+                this.servicioRol.actualzarRol(idRol, nombreNuevo, activo)
+        );
+    }
+
 }//===================================================================================================================//
 
