@@ -18,7 +18,7 @@ public class RepositorioRolMySQL implements RepositorioRol {
     //CREATE:
 
     @Override
-    public void insertarRol(Rol rolNuevo) {
+    public Rol insertarRol(Rol rolNuevo) {
         if (rolNuevo == null){
             throw new IllegalArgumentException("NO puedes Registrar un Rol Nulo.");
         }
@@ -34,6 +34,18 @@ public class RepositorioRolMySQL implements RepositorioRol {
                 }
 
                 conn.commit();
+
+                Rol rol =  Rol.reconstruirDesdeBD(
+                        idRolGenerado,
+                        rolNuevo.getNombre(),
+                        rolNuevo.isActivo()
+                );
+
+                for (Permiso permiso:rolNuevo.getPermisos()){
+                    rol.recuperarPermisoDeBD(permiso);
+                }
+
+                return rol;
 
             } catch (SQLException originalException) {
                 try {

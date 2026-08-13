@@ -8,7 +8,7 @@ public interface RepositorioRol {
 
     //CREATE:
 
-    void insertarRol(Rol rolNuevo);
+    Rol insertarRol(Rol rolNuevo);
 
     //READ:
 

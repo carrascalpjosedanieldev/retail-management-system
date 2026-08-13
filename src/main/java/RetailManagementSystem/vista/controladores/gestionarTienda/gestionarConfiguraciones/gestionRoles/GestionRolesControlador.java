@@ -7,6 +7,8 @@ import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,12 +22,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class GestionRolesControlador {
 
@@ -59,8 +60,12 @@ public class GestionRolesControlador {
     }
 
     private void configurarColumnas() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        colId.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().idRol())
+        );
+        colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(
+                cellData.getValue().nombre()
+        ));
         colEstado.setCellValueFactory(cellData -> {
             boolean estaActivo = cellData.getValue().activo();
             return new SimpleStringProperty(estaActivo ? "Activo" : "Inactivo");
@@ -68,19 +73,29 @@ public class GestionRolesControlador {
     }
 
     private void cargarDatosDesdeBD() {
-        try {
-            List<RolDTO> datosBD = this.orquestadorRoles.obtenerTodosLosRoles();
-            listaMaestraRoles.clear();
-            if (datosBD != null && !datosBD.isEmpty()) {
-                listaMaestraRoles.addAll(datosBD);
-            }
-        } catch (RuntimeException e) {
-            GestorAlertas.mostrarAlertaError(
-                    "Error de Carga",
-                    "No se pudieron cargar los roles.",
-                    "Detalle: " + e.getMessage()
-            );
-        }
+        CompletableFuture.supplyAsync(
+                this.orquestadorRoles::obtenerTodosLosRoles
+        ).thenAccept(listaRoles ->{
+            Platform.runLater(()->{
+                listaMaestraRoles.clear();
+                if (listaRoles != null && !listaRoles.isEmpty()) {
+                    listaMaestraRoles.addAll(listaRoles);
+                }
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()-> {
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error de Carga",
+                        "No se pudieron cargar los roles.",
+                        "Detalle: " + causa.getMessage() + "\n" +
+                                "Notificale el error al Administrador y Verifica tu conexión,"
+                );
+                Stage stageActual = (Stage) txtBuscar.getScene().getWindow();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+            });
+            return null;
+        });
     }
 
     private void configurarFiltroBusqueda() {
@@ -111,6 +126,10 @@ public class GestionRolesControlador {
     private void abrirFormularioEdicion(ActionEvent event) {
         RolDTO rolSeleccionado = tablaRoles.getSelectionModel().getSelectedItem();
         if (rolSeleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Rol de la Tabla para Modificarlo."
+            );
             return;
         }
         String rutaFxml = RutasVista.MODIFICAR_DATOS_ROL_VIEW;
@@ -130,7 +149,6 @@ public class GestionRolesControlador {
             throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
     }
-
 
 
     @FXML
