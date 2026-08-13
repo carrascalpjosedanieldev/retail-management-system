@@ -1,6 +1,7 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
+import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
 import RetailManagementSystem.dominio.excepciones.PermisoNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.RepositorioPermiso;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
@@ -97,6 +98,31 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
             throw new PersistenciaException("Error al listar los Permisos " + estadoStr, e);
         }
         return permisos;
+    }
+
+
+    //UPDATE:
+
+    private static final String SQL_CAMBIAR_ESTADO =
+            "UPDATE permisos SET activo = ? WHERE id_permiso = ?";
+
+    @Override
+    public void cambiarEstado(int idPermiso, boolean activo) {
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_ESTADO)) {
+
+            pstmt.setBoolean(1, activo);
+            pstmt.setInt(2, idPermiso);
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new PermisoNoEncontradoException("NO se pudo Actualizar: El Permiso con ID -" + idPermiso + "- NO Existe.");
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error de base de datos al actualizar el Permiso", e);
+        }
     }
 
 

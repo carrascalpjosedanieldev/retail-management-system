@@ -49,8 +49,13 @@
         </VBox>
 
         <Region HBox.hgrow="ALWAYS" />
+      <Button mnemonicParsing="false" onAction="#accionCambiarEstado" prefHeight="44.0" prefWidth="206.0" text="🔄 Activar / Desactivar">
+         <HBox.margin>
+            <Insets top="25.0" />
+         </HBox.margin>
+      </Button>
 
-        <Button fx:id="btnSalir" onAction="#accionSalir" mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" styleClass="btn-salir" text="Salir">
+        <Button fx:id="btnSalir" mnemonicParsing="false" onAction="#accionSalir" prefHeight="40.0" prefWidth="100.0" styleClass="btn-salir" text="Salir">
             <HBox.margin>
                 <Insets top="25.0" />
             </HBox.margin>

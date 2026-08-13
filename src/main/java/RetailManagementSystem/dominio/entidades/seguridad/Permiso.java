@@ -14,7 +14,7 @@ public class Permiso {
 
     private final String modulo;
 
-    private boolean activo;
+    private final boolean activo;
 
     //GETTERS Y SETTERS:
 
@@ -39,9 +39,6 @@ public class Permiso {
 
     public boolean isActivo() {
         return activo;
-    }
-    private void setActivo(boolean activo) {
-        this.activo = activo;
     }
 
     //CONSTRUCTORES:
@@ -92,20 +89,6 @@ public class Permiso {
             throw new IllegalArgumentException("Descripción del Permiso Nula");
         }
         setDescripcion(descripcionNueva);
-    }
-
-    public void activarPermiso(){
-        if (isActivo()){
-            throw new IllegalStateException("El Permiso ya esta Activo");
-        }
-        setActivo(true);
-    }
-
-    public void desactivarPermiso(){
-        if (!isActivo()){
-            throw new IllegalStateException("El Permiso ya esta Inactivo");
-        }
-        setActivo(false);
     }
 
 }//==================================================================================================================//

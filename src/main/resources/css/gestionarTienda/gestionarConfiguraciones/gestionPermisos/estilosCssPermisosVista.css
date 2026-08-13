@@ -170,28 +170,50 @@
 
 
 
-.btn-salir {
-    -fx-background-color: #e74c3c;
+.tabla-personalizada .table-cell.estado-activo {
+    -fx-text-fill: #10b981;
+    -fx-font-weight: bold;
+}
+
+.tabla-personalizada .table-cell.estado-inactivo {
+    -fx-text-fill: #ef4444;
+    -fx-font-weight: bold;
+}
+
+
+
+.button {
+    -fx-background-color: #2c3e50;
     -fx-text-fill: white;
     -fx-font-family: "Segoe UI", "Arial", sans-serif;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-background-radius: 8;
-    -fx-padding: 10 20 10 20;
-    -fx-cursor: hand;
-    -fx-border-color: #c0392b;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #0f172a;
     -fx-border-width: 2.5px;
-    -fx-border-radius: 8;
+    -fx-cursor: hand;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 6, 0.0, 0, 2);
+    -fx-font-smoothing-type: lcd;
+}
+
+.button:hover {
+    -fx-background-color: #34495e;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
+}
+
+.button:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0.0, 0, 0);
+}
+
+.btn-salir {
+    -fx-background-color: #e74c3c;
+    -fx-border-color: #c0392b;
 }
 
 .btn-salir:hover {
     -fx-background-color: #ff6b6b;
     -fx-border-color: #ff4757;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.25), 10, 0.0, 0, 4);
-}
-
-.btn-salir:pressed {
-    -fx-translate-y: 2px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 2, 0.0, 0, 0);
 }

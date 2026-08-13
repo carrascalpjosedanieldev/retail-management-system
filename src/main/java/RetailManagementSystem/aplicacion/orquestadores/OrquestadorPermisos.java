@@ -45,5 +45,9 @@ public class OrquestadorPermisos {
         );
     }
 
+    public void cambiarEstadoPermiso(int idPermiso, boolean activoActual){
+        this.servicioPermiso.cambiarEstadoPermiso(idPermiso, activoActual);
+    }
+
 }//===================================================================================================================//
 

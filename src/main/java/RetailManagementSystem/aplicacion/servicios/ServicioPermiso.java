@@ -28,5 +28,9 @@ public class ServicioPermiso {
         return new ArrayList<>(this.repositorioPermiso.obtenerPermisosInactivos());
     }
 
+    public void cambiarEstadoPermiso(int idPermiso, boolean activoActual){
+        this.repositorioPermiso.cambiarEstado(idPermiso, !activoActual);
+    }
+
 }//===================================================================================================================//
 

@@ -6,7 +6,8 @@ import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class PermisosVistaControlador {
 
@@ -60,7 +62,7 @@ public class PermisosVistaControlador {
 
     private void configurarColumnas() {
         colId.setCellValueFactory(cellData -> {
-            return new ReadOnlyObjectWrapper<>(cellData.getValue().idPermiso());
+            return new SimpleObjectProperty<>(cellData.getValue().idPermiso());
         });
         colNombre.setCellValueFactory(cellData -> {
             return new SimpleStringProperty(cellData.getValue().nombre());
@@ -75,42 +77,67 @@ public class PermisosVistaControlador {
             boolean estaActivo = cellData.getValue().activo();
             return new SimpleStringProperty(estaActivo ? "Activo" : "Inactivo");
         });
+        colEstado.setCellFactory(columna -> new TableCell<PermisoDTO, String>() {
+            @Override
+            protected void updateItem(String estado, boolean empty) {
+                super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
+                if (empty || estado == null) {
+                    setText(null);
+                } else {
+                    setText(estado);
+                    String estiloCss = estado.equalsIgnoreCase("Activo") ? "estado-activo" : "estado-inactivo";
+                    getStyleClass().add(estiloCss);
+                }
+            }
+        });
     }
 
     private void cargarDatosDesdeBD() {
-        try {
-            List<PermisoDTO> datosBD = this.orquestadorPermisos.obtenerTodosLosPermisos();
-            listaMaestraPermisos.clear();
-            if (datosBD != null && !datosBD.isEmpty()) {
-                listaMaestraPermisos.addAll(datosBD);
-            }
-            List<String> modulosUnicos = listaMaestraPermisos.stream()
-                    .map(PermisoDTO::modulo)
-                    .filter(modulo -> modulo != null && !modulo.isBlank())
-                    .distinct()
-                    .sorted()
-                    .toList();
-            cbFiltroModulo.getItems().clear();
-            cbFiltroModulo.getItems().add("Todos los Módulos");
-            cbFiltroModulo.getItems().addAll(modulosUnicos);
-            cbFiltroModulo.getSelectionModel().selectFirst();
-        } catch (RuntimeException e) {
-            GestorAlertas.mostrarAlertaError(
-                    "Error Crítico",
-                    "No se pudieron cargar los permisos",
-                    "Hubo un fallo al conectar con la base de datos: " + e.getMessage()
-            );
-            if (btnSalir != null && btnSalir.getScene() != null) {
-                ((Stage) btnSalir.getScene().getWindow()).close();
-            }
-        }
+        CompletableFuture.supplyAsync(
+                this.orquestadorPermisos::obtenerTodosLosPermisos
+        ).thenAccept(listaPermisos -> {
+            Platform.runLater(()->{
+                listaMaestraPermisos.clear();
+                listaMaestraPermisos.addAll(listaPermisos);
+                List<String> modulosUnicos = listaMaestraPermisos.stream()
+                        .map(PermisoDTO::modulo)
+                        .filter(modulo -> modulo != null && !modulo.isBlank())
+                        .distinct()
+                        .sorted()
+                        .toList();
+                cbFiltroModulo.getItems().clear();
+                cbFiltroModulo.getItems().add("Todos los Módulos");
+                cbFiltroModulo.getItems().addAll(modulosUnicos);
+                cbFiltroModulo.getSelectionModel().selectFirst();
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error Crítico",
+                        "No se pudieron cargar los permisos",
+                        "Hubo un fallo al conectar con la Base de Datos: " + ex.getMessage() + "\n" +
+                                "Comunicate con el Administrador y Revisa tu conexión."
+                );
+                if (btnSalir != null && btnSalir.getScene() != null) {
+                    ((Stage) btnSalir.getScene().getWindow()).close();
+                }
+            });
+            return null;
+        });
     }
 
     private void configurarFiltrosReactivos() {
         listaFiltrada = new FilteredList<>(listaMaestraPermisos, b -> true);
-        txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> aplicarFiltros());
-        cbFiltroModulo.valueProperty().addListener((observable, oldValue, newValue) -> aplicarFiltros());
-        tgEstado.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
+        txtBuscar.textProperty().addListener(
+                (observable, oldValue, newValue) -> aplicarFiltros()
+        );
+        cbFiltroModulo.valueProperty().addListener(
+                (observable, oldValue, newValue) -> aplicarFiltros()
+        );
+        tgEstado.selectedToggleProperty().addListener(
+                (observable, oldToggle, newToggle) -> {
             if (newToggle == null) {
                 tgEstado.selectToggle(btnFiltroTodos);
             } else {
@@ -132,7 +159,6 @@ public class PermisosVistaControlador {
             }
             String moduloSeleccionado = cbFiltroModulo.getValue();
             boolean coincideModulo = true;
-
             if (moduloSeleccionado != null && !moduloSeleccionado.equals("Todos los Módulos")) {
                 coincideModulo = permiso.modulo().equalsIgnoreCase(moduloSeleccionado);
             }
@@ -144,6 +170,53 @@ public class PermisosVistaControlador {
                 coincideEstado = !permiso.activo();
             }
             return coincideTexto && coincideModulo && coincideEstado;
+        });
+    }
+
+
+    @FXML
+    public void accionCambiarEstado(ActionEvent event) {
+        PermisoDTO permisoSeleccionado = tablaPermisos.getSelectionModel().getSelectedItem();
+        if (permisoSeleccionado == null){
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, selecciona un Permiso de la Tabla para cambiar su Estado."
+            );
+            return;
+        }
+        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+                "¿Estás Seguro de Cambiar el Estado del Permiso?")) {
+            return;
+        }
+
+        CompletableFuture.runAsync(()->
+                this.orquestadorPermisos.cambiarEstadoPermiso(permisoSeleccionado.idPermiso(), permisoSeleccionado.activo())
+        ).thenRun(()->{
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Éxito", null,
+                        "El Estado se ha Actualizado Correctamente."
+                );
+                PermisoDTO actualizado = new PermisoDTO(
+                        permisoSeleccionado.idPermiso(),
+                        permisoSeleccionado.nombre(),
+                        permisoSeleccionado.descripcion(),
+                        permisoSeleccionado.modulo(),
+                        !permisoSeleccionado.activo()
+                );
+                int indice = listaMaestraPermisos.indexOf(permisoSeleccionado);
+                listaMaestraPermisos.set(indice, actualizado);
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" + causa.getMessage()
+                );
+            });
+            return null;
         });
     }
 
