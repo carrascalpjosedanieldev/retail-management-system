@@ -1,135 +1,159 @@
-/* ==========================================================================
-   ESTILOS GENERALES
-   ========================================================================== */
+
+
+
 .root {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #ffffff;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
 }
 
+.label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 14px;
+    -fx-font-smoothing-type: lcd;
+}
+
+
+
 .titulo-principal {
-    -fx-font-size: 28px;
+    -fx-font-size: 26px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: #0f172a;
 }
 
 .subtitulo {
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
     -fx-font-weight: bold;
-    -fx-text-fill: #475569;
 }
 
-/* Etiqueta destacada para el nombre del Rol */
+
 .badge-rol {
-    -fx-background-color: #DBEAFE; /* Fondo azul claro */
-    -fx-text-fill: #1E40AF; /* Texto azul oscuro */
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-padding: 4px 12px;
-    -fx-background-radius: 20px;
-    -fx-border-radius: 20px;
-}
-
-/* ==========================================================================
-   PANEL LATERAL DE ACCIONES
-   ========================================================================== */
-.panel-acciones {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: transparent transparent transparent #E2E8F0;
-    -fx-border-width: 1px;
-    -fx-padding: 40px 20px;
-    -fx-spacing: 15px;
-}
-
-/* ==========================================================================
-   BOTONES DE ACCIÓN
-   ========================================================================== */
-.btn-accion {
-    -fx-background-color: #F1F5F9;
-    -fx-text-fill: #334155;
+    -fx-background-color: #2c3e50;
+    -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-border-color: #CBD5E1;
-    -fx-cursor: hand;
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 0 0 20px;
+    -fx-padding: 4px 14px;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 4, 0.0, 0, 1);
 }
 
-.btn-accion:hover { -fx-background-color: #E2E8F0; }
-.btn-accion:pressed { -fx-background-color: #CBD5E1; }
 
-/* Botón Añadir Permiso (Verde Esmeralda) */
-.btn-anadir {
-    -fx-background-color: #10B981;
-    -fx-text-fill: #FFFFFF;
-    -fx-border-color: transparent;
-}
-.btn-anadir:hover { -fx-background-color: #059669; }
-.btn-anadir:pressed { -fx-background-color: #047857; }
 
-/* Botón Eliminar/Quitar Permiso (Rojo Suave) */
-.btn-eliminar {
-    -fx-background-color: #FEF2F2;
-    -fx-text-fill: #DC2626;
-    -fx-border-color: #FCA5A5;
-}
-.btn-eliminar:hover { -fx-background-color: #FEE2E2; }
-.btn-eliminar:pressed { -fx-background-color: #FECACA; }
-
-/* Botón Volver (Neutro oscuro) */
-.btn-volver {
-    -fx-background-color: #FFFFFF;
-    -fx-text-fill: #475569;
-    -fx-border-color: #94A3B8;
-}
-.btn-volver:hover { -fx-background-color: #F1F5F9; }
-
-/* ==========================================================================
-   TABLA DE DATOS (TableView)
-   ========================================================================== */
 .tabla-personalizada {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #E2E8F0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1px;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 0;
 }
 
 .tabla-personalizada .column-header-background {
-    -fx-background-color: #F1F5F9;
-    -fx-background-radius: 8px 8px 0 0;
+    -fx-background-color: #f8fafc;
+    -fx-border-color: transparent transparent #e2e8f0 transparent;
+    -fx-border-width: 0 0 1px 0;
 }
 
 .tabla-personalizada .column-header {
     -fx-background-color: transparent;
-    -fx-border-color: transparent #E2E8F0 transparent transparent;
-    -fx-padding: 12px 10px;
+    -fx-size: 40px;
+    -fx-border-color: transparent;
 }
 
 .tabla-personalizada .column-header .label {
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
     -fx-text-fill: #475569;
     -fx-alignment: CENTER-LEFT;
 }
 
 .tabla-personalizada .table-row-cell {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: transparent transparent #F1F5F9 transparent;
-    -fx-padding: 8px 0;
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-cell-size: 42px;
 }
 
-.tabla-personalizada .table-row-cell:odd { -fx-background-color: #F8FAFC; }
-.tabla-personalizada .table-row-cell:hover { -fx-background-color: #E0F2FE; }
-.tabla-personalizada .table-row-cell:selected { -fx-background-color: #DBEAFE; }
+.tabla-personalizada .table-row-cell:odd {
+    -fx-background-color: #fafafa;
+}
+
+.tabla-personalizada .table-row-cell:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.tabla-personalizada .table-row-cell:selected {
+    -fx-background-color: #e2e8f0;
+}
 
 .tabla-personalizada .table-row-cell:selected .text {
-    -fx-fill: #1E40AF;
+    -fx-fill: #0f172a;
     -fx-font-weight: bold;
 }
 
-.tabla-personalizada .table-cell {
-    -fx-text-fill: #334155;
-    -fx-font-size: 13px;
-    -fx-alignment: CENTER-LEFT;
+.tabla-personalizada .placeholder .label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #94a3b8;
+    -fx-font-weight: normal;
 }
 
+
+
+.panel-acciones {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: transparent transparent transparent #e2e8f0;
+    -fx-border-width: 0 0 0 1px;
+    -fx-padding: 40px 25px 40px 25px;
+    -fx-spacing: 15px;
+}
+
+
+
+.btn-accion {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.20), 6, 0.0, 0, 2);
+    -fx-font-smoothing-type: lcd;
+}
+
+.btn-accion:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.10), 2, 0.0, 0, 0);
+}
+
+.btn-anadir {
+    -fx-background-color: #10b981;
+    -fx-border-color: #047857;
+}
+
+.btn-anadir:hover {
+    -fx-background-color: #059669;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.30), 10, 0.0, 0, 4);
+}
+
+.btn-eliminar {
+    -fx-background-color: #ef4444;
+    -fx-border-color: #b91c1c;
+}
+
+.btn-eliminar:hover {
+    -fx-background-color: #dc2626;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.30), 10, 0.0, 0, 4);
+}
+
+.btn-volver {
+    -fx-background-color: #2c3e50;
+    -fx-border-color: #1a252f;
+}
+
+.btn-volver:hover {
+    -fx-background-color: #34495e;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.30), 10, 0.0, 0, 4);
+}

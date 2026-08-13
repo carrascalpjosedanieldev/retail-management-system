@@ -1,25 +1,50 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 public class AdministrarPermisosDeRolControlador {
-    public Label lblNombreRol;
-    public TableView tablaPermisosRol;
-    public TableColumn colId;
-    public TableColumn colNombre;
-    public TableColumn colModulo;
-    public TableColumn colEstado;
 
-    public void anadirPermiso(ActionEvent event) {
+    //ATRIBUTOS:
+
+    @FXML private TableView<PermisoDTO> tablaPermisosRol;
+    @FXML private TableColumn<PermisoDTO, String> colEstado;
+    @FXML private TableColumn<PermisoDTO, Integer> colId;
+    @FXML private TableColumn<PermisoDTO, String> colModulo;
+    @FXML private TableColumn<PermisoDTO, String> colNombre;
+    @FXML private Label lblNombreRol;
+
+    //CONSTRUCTOR:
+
+    //MÉTODOS:
+
+    @FXML
+    public void initialize(){
+
     }
 
-    public void eliminarPermiso(ActionEvent event) {
+
+    @FXML
+    void anadirPermiso(ActionEvent event) {
+
     }
 
-    public void volverARoles(ActionEvent event) {
+
+    @FXML
+    void eliminarPermiso(ActionEvent event) {
 
     }
-}
+
+
+    @FXML
+    void volverARoles(ActionEvent event) {
+
+    }
+
+
+}//===================================================================================================================//
+

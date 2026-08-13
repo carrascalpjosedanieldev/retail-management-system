@@ -23,7 +23,6 @@
             </HBox>
         </VBox>
 
-        <!-- Tabla de Permisos del Rol -->
         <TableView fx:id="tablaPermisosRol" styleClass="tabla-personalizada" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="colId" text="ID" />
@@ -40,14 +39,12 @@
         </TableView>
     </VBox>
 
-    <!-- PANEL DERECHO: Acciones -->
     <VBox alignment="TOP_CENTER" prefWidth="320.0" styleClass="panel-acciones">
         <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 0 0 20 0;" text="Acciones del Rol"/>
 
         <Button onAction="#anadirPermiso" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-anadir" text="➕ Añadir Permiso" />
         <Button onAction="#eliminarPermiso" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-eliminar" text="❌ Quitar Permiso" />
 
-        <!-- Espaciador flexible para empujar el botón de volver al fondo -->
         <Region VBox.vgrow="ALWAYS"/>
 
         <Button onAction="#volverARoles" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-volver" text="⬅ Volver a Roles" />
