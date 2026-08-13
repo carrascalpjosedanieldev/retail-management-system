@@ -101,9 +101,6 @@ public class Rol {
     }
 
     public void anadirPermisoNuevo(Permiso permiso) {
-        if (!permiso.isActivo()) {
-            throw new PermisoNoDisponibleExeption("El Permiso '" + permiso.getNombre() + "' no está activo.");
-        }
         this.permisos.add(permiso);
     }
 

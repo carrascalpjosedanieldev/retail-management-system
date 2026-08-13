@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../../../css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssAdmisitrarPermisosDeRol.css"
-      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.AdministrarPermisosDeRolControlador">
+<HBox prefHeight="720.0" prefWidth="1280.0" styleClass="root" stylesheets="@../../../../css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssAdmisitrarPermisosDeRol.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.AdministrarPermisosDeRolControlador">
 
     <VBox style="-fx-padding: 40; -fx-spacing: 20;" HBox.hgrow="ALWAYS">
 
         <VBox style="-fx-spacing: 5;">
-            <Label styleClass="titulo-principal" text="Permisos Asignados"/>
+            <Label styleClass="titulo-principal" text="Permisos Asignados" />
             <HBox alignment="CENTER_LEFT" style="-fx-spacing: 10;">
-                <Label styleClass="subtitulo" text="Rol Seleccionado:"/>
-                <Label fx:id="lblNombreRol" styleClass="badge-rol" text="Cargando Rol..."/>
+                <Label styleClass="subtitulo" text="Rol Seleccionado:" />
+                <Label fx:id="lblNombreRol" styleClass="badge-rol" text="Cargando Rol..." />
             </HBox>
         </VBox>
 
@@ -40,14 +37,15 @@
     </VBox>
 
     <VBox alignment="TOP_CENTER" prefWidth="320.0" styleClass="panel-acciones">
-        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 0 0 20 0;" text="Acciones del Rol"/>
+        <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 0 0 20 0;" text="Acciones del Rol" />
 
         <Button onAction="#anadirPermiso" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-anadir" text="➕ Añadir Permiso" />
         <Button onAction="#eliminarPermiso" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-eliminar" text="❌ Quitar Permiso" />
 
-        <Region VBox.vgrow="ALWAYS"/>
+        <Region VBox.vgrow="ALWAYS" />
 
-        <Button onAction="#volverARoles" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-volver" text="⬅ Volver a Roles" />
+        <Button onAction="#guardarCambios" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-volver" text="⬅ Guardar Cambios" />
+      <Button layoutX="46.0" layoutY="640.0" onAction="#cancelar" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-volver" text="⬅ Cancelar" />
     </VBox>
 
 </HBox>

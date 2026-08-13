@@ -29,7 +29,7 @@ public class ServicioRol {
         return this.repositorioRol.insertarRol(rolNuevo);
     }
 
-    public Rol actualzarRol(int idRol, String nombreNuevo, boolean activo){
+    public Rol actualzarDatosRol(int idRol, String nombreNuevo, boolean activo){
         Rol rol = this.repositorioRol.obtenerRol(idRol);
         rol.cambiarNombre(nombreNuevo);
         if (rol.isActivo() && !activo){
@@ -39,6 +39,17 @@ public class ServicioRol {
         }
         this.repositorioRol.actualizarDatosRol(rol);
         return rol;
+    }
+
+    public void actualizarPermisosRol(int idRol, List<Permiso> listaPermisosActualizada){
+        Rol rol = this.repositorioRol.obtenerRol(idRol);
+        for (Permiso p:rol.getPermisos()){
+            rol.quitarPermiso(p);
+        }
+        for (Permiso permiso:listaPermisosActualizada){
+              rol.anadirPermisoNuevo(permiso);
+        }
+        this.repositorioRol.actualizarPermisosRol(rol);
     }
 
     public List<Rol> obtenerRoles(){

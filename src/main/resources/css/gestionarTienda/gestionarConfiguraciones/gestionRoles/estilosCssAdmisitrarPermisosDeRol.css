@@ -39,6 +39,18 @@
 
 
 
+.estado-activo {
+    -fx-text-fill: #10b981;
+    -fx-font-weight: bold;
+}
+
+.estado-inactivo {
+    -fx-text-fill: #ef4444;
+    -fx-font-weight: bold;
+}
+
+
+
 .tabla-personalizada {
     -fx-background-color: #ffffff;
     -fx-border-color: #e2e8f0;

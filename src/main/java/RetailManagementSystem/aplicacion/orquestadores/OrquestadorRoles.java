@@ -49,10 +49,25 @@ public class OrquestadorRoles {
         );
     }
 
-    public RolDTO actualizarRol(int idRol, String nombreNuevo, boolean activo){
+    public RolDTO actualizarDatosRol(int idRol, String nombreNuevo, boolean activo){
         return this.ensambladorDTORol.ensamblarDatosRol(
-                this.servicioRol.actualzarRol(idRol, nombreNuevo, activo)
+                this.servicioRol.actualzarDatosRol(idRol, nombreNuevo, activo)
         );
+    }
+
+    public void actualizarPermisosRol(int idRol, List<PermisoDTO> listaPermisosActualizada){
+        List<Permiso> permisosParaELRol = new ArrayList<>();
+        for (PermisoDTO permisoDTO:listaPermisosActualizada){
+            Permiso permiso = Permiso.reconstruirDesdeBD(
+                    permisoDTO.idPermiso(),
+                    permisoDTO.nombre(),
+                    permisoDTO.descripcion(),
+                    permisoDTO.modulo(),
+                    permisoDTO.activo()
+            );
+            permisosParaELRol.add(permiso);
+        }
+        this.servicioRol.actualizarPermisosRol(idRol, permisosParaELRol);
     }
 
 }//===================================================================================================================//

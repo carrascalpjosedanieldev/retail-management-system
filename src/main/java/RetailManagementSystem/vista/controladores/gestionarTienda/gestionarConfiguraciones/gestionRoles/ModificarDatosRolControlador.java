@@ -82,7 +82,7 @@ public class ModificarDatosRolControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorRoles.actualizarRol(this.rol.idRol(), nombreActualizado, activo)
+                this.orquestadorRoles.actualizarDatosRol(this.rol.idRol(), nombreActualizado, activo)
         ).thenAccept(rolActualizado->{
             Platform.runLater(()->{
                 int indice = listaObservable.indexOf(this.rol);

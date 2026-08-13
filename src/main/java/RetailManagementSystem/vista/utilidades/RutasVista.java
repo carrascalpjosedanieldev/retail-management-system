@@ -51,23 +51,15 @@ public class RutasVista {
 
     public static final String ADMINISTRAR_PERMISOS_DE_ROL_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/AdministrarPermisosDeRol.fxml";
-    public static final String ESTILOS_CSS_ADMINISTRAR_PERMISOS_DE_ROL =
-            "/css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssAdministrarPermisosDeRol.css";
 
     public static final String CREAR_ROL_NUEVO_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/CrearRolNuevo.fxml";
-    public static final String ESTILOS_CSS_CREAR_ROL_NUEVO =
-            "/css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssCrearRolNuevo.css";
 
     public static final String GESTION_ROLES_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/GestionRoles.fxml";
-    public static final String ESTILOS_CSS_GESTION_ROLES =
-            "/css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssGestionRoles.css";
 
     public static final String MODIFICAR_DATOS_ROL_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/ModificarDatosRol.fxml";
-    public static final String ESTILOS_CSS_MODIFICAR_DATOS_ROL =
-            "/css/gestionarTienda/gestionarConfiguraciones/gestionRoles/estilosCssModificarDatosRol.css";
 
 
         //GESTIONAR DESCUENTOS:
