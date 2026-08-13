@@ -52,6 +52,9 @@ public class RutasVista {
     public static final String ADMINISTRAR_PERMISOS_DE_ROL_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/AdministrarPermisosDeRol.fxml";
 
+    public static final String ANADIR_PERMISO_AL_ROL_VIEW =
+            "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/AnadirPermisoAlRol.fxml";
+
     public static final String CREAR_ROL_NUEVO_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/CrearRolNuevo.fxml";
 

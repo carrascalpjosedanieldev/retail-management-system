@@ -188,7 +188,6 @@ public class PermisosVistaControlador {
                 "¿Estás Seguro de Cambiar el Estado del Permiso?")) {
             return;
         }
-
         CompletableFuture.runAsync(()->
                 this.orquestadorPermisos.cambiarEstadoPermiso(permisoSeleccionado.idPermiso(), permisoSeleccionado.activo())
         ).thenRun(()->{

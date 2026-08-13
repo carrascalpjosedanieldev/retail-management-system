@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConf
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -14,12 +15,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -103,9 +109,22 @@ public class AdministrarPermisosDeRolControlador {
 
     @FXML
     void anadirPermiso(ActionEvent event) {
-
-
-
+        String rutaFxml = RutasVista.ANADIR_PERMISO_AL_ROL_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            AnadirPermisoAlRolControlador controlador = loader.getController();
+            controlador.cargarDatos(listaObservablePermisos);
+            Stage stageAdministrar = new Stage();
+            stageAdministrar.setTitle("Administrar Permisos.");
+            stageAdministrar.initModality(Modality.APPLICATION_MODAL);
+            stageAdministrar.setResizable(false);
+            Scene escenaEdicion = new Scene(root);
+            stageAdministrar.setScene(escenaEdicion);
+            stageAdministrar.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 

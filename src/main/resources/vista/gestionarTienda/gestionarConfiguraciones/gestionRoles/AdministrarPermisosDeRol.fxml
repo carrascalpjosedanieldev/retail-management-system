@@ -44,7 +44,7 @@
 
         <Region VBox.vgrow="ALWAYS" />
 
-        <Button onAction="#guardarCambios" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-volver" text="⬅ Guardar Cambios" />
+        <Button onAction="#guardarCambios" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-volver" text="💾 Guardar Cambios" />
       <Button layoutX="46.0" layoutY="640.0" onAction="#cancelar" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-volver" text="⬅ Cancelar" />
     </VBox>
 

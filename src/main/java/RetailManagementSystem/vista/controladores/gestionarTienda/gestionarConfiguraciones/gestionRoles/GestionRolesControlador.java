@@ -153,7 +153,25 @@ public class GestionRolesControlador {
 
     @FXML
     public void administrarPermisosRol(ActionEvent event) {
-
+        RolDTO rolSeleccionado = tablaRoles.getSelectionModel().getSelectedItem();
+        if (rolSeleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Rol de la Tabla para Administrar sus Permisos."
+            );
+            return;
+        }
+        String rutaFxml = RutasVista.ADMINISTRAR_PERMISOS_DE_ROL_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            AdministrarPermisosDeRolControlador controlador = loader.getController();
+            controlador.cargarDatos(rolSeleccionado);
+            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stageActual.getScene().setRoot(root);
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 
