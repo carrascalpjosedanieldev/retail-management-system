@@ -24,7 +24,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                 "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setString(1, servicio.getCodigo());
             pstmt.setString(2, servicio.getNombre());
@@ -152,7 +152,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
 
     @Override
-    public List<Servicio> obtenerServiciosInactivos() {
+    public List<Servicio> obtenerTodosLosServicios() {
         List<Servicio> servicios = new ArrayList<>();
         String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
                 "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
@@ -161,7 +161,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                 "FROM servicios s " +
                 "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
                 "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
-                "WHERE s.activo = false ";
+                "ORDER BY s.activo DESC, s.codigo_servicio ASC ";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -186,13 +186,15 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                 boolean activoDesc = rs.getBoolean("activo_descuento");
                 Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
 
-                Servicio servicio = Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, activo);
+                Servicio servicio = Servicio.reconstruirDesdeBD(
+                        codigo, nombre, precioBase, impuesto, descuento, activo
+                );
                 servicios.add(servicio);
 
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+            throw new PersistenciaException("Error Crítico de Infraestructura al Intentar obtener los Servicios.", e);
         }
         return servicios;
     }

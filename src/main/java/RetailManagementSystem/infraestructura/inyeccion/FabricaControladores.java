@@ -80,10 +80,9 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == GestionServiciosControlador.class) {
             return new GestionServiciosControlador(
-                    ContenedorDependencias.getServicioServicios(),
-                    ContenedorDependencias.getServicioImpuestos(),
-                    ContenedorDependencias.getServicioDescuentos(),
-                    ContenedorDependencias.getEnsambladorDTOServicio()
+                    ContenedorDependencias.getOrquestadorServicios(),
+                    ContenedorDependencias.getOrquestadorDescuentos(),
+                    ContenedorDependencias.getOrquestadorImpuestos()
             );
         }
         if (claseControlador == TabGeneralProductosControlador.class){

@@ -37,14 +37,15 @@ public class ServicioServicios {
         return this.repositorioServicio.existeServicio(codigoServicio);
     }
 
-    public void registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento){
+    public Servicio registrarServicioNuevo(String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento){
         Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
         Servicio servicio = Servicio.crearNuevo(nombreServicio, precioBase, impuesto, descuento);
         this.repositorioServicio.insertarServicio(servicio);
+        return servicio;
     }
 
-    public void actualizarServicio(String codigoServicio, String nombre, BigDecimal precioBase, int idImpuesto, int idDescuento){
+    public Servicio actualizarServicio(String codigoServicio, String nombre, BigDecimal precioBase, int idImpuesto, int idDescuento){
         Servicio servicio = this.obtenerServicio(codigoServicio);
         servicio.cambiarNombreServicio(nombre);
         servicio.cambiarPrecioBase(precioBase);
@@ -57,6 +58,7 @@ public class ServicioServicios {
             servicio.cambiarDescuento(descuento);
         }
         this.actualizarServicio(servicio);
+        return servicio;
     }
 
     public void cambiarEstadoServicio(String codigoServicio){
@@ -77,8 +79,8 @@ public class ServicioServicios {
         return this.repositorioServicio.obtenerServiciosActivos();
     }
 
-    public List<Servicio> obtenerServiciosInactivos(){
-        return this.repositorioServicio.obtenerServiciosInactivos();
+    public List<Servicio> obtenerTodosLosServicios(){
+        return this.repositorioServicio.obtenerTodosLosServicios();
     }
 
 }//===================================================================================================================//

@@ -1,19 +1,20 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios;
 
-import RetailManagementSystem.dominio.entidades.gestion.Descuento;
-import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
-import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
-import RetailManagementSystem.aplicacion.servicios.ServicioServicios;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOServicio;
 import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -32,9 +33,9 @@ import javafx.util.StringConverter;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class GestionServiciosControlador {
@@ -51,24 +52,23 @@ public class GestionServiciosControlador {
     @FXML private TableView<ServicioDTO> tablaServicios;
     @FXML private TextField txtBuscar;
 
-    private final ServicioServicios servicioServicios;
-    private final ServicioImpuestos servicioImpuestos;
-    private final ServicioDescuentos servicioDescuentos;
+    private final OrquestadorServicios orquestadorServicios;
 
-    private final EnsambladorDTOServicio ensambladorDTOServicio;
+    private final OrquestadorDescuentos orquestadorDescuentos;
+
+    private final OrquestadorImpuestos orquestadorImpuestos;
 
     private final ObservableList<ServicioDTO> listaObservableServicios = FXCollections.observableArrayList();
 
     //CONSTRUCTOR:
 
     public GestionServiciosControlador(
-            ServicioServicios servicioServicios, ServicioImpuestos servicioImpuestos,
-            ServicioDescuentos servicioDescuentos, EnsambladorDTOServicio ensambladorDTOServicio
+            OrquestadorServicios orquestadorServicios, OrquestadorDescuentos orquestadorDescuentos,
+            OrquestadorImpuestos orquestadorImpuestos
     ) {
-        this.servicioServicios = servicioServicios;
-        this.servicioImpuestos = servicioImpuestos;
-        this.servicioDescuentos = servicioDescuentos;
-        this.ensambladorDTOServicio = ensambladorDTOServicio;
+        this.orquestadorServicios = orquestadorServicios;
+        this.orquestadorDescuentos = orquestadorDescuentos;
+        this.orquestadorImpuestos = orquestadorImpuestos;
     }
 
     //MÉTODOS:
@@ -92,20 +92,7 @@ public class GestionServiciosControlador {
         }
     }
 
-    private void configurarColumnaMoneda(TableColumn<ServicioDTO, BigDecimal> columna) {
-        columna.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(BigDecimal precio, boolean empty) {
-                super.updateItem(precio, empty);
-                if (empty || precio == null) {
-                    setText(null);
-                } else {
-                    setText(String.format("$ %,.2f", precio));
-                    setStyle("-fx-font-weight: bold; -fx-text-fill: #0f172a;");
-                }
-            }
-        });
-    }
+
 
     private <T> void configurarComboBox(ComboBox<T> comboBox, List<T> items, String prompt, Function<T, String> extractorTexto) {
         comboBox.setItems(FXCollections.observableArrayList(items));
@@ -134,7 +121,7 @@ public class GestionServiciosControlador {
 
     private GridPane crearGridPane(
             TextField txtNombre, TextField txtPrecioBase,
-            ComboBox<Impuesto> cbImpuestos, ComboBox<Descuento> cbDescuentos
+            ComboBox<ImpuestoDTO> cbImpuestos, ComboBox<DescuentoDTO> cbDescuentos
     ) {
         GridPane grid = new GridPane();
         grid.setHgap(15);
@@ -152,7 +139,7 @@ public class GestionServiciosControlador {
     }
 
     private void validarCampos(Dialog<ButtonType> dialog, TextField txtNombre, TextField txtPrecioBase,
-                               ComboBox<Impuesto> cbImpuestos, ComboBox<Descuento> cbDescuentos) {
+                               ComboBox<ImpuestoDTO> cbImpuestos, ComboBox<DescuentoDTO> cbDescuentos) {
         ButtonType btnTipoAccion = dialog.getDialogPane().getButtonTypes().stream()
                 .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
                 .findFirst().orElse(null);
@@ -191,17 +178,33 @@ public class GestionServiciosControlador {
 
     @FXML
     public void initialize() {
-        inicializar();
+        configurarColumnas();
+        configurarFiltroBusqueda();
+        cargarDatosTabla();
     }
 
-    private void inicializar(){
-        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigo()));
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colPrecioBase.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioBase()));
-        colImpuesto.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().datosImpuesto().nombre()));
-        colDescuento.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().datosDescuento().nombre()));
-        colPrecioFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().precioFinal()));
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().estado()));
+    private void configurarColumnas(){
+        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().codigo())
+        );
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().nombre())
+        );
+        colPrecioBase.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().precioBase())
+        );
+        colImpuesto.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().datosImpuesto().nombre())
+        );
+        colDescuento.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().datosDescuento().nombre())
+        );
+        colPrecioFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().precioFinal())
+        );
+        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().estado())
+        );
         configurarColumnaMoneda(colPrecioBase);
         configurarColumnaMoneda(colPrecioFinal);
         colEstado.setCellFactory(columna -> new TableCell<ServicioDTO, String>() {
@@ -221,6 +224,25 @@ public class GestionServiciosControlador {
                 }
             }
         });
+    }
+
+    private void configurarColumnaMoneda(TableColumn<ServicioDTO, BigDecimal> columna) {
+        columna.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(BigDecimal precio, boolean empty) {
+                super.updateItem(precio, empty);
+                getStyleClass().removeAll("columna-moneda");
+                if (empty || precio == null) {
+                    setText(null);
+                } else {
+                    setText(FormateadorNumeros.formatoMoneda(precio));
+                    getStyleClass().add("columna-moneda");
+                }
+            }
+        });
+    }
+
+    private void configurarFiltroBusqueda(){
         FilteredList<ServicioDTO> listaFiltrada = new FilteredList<>(listaObservableServicios, b -> true);
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo) -> {
             listaFiltrada.setPredicate(servicio -> {
@@ -235,21 +257,29 @@ public class GestionServiciosControlador {
         SortedList<ServicioDTO> listaOrdenada = new SortedList<>(listaFiltrada);
         listaOrdenada.comparatorProperty().bind(tablaServicios.comparatorProperty());
         tablaServicios.setItems(listaOrdenada);
-        cargarDatosTabla();
     }
 
     private void cargarDatosTabla() {
         LocalDate fechaActual = LocalDate.now();
-        List<ServicioDTO> todosLosServicios = new ArrayList<>();
-        List<ServicioDTO> serviciosActivos = this.ensambladorDTOServicio.ensamblarDatosCatalogoServicios(
-                this.servicioServicios.obtenerServiciosActivos(), fechaActual
-        );
-        List<ServicioDTO> serviciosInactivos = this.ensambladorDTOServicio.ensamblarDatosCatalogoServicios(
-                this.servicioServicios.obtenerServiciosInactivos(), fechaActual
-        );
-        todosLosServicios.addAll(serviciosActivos);
-        todosLosServicios.addAll(serviciosInactivos);
-        listaObservableServicios.setAll(todosLosServicios);
+        CompletableFuture.supplyAsync(()->
+                this.orquestadorServicios.obtenerTodosLosServicios(fechaActual)
+        ).thenAccept(listaServicios->
+            Platform.runLater(()->
+                listaObservableServicios.setAll(listaServicios)
+            )
+        ).exceptionally(ex->{
+            Platform.runLater(() -> {
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Notificale al Administrador este Error:\n" + causa.getMessage()
+                );
+                Stage stageActual = (Stage) tablaServicios.getScene().getWindow();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+            });
+            return null;
+        });
     }
 
 
@@ -265,24 +295,24 @@ public class GestionServiciosControlador {
                     "Por favor, Selecciona un Servicio de la Tabla para Modificarlo.");
             return;
         }
-        List<Impuesto> listaImpuestos = this.servicioImpuestos.obtenerImpuestosActivos();
-        List<Descuento> listaDescuentos = this.servicioDescuentos.obtenerDescuentosActivos();
+        List<ImpuestoDTO> listaImpuestos = this.orquestadorImpuestos.obtenerImpuestosActivos();
+        List<DescuentoDTO> listaDescuentos = this.orquestadorDescuentos.obtenerDescuentosActivos();
         Dialog<ButtonType> dialog = crearDialogoBase("Modificar Servicio",
                 "Editando el servicio: " + seleccionado.codigo() + " \n " + seleccionado.nombre(),
                 "Actualizar");
         TextField txtNombre = new TextField(seleccionado.nombre());
         txtNombre.setPrefWidth(250);
         TextField txtPrecioBase = new TextField(seleccionado.precioBase().toString());
-        ComboBox<Impuesto> cbImpuestos = new ComboBox<>();
+        ComboBox<ImpuestoDTO> cbImpuestos = new ComboBox<>();
         configurarComboBox(cbImpuestos, listaImpuestos, "Seleccione un Impuesto...",
-                imp -> imp.getNombre() + " (" + imp.getPorcentaje() + "%)");
-        ComboBox<Descuento> cbDescuentos = new ComboBox<>();
+                imp -> imp.nombre() + " (" + imp.porcentaje() + "%)");
+        ComboBox<DescuentoDTO> cbDescuentos = new ComboBox<>();
         configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
-                desc -> desc.getNombre() + " (" + desc.getPorcentaje() + "%)");
+                desc -> desc.nombre() + " (" + desc.porcentaje() + "%)");
         listaImpuestos.stream().filter(imp ->
-                imp.getId() == seleccionado.datosImpuesto().idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
+                imp.idImpuesto() == seleccionado.datosImpuesto().idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
         listaDescuentos.stream().filter(desc ->
-                desc.getId() == seleccionado.datosDescuento().idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
+                desc.idDescuento() == seleccionado.datosDescuento().idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
         GridPane grid = crearGridPane(txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
         dialog.getDialogPane().setContent(grid);
         validarCampos(dialog, txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
@@ -291,11 +321,11 @@ public class GestionServiciosControlador {
                 try {
                     String nuevoNombre = txtNombre.getText().trim();
                     BigDecimal nuevoPrecioBase = FormateadorNumeros.stringAPrecio(txtPrecioBase.getText().trim());
-                    Impuesto impuestoSeleccionado = cbImpuestos.getValue();
-                    Descuento descuentoSeleccionado = cbDescuentos.getValue();
-                    this.servicioServicios.actualizarServicio(
+                    ImpuestoDTO impuestoSeleccionado = cbImpuestos.getValue();
+                    DescuentoDTO descuentoSeleccionado = cbDescuentos.getValue();
+                    this.orquestadorServicios.actualizarServicio(
                             seleccionado.codigo(), nuevoNombre, nuevoPrecioBase,
-                            impuestoSeleccionado.getId(), descuentoSeleccionado.getId()
+                            impuestoSeleccionado.idImpuesto(), descuentoSeleccionado.idDescuento(), LocalDate.now()
                     );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Servicio ha sido Actualizado Correctamente.");
@@ -321,8 +351,8 @@ public class GestionServiciosControlador {
     }
 
     private void abrirFormularioNuevo(){
-        List<Impuesto> listaImpuestos = this.servicioImpuestos.obtenerImpuestosActivos();
-        List<Descuento> listaDescuentos = this.servicioDescuentos.obtenerDescuentosActivos();
+        List<ImpuestoDTO> listaImpuestos = this.orquestadorImpuestos.obtenerImpuestosActivos();
+        List<DescuentoDTO> listaDescuentos = this.orquestadorDescuentos.obtenerDescuentosActivos();
         if (listaImpuestos.isEmpty()) {
             mostrarAlerta(Alert.AlertType.WARNING, "Configuración Requerida",
                     "NO puedes Crear un Servicio si no tienes al menos un Impuesto Activo en el Sistema.");
@@ -340,12 +370,12 @@ public class GestionServiciosControlador {
         txtNombre.setPrefWidth(250);
         TextField txtPrecioBase = new TextField();
         txtPrecioBase.setPromptText("Ej: 1500.00");
-        ComboBox<Impuesto> cbImpuestos = new ComboBox<>();
+        ComboBox<ImpuestoDTO> cbImpuestos = new ComboBox<>();
         configurarComboBox(cbImpuestos, listaImpuestos, "Seleccione un Impuesto...",
-                imp -> imp.getNombre() + " (" + imp.getPorcentaje() + "%)");
-        ComboBox<Descuento> cbDescuentos = new ComboBox<>();
+                imp -> imp.nombre() + " (" + imp.porcentaje() + "%)");
+        ComboBox<DescuentoDTO> cbDescuentos = new ComboBox<>();
         configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
-                desc -> desc.getNombre() + " (" + desc.getPorcentaje() + "%)");
+                desc -> desc.nombre() + " (" + desc.porcentaje() + "%)");
         GridPane grid = crearGridPane(txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
         dialog.getDialogPane().setContent(grid);
         validarCampos(dialog, txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
@@ -354,10 +384,11 @@ public class GestionServiciosControlador {
                 try {
                     String nombre = txtNombre.getText().trim();
                     BigDecimal precioBase = FormateadorNumeros.stringAPrecio(txtPrecioBase.getText().trim());
-                    Impuesto impuestoSeleccionado = cbImpuestos.getValue();
-                    Descuento descuentoSeleccionado = cbDescuentos.getValue();
-                    this.servicioServicios.registrarServicioNuevo(
-                            nombre, precioBase, impuestoSeleccionado.getId(), descuentoSeleccionado.getId()
+                    ImpuestoDTO impuestoSeleccionado = cbImpuestos.getValue();
+                    DescuentoDTO descuentoSeleccionado = cbDescuentos.getValue();
+                    this.orquestadorServicios.registrarServicio(
+                            nombre, precioBase, impuestoSeleccionado.idImpuesto(),
+                            descuentoSeleccionado.idDescuento(), LocalDate.now()
                     );
                     mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                             "El Servicio ha sido Registrado Correctamente.");
@@ -391,7 +422,7 @@ public class GestionServiciosControlador {
                         seleccionado.codigo() + " - " + seleccionado.nombre() + "?");
         if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
             try {
-                this.servicioServicios.cambiarEstadoServicio(seleccionado.codigo());
+                this.orquestadorServicios.cambiarEstadoServicio(seleccionado.codigo());
                 mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                         "El Estado del Servicio ha sido Actualizado Correctamente.");
                 cargarDatosTabla();

@@ -31,6 +31,12 @@ public class OrquestadorImpuestos {
         );
     }
 
+    public List<ImpuestoDTO> obtenerImpuestosActivos(){
+        return this.ensambladorDTOImpuesto.ensamblarDetalleImpuestos(
+                this.servicioImpuestos.obtenerImpuestosActivos()
+        );
+    }
+
     public ImpuestoDTO registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo) {
         Impuesto impuesto = this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
         return this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(impuesto);

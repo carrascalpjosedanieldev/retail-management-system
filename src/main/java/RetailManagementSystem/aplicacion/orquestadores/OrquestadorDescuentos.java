@@ -31,6 +31,12 @@ public class OrquestadorDescuentos {
         );
     }
 
+    public List<DescuentoDTO> obtenerDescuentosActivos(){
+        return this.ensambladorDTODescuento.ensamblarDetalleDescuentos(
+                this.servicioDescuentos.obtenerDescuentosActivos()
+        );
+    }
+
     public DescuentoDTO registrarDescuento(String nombre, BigDecimal porcentaje, boolean activo) {
         Descuento descuento = this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
         return this.ensambladorDTODescuento.ensamblarDatosDescuento(descuento);
