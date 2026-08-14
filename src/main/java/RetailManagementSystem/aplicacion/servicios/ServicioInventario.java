@@ -23,9 +23,9 @@ public class ServicioInventario {
         inventario.validarEspacioDisponible(stockNuevo);
     }
 
-    public void agregarInventario(String nombre, int capacidad){
+    public Inventario agregarInventario(String nombre, int capacidad){
         Inventario inventario = Inventario.crearNuevo(nombre, capacidad);
-        this.repositorioInventario.insertarInventario(inventario);
+        return this.repositorioInventario.insertarInventario(inventario);
     }
 
     public Inventario actualizarInventario(int idInventario, String nombreNuevo){

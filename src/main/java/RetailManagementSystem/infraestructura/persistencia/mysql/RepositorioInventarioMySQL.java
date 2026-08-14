@@ -15,7 +15,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
     //CREATE:
 
     @Override
-    public void insertarInventario(Inventario borrador) {
+    public Inventario insertarInventario(Inventario borrador) {
         String sql = "INSERT INTO inventarios (nombre, capacidad_maxima) VALUES (?, ?)";
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -32,7 +32,12 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    Inventario.reconstruirDesdeBD(idReal, borrador.getNombre(), borrador.getCapacidadMaxima(), 0);
+                    return Inventario.reconstruirDesdeBD(
+                            idReal,
+                            borrador.getNombre(),
+                            borrador.getCapacidadMaxima(),
+                            0
+                    );
                 } else {
                     throw new RuntimeException("La inserción fue exitosa, pero no se pudo obtener el ID autogenerado.");
                 }

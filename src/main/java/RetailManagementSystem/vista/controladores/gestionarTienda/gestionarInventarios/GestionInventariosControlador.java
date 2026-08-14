@@ -3,7 +3,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
-import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.GestionProductosControlador;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
@@ -20,19 +19,14 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionInventariosControlador {
@@ -61,17 +55,6 @@ public class GestionInventariosControlador {
     }
 
     //MÉTODOS:
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        alerta.showAndWait();
-    }
-
 
     @FXML
     public void initialize() {
@@ -156,24 +139,6 @@ public class GestionInventariosControlador {
     }
 
 
-    private Dialog<ButtonType> crearDialogoBase(String titulo, String cabecera, double ancho) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(titulo);
-        dialog.setHeaderText(cabecera);
-        DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setPrefWidth(ancho);
-        return dialog;
-    }
-
-    private GridPane crearGridPane() {
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20));
-        return grid;
-    }
-
-
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
         abrirFormularioEdicion();
@@ -182,8 +147,10 @@ public class GestionInventariosControlador {
     private void abrirFormularioEdicion(){
         InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Inventario de la Tabla para Modificarlo.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Inventario de la Tabla para Modificarlo."
+            );
             return;
         }
         String rutaFxml = RutasVista.EDITAR_INVENTARIO_VIEW;
@@ -207,66 +174,21 @@ public class GestionInventariosControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        abrirFormularioNuevo();
-    }
-
-    private void abrirFormularioNuevo(){
-        Dialog<ButtonType> dialog = crearDialogoBase("Nuevo Inventario", "Ingresa los datos de la nueva bodega / inventario", 500);
-        ButtonType btnGuardar = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
-        TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Ej: Bodega Central");
-        txtNombre.setPrefWidth(220);
-        TextField txtCapacidad = new TextField();
-        txtCapacidad.setPromptText("Ej: 500");
-        Label lblAdvertencia = new Label("""
-            ⚠️ Importante: Verifica bien este número.
-            Una vez creado el inventario, su capacidad
-            máxima NO podrá ser modificada.""");
-        lblAdvertencia.setStyle("-fx-text-fill: #ea580c; -fx-font-size: 12px; -fx-font-weight: bold;");
-        GridPane grid = crearGridPane();
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Capacidad Máx:"), 0, 1);
-        grid.add(txtCapacidad, 1, 1);
-        grid.add(lblAdvertencia, 1, 2);
-        dialog.getDialogPane().setContent(grid);
-        Button btnGuardarNode = (Button) dialog.getDialogPane().lookupButton(btnGuardar);
-        btnGuardarNode.addEventFilter(ActionEvent.ACTION, evt -> {
-            String nombre = txtNombre.getText().trim();
-            String capacidadTexto = txtCapacidad.getText().trim();
-            if (nombre.isEmpty() || capacidadTexto.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Campos Vacíos",
-                        "El Nombre y la Capacidad son Obligatorios.");
-                evt.consume();
-                return;
-            }
-            try {
-                int capacidad = Integer.parseInt(capacidadTexto);
-                if (capacidad <= 0) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Dato Inválido",
-                            "La Capacidad debe ser un Número Positivo.");
-                    evt.consume();
-                }
-            } catch (NumberFormatException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "La Capacidad debe ser un Número Entero (ej. 500), Sin Letras ni Decimales.");
-                evt.consume();
-            }
-        });
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == btnGuardar) {
-            String nombre = txtNombre.getText().trim();
-            int capacidad = Integer.parseInt(txtCapacidad.getText().trim());
-            try {
-                this.servicioInventario.agregarInventario(nombre, capacidad);
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Inventario ha sido Creado Correctamente.");
-                cargarDatosTabla();
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos",
-                        "Error:  " + e.getMessage());
-            }
+        String rutaFxml = RutasVista.CREAR_INVENTARIO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            CrearInventarioControlador controlador = loader.getController();
+            controlador.cargarDatos(listaObservable);
+            Stage stageCrear = new Stage();
+            stageCrear.setTitle("Creando Inventario");
+            stageCrear.initModality(Modality.APPLICATION_MODAL);
+            stageCrear.setResizable(false);
+            Scene escenaCrear = new Scene(root);
+            stageCrear.setScene(escenaCrear);
+            stageCrear.showAndWait();
+        } catch (IOException e){
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
     }
 
@@ -290,7 +212,7 @@ public class GestionInventariosControlador {
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.getScene().setRoot(root);
         } catch (IOException | IllegalStateException e) {
-            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
     }
 

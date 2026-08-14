@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="520.0" styleClass="fondo-panel"
+      stylesheets="@../../../css/gestionarTienda/gestionarInventarios/estilosCssCrearInventario.css"
+      xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.CrearInventarioControlador">
+    <VBox alignment="CENTER_LEFT" styleClass="panel-encabezado">
+        <Label styleClass="titulo-principal" text="Ingresa los datos de la nueva Bodega / Inventario"
+               wrapText="true"/>
+    </VBox>
+
+
+    <VBox styleClass="panel-formulario" VBox.vgrow="ALWAYS">
+        <GridPane hgap="15.0" vgap="15.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="10.0"
+                                   prefWidth="124.8000301361084"/>
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="428.8000122070313" minWidth="10.0"
+                                   prefWidth="319.1999698638916"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <Label styleClass="label-formulario" text="Nombre:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="txtNombre" promptText="Ej: Bodega Central" styleClass="campo-texto"
+                       GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+
+            <Label styleClass="label-formulario" text="Capacidad Máx:" GridPane.columnIndex="0"
+                   GridPane.rowIndex="1"/>
+            <TextField fx:id="txtCapacidad" promptText="Ej: 500" styleClass="campo-texto"
+                       GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+
+            <Label styleClass="texto-advertencia"
+                   text="⚠ Importante: Verifica bien este número. Una vez creado el inventario, su capacidad máxima NO podrá ser modificada."
+                   wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <GridPane.margin>
+                    <Insets top="-5.0"/>
+                </GridPane.margin>
+            </Label>
+
+        </GridPane>
+    </VBox>
+
+
+    <HBox alignment="CENTER_RIGHT" spacing="15.0" styleClass="panel-botones">
+        <Button mnemonicParsing="false" onAction="#accionGuardar" prefWidth="110.0" styleClass="button"
+                text="Guardar"/>
+        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#accionCancelar" prefWidth="110.0"
+                styleClass="btn-cancelar" text="Cancelar"/>
+    </HBox>
+
+</VBox>

@@ -194,6 +194,16 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorDependencias.getOrquestadorPermisos()
             );
         }
+        if (claseControlador == CrearInventarioControlador.class){
+            return new CrearInventarioControlador(
+                    ContenedorDependencias.getOrquestadorProductoInventario()
+            );
+        }
+        if (claseControlador == EditarInventarioControlador.class){
+            return new EditarInventarioControlador(
+                    ContenedorDependencias.getOrquestadorProductoInventario()
+            );
+        }
         try {
             return claseControlador.getDeclaredConstructor().newInstance();
         } catch (Exception e) {

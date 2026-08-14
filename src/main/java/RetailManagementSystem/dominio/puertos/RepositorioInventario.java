@@ -8,7 +8,7 @@ public interface RepositorioInventario {
 
     //CREATE:
 
-    void insertarInventario(Inventario inventario);
+    Inventario insertarInventario(Inventario inventario);
 
     //READ:
 

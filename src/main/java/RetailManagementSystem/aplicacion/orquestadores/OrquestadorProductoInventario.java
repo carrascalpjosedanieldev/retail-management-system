@@ -55,5 +55,11 @@ public class OrquestadorProductoInventario {
         );
     }
 
+    public InventarioDTO registrarInventario(String nombre, int capacidadMaxima){
+        return this.ensambladorDTOInventario.ensamblarDatosInventario(
+                this.servicioInventario.agregarInventario(nombre, capacidadMaxima)
+        );
+    }
+
 }//===================================================================================================================//
 
