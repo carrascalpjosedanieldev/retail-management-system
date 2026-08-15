@@ -11,6 +11,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInven
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.CrearPoliticaVencimiento;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.EditarPoliticaVencimientoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.GestionPoliticasVencimientoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.CrearServicioControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.GestionServiciosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.*;
@@ -201,6 +202,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == EditarInventarioControlador.class){
             return new EditarInventarioControlador(
                     ContenedorDependencias.getOrquestadorProductoInventario()
+            );
+        }
+        if (claseControlador == CrearServicioControlador.class){
+            return new CrearServicioControlador(
+                    ContenedorDependencias.getOrquestadorServicios()
             );
         }
         try {

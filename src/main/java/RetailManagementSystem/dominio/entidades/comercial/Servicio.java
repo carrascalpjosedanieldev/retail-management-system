@@ -113,10 +113,10 @@ public class Servicio implements ItemFacturable {
     private Servicio(String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento,
                      boolean activo){
         if (codigoServicio.length() > 50){
-            throw new IllegalArgumentException("El Codigo del Servicio execede los Caracteres Maximos Posibles");
+            throw new IllegalArgumentException("El Código del Servicio excede los Caracteres Máximos Posibles");
         }
         if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Servicio Vacio");
+            throw new IllegalArgumentException("Nombre del Servicio Vacío");
         }
         if (precioBase.compareTo(BigDecimal.ZERO) <= 0){
             throw new IllegalArgumentException("Precio del Servicio Invalido");

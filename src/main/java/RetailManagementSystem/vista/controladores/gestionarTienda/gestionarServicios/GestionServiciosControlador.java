@@ -9,6 +9,7 @@ import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
 import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
 import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
+import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -23,19 +24,25 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class GestionServiciosControlador {
@@ -344,62 +351,52 @@ public class GestionServiciosControlador {
         });
     }
 
+    private void ejecutarConCatalogosListos(BiConsumer<List<ImpuestoDTO>, List<DescuentoDTO>> accionVisual) {
+        CompletableFuture<List<ImpuestoDTO>> futuroImpuestos =
+                CompletableFuture.supplyAsync(this.orquestadorImpuestos::obtenerImpuestosActivos);
+        CompletableFuture<List<DescuentoDTO>> futuroDescuentos =
+                CompletableFuture.supplyAsync(this.orquestadorDescuentos::obtenerDescuentosActivos);
+        futuroImpuestos.thenCombine(futuroDescuentos, (impuestos, descuentos) -> {
+            if (impuestos.isEmpty()) {
+                throw new IllegalStateException("NO puedes realizar esta Acción sin al menos un Impuesto Activo.");
+            }
+            if (descuentos.isEmpty()) {
+                throw new IllegalStateException("NO puedes realizar esta Acción sin al menos un Descuento Activo.");
+            }
+            Platform.runLater(() -> accionVisual.accept(impuestos, descuentos));
+            return null;
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaWarning("Configuración Requerida", null, causa.getMessage());
+            });
+            return null;
+        });
+    }
+
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        abrirFormularioNuevo();
+        ejecutarConCatalogosListos(this::abrirModalCrear);
     }
 
-    private void abrirFormularioNuevo(){
-        List<ImpuestoDTO> listaImpuestos = this.orquestadorImpuestos.obtenerImpuestosActivos();
-        List<DescuentoDTO> listaDescuentos = this.orquestadorDescuentos.obtenerDescuentosActivos();
-        if (listaImpuestos.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Configuración Requerida",
-                    "NO puedes Crear un Servicio si no tienes al menos un Impuesto Activo en el Sistema.");
-            return;
+    private void abrirModalCrear(List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
+        String rutaFxml = RutasVista.CREAR_SERVICIO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            CrearServicioControlador controlador = loader.getController();
+            controlador.cargarDatos(listaObservableServicios, listaImpuestos, listaDescuentos);
+            Stage stageCrear = new Stage();
+            stageCrear.setTitle("Creando Servicio");
+            stageCrear.initModality(Modality.APPLICATION_MODAL);
+            stageCrear.setResizable(false);
+            Scene escenaCrear = new Scene(root);
+            stageCrear.setScene(escenaCrear);
+            stageCrear.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
-        if (listaDescuentos.isEmpty()) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Configuración Requerida",
-                    "NO puedes Crear un Servicio si no tienes al menos un Descuento Activo en el Sistema (De preferencia que sea -Sin Descuento-).");
-            return;
-        }
-        Dialog<ButtonType> dialog = crearDialogoBase("Registrar Nuevo Servicio",
-                "Ingresa los Datos del nuevo Servicio", "Guardar");
-        TextField txtNombre = new TextField();
-        txtNombre.setPromptText("Nombre del Servicio...");
-        txtNombre.setPrefWidth(250);
-        TextField txtPrecioBase = new TextField();
-        txtPrecioBase.setPromptText("Ej: 1500.00");
-        ComboBox<ImpuestoDTO> cbImpuestos = new ComboBox<>();
-        configurarComboBox(cbImpuestos, listaImpuestos, "Seleccione un Impuesto...",
-                imp -> imp.nombre() + " (" + imp.porcentaje() + "%)");
-        ComboBox<DescuentoDTO> cbDescuentos = new ComboBox<>();
-        configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
-                desc -> desc.nombre() + " (" + desc.porcentaje() + "%)");
-        GridPane grid = crearGridPane(txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                try {
-                    String nombre = txtNombre.getText().trim();
-                    BigDecimal precioBase = FormateadorNumeros.stringAPrecio(txtPrecioBase.getText().trim());
-                    ImpuestoDTO impuestoSeleccionado = cbImpuestos.getValue();
-                    DescuentoDTO descuentoSeleccionado = cbDescuentos.getValue();
-                    this.orquestadorServicios.registrarServicio(
-                            nombre, precioBase, impuestoSeleccionado.idImpuesto(),
-                            descuentoSeleccionado.idDescuento(), LocalDate.now()
-                    );
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Servicio ha sido Registrado Correctamente.");
-                    cargarDatosTabla();
-                } catch (Exception e) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error Crítico",
-                            "NO se pudo Registrar el Servicio en la Base de Datos:\n" +
-                                    "Error:  " + e.getMessage());
-                }
-            }
-        });
     }
 
 

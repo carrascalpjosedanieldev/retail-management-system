@@ -87,6 +87,9 @@ public class RutasVista {
 
         //GESTIONAR SERVICIOS:
 
+    public static final String CREAR_SERVICIO_VIEW =
+            "/vista/gestionarTienda/gestionarServicios/CrearServicio.fxml";
+
     public static final String GESTIONAR_SERVICIOS_VIEW =
             "/vista/gestionarTienda/gestionarServicios/GestionServicios.fxml";
     public static final String ESTILOS_CSS_SERVICIOS =
