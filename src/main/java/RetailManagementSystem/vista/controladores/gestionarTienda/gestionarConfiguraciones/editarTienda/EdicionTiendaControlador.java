@@ -2,15 +2,12 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConf
 
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.stage.Stage;
-
-import java.net.URL;
 
 public class EdicionTiendaControlador {
 
@@ -18,7 +15,6 @@ public class EdicionTiendaControlador {
 
     @FXML private TextField txtNombre;
     @FXML private TextArea txtDescripcion;
-    @FXML private Button btnGuardar;
     @FXML private Button btnCancelar;
 
     private final ServicioConfiguraciones servicioConfiguraciones;
@@ -35,6 +31,7 @@ public class EdicionTiendaControlador {
     public void initialize() {
         txtNombre.setText(this.servicioConfiguraciones.obtenerNombreTienda());
         txtDescripcion.setText(this.servicioConfiguraciones.obtenerDescripcionTienda());
+        Platform.runLater(()->btnCancelar.requestFocus());
     }
 
     @FXML
