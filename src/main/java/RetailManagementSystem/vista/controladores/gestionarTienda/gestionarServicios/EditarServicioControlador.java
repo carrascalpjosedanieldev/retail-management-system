@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -24,37 +25,61 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public class CrearServicioControlador {
+public class EditarServicioControlador {
 
     //ATRIBUTOS:
 
     @FXML private Button btnCancelar;
     @FXML private ComboBox<DescuentoDTO> cbDescuento;
     @FXML private ComboBox<ImpuestoDTO> cbImpuesto;
+    @FXML private Label lblCodigoServicio;
+    @FXML private Label lblNombreServicio;
     @FXML private TextField txtNombre;
     @FXML private TextField txtPrecioBase;
 
     private ObservableList<ServicioDTO> listaObservable;
 
+    private ServicioDTO servicioSeleccionado;
+
     private final OrquestadorServicios orquestadorServicios;
 
     //CONSTRUCTOR:
 
-    public CrearServicioControlador(OrquestadorServicios orquestadorServicios) {
+    public EditarServicioControlador(OrquestadorServicios orquestadorServicios) {
         this.orquestadorServicios = orquestadorServicios;
     }
 
     //MÉTODOS:
 
     public void cargarDatos(
-            ObservableList<ServicioDTO> listaObservable, List<ImpuestoDTO> listaImpuestos,
+            ServicioDTO seleccionado, ObservableList<ServicioDTO> listaObservable, List<ImpuestoDTO> listaImpuestos,
             List<DescuentoDTO> listaDescuentos
     ){
+        if (seleccionado==null){
+            throw new IllegalArgumentException("NO puedes editar un Servicio Nulo");
+        }
         this.listaObservable = listaObservable;
-        configurarComboBox(cbImpuesto, listaImpuestos, "Seleccione un Impuesto...",
-                imp -> imp.nombre() + " (" + imp.porcentaje() + "%)");
-        configurarComboBox(cbDescuento, listaDescuentos, "Seleccione un Descuento...",
-                desc -> desc.nombre() + " (" + desc.porcentaje() + "%)");
+        this.servicioSeleccionado = seleccionado;
+        lblNombreServicio.setText(seleccionado.nombre());
+        lblCodigoServicio.setText(seleccionado.codigo());
+        txtNombre.setText(seleccionado.nombre());
+        txtPrecioBase.setText(seleccionado.precioBase().toString());
+        configurarComboBox(
+                cbImpuesto, listaImpuestos, "Seleccione un Impuesto...",
+                imp -> imp.nombre() + " (" + imp.porcentaje() + "%)"
+        );
+        listaImpuestos.stream().filter(imp ->
+                imp.idImpuesto() == seleccionado.datosImpuesto().idImpuesto()).findFirst().ifPresent(
+                cbImpuesto.getSelectionModel()::select
+        );
+        configurarComboBox(
+                cbDescuento, listaDescuentos, "Seleccione un Descuento...",
+                desc -> desc.nombre() + " (" + desc.porcentaje() + "%)"
+        );
+        listaDescuentos.stream().filter(desc ->
+                desc.idDescuento() == seleccionado.datosDescuento().idDescuento()).findFirst().ifPresent(
+                cbDescuento.getSelectionModel()::select
+        );
         Platform.runLater(()->btnCancelar.requestFocus());
     }
 
@@ -78,31 +103,26 @@ public class CrearServicioControlador {
 
 
     @FXML
-    void accionGuardar(ActionEvent event) {
-        guardarServicio();
-    }
-
-    private void guardarServicio(){
-        String nombre = txtNombre.getText().trim();
-        String  precioBaseTexto = txtPrecioBase.getText().trim();
+    void accionActualizar(ActionEvent event) {
+        String nuevoNombre = txtNombre.getText().trim();
+        String nuevoPrecioBaseTexto = txtPrecioBase.getText().trim();
         ImpuestoDTO impuestoSeleccionado = cbImpuesto.getValue();
         DescuentoDTO descuentoSeleccionado = cbDescuento.getValue();
-        if (nombre.isEmpty() || precioBaseTexto.isEmpty()){
+        if (nuevoNombre.isEmpty() || nuevoPrecioBaseTexto.isEmpty()){
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos",
-                    "El Nombre y el Precio Base son Obligatorios.",
-                    "Por favor escribe un Nombre y un Precio Base Validos."
+                    "Datos Incompletos", null,
+                    "El Nombre y el Precio Base son Obligatorios. Escribelos por favor"
             );
             return;
         }
-        BigDecimal precioBase;
+        BigDecimal nuevoPrecioBase;
         try {
-            precioBase = FormateadorNumeros.stringAPrecio(precioBaseTexto);
+            nuevoPrecioBase = FormateadorNumeros.stringAPrecio(nuevoPrecioBaseTexto);
         } catch (IllegalArgumentException e){
-            GestorAlertas.mostrarAlertaWarning(
-                    "Precio Invalido", null,
-                    "Por favor, escribe un Precio Base Valido.\n" +
-                            "Error:  " + e.getMessage()
+            GestorAlertas.mostrarAlertaError(
+                    "Precio Base Invalido", null,
+                    "Escribe un Precio Base Valido.\n" +
+                            e.getMessage()
             );
             return;
         }
@@ -121,20 +141,22 @@ public class CrearServicioControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorServicios.registrarServicio(
-                        nombre, precioBase, impuestoSeleccionado.idImpuesto(), descuentoSeleccionado.idDescuento(), LocalDate.now()
+                this.orquestadorServicios.actualizarServicio(
+                        this.servicioSeleccionado.codigo(), nuevoNombre, nuevoPrecioBase, impuestoSeleccionado.idImpuesto(),
+                        descuentoSeleccionado.idDescuento(), LocalDate.now()
                 )
-        ).thenAccept(servicioRegistrado->
-                Platform.runLater(()->{
-                    listaObservable.add(servicioRegistrado);
-                    GestorAlertas.mostrarAlertaInformacion(
-                            "Éxito", null,
-                            "El Servicio ha sido Registrado Correctamente."
-                    );
-                    cerrarPantalla();
-                })
-        ).exceptionally(ex->{
-            Platform.runLater(() -> {
+        ).thenAccept(servicioActualizado->{
+            Platform.runLater(()->{
+                int indice = listaObservable.indexOf(this.servicioSeleccionado);
+                listaObservable.set(indice, servicioActualizado);
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Éxito", null,
+                        "El Servicio se ha Actualizado con Éxito"
+                );
+                cerrarPantalla();
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(

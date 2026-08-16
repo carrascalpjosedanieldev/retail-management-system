@@ -6,8 +6,6 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
-import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
-import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
@@ -25,25 +23,20 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 public class GestionServiciosControlador {
 
@@ -88,98 +81,8 @@ public class GestionServiciosControlador {
         DialogPane pane = alerta.getDialogPane();
         pane.setMinHeight(180);
         pane.setMinWidth(400);
-        aplicarCSS(pane);
+        //aplicarCSS(pane);
         return alerta.showAndWait();
-    }
-
-    private void aplicarCSS(DialogPane panel) {
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_SERVICIOS);
-        if (urlCss != null) {
-            panel.getStylesheets().add(urlCss.toExternalForm());
-        }
-    }
-
-
-
-    private <T> void configurarComboBox(ComboBox<T> comboBox, List<T> items, String prompt, Function<T, String> extractorTexto) {
-        comboBox.setItems(FXCollections.observableArrayList(items));
-        comboBox.setPromptText(prompt);
-        comboBox.setMaxWidth(Double.MAX_VALUE);
-        comboBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(T item) { return (item == null) ? "" : extractorTexto.apply(item); }
-            @Override
-            public T fromString(String string) { return null; }
-        });
-    }
-
-    private Dialog<ButtonType> crearDialogoBase(String titulo, String cabecera, String textoBoton) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(titulo);
-        dialog.setHeaderText(cabecera);
-        DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.setPrefWidth(480);
-        dialogPane.setPrefHeight(450);
-        aplicarCSS(dialogPane);
-        ButtonType btnAccion = new ButtonType(textoBoton, ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().addAll(btnAccion, ButtonType.CANCEL);
-        return dialog;
-    }
-
-    private GridPane crearGridPane(
-            TextField txtNombre, TextField txtPrecioBase,
-            ComboBox<ImpuestoDTO> cbImpuestos, ComboBox<DescuentoDTO> cbDescuentos
-    ) {
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20));
-        grid.add(new Label("Nombre:"), 0, 0);
-        grid.add(txtNombre, 1, 0);
-        grid.add(new Label("Precio Base:"), 0, 1);
-        grid.add(txtPrecioBase, 1, 1);
-        grid.add(new Label("Impuesto:"), 0, 2);
-        grid.add(cbImpuestos, 1, 2);
-        grid.add(new Label("Descuento:"), 0, 3);
-        grid.add(cbDescuentos, 1, 3);
-        return grid;
-    }
-
-    private void validarCampos(Dialog<ButtonType> dialog, TextField txtNombre, TextField txtPrecioBase,
-                               ComboBox<ImpuestoDTO> cbImpuestos, ComboBox<DescuentoDTO> cbDescuentos) {
-        ButtonType btnTipoAccion = dialog.getDialogPane().getButtonTypes().stream()
-                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
-                .findFirst().orElse(null);
-        Button botonFisico = (Button) dialog.getDialogPane().lookupButton(btnTipoAccion);
-        botonFisico.addEventFilter(ActionEvent.ACTION, event -> {
-            String nombre = txtNombre.getText().trim();
-            String precioTexto = txtPrecioBase.getText().trim();
-            if (nombre.isEmpty() || precioTexto.isEmpty()) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "El Nombre y el Precio Base son Obligatorios.");
-                event.consume();
-                return;
-            }
-            if (cbImpuestos.getValue() == null) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "Debes Seleccionar un Impuesto para el Servicio.");
-                event.consume();
-                return;
-            }
-            if (cbDescuentos.getValue() == null) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "Debes Seleccionar un Descuento para el Servicio (De preferencia que sea -Sin Descuento-).");
-                event.consume();
-                return;
-            }
-            try {
-                FormateadorNumeros.stringAPrecio(precioTexto);
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                        "Por favor, Ingresa un Precio Base Numérico Válido.");
-                event.consume();
-            }
-        });
     }
 
 
@@ -292,63 +195,36 @@ public class GestionServiciosControlador {
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
-        abrirFormularioEdicion();
-    }
-
-    private void abrirFormularioEdicion(){
         ServicioDTO seleccionado = tablaServicios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Servicio de la Tabla para Modificarlo.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Servicio de la Tabla para Modificarlo."
+            );
             return;
         }
-        List<ImpuestoDTO> listaImpuestos = this.orquestadorImpuestos.obtenerImpuestosActivos();
-        List<DescuentoDTO> listaDescuentos = this.orquestadorDescuentos.obtenerDescuentosActivos();
-        Dialog<ButtonType> dialog = crearDialogoBase("Modificar Servicio",
-                "Editando el servicio: " + seleccionado.codigo() + " \n " + seleccionado.nombre(),
-                "Actualizar");
-        TextField txtNombre = new TextField(seleccionado.nombre());
-        txtNombre.setPrefWidth(250);
-        TextField txtPrecioBase = new TextField(seleccionado.precioBase().toString());
-        ComboBox<ImpuestoDTO> cbImpuestos = new ComboBox<>();
-        configurarComboBox(cbImpuestos, listaImpuestos, "Seleccione un Impuesto...",
-                imp -> imp.nombre() + " (" + imp.porcentaje() + "%)");
-        ComboBox<DescuentoDTO> cbDescuentos = new ComboBox<>();
-        configurarComboBox(cbDescuentos, listaDescuentos, "Seleccione un Descuento...",
-                desc -> desc.nombre() + " (" + desc.porcentaje() + "%)");
-        listaImpuestos.stream().filter(imp ->
-                imp.idImpuesto() == seleccionado.datosImpuesto().idImpuesto()).findFirst().ifPresent(cbImpuestos.getSelectionModel()::select);
-        listaDescuentos.stream().filter(desc ->
-                desc.idDescuento() == seleccionado.datosDescuento().idDescuento()).findFirst().ifPresent(cbDescuentos.getSelectionModel()::select);
-        GridPane grid = crearGridPane(txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
-        dialog.getDialogPane().setContent(grid);
-        validarCampos(dialog, txtNombre, txtPrecioBase, cbImpuestos, cbDescuentos);
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                try {
-                    String nuevoNombre = txtNombre.getText().trim();
-                    BigDecimal nuevoPrecioBase = FormateadorNumeros.stringAPrecio(txtPrecioBase.getText().trim());
-                    ImpuestoDTO impuestoSeleccionado = cbImpuestos.getValue();
-                    DescuentoDTO descuentoSeleccionado = cbDescuentos.getValue();
-                    this.orquestadorServicios.actualizarServicio(
-                            seleccionado.codigo(), nuevoNombre, nuevoPrecioBase,
-                            impuestoSeleccionado.idImpuesto(), descuentoSeleccionado.idDescuento(), LocalDate.now()
-                    );
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Servicio ha sido Actualizado Correctamente.");
-                    cargarDatosTabla();
-                } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error en los Datos Ingresados",
-                            "Error:  " + e.getMessage());
-                } catch (ServicioNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Servicio NO Encontrado",
-                            "Error:  " + e.getMessage());
-                } catch (ImpuestoNoEncontradoException | DescuentoNoEncontradoExeption e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Error al Editar el Servicio",
-                            "Error:  " + e.getMessage());
-                }
-            }
+        ejecutarConCatalogosListos((listaImpuestos, listaDescuentos)->{
+            abrirModalEdicion(seleccionado, listaImpuestos, listaDescuentos);
         });
+    }
+
+    private void abrirModalEdicion(ServicioDTO seleccionado, List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
+        String rutaFxml = RutasVista.EDITAR_SERVICIO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            EditarServicioControlador controlador = loader.getController();
+            controlador.cargarDatos(seleccionado, listaObservableServicios, listaImpuestos, listaDescuentos);
+            Stage stageEditar = new Stage();
+            stageEditar.setTitle("Editando Servicio");
+            stageEditar.initModality(Modality.APPLICATION_MODAL);
+            stageEditar.setResizable(false);
+            Scene escenaEditar = new Scene(root);
+            stageEditar.setScene(escenaEditar);
+            stageEditar.showAndWait();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
     private void ejecutarConCatalogosListos(BiConsumer<List<ImpuestoDTO>, List<DescuentoDTO>> accionVisual) {

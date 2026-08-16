@@ -2,7 +2,7 @@ package RetailManagementSystem.vista.utilidades;
 
 public class RutasVista {
 
-    //ALERTAS:
+    //ESTILOS ALERTAS:
 
     public static final String ESTILOS_CSS_ALERTA_DE_NAVEGACION =
             "/css/alertas/estilosCssAlertaDeNavegacion.css";
@@ -90,10 +90,11 @@ public class RutasVista {
     public static final String CREAR_SERVICIO_VIEW =
             "/vista/gestionarTienda/gestionarServicios/CrearServicio.fxml";
 
+    public static final String EDITAR_SERVICIO_VIEW =
+            "/vista/gestionarTienda/gestionarServicios/EditarServicio.fxml";
+
     public static final String GESTIONAR_SERVICIOS_VIEW =
             "/vista/gestionarTienda/gestionarServicios/GestionServicios.fxml";
-    public static final String ESTILOS_CSS_SERVICIOS =
-            "/css/gestionarTienda/gestionarServicios/estilosCssServicios.css";
 
 
         //GESTIONAR POLÍTICAS V
