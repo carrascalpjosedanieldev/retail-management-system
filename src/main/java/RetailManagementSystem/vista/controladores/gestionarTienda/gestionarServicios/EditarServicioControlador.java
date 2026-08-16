@@ -145,7 +145,7 @@ public class EditarServicioControlador {
                         this.servicioSeleccionado.codigo(), nuevoNombre, nuevoPrecioBase, impuestoSeleccionado.idImpuesto(),
                         descuentoSeleccionado.idDescuento(), LocalDate.now()
                 )
-        ).thenAccept(servicioActualizado->{
+        ).thenAccept(servicioActualizado->
             Platform.runLater(()->{
                 int indice = listaObservable.indexOf(this.servicioSeleccionado);
                 listaObservable.set(indice, servicioActualizado);
@@ -154,8 +154,8 @@ public class EditarServicioControlador {
                         "El Servicio se ha Actualizado con Éxito"
                 );
                 cerrarPantalla();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
@@ -169,6 +169,7 @@ public class EditarServicioControlador {
                             "NO se pudo Completar la Acción.",
                             "Notificale al Administrador este Error:\n" + causa.getMessage()
                     );
+                    ex.printStackTrace();
                 }
             });
             return null;

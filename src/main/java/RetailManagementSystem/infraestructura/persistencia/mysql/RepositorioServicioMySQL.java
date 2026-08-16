@@ -327,7 +327,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas==0){
-                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el Codigo -" + servicio.getCodigo() + "- NO existe");
+                throw new ServicioNoEncontradoException("NO se pudo actualizar. El Servicio con el Código -" + servicio.getCodigo() + "- NO existe");
             }
 
         } catch (SQLException e) {

@@ -6,7 +6,6 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
-import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -73,19 +71,6 @@ public class GestionServiciosControlador {
 
     //MÉTODOS:
 
-    private Optional<ButtonType> mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(180);
-        pane.setMinWidth(400);
-        //aplicarCSS(pane);
-        return alerta.showAndWait();
-    }
-
-
     @FXML
     public void initialize() {
         configurarColumnas();
@@ -112,25 +97,24 @@ public class GestionServiciosControlador {
         colPrecioFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(
                 celda.getValue().precioFinal())
         );
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(
-                celda.getValue().estado())
-        );
+        colEstado.setCellValueFactory(celda -> {
+            boolean esActivo = celda.getValue().activo();
+            String textoEstado = esActivo ? "Activo" : "Inactivo";
+            return new SimpleStringProperty(textoEstado);
+        });
         configurarColumnaMoneda(colPrecioBase);
         configurarColumnaMoneda(colPrecioFinal);
         colEstado.setCellFactory(columna -> new TableCell<ServicioDTO, String>() {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
                 if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
                 } else {
                     setText(estado);
-                    if (estado.equalsIgnoreCase("Activo")) {
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    }
+                    String estiloCss = estado.equalsIgnoreCase("Activo") ? "estado-activo" : "estado-inactivo";
+                    getStyleClass().add(estiloCss);
                 }
             }
         });
@@ -284,29 +268,48 @@ public class GestionServiciosControlador {
     private void cambiarEstadoServicio(){
         ServicioDTO seleccionado = tablaServicios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Servicio de la Tabla para Cambiar su Estado.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Servicio de la Tabla para Cambiar su Estado."
+            );
             return;
         }
-        boolean esActivo = seleccionado.estado().equalsIgnoreCase("Activo");
-        String accion = esActivo ? "Desactivar" : "Activar";
-        Optional<ButtonType> respuesta = mostrarAlerta(Alert.AlertType.CONFIRMATION, "Confirmar Cambio de Estado",
+        String accion = seleccionado.activo() ? "Desactivar" : "Activar";
+        if (!GestorAlertas.mostrarConfirmacion(
+                "Confirmar Cambio de Estado", null,
                 "¿Estás Seguro de que Deseas " + accion + " el Servicio:\n" +
-                        seleccionado.codigo() + " - " + seleccionado.nombre() + "?");
-        if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
-            try {
-                this.orquestadorServicios.cambiarEstadoServicio(seleccionado.codigo());
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                        "El Estado del Servicio ha sido Actualizado Correctamente.");
-                cargarDatosTabla();
-            } catch (IllegalArgumentException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
-                        "Error:  " + e.getMessage());
-            } catch (ServicioNoEncontradoException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Servicio NO Encontrado",
-                        "Error:  " + e.getMessage());
-            }
+                        seleccionado.codigo() + " - " + seleccionado.nombre() + "?"
+        )){
+            return;
         }
+        CompletableFuture.runAsync(()->
+                this.orquestadorServicios.cambiarEstadoServicio(seleccionado.codigo())
+        ).thenRun(()->
+            Platform.runLater(()->{
+                ServicioDTO actualizado = new ServicioDTO(
+                        seleccionado.codigo(),
+                        seleccionado.nombre(),
+                        seleccionado.precioBase(),
+                        seleccionado.precioFinal(),
+                        !seleccionado.activo(),
+                        seleccionado.datosImpuesto(),
+                        seleccionado.datosDescuento()
+                );
+                int indice = listaObservableServicios.indexOf(seleccionado);
+                listaObservableServicios.set(indice, actualizado);
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Éxito", null,
+                        "El Estado del Servicio ha sido Actualizado Correctamente."
+                );
+            })
+        ).exceptionally(ex->{
+            Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+            GestorAlertas.mostrarAlertaError(
+                    "NO se pudo Completar la Acción", null,
+                    "Error:  " + causa.getMessage()
+            );
+            return null;
+        });
     }
 
 

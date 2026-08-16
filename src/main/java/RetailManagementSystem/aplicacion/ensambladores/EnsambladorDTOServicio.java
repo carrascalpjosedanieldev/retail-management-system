@@ -28,17 +28,11 @@ public class EnsambladorDTOServicio {
     //MÉTODOS:
 
     public ServicioDTO ensamblarServicio(Servicio servicio, LocalDate fecha){
-        String estado;
-        if (servicio.isActivo()){
-            estado = "Activo";
-        } else {
-            estado = "Inactivo";
-        }
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(servicio.getImpuesto());
         DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(servicio.getDescuento());
         return new ServicioDTO(
                 servicio.getCodigo(), servicio.getNombre(), servicio.getPrecioBase(),
-                servicio.getValorVenta(fecha), estado, datosImpuesto, datosDescuento
+                servicio.getValorVenta(fecha), servicio.isActivo(), datosImpuesto, datosDescuento
         );
     }
 
