@@ -22,15 +22,15 @@
 
     <TabPane fx:id="tabPaneProductos" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <Tab text="Vista General">
-            <fx:include fx:id="tabGeneral" source="tabGeneralProductos.fxml" />
+            <fx:include fx:id="tabGeneral" source="tabGeneral/tabGeneralProductos.fxml" />
         </Tab>
 
         <Tab text="👕 Ropa">
-            <fx:include fx:id="tabRopa" source="tabRopa.fxml"/>
+            <fx:include fx:id="tabRopa" source="tabRopa/tabRopa.fxml"/>
         </Tab>
 
         <Tab text="🍎 Perecederos">
-            <fx:include fx:id="tabPerecedero" source="tabPerecederos.fxml" />
+            <fx:include fx:id="tabPerecedero" source="tabPerecedero/tabPerecederos.fxml" />
         </Tab>
     </TabPane>
 </VBox>

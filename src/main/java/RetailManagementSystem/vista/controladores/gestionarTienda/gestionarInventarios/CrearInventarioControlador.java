@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -24,12 +24,12 @@ public class CrearInventarioControlador {
 
     private ObservableList<InventarioDTO> listaObservable;
 
-    private final OrquestadorProductoInventario orquestadorProductoInventario;
+    private final OrquestadorInventarioProducto orquestadorInventarioProducto;
 
     //CONSTRUCTOR:
 
-    public CrearInventarioControlador(OrquestadorProductoInventario orquestadorProductoInventario) {
-        this.orquestadorProductoInventario = orquestadorProductoInventario;
+    public CrearInventarioControlador(OrquestadorInventarioProducto orquestadorInventarioProducto) {
+        this.orquestadorInventarioProducto = orquestadorInventarioProducto;
     }
 
     //MÉTODOS:
@@ -69,7 +69,7 @@ public class CrearInventarioControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorProductoInventario.registrarInventario(nombre, capacidad)
+                this.orquestadorInventarioProducto.registrarInventario(nombre, capacidad)
         ).thenAccept(inventarioRegistrado->
             Platform.runLater(()->{
                 this.listaObservable.add(inventarioRegistrado);

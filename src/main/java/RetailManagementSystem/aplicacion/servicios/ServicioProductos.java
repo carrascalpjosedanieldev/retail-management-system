@@ -92,16 +92,18 @@ public class ServicioProductos {
         this.actualizarProductoDeInventario(idInventario, producto);
     }
 
-    public void reducirStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
+    public Producto reducirStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
         producto.reducirStock(cantidad);
         this.actualizarProductoDeInventario(idInventario, producto);
+        return producto;
     }
 
-    public void aumentarStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
+    public Producto aumentarStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
         producto.aumentarStock(cantidad);
         this.actualizarProductoDeInventario(idInventario, producto);
+        return producto;
     }
 
     public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){

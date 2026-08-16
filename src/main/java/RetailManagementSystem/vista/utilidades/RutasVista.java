@@ -123,23 +123,34 @@ public class RutasVista {
 
             //GESTIONAR PRODUCTOS:
 
+                //TAB GENERAL:
+
+    public static final String CREAR_PRODUCTO_VIEW =
+            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/crearProducto.fxml";
+    public static final String ESTILOS_CSS_CREAR_PRODUCTOS =
+            "/css/gestionarTienda/gestionarInventarios/gestionarProductos/estilosCssCrearProductos.css";
+
+    public static final String MANEJAR_STOCK_PRODUCTO_VIEW =
+            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/manejarStock.fxml";
+
+
+
+
+
     public static final String GESTIONAR_PRODUCTOS_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/gestionProductos/GestionProductos.fxml";
     public static final String ESTILOS_CSS_PRODUCTOS =
             "/css/gestionarTienda/gestionarInventarios/gestionarProductos/estilosCssProductos.css";
 
-    public static final String CREAR_PRODUCTO_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/crearProducto.fxml";
-    public static final String ESTILOS_CSS_CREAR_PRODUCTOS =
-            "/css/gestionarTienda/gestionarInventarios/gestionarProductos/estilosCssCrearProductos.css";
+
 
     public static final String EDITAR_ROPA_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/editarRopa.fxml";
+            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabRopa/editarRopa.fxml";
     public static final String ESTILOS_CSS_EDITAR_ROPA =
             "/css/gestionarTienda/gestionarInventarios/gestionarProductos/estilosCssEditarRopaOPerecedero.css";
 
     public static final String EDITAR_PERECEDERO_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/editarPerecedero.fxml";
+            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabPerecedero/editarPerecedero.fxml";
     public static final String ESTILOS_CSS_EDITAR_PERECEDERO =
             "/css/gestionarTienda/gestionarInventarios/gestionarProductos/estilosCssEditarRopaOPerecedero.css";
 

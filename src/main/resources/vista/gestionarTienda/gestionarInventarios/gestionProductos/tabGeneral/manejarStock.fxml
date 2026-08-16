@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="450.0" styleClass="fondo-panel" stylesheets="@../../../../../css/gestionarTienda/gestionarInventarios/gestionarProductos/tabGeneral/estilosCssManejarStock.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.ManejarStockControlador">
+    <VBox alignment="CENTER_LEFT" styleClass="panel-encabezado">
+        <HBox>
+            <Label styleClass="titulo-principal" text="Stock Actual: " />
+            <Label fx:id="lblStockActual" styleClass="titulo-principal" text="..." />
+        </HBox>
+    </VBox>
+
+
+    <VBox spacing="15.0" styleClass="panel-formulario" VBox.vgrow="ALWAYS">
+        <Label styleClass="label-formulario" text="Seleccione la acción:" />
+        <HBox alignment="CENTER_LEFT" styleClass="contenedor-segmentado">
+            <VBox.margin>
+                <Insets bottom="5.0" />
+            </VBox.margin>
+
+            <ToggleButton fx:id="tglReponer" maxWidth="1.7976931348623157E308" mnemonicParsing="false" selected="true" styleClass="tgl-reponer" text="⬆ Reponer (Entrada)" HBox.hgrow="ALWAYS">
+                <toggleGroup>
+                    <ToggleGroup fx:id="grupoAccion" />
+                </toggleGroup>
+            </ToggleButton>
+
+
+            <ToggleButton fx:id="tglRetirar" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="tgl-retirar" text="⬇ Retirar (Salida)" toggleGroup="$grupoAccion" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+
+        <Label styleClass="label-formulario" text="Cantidad a ajustar:" />
+        <TextField fx:id="txtCantidad" alignment="CENTER" promptText="Cantidad a ajustar..." styleClass="campo-texto" />
+         <Label fx:id="lblVistaPrevia" styleClass="label-resultado" text="Nuevo Stock estimado: ..." />
+
+    </VBox>
+
+
+    <HBox alignment="CENTER" spacing="15.0" styleClass="panel-botones">
+        <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#accionGuardar" prefWidth="150.0" styleClass="button-dark" text="Guardar Cambios" />
+        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#accionCancelar" prefWidth="150.0" styleClass="button-dark" text="Cancelar" />
+    </HBox>
+
+</VBox>

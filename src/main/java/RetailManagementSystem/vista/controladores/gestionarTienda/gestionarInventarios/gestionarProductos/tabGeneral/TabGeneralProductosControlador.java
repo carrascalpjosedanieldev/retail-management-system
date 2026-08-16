@@ -1,9 +1,9 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.dominio.excepciones.*;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
@@ -11,8 +11,10 @@ import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,7 +31,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -42,6 +43,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class TabGeneralProductosControlador {
 
@@ -52,7 +54,7 @@ public class TabGeneralProductosControlador {
     @FXML private TableColumn<ProductoResumenDTO, String> colNombre;
     @FXML private TableColumn<ProductoResumenDTO, BigDecimal> colValor;
     @FXML private TableColumn<ProductoResumenDTO, Integer> colStock;
-    @FXML private TableColumn<ProductoResumenDTO, Boolean> colEstado;
+    @FXML private TableColumn<ProductoResumenDTO, String> colEstado;
     @FXML private TextField txtBuscar;
     @FXML private ToggleGroup grupoFiltroEstado;
     @FXML private ToggleButton btnFiltroTodos;
@@ -67,7 +69,7 @@ public class TabGeneralProductosControlador {
     private final EnsambladorDTOProducto ensambladorDTOProducto;
     private final EnsambladorDTOInventario ensambladorDTOInventario;
 
-    private final OrquestadorProductoInventario orquestadorProductoInventario;
+    private final OrquestadorInventarioProducto orquestadorInventarioProducto;
 
     private final ObservableList<ProductoResumenDTO> listaObservable = FXCollections.observableArrayList();
 
@@ -83,8 +85,8 @@ public class TabGeneralProductosControlador {
         this.servicioInventario = servicioInventario;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
         this.ensambladorDTOInventario = ensambladorDTOInventario;
-        this.orquestadorProductoInventario = new OrquestadorProductoInventario(
-                servicioProductos, servicioInventario, ensambladorDTOInventario
+        this.orquestadorInventarioProducto = new OrquestadorInventarioProducto(
+                servicioProductos, servicioInventario, ensambladorDTOProducto, ensambladorDTOInventario
         );
     }
 
@@ -105,6 +107,13 @@ public class TabGeneralProductosControlador {
     }
 
     public void recibirIdInventario(int idInventario) {
+        if (idInventario <= 0){
+            GestorAlertas.mostrarAlertaWarning(
+                    "ID del Inventario Invalido", null,
+                    "El ID recibido NO es Valido."
+            );
+            return;
+        }
         this.idInventario = idInventario;
         cargarDatosTabla();
     }
@@ -114,23 +123,35 @@ public class TabGeneralProductosControlador {
     public void initialize() {
         configurarColumnas();
         configurarFiltros();
-        cargarDatosTabla();
     }
 
     private void cargarDatosTabla() {
-        List<ProductoResumenDTO> resumenProductos = this.ensambladorDTOProducto.ensamblarDetalleProductosResumen(
+        CompletableFuture.supplyAsync(()->
+                this.ensambladorDTOProducto.ensamblarDetalleProductosResumen(
                 this.servicioProductos.obtenerProductosDeInventario(this.idInventario), LocalDate.now()
-        );
-        listaObservable.clear();
-        listaObservable.addAll(resumenProductos);
+                )
+        ).thenAccept(resumenProductos->{
+            Platform.runLater(()->{
+                listaObservable.clear();
+                listaObservable.addAll(resumenProductos);
+            });
+        }).exceptionally(ex->{
+            Platform.runLater(()->{
+
+            });
+            return null;
+        });
     }
 
     private void configurarColumnas() {
-        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigoProducto()));
+        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().codigoProducto())
+        );
         colCodigo.setCellFactory(columna -> new TableCell<>() {
             private final Tooltip tooltipFlotante = new Tooltip();
             {
-                tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
+                tooltipFlotante.getStyleClass().add("tooltip-codigo");
+                getStyleClass().add("codigo-copiable");
                 tooltipFlotante.setShowDelay(Duration.millis(100));
                 setAlignment(Pos.CENTER);
             }
@@ -146,7 +167,6 @@ public class TabGeneralProductosControlador {
                     setText(codigo);
                     tooltipFlotante.setText(codigo + "\n(Clic para copiar)");
                     setTooltip(tooltipFlotante);
-                    setStyle("-fx-cursor: hand;");
                     setOnMouseClicked(evt -> {
                         ClipboardContent contenido = new ClipboardContent();
                         contenido.putString(codigo);
@@ -155,8 +175,12 @@ public class TabGeneralProductosControlador {
                 }
             }
         });
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(celda.getValue().stock()).asObject());
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().nombre())
+        );
+        colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(
+                celda.getValue().stock()).asObject()
+        );
         colStock.setCellFactory(columna -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -164,22 +188,24 @@ public class TabGeneralProductosControlador {
             @Override
             protected void updateItem(Integer stock, boolean empty) {
                 super.updateItem(stock, empty);
+                getStyleClass().removeAll("stock-sin-existencias", "stock-bajo", "stock-normal");
                 if (empty || stock == null) {
                     setText(null);
-                    setStyle("");
+                    return;
+                }
+                setText(String.valueOf(stock));
+                if (stock <= 0) {
+                    getStyleClass().add("stock-sin-existencias");
+                } else if (stock <= 5) {
+                    getStyleClass().add("stock-bajo");
                 } else {
-                    setText(String.valueOf(stock));
-                    if (stock <= 0) {
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    } else if (stock <= 5) {
-                        setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    }
+                    getStyleClass().add("stock-normal");
                 }
             }
         });
-        colValor.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().valorVenta()));
+        colValor.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().valorVenta())
+        );
         colValor.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(BigDecimal precio, boolean empty) {
@@ -191,25 +217,28 @@ public class TabGeneralProductosControlador {
                 }
             }
         });
-        colEstado.setCellValueFactory(celda -> new SimpleBooleanProperty(celda.getValue().disponible()).asObject());
+        colEstado.setCellValueFactory(celda -> {
+            boolean esActivo = celda.getValue().activo();
+            String estado = esActivo ? "Disponible" : "NO Disponible";
+            return new SimpleStringProperty(estado);
+        });
         colEstado.setCellFactory(col -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
             }
             @Override
-            protected void updateItem(Boolean disponible, boolean empty) {
-                super.updateItem(disponible, empty);
-                if (empty || disponible == null) {
+            protected void updateItem(String estado, boolean empty) {
+                super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-disponible", "estado-no-disponible");
+                if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
+                    return;
+                }
+                setText(estado);
+                if (estado.equalsIgnoreCase("Disponible")) {
+                    getStyleClass().add("estado-disponible");
                 } else {
-                    if (disponible) {
-                        setText("Disponible");
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    } else {
-                        setText("No Disponible");
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    }
+                    getStyleClass().add("estado-no-disponible");
                 }
             }
         });
@@ -225,9 +254,9 @@ public class TabGeneralProductosControlador {
                 ToggleButton btnSeleccionado = (ToggleButton) grupoFiltroEstado.getSelectedToggle();
                 boolean coincideEstado = true;
                 if (btnSeleccionado == btnFiltroDisponibles) {
-                    coincideEstado = producto.disponible();
+                    coincideEstado = producto.activo();
                 } else if (btnSeleccionado == btnFiltroNoDisponibles) {
-                    coincideEstado = !producto.disponible();
+                    coincideEstado = !producto.activo();
                 }
                 return coincideTexto && coincideEstado;
             });
@@ -257,7 +286,8 @@ public class TabGeneralProductosControlador {
             Stage modalStage = new Stage();
             modalStage.setTitle("Crear Nuevo Producto");
             modalStage.setScene(new Scene(root));
-            modalStage.initModality(Modality.WINDOW_MODAL);
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.setResizable(false);
             Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
             modalStage.initOwner(ventanaPadre);
             modalStage.showAndWait();
@@ -276,175 +306,79 @@ public class TabGeneralProductosControlador {
     private void cambiarEstadoProducto(){
         ProductoResumenDTO seleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Por favor, Selecciona un Producto para Cambiar su Estado.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Por favor, Selecciona un Producto para Cambiar su Estado."
+            );
             return;
         }
-        String textoNuevoEstado = seleccionado.disponible() ? "NO DISPONIBLE" : "DISPONIBLE";
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar cambio de activo");
-        confirmacion.setHeaderText("Vas a modificar el producto: " + seleccionado.nombre());
-        confirmacion.setContentText("¿Estás Seguro de que Deseas Marcar este Producto como " + textoNuevoEstado + "?");
-        DialogPane pane = confirmacion.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
-        if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
+        String textoNuevoEstado = seleccionado.activo() ? "NO DISPONIBLE" : "DISPONIBLE";
+        if (!GestorAlertas.mostrarConfirmacion(
+                "Confirmar cambio de activo",
+                "Vas a modificar el producto: " + seleccionado.nombre(),
+                "¿Estás Seguro de que Deseas Marcar este Producto como " + textoNuevoEstado + "?"
+        )){
+            return;
         }
-        confirmacion.showAndWait().ifPresent(respuesta -> {
-            if (respuesta == ButtonType.OK) {
-                try {
-                    this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigoProducto());
-                    cargarDatosTabla();
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
-                            "Error:  " + e.getMessage());
-                } catch (ProductoNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
-                            "Error:  " + e.getMessage());
-                }
-            }
+        CompletableFuture.runAsync(()->
+                this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigoProducto())
+        ).thenRun(()->
+            Platform.runLater(()->{
+                ProductoResumenDTO actualizado = new ProductoResumenDTO(
+                        seleccionado.codigoProducto(),
+                        seleccionado.nombre(),
+                        seleccionado.valorVenta(),
+                        seleccionado.stock(),
+                        !seleccionado.activo()
+                );
+                int indice = listaObservable.indexOf(seleccionado);
+                listaObservable.set(indice, actualizado);
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Éxito", null,
+                        "El Estado del Producto - " + seleccionado.nombre() + " - ha sido Actualizado con Éxito."
+                );
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "NO se pudo Completar la Acción", null,
+                        "Error:  " + causa.getMessage()
+                );
+            });
+            return null;
         });
     }
 
 
     @FXML
     public void abrirManejarStock(ActionEvent event) {
-        manejarStock();
-    }
-
-    private void manejarStock(){
         ProductoResumenDTO productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Seleccione un Producto Primero.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Seleccione un Producto Primero."
+            );
             return;
         }
-        Dialog<ButtonType> dialog = new Dialog<>();
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
-        if (urlCss != null) {
-            dialog.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
+        String rutaFxml = RutasVista.MANEJAR_STOCK_PRODUCTO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            ManejarStockControlador controlador = loader.getController();
+            controlador.cargarDatos(productoSeleccionado, this.idInventario, listaObservable);
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Manejar Stock Producto");
+            modalStage.setScene(new Scene(root));
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.setResizable(false);
+            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            modalStage.initOwner(ventanaPadre);
+            modalStage.showAndWait();
+            cargarDatosTabla();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
-        dialog.setTitle("Ajustar Stock - " + productoSeleccionado.nombre());
-        dialog.setHeaderText("Stock Actual: " + productoSeleccionado.stock() + " Unidades");
-        ToggleGroup grupoAccion = new ToggleGroup();
-        ToggleButton btnReponer = new ToggleButton("⬆ Reponer (Entrada)");
-        btnReponer.getStyleClass().addAll("toggle-stock", "toggle-reponer");
-        btnReponer.setToggleGroup(grupoAccion);
-        btnReponer.setSelected(true);
-        ToggleButton btnRetirar = new ToggleButton("⬇ Retirar (Salida)");
-        btnRetirar.getStyleClass().addAll("toggle-stock", "toggle-retirar");
-        btnRetirar.setToggleGroup(grupoAccion);
-        HBox boxBotones = new HBox(0, btnReponer, btnRetirar);
-        boxBotones.setAlignment(Pos.CENTER);
-        TextField txtCantidad = new TextField();
-        txtCantidad.setPromptText("Cantidad a ajustar...");
-        txtCantidad.getStyleClass().add("input-cantidad");
-        Label lblVistaPrevia = new Label("Nuevo Stock estimado: " + productoSeleccionado.stock());
-        lblVistaPrevia.getStyleClass().add("lbl-vista-previa");
-        Runnable actualizarVistaPrevia = () -> {
-            try {
-                int cantidad = txtCantidad.getText().isBlank() ? 0 : Integer.parseInt(txtCantidad.getText().trim());
-                if (cantidad < 0) {
-                    throw new NumberFormatException();
-                }
-                int nuevoStock = btnReponer.isSelected()
-                        ? productoSeleccionado.stock() + cantidad
-                        : productoSeleccionado.stock() - cantidad;
-                lblVistaPrevia.setText("Nuevo Stock estimado: " + nuevoStock);
-                if (nuevoStock < 0) {
-                    lblVistaPrevia.getStyleClass().setAll("lbl-vista-previa-error");
-                    lblVistaPrevia.setText("Error: El stock no puede ser negativo (" + nuevoStock + ")");
-                } else {
-                    lblVistaPrevia.getStyleClass().setAll("lbl-vista-previa");
-                }
-            } catch (NumberFormatException ex) {
-                lblVistaPrevia.setText("Ingrese una cantidad válida");
-                lblVistaPrevia.getStyleClass().setAll("lbl-vista-previa");
-            }
-        };
-        txtCantidad.textProperty().addListener((obs, old, newValue) -> actualizarVistaPrevia.run());
-        grupoAccion.selectedToggleProperty().addListener((obs, old, newValue) -> actualizarVistaPrevia.run());
-        VBox contenido = new VBox(
-                15, new Label("Seleccione la acción:"), boxBotones, new Label("Cantidad a ajustar:"),
-                txtCantidad, lblVistaPrevia
-        );
-        contenido.setPadding(new Insets(20));
-        dialog.getDialogPane().setContent(contenido);
-        ButtonType btnGuardar = new ButtonType("Guardar Cambios", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnGuardar, ButtonType.CANCEL);
-        ButtonType btnTipoGuardar = dialog.getDialogPane().getButtonTypes().stream()
-                .filter(b -> b.getButtonData() == ButtonBar.ButtonData.OK_DONE)
-                .findFirst().orElse(null);
-        if (btnTipoGuardar != null) {
-            Button botonFisicoGuardar = (Button) dialog.getDialogPane().lookupButton(btnTipoGuardar);
-            botonFisicoGuardar.addEventFilter(ActionEvent.ACTION, evt -> {
-                String textoCantidad = txtCantidad.getText().trim();
-                if (textoCantidad.isEmpty()) {
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                            "La Cantidad NO puede estar vacía.");
-                    evt.consume();
-                    return;
-                }
-                try {
-                    int cantidad = Integer.parseInt(textoCantidad);
-                    if (cantidad <= 0) {
-                        mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                                "La Cantidad debe ser Mayor a Cero.");
-                        evt.consume();
-                        return;
-                    }
-                    if (btnRetirar.isSelected()) {
-                        int stockResultante = productoSeleccionado.stock() - cantidad;
-                        if (stockResultante < 0) {
-                            mostrarAlerta(Alert.AlertType.ERROR, "Error de Operación",
-                                    "NO puedes Retirar más Unidades de las Disponibles.\n" +
-                                            "\nStock actual: " + productoSeleccionado.stock());
-                            evt.consume();
-                        }
-                    }
-                } catch (NumberFormatException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Número Inválido",
-                            "Por favor Ingresa un Número Entero Válido.");
-                    evt.consume();
-                }
-            });
-        }
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                int cantidadAManejar = Integer.parseInt(txtCantidad.getText().trim());
-                boolean esRepocision = btnReponer.isSelected();
-                try {
-                    if (esRepocision) {
-                        this.orquestadorProductoInventario.validarEspacioInventarioYAumentarStockProducto(
-                                this.idInventario, cantidadAManejar, productoSeleccionado.codigoProducto()
-                        );
-                    } else {
-                        this.servicioProductos.reducirStockDeProductoDeInventario(
-                                this.idInventario, productoSeleccionado.codigoProducto(), cantidadAManejar
-                        );
-                    }
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Stock se ha Actualizado Correctamente.");
-                    cargarDatosTabla();
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
-                            "Error:  " + e.getMessage());
-                } catch (InventarioNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
-                            "Error:  " + e.getMessage());
-                } catch (ProductoNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
-                            "Error:  " + e.getMessage());
-                } catch (CapacidadInventarioExcedidaException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida",
-                            "Error:  " + e.getMessage());
-                } catch (StockInsuficienteException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Stock Insuficiente",
-                            "Error:  " + e.getMessage());
-                }
-            }
-        });
     }
 
 
@@ -514,7 +448,7 @@ public class TabGeneralProductosControlador {
             if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
                 InventarioDTO inventarioDestino = comboInventarios.getValue();
                 try {
-                    this.orquestadorProductoInventario.validarEspacioInventarioYMoverProducto(
+                    this.orquestadorInventarioProducto.validarEspacioInventarioYMoverProducto(
                             this.idInventario, inventarioDestino.idInventario(),
                             productoSeleccionado.codigoProducto(), productoSeleccionado.stock()
                     );

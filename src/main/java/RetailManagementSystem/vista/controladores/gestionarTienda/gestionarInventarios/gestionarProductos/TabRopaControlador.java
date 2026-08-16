@@ -6,13 +6,13 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
-import RetailManagementSystem.dominio.excepciones.ProductoNoEncontradoException;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,16 +30,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class TabRopaControlador {
 
@@ -82,19 +81,6 @@ public class TabRopaControlador {
         cargarDatosTabla();
     }
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_ROPA);
-        if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
-        }
-        alerta.showAndWait();
-    }
 
     private void cargarDatosTabla() {
         try {
@@ -155,10 +141,15 @@ public class TabRopaControlador {
                 }
             }
         });
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().nombre()));
-        colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(celda.getValue().stock()).asObject());
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().disponible()));
-        colTalla.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().talla()));
+        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().nombre())
+        );
+        colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(
+                celda.getValue().stock()).asObject()
+        );
+        colTalla.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().talla())
+        );
         colTalla.setCellFactory(col -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -223,7 +214,11 @@ public class TabRopaControlador {
                 }
             }
         });
-        colEstado.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().disponible()));
+        colEstado.setCellValueFactory(celda -> {
+            boolean esActivo = celda.getValue().activo();
+            String estado = esActivo ? "Activo" : "Inactivo";
+            return new SimpleStringProperty(estado);
+        });
         colEstado.setCellFactory(columna -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -265,8 +260,7 @@ public class TabRopaControlador {
                 String filtro = newVal.toLowerCase().trim();
                 return ropa.nombre().toLowerCase().contains(filtro) ||
                         ropa.codigo().toLowerCase().contains(filtro) ||
-                        ropa.talla().name().toLowerCase().contains(filtro) ||
-                        ropa.disponible().toLowerCase().contains(filtro);
+                        ropa.talla().name().toLowerCase().contains(filtro);
             });
         });
         SortedList<DatosTotalesProductoRopaDTO> listaOrdenada = new SortedList<>(listaFiltrada);
@@ -279,8 +273,10 @@ public class TabRopaControlador {
     void abrirEditorRopa(ActionEvent event) {
         DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida",
-                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Editarla.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Selección requerida", null,
+                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Editarla."
+            );
             return;
         }
         String rutaFxml = RutasVista.EDITAR_ROPA_VIEW;
@@ -310,41 +306,54 @@ public class TabRopaControlador {
     }
 
     private void cambiarEstadoProducto(){
-        DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
-        if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
-                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Cambiar su Estado.");
+        DatosTotalesProductoRopaDTO seleccionado = tablaRopa.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    "Selección Requerida", null,
+                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Cambiar su Estado."
+            );
             return;
         }
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Cambio de Estado");
-        confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Está Seguro que desea Cambiar el Estado del Producto:\n"
-                + productoSeleccionado.codigo() + " - " + productoSeleccionado.nombre() + "?");
-        DialogPane pane = confirmacion.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_ROPA);
-        if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
+
+        if (!GestorAlertas.mostrarConfirmacion(
+                "Confirmar Cambio de Estado", null,
+                "¿Está Seguro que desea Cambiar el Estado del Producto:\n"
+                        + seleccionado.codigo() + " - " + seleccionado.nombre() + "?"
+        )){
+            return;
         }
-        confirmacion.showAndWait().ifPresent(respuesta -> {
-            if (respuesta == ButtonType.OK) {
-                try {
-                    this.servicioProductos.cambiarEstadoProducto(
-                            this.idInventario,
-                            productoSeleccionado.codigo()
-                    );
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Estado Actualizado",
-                            "El Estado del Producto se Actualizó Correctamente.");
-                    cargarDatosTabla();
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
-                            "Error:  " + e.getMessage());
-                } catch (ProductoNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
-                            "Error:  " + e.getMessage());
-                }
-            }
+        CompletableFuture.runAsync(()->
+                this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
+        ).thenRun(()->
+            Platform.runLater(()->{
+                DatosTotalesProductoRopaDTO actualizado = new DatosTotalesProductoRopaDTO(
+                        seleccionado.codigo(),
+                        seleccionado.nombre(),
+                        seleccionado.valorCompra(),
+                        seleccionado.porcentajeGanancia(),
+                        seleccionado.valorVentaFinal(),
+                        seleccionado.stock(),
+                        seleccionado.datosImpuesto(),
+                        seleccionado.datosDescuento(),
+                        seleccionado.talla(),
+                        !seleccionado.activo()
+                );
+                int indice = listaObservable.indexOf(seleccionado);
+                listaObservable.set(indice, actualizado);
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Estado Actualizado", null,
+                        "El Estado del Producto se Actualizó Correctamente."
+                );
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "NO se pudo Completar la Acción", null,
+                        "Error:  " + causa.getMessage()
+                );
+            });
+            return null;
         });
     }
 

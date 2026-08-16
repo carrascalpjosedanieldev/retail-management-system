@@ -1,15 +1,18 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos;
 
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerecederoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
-import RetailManagementSystem.dominio.excepciones.ProductoNoEncontradoException;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -26,16 +29,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class TabPerecederosControlador {
 
@@ -80,20 +82,6 @@ public class TabPerecederosControlador {
         cargarDatosTabla();
     }
 
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_PERECEDERO);
-        if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
-        }
-        alerta.showAndWait();
-    }
-
 
     @FXML
     public void initialize() {
@@ -132,8 +120,14 @@ public class TabPerecederosControlador {
                 }
             }
         });
-        colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().nombre()));
-        colEstaVencido.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().estaVencido()));
+        colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(
+                cellData.getValue().nombre())
+        );
+        colEstaVencido.setCellValueFactory(cellData -> {
+            boolean esActivo = cellData.getValue().estaVencido();
+            String estado = esActivo ? "Activo" : "Inactivo";
+            return new SimpleStringProperty(estado);
+        });
         colEstaVencido.setCellFactory(col -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -153,7 +147,9 @@ public class TabPerecederosControlador {
                 }
             }
         });
-        colStock.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().stock()));
+        colStock.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().stock())
+        );
         colStock.setCellFactory(columna -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -176,7 +172,11 @@ public class TabPerecederosControlador {
                 }
             }
         });
-        colDisponible.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().disponible()));
+        colDisponible.setCellValueFactory(cellData -> {
+            boolean estaDisponible = cellData.getValue().estaVencido();
+            String disponible = estaDisponible ? "Disponible" : "NO Disponible";
+            return new SimpleStringProperty(disponible);
+        });
         colDisponible.setCellFactory(columna -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -195,25 +195,35 @@ public class TabPerecederosControlador {
                 }
             }
         });
-        colFechaVencimiento.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().fechaVencimiento()));
+        colFechaVencimiento.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().fechaVencimiento())
+        );
         colPoliticaVencimiento.setCellValueFactory(cellData -> {
-            var politica = cellData.getValue().datosPoliticaVencimiento();
-            return new SimpleStringProperty(politica != null ? politica.nombrePolitica() : "Sin Política");
+            PoliticaVencimientoDTO politica = cellData.getValue().datosPoliticaVencimiento();
+            return new SimpleStringProperty(politica.nombrePolitica());
         });
         colImpuesto.setCellValueFactory(cellData -> {
-            var impuesto = cellData.getValue().datosImpuesto();
-            return new SimpleStringProperty(impuesto != null ? impuesto.nombre() + " (" + impuesto.porcentaje() + "%)" : "Sin Impuesto");
+            ImpuestoDTO impuesto = cellData.getValue().datosImpuesto();
+            return new SimpleStringProperty(impuesto.nombre() + " (" + impuesto.porcentaje() + "%)");
         });
         colDescuento.setCellValueFactory(cellData -> {
-            var descuento = cellData.getValue().datosDescuento();
-            return new SimpleStringProperty(descuento != null ? descuento.nombre() + " (" + descuento.porcentaje() + "%)" : "Sin Descuento");
+            DescuentoDTO descuento = cellData.getValue().datosDescuento();
+            return new SimpleStringProperty(descuento.nombre() + " (" + descuento.porcentaje() + "%)");
         });
-        colCompra.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().valorCompra()));
-        colGanancia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().porcentajeGanancia()));
-        colVentaFinal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().valorVentaFinal()));
+        colCompra.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().valorCompra())
+        );
+        colGanancia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().porcentajeGanancia())
+        );
+        colVentaFinal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().valorVentaFinal())
+        );
         formatearColumnaMoneda(colCompra);
         formatearColumnaMoneda(colVentaFinal);
-        colGanancia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().porcentajeGanancia()));
+        colGanancia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().porcentajeGanancia())
+        );
         colGanancia.setCellFactory(col -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -285,8 +295,10 @@ public class TabPerecederosControlador {
     void abrirEditorPerecedero(ActionEvent event) {
         DatosTotalesProductoPerecederoDTO productoSeleccionado = tablaPerecederos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
-                    "Por favor, Seleccione un Producto Perecedero en la Tabla para Editarlo.");
+            GestorAlertas.mostrarAlertaWarning(
+                    "Selección Requerida", null,
+                    "Por favor, Seleccione un Producto Perecedero en la Tabla para Editarlo."
+            );
             return;
         }
         String rutaFxml = RutasVista.EDITAR_PERECEDERO_VIEW;
@@ -316,41 +328,55 @@ public class TabPerecederosControlador {
     }
 
     private void cambiarEstadoProducto(){
-        DatosTotalesProductoPerecederoDTO productoSeleccionado = this.tablaPerecederos.getSelectionModel().getSelectedItem();
-        if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Selección Requerida",
-                    "Por favor, Seleccione un Producto Perecedero de la Tabla para Cambiar su Estado.");
+        DatosTotalesProductoPerecederoDTO seleccionado = this.tablaPerecederos.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    "Selección Requerida", null,
+                    "Por favor, Seleccione un Producto Perecedero de la Tabla para Cambiar su Estado."
+            );
             return;
         }
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar Cambio de Estado");
-        confirmacion.setHeaderText(null);
-        confirmacion.setContentText("¿Está Seguro que desea Cambiar el Estado del Producto:\n"
-                + productoSeleccionado.codigo() + " - " + productoSeleccionado.nombre() + "?");
-        DialogPane pane = confirmacion.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_EDITAR_PERECEDERO);
-        if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
+        if (!GestorAlertas.mostrarConfirmacion(
+                "Confirmar Cambio de Estado", null,
+                "¿Está Seguro que desea Cambiar el Estado del Producto:\n"
+                        + seleccionado.codigo() + " - " + seleccionado.nombre() + "?")
+        ){
+            return;
         }
-        confirmacion.showAndWait().ifPresent(respuesta -> {
-            if (respuesta == ButtonType.OK) {
-                try {
-                    this.servicioProductos.cambiarEstadoProducto(
-                            this.idInventario,
-                            productoSeleccionado.codigo()
-                    );
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Estado Actualizado",
-                            "El Estado del Producto se Actualizó Correctamente.");
-                    cargarDatosTabla();
-                } catch (IllegalArgumentException | IllegalStateException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Acción",
-                            "Error:  " + e.getMessage());
-                } catch (ProductoNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
-                            "Error:  " + e.getMessage());
-                }
-            }
+        CompletableFuture.runAsync(()->
+                this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
+        ).thenRun(()->
+            Platform.runLater(()->{
+                DatosTotalesProductoPerecederoDTO actualizado = new DatosTotalesProductoPerecederoDTO(
+                        seleccionado.codigo(),
+                        seleccionado.nombre(),
+                        seleccionado.valorCompra(),
+                        seleccionado.porcentajeGanancia(),
+                        seleccionado.valorVentaFinal(),
+                        seleccionado.stock(),
+                        seleccionado.datosImpuesto(),
+                        seleccionado.datosDescuento(),
+                        seleccionado.fechaVencimiento(),
+                        seleccionado.datosPoliticaVencimiento(),
+                        seleccionado.estaVencido(),
+                        !seleccionado.activo()
+                );
+                int indice = listaMaestraPerecederos.indexOf(seleccionado);
+                listaMaestraPerecederos.set(indice, actualizado);
+                GestorAlertas.mostrarAlertaInformacion(
+                        "Estado Actualizado", null,
+                        "El Estado del Producto se Actualizó Correctamente."
+                );
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        "NO se pudo Completar la Acción", null,
+                        "Error:  " + causa.getMessage()
+                );
+            });
+            return null;
         });
     }
 

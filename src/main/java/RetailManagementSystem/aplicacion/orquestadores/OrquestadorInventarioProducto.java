@@ -1,28 +1,34 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
+import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 
-public class OrquestadorProductoInventario {
+import java.time.LocalDate;
+
+public class OrquestadorInventarioProducto {
 
     //ATRIBUTOS:
 
     private final ServicioProductos servicioProductos;
     private final ServicioInventario servicioInventario;
 
+    private final EnsambladorDTOProducto ensambladorDTOProducto;
     private final EnsambladorDTOInventario ensambladorDTOInventario;
 
     //CONSTRUCTOR:
 
-    public OrquestadorProductoInventario(
+    public OrquestadorInventarioProducto(
             ServicioProductos servicioProductos, ServicioInventario servicioInventario,
-            EnsambladorDTOInventario ensambladorDTOInventario
+            EnsambladorDTOProducto ensambladorDTOProducto, EnsambladorDTOInventario ensambladorDTOInventario
     ) {
         this.servicioProductos = servicioProductos;
         this.servicioInventario = servicioInventario;
+        this.ensambladorDTOProducto = ensambladorDTOProducto;
         this.ensambladorDTOInventario = ensambladorDTOInventario;
     }
 
@@ -33,12 +39,14 @@ public class OrquestadorProductoInventario {
         this.servicioProductos.registrarProducto(idInventario, producto);
     }
 
-    public void validarEspacioInventarioYAumentarStockProducto(
-            int idInventario, int cantidadAAumentarProducto, String codigoProducto
+    public ProductoResumenDTO validarEspacioInventarioYAumentarStockProducto(
+            int idInventario, int cantidadAAumentarProducto, String codigoProducto, LocalDate fecha
     ) {
         this.servicioInventario.verificarEspacioDisponible(idInventario, cantidadAAumentarProducto);
-        this.servicioProductos.aumentarStockDeProductoDeInventario(
-                idInventario, codigoProducto, cantidadAAumentarProducto
+        return this.ensambladorDTOProducto.ensamblarProductoResumen(
+                this.servicioProductos.aumentarStockDeProductoDeInventario(
+                        idInventario, codigoProducto, cantidadAAumentarProducto
+                ) , fecha
         );
     }
 

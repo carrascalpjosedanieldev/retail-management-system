@@ -1,4 +1,4 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
 import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
@@ -11,8 +11,9 @@ import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.dominio.excepciones.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductoInventario;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
@@ -56,24 +57,31 @@ public class CrearProductoControlador {
 
     private final FabricaProductos fabricaProductos;
 
-    private final OrquestadorProductoInventario orquestadorProductoInventario;
+    private final OrquestadorInventarioProducto orquestadorInventarioProducto;
 
     //CONSTRUCTOR:
 
     public CrearProductoControlador(
             ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos,
-            ServicioPoliticaVencimiento servicioPolitica, OrquestadorProductoInventario orquestadorProductoInventario
+            ServicioPoliticaVencimiento servicioPolitica, OrquestadorInventarioProducto orquestadorInventarioProducto
     ) {
         this.servicioImpuestos = servicioImpuestos;
         this.servicioDescuentos = servicioDescuentos;
         this.servicioPolitica = servicioPolitica;
         this.fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPolitica);
-        this.orquestadorProductoInventario = orquestadorProductoInventario;
+        this.orquestadorInventarioProducto = orquestadorInventarioProducto;
     }
 
     //MÉTODOS:
 
     public void recibirIdInventario(int idInventario) {
+        if (idInventario <=0 ){
+            GestorAlertas.mostrarAlertaWarning(
+                    "ID del Inventario Invalido", null,
+                    "El ID recibido NO es Valido."
+            );
+            return;
+        }
         this.idInventario = idInventario;
     }
 
@@ -135,15 +143,21 @@ public class CrearProductoControlador {
                 .toList();
         cbTalla.setItems(FXCollections.observableArrayList(listaTallas));
         cbImpuesto.setConverter(new StringConverter<>() {
-            @Override public String toString(ImpuestoDTO dto) { return dto != null ? dto.nombre() + " (" + dto.porcentaje() + "%)" : ""; }
+            @Override public String toString(ImpuestoDTO dto) {
+                return dto != null ? dto.nombre() + " (" + dto.porcentaje() + "%)" : "";
+            }
             @Override public ImpuestoDTO fromString(String string) { return null; }
         });
         cbDescuento.setConverter(new StringConverter<>() {
-            @Override public String toString(DescuentoDTO dto) { return dto != null ? dto.nombre() + " (" + dto.porcentaje() + "%)" : ""; }
+            @Override public String toString(DescuentoDTO dto) {
+                return dto != null ? dto.nombre() + " (" + dto.porcentaje() + "%)" : "";
+            }
             @Override public DescuentoDTO fromString(String string) { return null; }
         });
         cbPolitica.setConverter(new StringConverter<>() {
-            @Override public String toString(PoliticaVencimientoDTO dto) { return dto != null ? dto.nombrePolitica() : ""; }
+            @Override public String toString(PoliticaVencimientoDTO dto) {
+                return dto != null ? dto.nombrePolitica() : "";
+            }
             @Override public PoliticaVencimientoDTO fromString(String string) { return null; }
         });
     }
@@ -225,7 +239,7 @@ public class CrearProductoControlador {
                         "Tipo de Producto Invalido");
                 return;
             }
-            this.orquestadorProductoInventario.validarEspacioInventarioYGuardarProducto(this.idInventario, producto);
+            this.orquestadorInventarioProducto.validarEspacioInventarioYGuardarProducto(this.idInventario, producto);
             mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
                     "Producto Creado Correctamente.");
             cerrarVentana();

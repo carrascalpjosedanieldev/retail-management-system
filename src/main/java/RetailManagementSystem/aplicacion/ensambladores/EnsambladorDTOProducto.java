@@ -31,12 +31,6 @@ public class EnsambladorDTOProducto {
     }
 
     public DatosTotalesProductoDTO ensamblarDatosTotalesProducto(Producto producto, LocalDate fecha){
-        String disponible;
-        if (producto.isActivo()){
-            disponible = "Disponible";
-        } else {
-            disponible = "NO Disponible";
-        }
         if (producto instanceof ProductoRopa ropa){
             ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(
                     ropa.getImpuesto()
@@ -47,7 +41,7 @@ public class EnsambladorDTOProducto {
             return new DatosTotalesProductoRopaDTO(
                     ropa.getCodigo(), ropa.getNombre(), ropa.getValorCompra(), ropa.getPorcentajeGanancia(),
                     ropa.getValorVenta(fecha), ropa.getStock(), datosImpuesto, datosDescuento, ropa.getTalla(),
-                    disponible
+                    ropa.isActivo()
             );
         } else if (producto instanceof ProductoPerecedero perecedero){
             ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(
@@ -59,17 +53,11 @@ public class EnsambladorDTOProducto {
             PoliticaVencimientoDTO datosPoliticaVencimiento = this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
                     perecedero.getPoliticaVencimiento()
             );
-            String estado;
-            if (perecedero.estaVencido(fecha)){
-                estado = "Vencido";
-            } else {
-                estado = "NO Vencido";
-            }
             return new DatosTotalesProductoPerecederoDTO(
                     perecedero.getCodigo(), perecedero.getNombre(), perecedero.getValorCompra(),
                     perecedero.getPorcentajeGanancia(), perecedero.getValorVenta(fecha), perecedero.getStock(),
                     datosImpuesto, datosDescuento, perecedero.getFechaVencimiento(), datosPoliticaVencimiento,
-                    estado, disponible
+                    perecedero.isActivo(), perecedero.estaVencido(fecha)
             );
         } else {
             throw new IllegalStateException("Tipo de Producto no soportado por el Sistema");
@@ -95,13 +83,17 @@ public class EnsambladorDTOProducto {
         return datosProductosRopa;
     }
 
+    public ProductoResumenDTO ensamblarProductoResumen(Producto producto, LocalDate fecha){
+        return new ProductoResumenDTO(
+                producto.getCodigo(), producto.getNombre(), producto.getValorVenta(fecha),
+                producto.getStock(), producto.isActivo()
+        );
+    }
+
     public List<ProductoResumenDTO> ensamblarDetalleProductosResumen(List<Producto> productos, LocalDate fecha){
         List<ProductoResumenDTO> resumenProductos = new ArrayList<>();
         for (Producto producto:productos){
-            ProductoResumenDTO productoResumen = new ProductoResumenDTO(
-                    producto.getCodigo(), producto.getNombre(), producto.getValorVenta(fecha),
-                    producto.getStock(), producto.isActivo()
-            );
+            ProductoResumenDTO productoResumen = ensamblarProductoResumen(producto, fecha);
             resumenProductos.add(productoResumen);
         }
         return resumenProductos;

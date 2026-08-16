@@ -69,7 +69,8 @@ public class ContenedorDependencias {
     private static OrquestadorLogin orquestadorLogin;
     private static OrquestadorPermisos orquestadorPermisos;
     private static OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
-    private static OrquestadorProductoInventario orquestadorProductoInventario;
+    private static OrquestadorProductos orquestadorProductos;
+    private static OrquestadorInventarioProducto orquestadorInventarioProducto;
     private static OrquestadorRoles orquestadorRoles;
     private static OrquestadorServicios orquestadorServicios;
     private static OrquestadorVentas orquestadorVentas;
@@ -148,8 +149,9 @@ public class ContenedorDependencias {
         orquestadorPoliticaVencimiento= new OrquestadorPoliticaVencimiento(
                 servicioPoliticaVencimiento, ensambladorDTOPoliticaVencimiento
         );
-        orquestadorProductoInventario = new OrquestadorProductoInventario(
-                servicioProductos, servicioInventario, ensambladorDTOInventario
+        orquestadorProductos = new OrquestadorProductos(ensambladorDTOProducto, servicioProductos);
+        orquestadorInventarioProducto = new OrquestadorInventarioProducto(
+                servicioProductos, servicioInventario, ensambladorDTOProducto, ensambladorDTOInventario
         );
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorServicios = new OrquestadorServicios(
@@ -365,9 +367,13 @@ public class ContenedorDependencias {
         return orquestadorPoliticaVencimiento;
     }
 
-    public static OrquestadorProductoInventario getOrquestadorProductoInventario() {
+    public static OrquestadorProductos getOrquestadorProductos() {
+        return orquestadorProductos;
+    }
+
+    public static OrquestadorInventarioProducto getOrquestadorProductoInventario() {
         validarInicializado();
-        return orquestadorProductoInventario;
+        return orquestadorInventarioProducto;
     }
 
     public static OrquestadorRoles getOrquestadorRoles() {
