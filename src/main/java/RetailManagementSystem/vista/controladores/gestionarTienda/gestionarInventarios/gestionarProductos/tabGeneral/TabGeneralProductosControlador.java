@@ -1,12 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.*;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
-import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
-import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -56,13 +53,9 @@ public class TabGeneralProductosControlador {
 
     private int idInventario;
 
-    private final ServicioProductos servicioProductos;
-    private final ServicioInventario servicioInventario;
-
-    private final EnsambladorDTOProducto ensambladorDTOProducto;
-    private final EnsambladorDTOInventario ensambladorDTOInventario;
-
     private final OrquestadorInventarioProducto orquestadorInventarioProducto;
+
+    private final OrquestadorProductos orquestadorProductos;
 
     private final ObservableList<ProductoResumenDTO> listaObservable = FXCollections.observableArrayList();
 
@@ -71,16 +64,10 @@ public class TabGeneralProductosControlador {
     //CONSTRUCTOR:
 
     public TabGeneralProductosControlador(
-            ServicioProductos servicioProductos, ServicioInventario servicioInventario,
-            EnsambladorDTOProducto ensambladorDTOProducto, EnsambladorDTOInventario ensambladorDTOInventario
+            OrquestadorInventarioProducto orquestadorInventarioProducto, OrquestadorProductos orquestadorProductos
     ) {
-        this.servicioProductos = servicioProductos;
-        this.servicioInventario = servicioInventario;
-        this.ensambladorDTOProducto = ensambladorDTOProducto;
-        this.ensambladorDTOInventario = ensambladorDTOInventario;
-        this.orquestadorInventarioProducto = new OrquestadorInventarioProducto(
-                servicioProductos, servicioInventario, ensambladorDTOProducto, ensambladorDTOInventario
-        );
+        this.orquestadorInventarioProducto = orquestadorInventarioProducto;
+        this.orquestadorProductos = orquestadorProductos;
     }
 
     //MÉTODOS:
@@ -106,9 +93,7 @@ public class TabGeneralProductosControlador {
 
     private void cargarDatosTabla() {
         CompletableFuture.supplyAsync(()->
-                this.ensambladorDTOProducto.ensamblarDetalleProductosResumen(
-                this.servicioProductos.obtenerProductosDeInventario(this.idInventario), LocalDate.now()
-                )
+                this.orquestadorProductos.obtenerResumenProductosDeInventario(this.idInventario, LocalDate.now())
         ).thenAccept(resumenProductos->{
             Platform.runLater(()->{
                 listaObservable.clear();
@@ -300,7 +285,7 @@ public class TabGeneralProductosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigoProducto())
+                this.orquestadorProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigoProducto())
         ).thenRun(()->
             Platform.runLater(()->{
                 ProductoResumenDTO actualizado = new ProductoResumenDTO(
