@@ -10,6 +10,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpue
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.*;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.CrearProductoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.ManejarStockControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.MoverProductoAOtroInventarioControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.TabGeneralProductosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.CrearPoliticaVencimiento;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.EditarPoliticaVencimientoControlador;
@@ -222,6 +223,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
             return new ManejarStockControlador(
                     ContenedorDependencias.getOrquestadorProductoInventario(),
                     ContenedorDependencias.getOrquestadorProductos()
+            );
+        }
+        if (claseControlador == MoverProductoAOtroInventarioControlador.class){
+            return new MoverProductoAOtroInventarioControlador(
+                    ContenedorDependencias.getOrquestadorProductoInventario()
             );
         }
         try {

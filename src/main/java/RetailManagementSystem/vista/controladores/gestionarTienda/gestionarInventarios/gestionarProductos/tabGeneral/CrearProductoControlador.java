@@ -92,10 +92,10 @@ public class CrearProductoControlador {
         alerta.setContentText(mensaje);
         DialogPane panelAlerta = alerta.getDialogPane();
         panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_CREAR_PRODUCTOS);
-        if (urlCss != null) {
-            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-        }
+//        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_CREAR_PRODUCTOS);
+//        if (urlCss != null) {
+//            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
+//        }
         alerta.showAndWait();
     }
 

@@ -9,6 +9,7 @@ import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class OrquestadorInventarioProducto {
 
@@ -47,6 +48,12 @@ public class OrquestadorInventarioProducto {
                 this.servicioProductos.aumentarStockDeProductoDeInventario(
                         idInventario, codigoProducto, cantidadAAumentarProducto
                 ) , fecha
+        );
+    }
+
+    public List<InventarioDTO> obtenerTodosLosInventarios(){
+        return this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
+                this.servicioInventario.obtenerTodosLosInventarios()
         );
     }
 

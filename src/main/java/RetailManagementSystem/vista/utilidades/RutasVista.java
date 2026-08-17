@@ -127,13 +127,12 @@ public class RutasVista {
 
     public static final String CREAR_PRODUCTO_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/crearProducto.fxml";
-    public static final String ESTILOS_CSS_CREAR_PRODUCTOS =
-            "/css/gestionarTienda/gestionarInventarios/gestionarProductos/estilosCssCrearProductos.css";
 
     public static final String MANEJAR_STOCK_PRODUCTO_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/manejarStock.fxml";
 
-
+    public static final String MOVER_PRODUCTO_INVENTARIO_VIEW =
+            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/moverProductoAOtroInventario.fxml";
 
 
 

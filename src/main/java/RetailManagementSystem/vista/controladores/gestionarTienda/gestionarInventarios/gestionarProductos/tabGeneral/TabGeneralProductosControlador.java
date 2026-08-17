@@ -1,6 +1,5 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
-import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.dominio.excepciones.*;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
@@ -23,7 +22,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -31,18 +29,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TabGeneralProductosControlador {
@@ -91,20 +84,6 @@ public class TabGeneralProductosControlador {
     }
 
     //MÉTODOS:
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane pane = alerta.getDialogPane();
-        pane.setMinHeight(Region.USE_PREF_SIZE);
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
-        if (urlCss != null) {
-            pane.getStylesheets().add(urlCss.toExternalForm());
-        }
-        alerta.showAndWait();
-    }
 
     public void recibirIdInventario(int idInventario) {
         if (idInventario <= 0){
@@ -384,93 +363,32 @@ public class TabGeneralProductosControlador {
 
     @FXML
     public void abrirMoverAOtroInventario(ActionEvent event) {
-        moverAOtroInventario();
-    }
-
-    private void moverAOtroInventario(){
-        ProductoResumenDTO productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
-        if (productoSeleccionado == null) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Atención",
-                    "Seleccione un Producto de la tabla para moverlo.");
-            return;
-        }
-        Dialog<ButtonType> dialog = new Dialog<>();
-        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_PRODUCTOS);
-        if (urlCss != null) {
-            dialog.getDialogPane().getStylesheets().add(urlCss.toExternalForm());
-        }
-        dialog.setTitle("Mover Producto de Inventario");
-        dialog.setHeaderText("Mover: " + productoSeleccionado.nombre());
-        Label lblInfo = new Label("Se moverá la referencia completa y sus " + productoSeleccionado.stock() + " unidades disponibles.");
-        lblInfo.setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-        Label lblDestino = new Label("Seleccione el Inventario de Destino:");
-        ComboBox<InventarioDTO> comboInventarios = new ComboBox<>();
-        comboInventarios.setPromptText("Elegir Inventario...");
-        comboInventarios.getStyleClass().add("combo-box-personalizado");
-        comboInventarios.setPrefWidth(250);
-        try {
-            List<InventarioDTO> lista = this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
-                    servicioInventario.obtenerTodosLosInventarios()
+        ProductoResumenDTO seleccionado = tablaProductos.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    "Atención", null,
+                    "Seleccione un Producto de la tabla para moverlo."
             );
-            for (InventarioDTO inventarioDTO:lista){
-                if (inventarioDTO.idInventario() == this.idInventario){
-                    lista.remove(inventarioDTO);
-                    break;
-                }
-            }
-            comboInventarios.getItems().addAll(lista);
-        } catch (Exception e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "NO se Pudieron Cargar los Inventarios.");
             return;
         }
-        comboInventarios.setConverter(new StringConverter<InventarioDTO>() {
-            @Override
-            public String toString(InventarioDTO inv) { return inv != null ? inv.nombre() : ""; }
-            @Override
-            public InventarioDTO fromString(String string) { return null; }
-        });
-        VBox contenido = new VBox(15, lblInfo, lblDestino, comboInventarios);
-        contenido.setPadding(new Insets(20));
-        dialog.getDialogPane().setContent(contenido);
-        ButtonType btnMover = new ButtonType("Mover Producto", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(btnMover, ButtonType.CANCEL);
-        Button botonFisicoMover = (Button) dialog.getDialogPane().lookupButton(btnMover);
-        botonFisicoMover.setStyle("-fx-background-color: #ef4444; -fx-border-color: #b91c1c;");
-        botonFisicoMover.addEventFilter(ActionEvent.ACTION, evt -> {
-            if (comboInventarios.getValue() == null) {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error de Validación",
-                        "Debe seleccionar un Inventario de destino.");
-                evt.consume();
-            }
-        });
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-                InventarioDTO inventarioDestino = comboInventarios.getValue();
-                try {
-                    this.orquestadorInventarioProducto.validarEspacioInventarioYMoverProducto(
-                            this.idInventario, inventarioDestino.idInventario(),
-                            productoSeleccionado.codigoProducto(), productoSeleccionado.stock()
-                    );
-                    mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                            "El Producto ha sido Movido Exitosamente al Inventario: " + inventarioDestino.nombre());
-                    cargarDatosTabla();
-                } catch (IllegalArgumentException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "NO se pudo Completar la Accion",
-                            "Error:  " + e.getMessage());
-                } catch (InventarioNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
-                            "Error:  " + e.getMessage());
-                } catch (ProductoNoEncontradoException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Producto NO Encontrado",
-                            "Error:  " + e.getMessage());
-                } catch (CapacidadInventarioExcedidaException e) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida",
-                            "El Inventario -" + inventarioDestino.nombre() + "- NO puede recibir esa Cantidad.\n" +
-                                    e.getMessage());
-                }
-            }
-        });
+        String rutaFxml = RutasVista.MOVER_PRODUCTO_INVENTARIO_VIEW;
+        try {
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
+            Parent root = loader.load();
+            MoverProductoAOtroInventarioControlador controlador = loader.getController();
+            controlador.cargarDatos(this.idInventario, seleccionado, listaObservable);
+            Stage modalStage = new Stage();
+            modalStage.setTitle("Mover Producto");
+            modalStage.setScene(new Scene(root));
+            modalStage.initModality(Modality.APPLICATION_MODAL);
+            modalStage.setResizable(false);
+            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            modalStage.initOwner(ventanaPadre);
+            modalStage.showAndWait();
+            cargarDatosTabla();
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        }
     }
 
 
