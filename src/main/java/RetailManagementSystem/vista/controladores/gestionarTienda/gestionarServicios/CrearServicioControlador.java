@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
@@ -45,6 +46,11 @@ public class CrearServicioControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
 
     public void cargarDatos(
             ObservableList<ServicioDTO> listaObservable, List<ImpuestoDTO> listaImpuestos,
@@ -89,7 +95,7 @@ public class CrearServicioControlador {
         DescuentoDTO descuentoSeleccionado = cbDescuento.getValue();
         if (nombre.isEmpty() || precioBaseTexto.isEmpty()){
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos",
+                    getVentana(), "Datos Incompletos",
                     "El Nombre y el Precio Base son Obligatorios.",
                     "Por favor escribe un Nombre y un Precio Base Validos."
             );
@@ -100,7 +106,7 @@ public class CrearServicioControlador {
             precioBase = FormateadorNumeros.stringAPrecio(precioBaseTexto);
         } catch (IllegalArgumentException e){
             GestorAlertas.mostrarAlertaWarning(
-                    "Precio Invalido", null,
+                    getVentana(), "Precio Invalido", null,
                     "Por favor, escribe un Precio Base Valido.\n" +
                             "Error:  " + e.getMessage()
             );
@@ -108,14 +114,14 @@ public class CrearServicioControlador {
         }
         if (impuestoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos", null,
+                    getVentana(), "Datos Incompletos", null,
                     "Por favor selecciona un Impuesto."
             );
             return;
         }
         if (descuentoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos", null,
+                    getVentana(), "Datos Incompletos", null,
                     "Por favor selecciona un Descuento."
             );
             return;
@@ -128,7 +134,7 @@ public class CrearServicioControlador {
                 Platform.runLater(()->{
                     listaObservable.add(servicioRegistrado);
                     GestorAlertas.mostrarAlertaInformacion(
-                            "Éxito", null,
+                            getVentana(), "Éxito", null,
                             "El Servicio ha sido Registrado Correctamente."
                     );
                     cerrarPantalla();
@@ -138,12 +144,12 @@ public class CrearServicioControlador {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "Error en los Datos Ingresados", null,
+                            getVentana(), "Error en los Datos Ingresados", null,
                             "Error:  " + causa.getMessage()
                     );
                 } else {
                     GestorAlertas.mostrarAlertaError(
-                            "Error Critico",
+                            getVentana(), "Error Critico",
                             "NO se pudo Completar la Acción.",
                             "Notificale al Administrador este Error:\n" + causa.getMessage()
                     );
@@ -154,7 +160,7 @@ public class CrearServicioControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) btnCancelar.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

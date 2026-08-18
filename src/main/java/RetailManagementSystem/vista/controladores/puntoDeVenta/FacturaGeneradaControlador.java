@@ -18,6 +18,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
@@ -50,6 +51,11 @@ public class FacturaGeneradaControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return lblFechaFactura.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize() {
@@ -104,20 +110,20 @@ public class FacturaGeneradaControlador {
         lblNombreTienda.setText("Cargando...");
         CompletableFuture.supplyAsync(
                 this.servicioConfiguraciones::obtenerNombreTienda
-        ).thenAccept(nombreTienda -> {
+        ).thenAccept(nombreTienda ->
             Platform.runLater(() -> {
                 if (nombreTienda != null && !nombreTienda.isBlank()) {
                     lblNombreTienda.setText(nombreTienda);
                 } else {
                     lblNombreTienda.setText("Mi Tienda");
                 }
-            });
-        }).exceptionally(ex -> {
+            })
+        ).exceptionally(ex -> {
             Platform.runLater(() -> {
                 lblNombreTienda.setText("Tienda (Modo Offline)");
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error de Carga",
+                        getVentana(), "Error de Carga",
                         "Error al Obtener el Nombre de la Tienda",
                         "NO se pudo Leer la Configuración Local: " + causa.getMessage() + "\n" +
                                 "Vertica tu conexión para seguir utilizando la App."
@@ -130,7 +136,7 @@ public class FacturaGeneradaControlador {
 
     @FXML
     public void cerrarFactura(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) getVentana();
         stage.close();
     }
 

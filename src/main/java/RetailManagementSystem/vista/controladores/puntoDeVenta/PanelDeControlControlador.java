@@ -1,6 +1,5 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
-import RetailManagementSystem.aplicacion.dto.ventas.ResumenVentaDiaDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
 import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
@@ -13,16 +12,15 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.time.LocalDateTime;
@@ -56,6 +54,11 @@ public class PanelDeControlControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return btnVolver.getScene().getWindow();
+    }
+
+
     @FXML
     public void initialize() {
         iniciarReloj();
@@ -84,23 +87,22 @@ public class PanelDeControlControlador {
         lblCantidadFacturas.setText("...");
         lblTotalVentasHoy.setText("Calculando...");
         lblUltimaVenta.setText("Cargando...");
-
         CompletableFuture.supplyAsync(()->
                 ensambladorDTOFactura.ensamblarResumenVentaDia(servicioFacturas.obtenerResumenHoy())
-        ).thenAccept(resumenVentaDia -> {
+        ).thenAccept(resumenVentaDia ->
             Platform.runLater(()->{
                 lblCantidadFacturas.setText(String.valueOf(resumenVentaDia.cantidadFacturas()));
                 lblTotalVentasHoy.setText(FormateadorNumeros.formatoMoneda(resumenVentaDia.totalVentas()));
                 lblUltimaVenta.setText(FormateadorNumeros.formatoMoneda(resumenVentaDia.ultimaVenta()));
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 lblCantidadFacturas.setText("0");
                 lblTotalVentasHoy.setText("$ 0.00");
                 lblUltimaVenta.setText("$ 0.00");
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error de Conexión",
+                        getVentana(), "Error de Conexión",
                         "No se pudieron cargar las métricas de hoy",
                         "Se asignaron valores en cero. Se ha registrado el error: " + causa.getMessage()
                 );
@@ -113,16 +115,16 @@ public class PanelDeControlControlador {
         lblVersion.setText("Cargando...");
         CompletableFuture.supplyAsync(
                 InformacionAplicacion::obtenerVersion
-        ).thenAccept(version->{
-            Platform.runLater(()->{
-                lblVersion.setText("Mi Tienda " + version);
-            });
-        }).exceptionally(ex->{
+        ).thenAccept(version->
+            Platform.runLater(()->
+                lblVersion.setText("Mi Tienda " + version)
+            )
+        ).exceptionally(ex->{
             Platform.runLater(() -> {
                 lblVersion.setText("Versión --");
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error de Carga", "Error al Cargar la Version",
+                        getVentana(), "Error de Carga", "Error al Cargar la Version",
                         "NO se pudo Cargar la Versión de la Tienda: " + causa.getMessage() + ".\n" +
                                 "Contacte al Administrador o Verifica tu Conexión."
                 );
@@ -134,7 +136,7 @@ public class PanelDeControlControlador {
 
     @FXML
     public void abrirNuevaVenta(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_DE_VENTAS_VIEW);
     }
 
@@ -154,7 +156,7 @@ public class PanelDeControlControlador {
 
     @FXML
     public void volverAlMenu(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_PRINCIPAL_VIEW);
     }
 

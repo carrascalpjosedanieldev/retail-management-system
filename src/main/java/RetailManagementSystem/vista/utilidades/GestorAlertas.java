@@ -3,14 +3,18 @@ package RetailManagementSystem.vista.utilidades;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
+import javafx.stage.Window;
 
 import java.net.URL;
 import java.util.Optional;
 
 public class GestorAlertas {
 
-    private static void mostrarAlerta(Alert.AlertType tipo, String titulo, String encabezado, String contenido){
+    private static void mostrarAlerta(Alert.AlertType tipo, Window ventana, String titulo, String encabezado, String contenido){
         Alert alerta = new Alert(tipo);
+        if (ventana != null) {
+            alerta.initOwner(ventana);
+        }
         alerta.setTitle(titulo);
         alerta.setHeaderText(encabezado);
         alerta.setContentText(contenido);
@@ -23,21 +27,24 @@ public class GestorAlertas {
         alerta.showAndWait();
     }
 
-    public static void mostrarAlertaError(String titulo, String encabezado, String contenido) {
-        mostrarAlerta(Alert.AlertType.ERROR, titulo, encabezado, contenido);
+    public static void mostrarAlertaError(Window ventana, String titulo, String encabezado, String contenido) {
+        mostrarAlerta(Alert.AlertType.ERROR, ventana, titulo, encabezado, contenido);
     }
 
-    public static void mostrarAlertaWarning(String titulo, String encabezado, String contenido) {
-        mostrarAlerta(Alert.AlertType.WARNING, titulo, encabezado, contenido);
+    public static void mostrarAlertaWarning(Window ventana, String titulo, String encabezado, String contenido) {
+        mostrarAlerta(Alert.AlertType.WARNING, ventana, titulo, encabezado, contenido);
     }
 
-    public static void mostrarAlertaInformacion(String titulo, String encabezado, String contenido) {
-        mostrarAlerta(Alert.AlertType.INFORMATION, titulo, encabezado, contenido);
+    public static void mostrarAlertaInformacion(Window ventana, String titulo, String encabezado, String contenido) {
+        mostrarAlerta(Alert.AlertType.INFORMATION, ventana,titulo, encabezado, contenido);
     }
 
 
-    public static boolean mostrarConfirmacion(String titulo, String encabezado, String contenido) {
+    public static boolean mostrarConfirmacion(Window ventana, String titulo, String encabezado, String contenido) {
         Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        if (ventana != null){
+            confirmacion.initOwner(ventana);
+        }
         confirmacion.setTitle(titulo);
         confirmacion.setHeaderText(encabezado);
         confirmacion.setContentText(contenido);
@@ -52,10 +59,13 @@ public class GestorAlertas {
     }
 
 
-    public static void mostrarAlertaSalirDelSistema() {
+    public static void mostrarAlertaSalirDelSistema(Window ventanaPadre) {
         Label iconoAmigable = new Label("👋");
         iconoAmigable.setId("iconoAlerta");
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+        if (ventanaPadre != null) {
+            alerta.initOwner(ventanaPadre);
+        }
         alerta.setTitle("Confirmar Salida");
         alerta.setHeaderText(null);
         alerta.setContentText("¿Estás Seguro de que deseas Salir del Sistema?");

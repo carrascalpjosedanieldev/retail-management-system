@@ -27,6 +27,7 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.beans.binding.Bindings;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -72,6 +73,10 @@ public class MenuDeVentasControlador {
 
     private LocalDate obtenerFecha(){
         return LocalDate.now();
+    }
+
+    private Window getVentana(){
+        return btnVolver.getScene().getWindow();
     }
 
 
@@ -156,7 +161,7 @@ public class MenuDeVentasControlador {
     public void volverAlMenu(ActionEvent event) {
         if (listaCarrito != null && !listaCarrito.isEmpty()) {
             boolean respuesta = GestorAlertas.mostrarConfirmacion(
-                    "Venta en Curso",
+                    getVentana(), "Venta en Curso",
                     "¿Está Seguro de que desea Salir?",
                     """
                     Tiene ítems en el Carrito. Si sale Ahora, se Cancelará la Venta y Perderá Todo el Progreso.
@@ -168,15 +173,15 @@ public class MenuDeVentasControlador {
             }
             CompletableFuture.supplyAsync(()->
                     this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta, obtenerFecha())
-            ).thenAccept(carritoActualizado->{
+            ).thenAccept(carritoActualizado->
                 Platform.runLater(()->{
                     actualizarTablaYTotales(carritoActualizado.carritoItems());
                     GestorAlertas.mostrarAlertaInformacion(
-                            "Venta Cancelada", null,
+                            getVentana(), "Venta Cancelada", null,
                             "Se ha Cancelado la Venta y vaciado el Carrito con Éxito."
                     );
-                });
-            }).exceptionally(ex->{
+                })
+            ).exceptionally(ex->{
                 Platform.runLater(()->{
                     Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                     manejarErrorCritico(causa);
@@ -184,7 +189,7 @@ public class MenuDeVentasControlador {
                 return null;
             });
         }
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
     }
 
@@ -201,37 +206,39 @@ public class MenuDeVentasControlador {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorVentas.agregarItemAlCarrito(this.sesionVenta, codigo, obtenerFecha())
-        ).thenAccept(carritoActualizado -> {
+        ).thenAccept(carritoActualizado ->
             Platform.runLater(()->{
                 actualizarTablaYTotales(carritoActualizado.carritoItems());
                 txtCodigo.clear();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof ProductoVencidoException){
                     GestorAlertas.mostrarAlertaError(
-                            "Producto Vencido", null,
+                            getVentana(), "Producto Vencido", null,
                             causa.getMessage() + " NO sera agregado al Carrito"
                     );
                 } else if (causa instanceof StockInsuficienteException){
                     GestorAlertas.mostrarAlertaError(
-                            "Stock Insuficiente", null,
+                            getVentana(), "Stock Insuficiente", null,
                             "Error:  " + causa.getMessage()
                     );
-                } else if (causa instanceof ProductoNoDisponibleException || causa instanceof ServicioNoDisponibleExeption){
+                } else if (causa instanceof ProductoNoDisponibleException ||
+                        causa instanceof ServicioNoDisponibleExeption){
                     GestorAlertas.mostrarAlertaError(
-                            "Item NO Disponible", null,
+                            getVentana(), "Item NO Disponible", null,
                             causa.getMessage() + " NO sera agregado al Carrito"
                     );
-                } else if (causa instanceof ProductoNoEncontradoException || causa instanceof ServicioNoEncontradoException) {
+                } else if (causa instanceof ProductoNoEncontradoException ||
+                        causa instanceof ServicioNoEncontradoException) {
                     GestorAlertas.mostrarAlertaError(
-                            "Item NO Encontrado", null,
+                            getVentana(), "Item NO Encontrado", null,
                             "Error:  " + causa.getMessage()
                     );
                 } else if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "Error en los Datos Ingresados", null,
+                            getVentana(), "Error en los Datos Ingresados", null,
                             "Error:  " + causa.getMessage()
                     );
                 } else {
@@ -239,9 +246,9 @@ public class MenuDeVentasControlador {
                 }
             });
             return null;
-        }).whenComplete((resultado, excepcion)->{
-            Platform.runLater(this::restaurarFocoCodigo);
-        });
+        }).whenComplete((resultado, excepcion)->
+            Platform.runLater(this::restaurarFocoCodigo)
+        );
     }
 
     private void actualizarTablaYTotales(List<ItemCarritoDTO> itemsDelCarrito) {
@@ -268,7 +275,7 @@ public class MenuDeVentasControlador {
 
     private void manejarErrorCritico(Throwable causa) {
         GestorAlertas.mostrarAlertaError(
-                "Error Crítico",
+                getVentana(), "Error Crítico",
                 "NO se pudo Completar la Acción.",
                 "Notifícale al Administrador este Error:\n" + causa.getMessage()
         );
@@ -290,10 +297,9 @@ public class MenuDeVentasControlador {
             return;
         }
         boolean respuesta = GestorAlertas.mostrarConfirmacion(
-                "Confirmar Eliminación",
+                getVentana(), "Confirmar Eliminación",
                 "¿Eliminar ítem?",
-                "¿Está seguro de que desea retirar -" + itemSeleccionado.nombreArticulo() +
-                        "- del carrito?"
+                "¿Está seguro de que desea retirar -" + itemSeleccionado.nombreArticulo() + "- del carrito?"
         );
         if (!respuesta) {
             txtCodigo.requestFocus();
@@ -303,16 +309,16 @@ public class MenuDeVentasControlador {
             this.orquestadorVentas.eliminarItemDelCarrito(
                     this.sesionVenta, itemSeleccionado.codigoArticulo(), obtenerFecha()
             )
-        ).thenAccept(carritoActualizado->{
-            Platform.runLater(()->{
-                actualizarTablaYTotales(carritoActualizado.carritoItems());
-            });
-        }).exceptionally(ex->{
+        ).thenAccept(carritoActualizado->
+            Platform.runLater(()->
+                actualizarTablaYTotales(carritoActualizado.carritoItems())
+            )
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException) {
                     GestorAlertas.mostrarAlertaError(
-                            "Error en el Proceso", null,
+                            getVentana(), "Error en el Proceso", null,
                             "Error:  " + causa.getMessage()
                     );
                 } else {
@@ -320,9 +326,9 @@ public class MenuDeVentasControlador {
                 }
             });
             return null;
-        }).whenComplete((resultado, excepcion)->{
-            Platform.runLater(this::restaurarFocoCodigo);
-        });
+        }).whenComplete((resultado, excepcion)->
+            Platform.runLater(this::restaurarFocoCodigo)
+        );
     }
 
 
@@ -336,7 +342,7 @@ public class MenuDeVentasControlador {
             return;
         }
         boolean respuesta = GestorAlertas.mostrarConfirmacion(
-                "Cancelar Venta",
+                getVentana(), "Cancelar Venta",
                 "¿Desea Cancelar Toda la Venta?",
                 "Se Eliminarán Todos los Productos del Carrito. Esta Acción NO se puede Deshacer."
         );
@@ -346,15 +352,15 @@ public class MenuDeVentasControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta, obtenerFecha())
-        ).thenAccept(carritoActualizado->{
+        ).thenAccept(carritoActualizado->
             Platform.runLater(()->{
                 actualizarTablaYTotales(carritoActualizado.carritoItems());
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Venta Cancelada", null,
+                        getVentana(), "Venta Cancelada", null,
                         "Se ha Cancelado la Venta y vaciado el Carrito con Éxito."
                 );
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 manejarErrorCritico(causa);
@@ -406,19 +412,19 @@ public class MenuDeVentasControlador {
                     return this.orquestadorVentas.reducirCantidadItem(
                             this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
                 }
-            }).thenAccept(carritoActualizado -> {
-                Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()));
-            }).exceptionally(ex -> {
+            }).thenAccept(carritoActualizado ->
+                Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()))
+            ).exceptionally(ex -> {
                 Platform.runLater(() -> {
                     Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                     if (causa instanceof IllegalArgumentException){
                         GestorAlertas.mostrarAlertaError(
-                                "Entrada Inválida", null,
+                                getVentana(), "Entrada Inválida", null,
                                 "Por favor, Ingrese un Número Entero Válido."
                         );
                     } else if (causa instanceof StockInsuficienteException) {
                         GestorAlertas.mostrarAlertaError(
-                                "Stock Insuficiente", null,
+                                getVentana(), "Stock Insuficiente", null,
                                 "Error:  " + causa.getMessage()
                         );
                     } else {
@@ -444,7 +450,7 @@ public class MenuDeVentasControlador {
         }
         String total = lblTotalGeneral.getText().trim();
         boolean respuesta = GestorAlertas.mostrarConfirmacion(
-                "Confirmar Venta",
+                getVentana(), "Confirmar Venta",
                 "¿Finalizar y Registrar la Venta?",
                 "Se Registrará la Venta por un Total de " + total + ".\n¿Está seguro de continuar?"
         );
@@ -454,23 +460,23 @@ public class MenuDeVentasControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha())
-        ).thenAccept(facturaGenerada -> {
+        ).thenAccept(facturaGenerada ->
             Platform.runLater(()->{
                 mostrarVentanaFactura(facturaGenerada);
                 actualizarTotales();
                 actualizarTablaYTotales(null);
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof CarritoVacioException){
                     GestorAlertas.mostrarAlertaError(
-                            "Carrito Vacío", null,
+                            getVentana(), "Carrito Vacío", null,
                             "Error:  " + causa.getMessage()
                     );
                 } else if (causa instanceof StockInsuficienteException){
                     GestorAlertas.mostrarAlertaError(
-                            "Stock Insuficiente", null,
+                            getVentana(), "Stock Insuficiente", null,
                             "Lo Sentimos, volviendo a Verificar el Stock por seguridad nos dimos cuenta de esto:\n" +
                                     causa.getMessage() + "\n" +
                                     "No te preocupes el carrito esta Intacto pero debes modificarlo."

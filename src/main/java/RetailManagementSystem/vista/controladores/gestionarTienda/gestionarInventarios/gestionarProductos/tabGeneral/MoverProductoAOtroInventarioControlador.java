@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
@@ -57,6 +58,10 @@ public class MoverProductoAOtroInventarioControlador {
         cargarDatosComboBox();
     }
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize(){
@@ -81,7 +86,7 @@ public class MoverProductoAOtroInventarioControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error", null,
+                        getVentana(), "Error", null,
                         "NO se Pudieron Cargar los Inventarios.\n" +
                                 "Detalle:  " + causa.getMessage()
                 );
@@ -96,7 +101,7 @@ public class MoverProductoAOtroInventarioControlador {
     void moverProducto(ActionEvent event) {
         if (comboInventarios.getValue() == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Error de Validación", null,
+                    getVentana(), "Error de Validación", null,
                     "Debe seleccionar un Inventario de destino."
             );
             return;
@@ -111,7 +116,7 @@ public class MoverProductoAOtroInventarioControlador {
             Platform.runLater(()->{
                 listaObservable.remove(seleccionado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Producto ha sido Movido Exitosamente al Inventario: " + inventarioDestino.nombre()
                 );
                 cerrarPantalla();
@@ -121,18 +126,18 @@ public class MoverProductoAOtroInventarioControlador {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "NO se pudo Completar la Acción", null,
+                            getVentana(), "NO se pudo Completar la Acción", null,
                             "Error:  " + causa.getMessage()
                     );
                 } else if (causa instanceof CapacidadExcedidaException){
                     GestorAlertas.mostrarAlertaError(
-                            "Capacidad Excedida", null,
+                            getVentana(), "Capacidad Excedida", null,
                             "El Inventario -" + inventarioDestino.nombre() + "- NO puede recibir esa Cantidad.\n" +
                                     causa.getMessage()
                     );
                 } else {
                     GestorAlertas.mostrarAlertaError(
-                            "Error Critico", null,
+                            getVentana(), "Error Critico", null,
                             "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
                                     causa.getMessage()
                     );
@@ -143,7 +148,7 @@ public class MoverProductoAOtroInventarioControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) btnCancelar.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

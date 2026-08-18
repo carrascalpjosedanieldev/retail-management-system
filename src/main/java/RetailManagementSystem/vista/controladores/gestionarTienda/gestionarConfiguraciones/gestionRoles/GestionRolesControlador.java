@@ -16,7 +16,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
@@ -24,6 +23,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -52,6 +52,11 @@ public class GestionRolesControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return tablaRoles.getScene().getWindow();
+    }
+
+
     @FXML
     public void initialize() {
         configurarColumnas();
@@ -75,23 +80,23 @@ public class GestionRolesControlador {
     private void cargarDatosDesdeBD() {
         CompletableFuture.supplyAsync(
                 this.orquestadorRoles::obtenerTodosLosRoles
-        ).thenAccept(listaRoles ->{
+        ).thenAccept(listaRoles ->
             Platform.runLater(()->{
                 listaMaestraRoles.clear();
                 if (listaRoles != null && !listaRoles.isEmpty()) {
                     listaMaestraRoles.addAll(listaRoles);
                 }
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()-> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error de Carga",
+                        getVentana(), "Error de Carga",
                         "No se pudieron cargar los roles.",
                         "Detalle: " + causa.getMessage() + "\n" +
                                 "Notificale el error al Administrador y Verifica tu conexión,"
                 );
-                Stage stageActual = (Stage) txtBuscar.getScene().getWindow();
+                Stage stageActual = (Stage) getVentana();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
             });
             return null;
@@ -117,7 +122,7 @@ public class GestionRolesControlador {
 
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.CREAR_ROL_NUEVO_VIEW);
     }
 
@@ -127,7 +132,7 @@ public class GestionRolesControlador {
         RolDTO rolSeleccionado = tablaRoles.getSelectionModel().getSelectedItem();
         if (rolSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Rol de la Tabla para Modificarlo."
             );
             return;
@@ -156,7 +161,7 @@ public class GestionRolesControlador {
         RolDTO rolSeleccionado = tablaRoles.getSelectionModel().getSelectedItem();
         if (rolSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Rol de la Tabla para Administrar sus Permisos."
             );
             return;
@@ -167,7 +172,7 @@ public class GestionRolesControlador {
             Parent root = loader.load();
             AdministrarPermisosDeRolControlador controlador = loader.getController();
             controlador.cargarDatos(rolSeleccionado);
-            Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage stageActual = (Stage) getVentana();
             stageActual.getScene().setRoot(root);
         } catch (IOException e) {
             throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
@@ -177,7 +182,7 @@ public class GestionRolesControlador {
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
     }
 

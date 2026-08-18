@@ -17,12 +17,12 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -50,6 +50,11 @@ public class GestionImpuestosControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaImpuestos.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize() {
@@ -111,19 +116,19 @@ public class GestionImpuestosControlador {
     private void cargarDatosTabla() {
         CompletableFuture.supplyAsync(
                 this.orquestadorImpuestos::obtenerTodosLosImpuestos
-        ).thenAccept(listaImpuestos -> {
+        ).thenAccept(listaImpuestos ->
             Platform.runLater(()-> {
                 listaObservableImpuestos.setAll(listaImpuestos);
-            });
-        }).exceptionally(ex ->{
+            })
+        ).exceptionally(ex ->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                Stage stageActual = (Stage) tablaImpuestos.getScene().getWindow();
+                Stage stageActual = (Stage) getVentana();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
@@ -136,7 +141,7 @@ public class GestionImpuestosControlador {
         ImpuestoDTO seleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Impuesto de la Tabla para Modificarlo."
             );
             return;
@@ -190,12 +195,12 @@ public class GestionImpuestosControlador {
         ImpuestoDTO impuestoSeleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (impuestoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, selecciona un Impuesto de la Tabla para cambiar su Estado."
             );
             return;
         }
-        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Estás Seguro de Cambiar el Estado del Impuesto?")) {
             return;
         }
@@ -204,7 +209,7 @@ public class GestionImpuestosControlador {
         }).thenRun(()->{
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Estado se ha Actualizado Correctamente."
                 );
                 ImpuestoDTO actualizado = new ImpuestoDTO(
@@ -220,7 +225,7 @@ public class GestionImpuestosControlador {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -232,7 +237,7 @@ public class GestionImpuestosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 

@@ -17,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
@@ -51,6 +52,11 @@ public class EditarServicioControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
+
     public void cargarDatos(
             ServicioDTO seleccionado, ObservableList<ServicioDTO> listaObservable, List<ImpuestoDTO> listaImpuestos,
             List<DescuentoDTO> listaDescuentos
@@ -80,7 +86,7 @@ public class EditarServicioControlador {
                 desc.idDescuento() == seleccionado.datosDescuento().idDescuento()).findFirst().ifPresent(
                 cbDescuento.getSelectionModel()::select
         );
-        Platform.runLater(()->btnCancelar.requestFocus());
+        Platform.runLater(()-> btnCancelar.requestFocus());
     }
 
     private <T> void configurarComboBox(
@@ -110,7 +116,7 @@ public class EditarServicioControlador {
         DescuentoDTO descuentoSeleccionado = cbDescuento.getValue();
         if (nuevoNombre.isEmpty() || nuevoPrecioBaseTexto.isEmpty()){
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos", null,
+                    getVentana(), "Datos Incompletos", null,
                     "El Nombre y el Precio Base son Obligatorios. Escribelos por favor"
             );
             return;
@@ -120,7 +126,7 @@ public class EditarServicioControlador {
             nuevoPrecioBase = FormateadorNumeros.stringAPrecio(nuevoPrecioBaseTexto);
         } catch (IllegalArgumentException e){
             GestorAlertas.mostrarAlertaError(
-                    "Precio Base Invalido", null,
+                    getVentana(), "Precio Base Invalido", null,
                     "Escribe un Precio Base Valido.\n" +
                             e.getMessage()
             );
@@ -128,14 +134,14 @@ public class EditarServicioControlador {
         }
         if (impuestoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos", null,
+                    getVentana(), "Datos Incompletos", null,
                     "Por favor selecciona un Impuesto."
             );
             return;
         }
         if (descuentoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos", null,
+                    getVentana(), "Datos Incompletos", null,
                     "Por favor selecciona un Descuento."
             );
             return;
@@ -150,7 +156,7 @@ public class EditarServicioControlador {
                 int indice = listaObservable.indexOf(this.servicioSeleccionado);
                 listaObservable.set(indice, servicioActualizado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Servicio se ha Actualizado con Éxito"
                 );
                 cerrarPantalla();
@@ -160,16 +166,15 @@ public class EditarServicioControlador {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "Error en los Datos Ingresados", null,
+                            getVentana(), "Error en los Datos Ingresados", null,
                             "Error:  " + causa.getMessage()
                     );
                 } else {
                     GestorAlertas.mostrarAlertaError(
-                            "Error Critico",
+                            getVentana(), "Error Critico",
                             "NO se pudo Completar la Acción.",
                             "Notificale al Administrador este Error:\n" + causa.getMessage()
                     );
-                    ex.printStackTrace();
                 }
             });
             return null;
@@ -177,7 +182,7 @@ public class EditarServicioControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) btnCancelar.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

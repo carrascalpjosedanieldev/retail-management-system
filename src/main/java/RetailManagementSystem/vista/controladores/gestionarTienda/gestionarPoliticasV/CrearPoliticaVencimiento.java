@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +43,10 @@ public class CrearPoliticaVencimiento {
         this.listaObservable = listaObservable;
     }
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
 
     @FXML
     void guardarPoliticaV(ActionEvent event) {
@@ -51,14 +56,14 @@ public class CrearPoliticaVencimiento {
         boolean activo = chkActivo.isSelected();
         if (nombre.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Error de Validación", null,
+                    getVentana(), "Error de Validación", null,
                     "El Nombre de la Política NO puede estar Vacío."
             );
             return;
         }
         if (porcentajeTexto.isEmpty() || diasUmbralTexto.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Error de Validación", null,
+                    getVentana(), "Error de Validación", null,
                     "El Porcentaje y los Dias Umbral NO pueden estar Vacíos."
             );
             return;
@@ -68,7 +73,7 @@ public class CrearPoliticaVencimiento {
             porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
         } catch (IllegalArgumentException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "Error al Ingresar el Porcentaje:\n" + e.getMessage()
             );
             return;
@@ -78,25 +83,25 @@ public class CrearPoliticaVencimiento {
             diasUmbral = Integer.parseInt(diasUmbralTexto);
         } catch (NumberFormatException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "Los Días Umbral deben ser un Número Entero válido."
             );
             return;
         }
-        CompletableFuture.supplyAsync(()->{
-            return this.orquestadorPoliticaVencimiento.registrarPoliticaVencimiento(
+        CompletableFuture.supplyAsync(()->
+            this.orquestadorPoliticaVencimiento.registrarPoliticaVencimiento(
                     nombre, diasUmbral, porcentaje, activo
-            );
-        }).thenAccept(politicaVRegistrada -> {
+            )
+        ).thenAccept(politicaVRegistrada ->
             Platform.runLater(()->{
                 listaObservable.add(politicaVRegistrada);
                 cerrarPantalla();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -106,7 +111,7 @@ public class CrearPoliticaVencimiento {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) btnCancelar.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

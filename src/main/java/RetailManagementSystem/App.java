@@ -31,7 +31,7 @@ public class App extends Application {
             Parent root = loader.load();
             stagePrincipal.setOnCloseRequest(event -> {
                 event.consume();
-                GestorAlertas.mostrarAlertaSalirDelSistema();
+                GestorAlertas.mostrarAlertaSalirDelSistema(stagePrincipal);
             });
             Scene escena = new Scene(root, 1280, 720);
             stagePrincipal.setTitle("Sistema de Gestión de Tienda - JavaFX");
@@ -42,6 +42,7 @@ public class App extends Application {
             stagePrincipal.show();
         } catch (Exception e) {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
+            alerta.initOwner(stagePrincipal);
             alerta.setTitle("Error Crítico de Inicialización");
             alerta.setHeaderText("NO se pudo Iniciar la Aplicación");
             alerta.setContentText("""

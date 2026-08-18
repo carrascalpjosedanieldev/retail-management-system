@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -65,7 +64,7 @@ public class DialogoCantidadControlador {
     }
 
     private void cerrarVentana(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) btnCancelar.getScene().getWindow();
         stage.close();
     }
 

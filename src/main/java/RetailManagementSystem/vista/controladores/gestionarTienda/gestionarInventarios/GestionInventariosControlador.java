@@ -25,6 +25,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -55,6 +56,11 @@ public class GestionInventariosControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaInventarios.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize() {
@@ -130,7 +136,7 @@ public class GestionInventariosControlador {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error", null,
+                        getVentana(), "Error", null,
                         "No se pudieron cargar los inventarios: " + causa.getMessage()
                 );
             });
@@ -148,7 +154,7 @@ public class GestionInventariosControlador {
         InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Inventario de la Tabla para Modificarlo."
             );
             return;
@@ -198,7 +204,7 @@ public class GestionInventariosControlador {
         InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Selecciona un Inventario para ver sus Productos."
             );
             return;
@@ -219,7 +225,7 @@ public class GestionInventariosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 

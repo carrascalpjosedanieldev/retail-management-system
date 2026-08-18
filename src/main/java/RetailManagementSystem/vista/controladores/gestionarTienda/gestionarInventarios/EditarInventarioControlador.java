@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -51,12 +52,17 @@ public class EditarInventarioControlador {
         Platform.runLater(()-> btnCancelar.requestFocus());
     }
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
+
     @FXML
     void accionActualizar(ActionEvent event) {
         String nuevoNombre = txtNombre.getText().trim();
         if (nuevoNombre.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Campos Vacíos", null,
+                    getVentana(), "Campos Vacíos", null,
                     "El Nombre del Inventario NO puede estar Vacío."
             );
             return;
@@ -66,28 +72,28 @@ public class EditarInventarioControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorInventarioProducto.actualizarInventario(this.datosInventario.idInventario(), nuevoNombre)
-        ).thenAccept(inventarioActualizado->{
+        ).thenAccept(inventarioActualizado->
             Platform.runLater(()->{
                 int indice = listaObservable.indexOf(this.datosInventario);
                 listaObservable.set(indice, inventarioActualizado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Inventario se ha Actualizado con Éxito."
                 );
                 cerrarPantalla();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "Error en los Datos Ingresados",
+                            getVentana(), "Error en los Datos Ingresados",
                             "NO se pudo Completar la Acción.",
                             "Error:  " + causa.getMessage()
                     );
                 } else {
                     GestorAlertas.mostrarAlertaError(
-                          "Error Critico",
+                          getVentana(), "Error Critico",
                            "NO se pudo Completar la Acción.",
                           "Notificale al Administrador este Error:\n" + causa.getMessage()
                     );
@@ -99,7 +105,7 @@ public class EditarInventarioControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) lblNombreInv.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

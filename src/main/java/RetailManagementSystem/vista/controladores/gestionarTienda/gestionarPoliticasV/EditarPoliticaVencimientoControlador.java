@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
@@ -51,9 +52,11 @@ public class EditarPoliticaVencimientoControlador {
         txtNombre.setText(this.datosPoliticaV.nombrePolitica());
         txtDiasUmbral.setText(String.valueOf(this.datosPoliticaV.diasUmbral()));
         txtPorcentaje.setText(this.datosPoliticaV.porcentajeDescuento().toString());
-        Platform.runLater(() -> {
-            btnCancelar.requestFocus();
-        });
+        Platform.runLater(() -> btnCancelar.requestFocus());
+    }
+
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
     }
 
 
@@ -64,14 +67,14 @@ public class EditarPoliticaVencimientoControlador {
         String nuevoDiasUmbralTexto = txtDiasUmbral.getText().trim();
         if (nuevoNombre.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Error de Validación", null,
+                    getVentana(), "Error de Validación", null,
                     "El Nombre de la Política NO puede estar Vacío."
             );
             return;
         }
         if (nuevoPorcentajeTexto.isEmpty() || nuevoDiasUmbralTexto.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Error de Validación", null,
+                    getVentana(), "Error de Validación", null,
                     "El Porcentaje y los Dias Umbral NO pueden estar Vacíos."
             );
             return;
@@ -81,7 +84,7 @@ public class EditarPoliticaVencimientoControlador {
             porcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
         } catch (IllegalArgumentException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "Error al Ingresar el Porcentaje:\n" + e.getMessage()
             );
             return;
@@ -91,30 +94,30 @@ public class EditarPoliticaVencimientoControlador {
             diasUmbral = Integer.parseInt(nuevoDiasUmbralTexto);
         } catch (NumberFormatException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "Los Días Umbral deben ser un Número Entero válido."
             );
             return;
         }
-        CompletableFuture.supplyAsync(()->{
-            return this.orquestadorPoliticaVencimiento.actualizarPoliticaVencimiento(
+        CompletableFuture.supplyAsync(()->
+            this.orquestadorPoliticaVencimiento.actualizarPoliticaVencimiento(
                     this.datosPoliticaV.idPoliticaVencimiento(), nuevoNombre, diasUmbral, porcentaje
-            );
-        }).thenAccept( politicaVActualizada ->{
+            )
+        ).thenAccept( politicaVActualizada ->
             Platform.runLater(()->{
                 int indice = listaObservable.indexOf(this.datosPoliticaV);
                 listaObservable.set(indice, politicaVActualizada);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "La Política de Vencimiento se ha Actualizado con Éxito."
                 );
                 cerrarPantalla();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -125,7 +128,7 @@ public class EditarPoliticaVencimientoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) lblNombrePoliticaV.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

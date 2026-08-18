@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +43,10 @@ public class CrearImpuestoControlador {
         this.listaObservable = listaObservable;
     }
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
 
     @FXML
     void guardarImpuesto(ActionEvent event) {
@@ -50,7 +55,7 @@ public class CrearImpuestoControlador {
         boolean activo = chkActivo.isSelected();
         if (nombre.isEmpty() || porcentajeTexto.isEmpty()){
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos",
+                    getVentana(), "Datos Incompletos",
                     "El Nombre y el Porcentaje son Obligatorios.",
                     "Por favor escribe un Nombre y un Porcentaje Validos."
             );
@@ -61,23 +66,23 @@ public class CrearImpuestoControlador {
             porcentaje = FormateadorNumeros.stringAPorcentaje(porcentajeTexto);
         } catch (IllegalArgumentException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "Error al Ingresar el Porcentaje:\n" + e.getMessage()
             );
             return;
         }
-        CompletableFuture.supplyAsync(()->{
-            return this.orquestadorImpuestos.registrarImpuesto(nombre, porcentaje, activo);
-        }).thenAccept(impuestoRegistrado ->{
+        CompletableFuture.supplyAsync(()->
+             this.orquestadorImpuestos.registrarImpuesto(nombre, porcentaje, activo)
+        ).thenAccept(impuestoRegistrado ->
             Platform.runLater(()-> {
                 listaObservable.add(impuestoRegistrado);
                 cerrarPantalla();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -87,7 +92,7 @@ public class CrearImpuestoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) btnCancelar.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

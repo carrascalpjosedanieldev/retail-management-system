@@ -14,9 +14,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -53,6 +53,11 @@ public class PermisosVistaControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return tablaPermisos.getScene().getWindow();
+    }
+
+
     @FXML
     public void initialize() {
         configurarColumnas();
@@ -61,18 +66,18 @@ public class PermisosVistaControlador {
     }
 
     private void configurarColumnas() {
-        colId.setCellValueFactory(cellData -> {
-            return new SimpleObjectProperty<>(cellData.getValue().idPermiso());
-        });
-        colNombre.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().nombre());
-        });
-        colModulo.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().modulo());
-        });
-        colDescripcion.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().descripcion());
-        });
+        colId.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(cellData.getValue().idPermiso())
+        );
+        colNombre.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().nombre())
+        );
+        colModulo.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().modulo())
+        );
+        colDescripcion.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().descripcion())
+        );
         colEstado.setCellValueFactory(cellData -> {
             boolean estaActivo = cellData.getValue().activo();
             return new SimpleStringProperty(estaActivo ? "Activo" : "Inactivo");
@@ -115,14 +120,12 @@ public class PermisosVistaControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Crítico",
+                        getVentana(), "Error Crítico",
                         "No se pudieron cargar los permisos",
                         "Hubo un fallo al conectar con la Base de Datos: " + ex.getMessage() + "\n" +
                                 "Comunicate con el Administrador y Revisa tu conexión."
                 );
-                if (btnSalir != null && btnSalir.getScene() != null) {
-                    ((Stage) btnSalir.getScene().getWindow()).close();
-                }
+                ((Stage) getVentana()).close();
             });
             return null;
         });
@@ -179,12 +182,12 @@ public class PermisosVistaControlador {
         PermisoDTO permisoSeleccionado = tablaPermisos.getSelectionModel().getSelectedItem();
         if (permisoSeleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, selecciona un Permiso de la Tabla para cambiar su Estado."
             );
             return;
         }
-        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Estás Seguro de Cambiar el Estado del Permiso?")) {
             return;
         }
@@ -193,7 +196,7 @@ public class PermisosVistaControlador {
         ).thenRun(()->{
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Estado se ha Actualizado Correctamente."
                 );
                 PermisoDTO actualizado = new PermisoDTO(
@@ -210,7 +213,7 @@ public class PermisosVistaControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -222,7 +225,7 @@ public class PermisosVistaControlador {
 
     @FXML
     public void accionSalir(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
     }
 

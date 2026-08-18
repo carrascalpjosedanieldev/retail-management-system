@@ -9,9 +9,9 @@ import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +42,11 @@ public class HistorialVentasControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return btnCerrar.getScene().getWindow();
+    }
+
+
     @FXML
     public void initialize() {
         dpFechaInicio.setValue(LocalDate.now());
@@ -59,14 +64,14 @@ public class HistorialVentasControlador {
         LocalDate fechaFin = dpFechaFin.getValue();
         if (fechaInicio == null || fechaFin == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Campos incompletos", null,
+                    getVentana(), "Campos incompletos", null,
                     "Por favor, Seleccione ambas Fechas."
             );
             return;
         }
         if (fechaInicio.isAfter(fechaFin)) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Rango inválido", null,
+                    getVentana(), "Rango inválido", null,
                     "La Fecha de Inicio NO puede ser Mayor a la Fecha de Fin."
             );
             return;
@@ -74,11 +79,11 @@ public class HistorialVentasControlador {
         lblCantidad.setText("...");
         lblTotalGeneral.setText("Calculando...");
         btnGenerar.setDisable(true);
-        CompletableFuture.supplyAsync(()->{
-            return this.ensambladorDTOFactura.ensamblarReporteRecaudo(
+        CompletableFuture.supplyAsync(()->
+            this.ensambladorDTOFactura.ensamblarReporteRecaudo(
                     servicioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin)
-            );
-        }).thenAccept(reporteRecaudo ->
+            )
+        ).thenAccept(reporteRecaudo ->
             Platform.runLater(()->{
                 actualizarTarjetas(reporteRecaudo);
                 btnGenerar.setDisable(false);
@@ -87,7 +92,7 @@ public class HistorialVentasControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error en los Datos Ingresados", null,
+                        getVentana(), "Error en los Datos Ingresados", null,
                         "Hubo un Problema al Generar el Reporte\n" + "Error:  " + causa.getMessage()
                 );
                 btnGenerar.setDisable(false);
@@ -106,7 +111,7 @@ public class HistorialVentasControlador {
 
     @FXML
     public void cerrarModal(ActionEvent event) {
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) getVentana();
         stage.close();
     }
 

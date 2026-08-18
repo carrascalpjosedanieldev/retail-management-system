@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class EdicionTiendaControlador {
 
@@ -27,6 +28,11 @@ public class EdicionTiendaControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
+
     @FXML
     public void initialize() {
         txtNombre.setText(this.servicioConfiguraciones.obtenerNombreTienda());
@@ -39,21 +45,23 @@ public class EdicionTiendaControlador {
         String nuevoNombre = txtNombre.getText().trim();
         String nuevaDescripcion = txtDescripcion.getText().trim();
         if (nuevoNombre.isEmpty()) {
-            GestorAlertas.mostrarAlertaError("Dato Inválido", "Campo Requerido",
-                    "El Nombre de la Tienda NO puede estar vacío.");
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(), "Dato Inválido", "Campo Requerido",
+                    "El Nombre de la Tienda NO puede estar vacío."
+            );
             txtNombre.requestFocus();
             return;
         }
         try {
             this.servicioConfiguraciones.cambiarNombreYDescripcionTienda(nuevoNombre, nuevaDescripcion);
             GestorAlertas.mostrarAlertaInformacion(
-                    "Cambios Guardados", null,
+                    getVentana(), "Cambios Guardados", null,
                     "La Información de la Tienda se Actualizó con Éxito."
             );
             cerrarVentana(event);
         } catch (IllegalArgumentException e) {
             GestorAlertas.mostrarAlertaError(
-                    "Error en los Datos", null,
+                    getVentana(), "Error en los Datos", null,
                     "Error:  " + e.getMessage()
             );
         }
@@ -61,7 +69,7 @@ public class EdicionTiendaControlador {
 
     @FXML
     private void cerrarVentana(ActionEvent event) {
-        Stage stage = (Stage) btnCancelar.getScene().getWindow();
+        Stage stage = (Stage) getVentana();
         stage.close();
     }
 

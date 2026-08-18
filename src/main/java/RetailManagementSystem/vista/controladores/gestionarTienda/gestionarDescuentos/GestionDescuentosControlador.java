@@ -15,7 +15,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -23,6 +22,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -50,6 +50,11 @@ public class GestionDescuentosControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaDescuentos.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize() {
@@ -111,19 +116,19 @@ public class GestionDescuentosControlador {
     private void cargarDatosTabla() {
         CompletableFuture.supplyAsync(
                 this.orquestadorDescuentos::obtenerTodosLosDescuentos
-        ).thenAccept(listaDescuentos -> {
-            Platform.runLater(() -> {
-                listaObservableDescuentos.setAll(listaDescuentos);
-            });
-        }).exceptionally(ex -> {
+        ).thenAccept(listaDescuentos ->
+            Platform.runLater(() ->
+                    listaObservableDescuentos.setAll(listaDescuentos)
+            )
+        ).exceptionally(ex -> {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                Stage stageActual = (Stage) tablaDescuentos.getScene().getWindow();
+                Stage stageActual = (Stage) getVentana();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
@@ -136,7 +141,7 @@ public class GestionDescuentosControlador {
         DescuentoDTO seleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Descuento de la Tabla para Modificarlo."
             );
             return;
@@ -190,21 +195,21 @@ public class GestionDescuentosControlador {
         DescuentoDTO descuentoSeleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (descuentoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, selecciona un Descuento de la Tabla para cambiar su Estado."
             );
             return;
         }
-        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Estás Seguro de Cambiar el Estado del Descuento?")) {
             return;
         }
-        CompletableFuture.runAsync(()-> {
-            this.orquestadorDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento());
-        }).thenRun(()->{
+        CompletableFuture.runAsync(()->
+            this.orquestadorDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento())
+        ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Estado se ha Actualizado Correctamente."
                 );
                 DescuentoDTO actualizado = new DescuentoDTO(
@@ -215,12 +220,12 @@ public class GestionDescuentosControlador {
                 );
                 int indice = listaObservableDescuentos.indexOf(descuentoSeleccionado);
                 listaObservableDescuentos.set(indice, actualizado);
-            });
-        }).exceptionally(ex -> {
+            })
+        ).exceptionally(ex -> {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -232,7 +237,7 @@ public class GestionDescuentosControlador {
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 

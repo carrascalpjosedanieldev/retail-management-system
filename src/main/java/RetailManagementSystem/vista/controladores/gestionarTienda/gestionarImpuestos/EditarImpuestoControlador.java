@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
@@ -49,9 +50,11 @@ public class EditarImpuestoControlador {
         lblNombreImpuesto.setText(this.datosImpuesto.nombre());
         txtNombre.setText(this.datosImpuesto.nombre());
         txtPorcentaje.setText(this.datosImpuesto.porcentaje().toString());
-        Platform.runLater(() -> {
-            btnCancelar.requestFocus();
-        });
+        Platform.runLater(() -> btnCancelar.requestFocus());
+    }
+
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
     }
 
 
@@ -61,7 +64,7 @@ public class EditarImpuestoControlador {
         String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
         if (nombre.isEmpty() || nuevoPorcentajeTexto.isEmpty()){
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos",
+                    getVentana(), "Datos Incompletos",
                     "El Nombre y el Porcentaje son Obligatorios.",
                     "Por favor escribe un Nombre y un Porcentaje Validos."
             );
@@ -72,30 +75,30 @@ public class EditarImpuestoControlador {
             porcentaje = FormateadorNumeros.stringAPorcentaje(nuevoPorcentajeTexto);
         } catch (IllegalArgumentException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "Error al Ingresar el Porcentaje:\n" + e.getMessage()
             );
             return;
         }
-        CompletableFuture.supplyAsync(()->{
-            return this.orquestadorImpuestos.actualizarImpuesto(
+        CompletableFuture.supplyAsync(()->
+            this.orquestadorImpuestos.actualizarImpuesto(
                     this.datosImpuesto.idImpuesto(), nombre, porcentaje
-            );
-        }).thenAccept(impuestoActualizado -> {
+            )
+        ).thenAccept(impuestoActualizado ->
             Platform.runLater(()->{
                 int indice = listaObservable.indexOf(this.datosImpuesto);
                 listaObservable.set(indice, impuestoActualizado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Impuesto se ha Actualizado con Éxito."
                 );
                 cerrarPantalla();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -106,7 +109,7 @@ public class EditarImpuestoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) lblNombreImpuesto.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

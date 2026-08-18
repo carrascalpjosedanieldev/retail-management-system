@@ -13,10 +13,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -51,6 +51,11 @@ public class AnadirPermisoAlRolControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaPermisos.getScene().getWindow();
+    }
+
 
     public void cargarDatos(List<PermisoDTO> permisosDelRol){
         this.permisosDelRol = permisosDelRol;
@@ -149,14 +154,12 @@ public class AnadirPermisoAlRolControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Crítico",
+                        getVentana(), "Error Crítico",
                         "No se pudieron cargar los permisos",
                         "Hubo un fallo al conectar con la Base de Datos: " + ex.getMessage() + "\n" +
                                 "Comunicate con el Administrador y Revisa tu conexión."
                 );
-                if (btnCancelar != null && btnCancelar.getScene() != null) {
-                    ((Stage) btnCancelar.getScene().getWindow()).close();
-                }
+                ((Stage) getVentana()).close();
             });
             return null;
         });
@@ -186,24 +189,24 @@ public class AnadirPermisoAlRolControlador {
         PermisoDTO permisoSeleccionado = tablaPermisos.getSelectionModel().getSelectedItem();
         if (permisoSeleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, selecciona un Permiso de la Tabla para Agregarlo al Rol."
             );
             return;
         }
-        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Estás Seguro de Agregar este Permiso al Rol?")) {
             return;
         }
         this.permisosDelRol.add(permisoSeleccionado);
-        Stage stageActual = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 
 
     @FXML
     void accionCancelar(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

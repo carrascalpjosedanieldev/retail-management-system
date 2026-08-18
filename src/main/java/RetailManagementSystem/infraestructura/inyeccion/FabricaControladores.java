@@ -96,7 +96,6 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == TabGeneralProductosControlador.class){
             return new TabGeneralProductosControlador(
-                    ContenedorDependencias.getOrquestadorProductoInventario(),
                     ContenedorDependencias.getOrquestadorProductos()
             );
         }

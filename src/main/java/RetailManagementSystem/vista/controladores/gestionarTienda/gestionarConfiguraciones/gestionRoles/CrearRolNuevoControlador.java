@@ -17,9 +17,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +60,11 @@ public class CrearRolNuevoControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return tablaPermisosAgregados.getScene().getWindow();
+    }
+
+
     @FXML
     public void initialize(){
         configurarColumnasDisp();
@@ -97,7 +102,6 @@ public class CrearRolNuevoControlador {
     private void configurarEstructuraFiltros() {
         listaFiltrada = new FilteredList<>(listaMaestraPermisos, p -> true);
         tablaPermisosDisponibles.setItems(listaFiltrada);
-
         cbModulos.valueProperty().addListener((observable, oldValue, newValue) -> {
             listaFiltrada.setPredicate(permiso -> {
                 if (newValue == null || newValue.equals("Todos los Módulos")) {
@@ -123,12 +127,12 @@ public class CrearRolNuevoControlador {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Crítico",
+                        getVentana(), "Error Crítico",
                         "NO se pudieron Cargar los Permisos",
                         "Hubo un fallo al conectar con la base de datos: " + causa.getMessage() + "\n" +
                                 "Notificale el error al Administrador y Verifica tu Conexión."
                 );
-                Stage stageActual = (Stage) cbModulos.getScene().getWindow();
+                Stage stageActual = (Stage) getVentana();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
             });
             return null;
@@ -142,7 +146,6 @@ public class CrearRolNuevoControlador {
                 .distinct()
                 .sorted()
                 .toList();
-
         cbModulos.getItems().clear();
         cbModulos.getItems().add("Todos los Módulos");
         cbModulos.getItems().addAll(modulosUnicos);
@@ -181,7 +184,7 @@ public class CrearRolNuevoControlador {
         PermisoDTO permisoSeleccionado = tablaPermisosDisponibles.getSelectionModel().getSelectedItem();
         if (permisoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Permiso de la Tabla para Agregarlo."
             );
             return;
@@ -190,7 +193,7 @@ public class CrearRolNuevoControlador {
                 .anyMatch(p -> p.idPermiso() == permisoSeleccionado.idPermiso());
         if (yaExiste) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Permiso Duplicado",
+                    getVentana(), "Permiso Duplicado",
                     "El Permiso ya fue Agregado",
                     "El Permiso -" + permisoSeleccionado.nombre() + "- Ya se Encuentra en la Lista de este Rol."
             );
@@ -210,7 +213,7 @@ public class CrearRolNuevoControlador {
         PermisoDTO permisoSeleccionado = tablaPermisosAgregados.getSelectionModel().getSelectedItem();
         if (permisoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Permiso de la Tabla para Quitarlo."
             );
             return;
@@ -229,7 +232,7 @@ public class CrearRolNuevoControlador {
         String nombre = txtNombreRol.getText();
         if (nombre == null || nombre.trim().isEmpty()) {
             GestorAlertas.mostrarAlertaError(
-                    "Error de Validación",
+                    getVentana(), "Error de Validación",
                     "Nombre de Rol Inválido",
                     "El nombre del rol no puede estar vacío. Por favor, ingrese un nombre."
             );
@@ -240,27 +243,28 @@ public class CrearRolNuevoControlador {
         List<PermisoDTO> permisosSeleccionados = new ArrayList<>(listaPermisosAgregados);
         CompletableFuture.supplyAsync(()->
                 this.orquestadorRoles.registrarRolNuevo(nombreProcesado, estaActivo, permisosSeleccionados)
-        ).thenAccept(rolRegistrado->{
+        ).thenAccept(rolRegistrado->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Operación Exitosa",
+                        getVentana(), "Operación Exitosa",
                         "Rol Guardado",
                         "Rol creado correctamente."
                 );
                 Stage stageActual = (Stage) cbModulos.getScene().getWindow();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "Error al Guardar",
+                            getVentana(), "Error al Guardar",
                             "NO se pudo Registrar el Rol",
                             "Error:  " + causa.getMessage()
                     );
                 } else if (causa instanceof PersistenciaException){
-                    GestorAlertas.mostrarAlertaError("Error del Sistema",
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error del Sistema",
                             "Fallo de Comunicación",
                             "Hubo un problema guardando en la base de datos: " + causa.getMessage() + "\n" +
                                     "Notificale el error al Administrador y Verifica tu Conexión.");
@@ -273,7 +277,7 @@ public class CrearRolNuevoControlador {
 
     @FXML
     private void cancelar(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
     }
 

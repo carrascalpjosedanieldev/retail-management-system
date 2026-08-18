@@ -23,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -51,6 +52,10 @@ public class GestionPoliticasVencimientoControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaPoliticasVencimiento.getScene().getWindow();
+    }
 
     @FXML
     public void initialize() {
@@ -115,19 +120,19 @@ public class GestionPoliticasVencimientoControlador {
     private void cargarDatosTabla() {
         CompletableFuture.supplyAsync(
                 this.orquestadorPoliticaVencimiento::obtenerTodasLasPoliticasV
-        ).thenAccept(listaPoliticasV -> {
-            Platform.runLater(()->{
-                listaObservablePoliticasVencimiento.setAll(listaPoliticasV);
-            });
-        }).exceptionally(ex ->{
+        ).thenAccept(listaPoliticasV ->
+            Platform.runLater(()->
+                listaObservablePoliticasVencimiento.setAll(listaPoliticasV)
+            )
+        ).exceptionally(ex ->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                Stage stageActual = (Stage) tablaPoliticasVencimiento.getScene().getWindow();
+                Stage stageActual = (Stage) getVentana();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
@@ -140,7 +145,7 @@ public class GestionPoliticasVencimientoControlador {
         PoliticaVencimientoDTO seleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona una Política de Vencimiento de la Tabla para Modificarlo."
             );
             return;
@@ -194,22 +199,22 @@ public class GestionPoliticasVencimientoControlador {
         PoliticaVencimientoDTO politicaSeleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
         if (politicaSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona una Política de Vencimiento de la Tabla para Cambiar su Estado."
             );
             return;
         }
-        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Estás Seguro de Cambiar el Estado de la Política de Vencimiento?")) {
             return;
         }
 
-        CompletableFuture.runAsync(()->{
-            this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(politicaSeleccionado.idPoliticaVencimiento());
-        }).thenRun(()->{
+        CompletableFuture.runAsync(()->
+            this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(politicaSeleccionado.idPoliticaVencimiento())
+        ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Estado se ha Actualizado Correctamente."
                 );
                 PoliticaVencimientoDTO actualizado = new PoliticaVencimientoDTO(
@@ -221,12 +226,12 @@ public class GestionPoliticasVencimientoControlador {
                 );
                 int indice = listaObservablePoliticasVencimiento.indexOf(politicaSeleccionado);
                 listaObservablePoliticasVencimiento.set(indice, actualizado);
-            });
-        }).exceptionally(ex -> {
+            })
+        ).exceptionally(ex -> {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
@@ -238,7 +243,7 @@ public class GestionPoliticasVencimientoControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 

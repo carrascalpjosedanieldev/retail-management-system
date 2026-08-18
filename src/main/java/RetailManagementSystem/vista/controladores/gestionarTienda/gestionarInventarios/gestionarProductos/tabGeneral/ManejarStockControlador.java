@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
@@ -61,6 +62,10 @@ public class ManejarStockControlador {
         txtCantidad.clear();
         tglReponer.setSelected(true);
         lblStockActual.setText(String.valueOf(producto.stock()));
+    }
+
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
     }
 
 
@@ -135,7 +140,7 @@ public class ManejarStockControlador {
         String textoCantidad = txtCantidad.getText().trim();
         if (textoCantidad.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Error de Validación", null,
+                    getVentana(), "Error de Validación", null,
                     "La Cantidad NO puede estar vacía."
             );
             return;
@@ -144,7 +149,7 @@ public class ManejarStockControlador {
             int cantidad = Integer.parseInt(textoCantidad);
             if (cantidad <= 0) {
                 GestorAlertas.mostrarAlertaWarning(
-                        "Error de Validación", null,
+                        getVentana(), "Error de Validación", null,
                         "La Cantidad debe ser Mayor a Cero."
                 );
                 return;
@@ -168,7 +173,7 @@ public class ManejarStockControlador {
                             item -> item.codigoProducto().equals(actualizado.codigoProducto())
                     );
                     GestorAlertas.mostrarAlertaInformacion(
-                            "Éxito", null,
+                            getVentana(), "Éxito", null,
                             "El Stock se ha Actualizado Correctamente."
                     );
                     cerrarPantalla();
@@ -178,19 +183,19 @@ public class ManejarStockControlador {
                     Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                     if (causa instanceof IllegalArgumentException || causa instanceof IllegalStateException){
                         GestorAlertas.mostrarAlertaWarning(
-                                "NO se pudo Completar la Acción", null,
+                                getVentana(), "NO se pudo Completar la Acción", null,
                                 "Error: " + causa.getMessage()
                         );
                     } else if (
                             causa instanceof CapacidadInventarioExcedidaException || causa instanceof StockInsuficienteException
                     ) {
                         GestorAlertas.mostrarAlertaWarning(
-                                "Operación Rechazada", null,
+                                getVentana(), "Operación Rechazada", null,
                                 "Error: " + causa.getMessage()
                         );
                     } else {
                         GestorAlertas.mostrarAlertaError(
-                                "Error Critico", null,
+                                getVentana(), "Error Critico", null,
                                 "Verifica tu Conexión y Notificale este error al Administrador:\n" +
                                         causa.getMessage()
                         );
@@ -200,14 +205,14 @@ public class ManejarStockControlador {
             });
         } catch (NumberFormatException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "Por favor Ingresa un Número Entero Válido."
             );
         }
     }
 
     private void cerrarPantalla() {
-        Stage stageActual = (Stage) txtCantidad.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

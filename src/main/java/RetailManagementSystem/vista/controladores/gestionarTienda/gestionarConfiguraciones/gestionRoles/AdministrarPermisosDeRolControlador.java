@@ -24,6 +24,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,10 +56,15 @@ public class AdministrarPermisosDeRolControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return tablaPermisosRol.getScene().getWindow();
+    }
+
+
     public void cargarDatos(RolDTO datosRol){
         if (datosRol == null){
             GestorAlertas.mostrarAlertaError(
-                    "Error", null,
+                    getVentana(), "Error", null,
                     "NO puedes Administrar los Permisos de un Rol Vacío."
             );
             return;
@@ -133,12 +139,12 @@ public class AdministrarPermisosDeRolControlador {
         PermisoDTO seleccionado = tablaPermisosRol.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, selecciona un Permiso de la Tabla para Eliminarlo."
             );
             return;
         }
-        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Estás Seguro de Eliminar este Permiso?")) {
             return;
         }
@@ -149,7 +155,7 @@ public class AdministrarPermisosDeRolControlador {
 
     @FXML
     void guardarCambios(ActionEvent event) {
-        if (!GestorAlertas.mostrarConfirmacion("Confirmar", null,
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Quieres guardar los cambios en el Rol?")){
             return;
         }
@@ -159,7 +165,7 @@ public class AdministrarPermisosDeRolControlador {
         }).thenRun(()->{
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "Se han guardado los cambios con Éxito."
                 );
                 volverAlPanel();
@@ -168,7 +174,7 @@ public class AdministrarPermisosDeRolControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Verifica tu conexión y Notificale al Administrador este Error:\n"
                                 + causa.getMessage()
@@ -179,14 +185,14 @@ public class AdministrarPermisosDeRolControlador {
     }
 
     private void volverAlPanel(){
-        Stage stageActual = (Stage) lblNombreRol.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
     }
 
 
     @FXML
     void cancelar(ActionEvent event) {
-        if (!GestorAlertas.mostrarConfirmacion("Salir?", "Estas seguro de salir",
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Salir?", "Estas seguro de salir",
                 "Si sales ahora se descartaran los cambios realizados.")){
             return;
         }

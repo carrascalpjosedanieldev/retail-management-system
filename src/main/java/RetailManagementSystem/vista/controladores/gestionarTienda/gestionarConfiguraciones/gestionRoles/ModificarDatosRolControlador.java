@@ -13,6 +13,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -39,6 +40,11 @@ public class ModificarDatosRolControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
+
     @FXML
     private void initialize(){
         txtNombreRol.textProperty().addListener((obs, viejo, nuevo) -> {
@@ -50,7 +56,8 @@ public class ModificarDatosRolControlador {
 
     public void cargarDatos(RolDTO rol, ObservableList<RolDTO> listaObservable) {
         if (rol == null) {
-            GestorAlertas.mostrarAlertaError("Error",
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(), "Error",
                     "Datos Inválidos",
                     "NO se recibió un Rol para Editar.");
             cerrarVentanaSeguro();
@@ -65,10 +72,8 @@ public class ModificarDatosRolControlador {
     }
 
     private void cerrarVentanaSeguro(){
-        if (lblIdRol != null && lblIdRol.getScene() != null) {
-            Stage stageModal = (Stage) lblIdRol.getScene().getWindow();
-            stageModal.close();
-        }
+        Stage stageModal = (Stage) getVentana();
+        stageModal.close();
     }
 
 
@@ -78,7 +83,7 @@ public class ModificarDatosRolControlador {
         boolean activo = chkActivo.isSelected();
         if (nombreActualizado.isEmpty()){
             GestorAlertas.mostrarAlertaWarning(
-                    "Datos Incompletos",
+                    getVentana(), "Datos Incompletos",
                     "El Nombre es Obligatorio.",
                     "Por favor escribe un Nombre Valido."
             );
@@ -86,25 +91,25 @@ public class ModificarDatosRolControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorRoles.actualizarDatosRol(this.rol.idRol(), nombreActualizado, activo)
-        ).thenAccept(rolActualizado->{
+        ).thenAccept(rolActualizado->
             Platform.runLater(()->{
                 int indice = listaObservable.indexOf(this.rol);
                 listaObservable.set(indice, rolActualizado);
                 cerrarVentanaSeguro();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "Error",
+                            getVentana(), "Error",
                             "NO se Actualizo.",
                             "NO se pudo Completar la Accion.\n" +
                                     "Error:  " + causa.getMessage()
                     );
                 } else {
                     GestorAlertas.mostrarAlertaError(
-                            "Error Critico",
+                            getVentana(), "Error Critico",
                             "NO se pudo Completar la Acción.",
                             "Notificale al Administrador este Error:\n" + causa.getMessage()
                     );

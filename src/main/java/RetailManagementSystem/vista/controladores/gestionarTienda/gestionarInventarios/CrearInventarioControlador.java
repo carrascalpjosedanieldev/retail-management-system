@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -39,6 +40,10 @@ public class CrearInventarioControlador {
         Platform.runLater(()->btnCancelar.requestFocus());
     }
 
+    private Window getVentana(){
+        return btnCancelar.getScene().getWindow();
+    }
+
 
     @FXML
     void accionGuardar(ActionEvent event) {
@@ -46,7 +51,7 @@ public class CrearInventarioControlador {
         String capacidadTexto = txtCapacidad.getText().trim();
         if (nombre.isEmpty() || capacidadTexto.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Campos Vacíos", null,
+                    getVentana(), "Campos Vacíos", null,
                     "El Nombre y la Capacidad son Obligatorios."
             );
             return;
@@ -56,14 +61,14 @@ public class CrearInventarioControlador {
             capacidad = Integer.parseInt(capacidadTexto);
             if (capacidad <= 0) {
                 GestorAlertas.mostrarAlertaWarning(
-                        "Dato Inválido", null,
+                        getVentana(), "Dato Inválido", null,
                         "La Capacidad debe ser un Número Positivo."
                 );
                 return;
             }
         } catch (NumberFormatException e) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Número Inválido", null,
+                    getVentana(), "Número Inválido", null,
                     "La Capacidad debe ser un Número Entero (ej. 500), Sin Letras ni Decimales."
             );
             return;
@@ -74,7 +79,7 @@ public class CrearInventarioControlador {
             Platform.runLater(()->{
                 this.listaObservable.add(inventarioRegistrado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Inventario ha sido Creado Correctamente."
                 );
                 cerrarPantalla();
@@ -84,13 +89,13 @@ public class CrearInventarioControlador {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
-                            "Error en los Datos Ingresados",
+                            getVentana(), "Error en los Datos Ingresados",
                             "NO se pudo Completar la Acción.",
                             "Error:  " + causa.getMessage()
                     );
                 } else {
                     GestorAlertas.mostrarAlertaError(
-                            "Error Critico",
+                            getVentana(), "Error Critico",
                             "NO se pudo Completar la Acción.",
                             "Notificale al Administrador este Error:\n" + causa.getMessage()
                     );
@@ -103,7 +108,7 @@ public class CrearInventarioControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) btnCancelar.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         stageActual.close();
     }
 

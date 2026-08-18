@@ -3,7 +3,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.*;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -20,7 +19,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -28,6 +26,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -53,8 +52,6 @@ public class TabGeneralProductosControlador {
 
     private int idInventario;
 
-    private final OrquestadorInventarioProducto orquestadorInventarioProducto;
-
     private final OrquestadorProductos orquestadorProductos;
 
     private final ObservableList<ProductoResumenDTO> listaObservable = FXCollections.observableArrayList();
@@ -63,19 +60,20 @@ public class TabGeneralProductosControlador {
 
     //CONSTRUCTOR:
 
-    public TabGeneralProductosControlador(
-            OrquestadorInventarioProducto orquestadorInventarioProducto, OrquestadorProductos orquestadorProductos
-    ) {
-        this.orquestadorInventarioProducto = orquestadorInventarioProducto;
+    public TabGeneralProductosControlador(OrquestadorProductos orquestadorProductos) {
         this.orquestadorProductos = orquestadorProductos;
     }
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return tablaProductos.getScene().getWindow();
+    }
+
     public void recibirIdInventario(int idInventario) {
         if (idInventario <= 0){
             GestorAlertas.mostrarAlertaWarning(
-                    "ID del Inventario Invalido", null,
+                    getVentana(), "ID del Inventario Invalido", null,
                     "El ID recibido NO es Valido."
             );
             return;
@@ -101,7 +99,12 @@ public class TabGeneralProductosControlador {
             });
         }).exceptionally(ex->{
             Platform.runLater(()->{
-
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        getVentana(), "Error Critico", null,
+                        "Verifica tu conexion y Notificale este Error al Administrador\n" +
+                                causa.getMessage()
+                );
             });
             return null;
         });
@@ -252,10 +255,9 @@ public class TabGeneralProductosControlador {
             modalStage.setScene(new Scene(root));
             modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.setResizable(false);
-            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage ventanaPadre = (Stage) tablaProductos.getScene().getWindow();
             modalStage.initOwner(ventanaPadre);
             modalStage.showAndWait();
-            cargarDatosTabla();
         } catch (IOException e) {
             throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
         }
@@ -271,14 +273,14 @@ public class TabGeneralProductosControlador {
         ProductoResumenDTO seleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Producto para Cambiar su Estado."
             );
             return;
         }
         String textoNuevoEstado = seleccionado.activo() ? "NO DISPONIBLE" : "DISPONIBLE";
         if (!GestorAlertas.mostrarConfirmacion(
-                "Confirmar cambio de activo",
+                getVentana(), "Confirmar cambio de activo",
                 "Vas a modificar el producto: " + seleccionado.nombre(),
                 "¿Estás Seguro de que Deseas Marcar este Producto como " + textoNuevoEstado + "?"
         )){
@@ -298,7 +300,7 @@ public class TabGeneralProductosControlador {
                 int indice = listaObservable.indexOf(seleccionado);
                 listaObservable.set(indice, actualizado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Estado del Producto - " + seleccionado.nombre() + " - ha sido Actualizado con Éxito."
                 );
             })
@@ -306,7 +308,7 @@ public class TabGeneralProductosControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "NO se pudo Completar la Acción", null,
+                        getVentana(), "NO se pudo Completar la Acción", null,
                         "Error:  " + causa.getMessage()
                 );
             });
@@ -320,7 +322,7 @@ public class TabGeneralProductosControlador {
         ProductoResumenDTO productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Seleccione un Producto Primero."
             );
             return;
@@ -336,10 +338,9 @@ public class TabGeneralProductosControlador {
             modalStage.setScene(new Scene(root));
             modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.setResizable(false);
-            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage ventanaPadre = (Stage) tablaProductos.getScene().getWindow();
             modalStage.initOwner(ventanaPadre);
             modalStage.showAndWait();
-            cargarDatosTabla();
         } catch (IOException e) {
             throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }
@@ -351,7 +352,7 @@ public class TabGeneralProductosControlador {
         ProductoResumenDTO seleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Seleccione un Producto de la tabla para moverlo."
             );
             return;
@@ -367,10 +368,9 @@ public class TabGeneralProductosControlador {
             modalStage.setScene(new Scene(root));
             modalStage.initModality(Modality.APPLICATION_MODAL);
             modalStage.setResizable(false);
-            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Stage ventanaPadre = (Stage) tablaProductos.getScene().getWindow();
             modalStage.initOwner(ventanaPadre);
             modalStage.showAndWait();
-            cargarDatosTabla();
         } catch (IOException e) {
             throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
         }

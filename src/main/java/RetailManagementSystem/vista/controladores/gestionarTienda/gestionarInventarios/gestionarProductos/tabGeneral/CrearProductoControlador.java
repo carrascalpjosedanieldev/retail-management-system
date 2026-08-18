@@ -14,7 +14,6 @@ import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -23,10 +22,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -74,10 +73,15 @@ public class CrearProductoControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return boxRopa.getScene().getWindow();
+    }
+
+
     public void recibirIdInventario(int idInventario) {
         if (idInventario <=0 ){
             GestorAlertas.mostrarAlertaWarning(
-                    "ID del Inventario Invalido", null,
+                    getVentana(), "ID del Inventario Invalido", null,
                     "El ID recibido NO es Valido."
             );
             return;

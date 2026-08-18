@@ -22,12 +22,12 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -70,6 +70,11 @@ public class GestionServiciosControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaServicios.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize() {
@@ -165,11 +170,11 @@ public class GestionServiciosControlador {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "Error Critico",
+                        getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                Stage stageActual = (Stage) tablaServicios.getScene().getWindow();
+                Stage stageActual = (Stage) getVentana();
                 CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
@@ -182,7 +187,7 @@ public class GestionServiciosControlador {
         ServicioDTO seleccionado = tablaServicios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Servicio de la Tabla para Modificarlo."
             );
             return;
@@ -228,7 +233,10 @@ public class GestionServiciosControlador {
         }).exceptionally(ex -> {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
-                GestorAlertas.mostrarAlertaWarning("Configuración Requerida", null, causa.getMessage());
+                GestorAlertas.mostrarAlertaWarning(
+                        getVentana(), "Configuración Requerida", null,
+                        causa.getMessage()
+                );
             });
             return null;
         });
@@ -269,14 +277,14 @@ public class GestionServiciosControlador {
         ServicioDTO seleccionado = tablaServicios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Atención", null,
+                    getVentana(), "Atención", null,
                     "Por favor, Selecciona un Servicio de la Tabla para Cambiar su Estado."
             );
             return;
         }
         String accion = seleccionado.activo() ? "Desactivar" : "Activar";
         if (!GestorAlertas.mostrarConfirmacion(
-                "Confirmar Cambio de Estado", null,
+                getVentana(), "Confirmar Cambio de Estado", null,
                 "¿Estás Seguro de que Deseas " + accion + " el Servicio:\n" +
                         seleccionado.codigo() + " - " + seleccionado.nombre() + "?"
         )){
@@ -298,14 +306,14 @@ public class GestionServiciosControlador {
                 int indice = listaObservableServicios.indexOf(seleccionado);
                 listaObservableServicios.set(indice, actualizado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Éxito", null,
+                        getVentana(), "Éxito", null,
                         "El Estado del Servicio ha sido Actualizado Correctamente."
                 );
             })
         ).exceptionally(ex->{
             Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
             GestorAlertas.mostrarAlertaError(
-                    "NO se pudo Completar la Acción", null,
+                    getVentana(), "NO se pudo Completar la Acción", null,
                     "Error:  " + causa.getMessage()
             );
             return null;
@@ -315,7 +323,7 @@ public class GestionServiciosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
