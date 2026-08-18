@@ -24,7 +24,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stagePrincipal){
-        ConfiguradorExcepciones.inicializarManejadorGlobal();
+        ConfiguradorExcepciones.inicializarManejadorGlobal(stagePrincipal);
         ContenedorDependencias.inicializar();
         try {
             FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.MENU_PRINCIPAL_VIEW);

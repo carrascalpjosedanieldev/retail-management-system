@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpu
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -16,15 +15,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
@@ -146,43 +140,25 @@ public class GestionImpuestosControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.EDITAR_IMPUESTO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            EditarImpuestoControlador controlador = loader.getController();
-            controlador.cargarDatos(seleccionado, listaObservableImpuestos);
-            Stage stageEdicion = new Stage();
-            stageEdicion.setTitle("Editando Impuesto");
-            stageEdicion.initModality(Modality.APPLICATION_MODAL);
-            stageEdicion.setResizable(false);
-            Scene escenaEdicion = new Scene(root);
-            stageEdicion.setScene(escenaEdicion);
-            stageEdicion.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.EDITAR_IMPUESTO_VIEW,
+                "Editando Impuesto", getVentana(),
+                (EditarImpuestoControlador c)->{
+                    c.cargarDatos(seleccionado, listaObservableImpuestos);
+                }
+        );
     }
 
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        String rutaFxml = RutasVista.CREAR_IMPUESTO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            CrearImpuestoControlador controlador = loader.getController();
-            controlador.cargarDatos(listaObservableImpuestos);
-            Stage stageEdicion = new Stage();
-            stageEdicion.setTitle("Creando Impuesto");
-            stageEdicion.initModality(Modality.APPLICATION_MODAL);
-            stageEdicion.setResizable(false);
-            Scene escenaEdicion = new Scene(root);
-            stageEdicion.setScene(escenaEdicion);
-            stageEdicion.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.CREAR_IMPUESTO_VIEW,
+                "Creando Impuesto", getVentana(),
+                (CrearImpuestoControlador c)->{
+                    c.cargarDatos(listaObservableImpuestos);
+                }
+        );
     }
 
 

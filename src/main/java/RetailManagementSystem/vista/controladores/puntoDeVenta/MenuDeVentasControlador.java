@@ -5,7 +5,6 @@ import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
 import RetailManagementSystem.dominio.excepciones.*;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -18,18 +17,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -387,55 +380,55 @@ public class MenuDeVentasControlador {
 
     private void gestionarCambioCantidad(boolean esAumento) {
         ItemCarritoDTO itemSeleccionado = tablaCarrito.getSelectionModel().getSelectedItem();
-        if (itemSeleccionado == null) return;
-        String rutaFxml = RutasVista.DIALOGO_CANTIDAD_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            DialogoCantidadControlador controladorDialogo = loader.getController();
-            String titulo = esAumento ? "Aumentar" : "Reducir";
-            controladorDialogo.configurarDialogo(titulo, 1, itemSeleccionado.nombreArticulo());
-            Stage stageModal = new Stage();
-            stageModal.setScene(new Scene(root));
-            stageModal.initModality(Modality.APPLICATION_MODAL);
-            stageModal.showAndWait();
-            if (!controladorDialogo.isConfirmado()) {
-                restaurarFocoCodigo();
-                return;
-            }
-            int cantidad = controladorDialogo.getCantidadFinal();
-            CompletableFuture.supplyAsync(() -> {
-                if (esAumento) {
-                    return this.orquestadorVentas.aumentarCantidadItem(
-                            this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
-                } else {
-                    return this.orquestadorVentas.reducirCantidadItem(
-                            this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
-                }
-            }).thenAccept(carritoActualizado ->
-                Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()))
-            ).exceptionally(ex -> {
-                Platform.runLater(() -> {
-                    Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
-                    if (causa instanceof IllegalArgumentException){
-                        GestorAlertas.mostrarAlertaError(
-                                getVentana(), "Entrada Inválida", null,
-                                "Por favor, Ingrese un Número Entero Válido."
-                        );
-                    } else if (causa instanceof StockInsuficienteException) {
-                        GestorAlertas.mostrarAlertaError(
-                                getVentana(), "Stock Insuficiente", null,
-                                "Error:  " + causa.getMessage()
-                        );
-                    } else {
-                        manejarErrorCritico(causa);
-                    }
-                });
-                return null;
-            }).whenComplete((resultado, excepcion) -> restaurarFocoCodigo());
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
+        if (itemSeleccionado == null) {
+            return;
         }
+        String titulo = esAumento ? "Aumentar" : "Reducir";
+        DialogoCantidadControlador controladorDialogo = CargadorVistas.abrirModalInyectada(
+                RutasVista.DIALOGO_CANTIDAD_VIEW,
+                titulo, getVentana(),
+                (DialogoCantidadControlador c)->{
+                    c.configurarDialogo(titulo, 1, itemSeleccionado.nombreArticulo());
+                }
+        );
+        if (controladorDialogo == null){
+            restaurarFocoCodigo();
+            return;
+        }
+        if (!controladorDialogo.isConfirmado()) {
+            restaurarFocoCodigo();
+            return;
+        }
+        int cantidad = controladorDialogo.getCantidadFinal();
+        CompletableFuture.supplyAsync(() -> {
+            if (esAumento) {
+                return this.orquestadorVentas.aumentarCantidadItem(
+                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+            } else {
+                return this.orquestadorVentas.reducirCantidadItem(
+                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+            }
+        }).thenAccept(carritoActualizado ->
+                Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()))
+        ).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                if (causa instanceof IllegalArgumentException){
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Entrada Inválida", null,
+                            "Por favor, Ingrese un Número Entero Válido."
+                    );
+                } else if (causa instanceof StockInsuficienteException) {
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Stock Insuficiente", null,
+                            "Error:  " + causa.getMessage()
+                    );
+                } else {
+                    manejarErrorCritico(causa);
+                }
+            });
+            return null;
+        }).whenComplete((resultado, excepcion) -> restaurarFocoCodigo());
     }
 
 
@@ -494,22 +487,13 @@ public class MenuDeVentasControlador {
     }
 
     private void mostrarVentanaFactura(FacturaDTO factura) {
-        String rutaFxml = RutasVista.FACTURA_GENERADA_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            FacturaGeneradaControlador controlador = loader.getController();
-            controlador.cargarFactura(factura);
-            Stage stageFactura = new Stage();
-            stageFactura.setTitle("Factura Generada - " + factura.numeroFactura());
-            stageFactura.initModality(Modality.APPLICATION_MODAL);
-            stageFactura.setResizable(false);
-            Scene escenaFactura = new Scene(root);
-            stageFactura.setScene(escenaFactura);
-            stageFactura.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.FACTURA_GENERADA_VIEW,
+                "Factura Generada - " + factura.numeroFactura(), getVentana(),
+                (FacturaGeneradaControlador c)->{
+                    c.cargarFactura(factura);
+                }
+        );
     }
 
 

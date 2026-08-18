@@ -32,6 +32,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -81,6 +82,10 @@ public class TabRopaControlador {
         cargarDatosTabla();
     }
 
+    private Window getVentana(){
+        return tablaRopa.getScene().getWindow();
+    }
+
 
     private void cargarDatosTabla() {
         try {
@@ -92,7 +97,7 @@ public class TabRopaControlador {
             listaObservable.setAll(listaRopa);
         } catch (RuntimeException e) {
             GestorAlertas.mostrarAlertaError(
-                    "Error Crítico de Carga",
+                    getVentana(), "Error Crítico de Carga",
                     "No se pudieron cargar los datos del inventario.",
                     "Ocurrió un error al cargar los productos ropa. La ventana se cerrará por seguridad.\nDetalle: " + e.getMessage()
             );
@@ -274,7 +279,7 @@ public class TabRopaControlador {
         DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Selección requerida", null,
+                    getVentana(), "Selección requerida", null,
                     "Por favor, Seleccione una Prenda de Ropa en la Tabla para Editarla."
             );
             return;
@@ -309,14 +314,14 @@ public class TabRopaControlador {
         DatosTotalesProductoRopaDTO seleccionado = tablaRopa.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Selección Requerida", null,
+                    getVentana(), "Selección Requerida", null,
                     "Por favor, Seleccione una Prenda de Ropa en la Tabla para Cambiar su Estado."
             );
             return;
         }
 
         if (!GestorAlertas.mostrarConfirmacion(
-                "Confirmar Cambio de Estado", null,
+                getVentana(), "Confirmar Cambio de Estado", null,
                 "¿Está Seguro que desea Cambiar el Estado del Producto:\n"
                         + seleccionado.codigo() + " - " + seleccionado.nombre() + "?"
         )){
@@ -341,7 +346,7 @@ public class TabRopaControlador {
                 int indice = listaObservable.indexOf(seleccionado);
                 listaObservable.set(indice, actualizado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Estado Actualizado", null,
+                        getVentana(), "Estado Actualizado", null,
                         "El Estado del Producto se Actualizó Correctamente."
                 );
             })
@@ -349,7 +354,7 @@ public class TabRopaControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "NO se pudo Completar la Acción", null,
+                        getVentana(), "NO se pudo Completar la Acción", null,
                         "Error:  " + causa.getMessage()
                 );
             });

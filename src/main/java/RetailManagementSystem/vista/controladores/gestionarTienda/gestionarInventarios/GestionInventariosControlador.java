@@ -4,7 +4,6 @@ import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.GestionProductosControlador;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -18,16 +17,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionInventariosControlador {
@@ -159,43 +152,25 @@ public class GestionInventariosControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.EDITAR_INVENTARIO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            EditarInventarioControlador controlador = loader.getController();
-            controlador.cargarDatos(seleccionado, listaObservable);
-            Stage stageEdicion = new Stage();
-            stageEdicion.setTitle("Editando Inventario");
-            stageEdicion.initModality(Modality.APPLICATION_MODAL);
-            stageEdicion.setResizable(false);
-            Scene escenaEdicion = new Scene(root);
-            stageEdicion.setScene(escenaEdicion);
-            stageEdicion.showAndWait();
-        } catch (IOException e){
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.EDITAR_INVENTARIO_VIEW,
+                "Editando Inventario", getVentana(),
+                (EditarInventarioControlador c)->{
+                    c.cargarDatos(seleccionado, listaObservable);
+                }
+        );
     }
 
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        String rutaFxml = RutasVista.CREAR_INVENTARIO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            CrearInventarioControlador controlador = loader.getController();
-            controlador.cargarDatos(listaObservable);
-            Stage stageCrear = new Stage();
-            stageCrear.setTitle("Creando Inventario");
-            stageCrear.initModality(Modality.APPLICATION_MODAL);
-            stageCrear.setResizable(false);
-            Scene escenaCrear = new Scene(root);
-            stageCrear.setScene(escenaCrear);
-            stageCrear.showAndWait();
-        } catch (IOException e){
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.CREAR_INVENTARIO_VIEW,
+                "Creando Inventario", getVentana(),
+                (CrearInventarioControlador c)->{
+                    c.cargarDatos(listaObservable);
+                }
+        );
     }
 
 
@@ -209,17 +184,13 @@ public class GestionInventariosControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.GESTIONAR_PRODUCTOS_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            GestionProductosControlador controlador = loader.getController();
-            controlador.inicializarConInventario(seleccionado.idInventario());
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.getScene().setRoot(root);
-        } catch (IOException | IllegalStateException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.cambiarPantallaInyectada(
+                RutasVista.GESTIONAR_PRODUCTOS_VIEW,
+                getVentana(),
+                (GestionProductosControlador c)->{
+                    c.inicializarConInventario(seleccionado.idInventario());
+                }
+        );
     }
 
 

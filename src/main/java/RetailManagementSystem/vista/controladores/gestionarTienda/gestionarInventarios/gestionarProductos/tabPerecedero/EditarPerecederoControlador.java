@@ -23,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
@@ -90,6 +91,10 @@ public class EditarPerecederoControlador {
         alerta.showAndWait();
     }
 
+    private Window getVentana(){
+        return txtCodigo.getScene().getWindow();
+    }
+
 
     @FXML
     public void initialize() {
@@ -149,7 +154,7 @@ public class EditarPerecederoControlador {
             }
         } catch (RuntimeException e) {
             GestorAlertas.mostrarAlertaError(
-                    "Error de Conexión",
+                    getVentana(), "Error de Conexión",
                     "Faltan Datos Obligatorios para Operar.",
                     "No se pudieron cargar las listas desplegables desde la base de datos: " + e.getMessage()
             );

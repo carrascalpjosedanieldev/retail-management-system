@@ -198,22 +198,13 @@ public class GestionServiciosControlador {
     }
 
     private void abrirModalEdicion(ServicioDTO seleccionado, List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
-        String rutaFxml = RutasVista.EDITAR_SERVICIO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            EditarServicioControlador controlador = loader.getController();
-            controlador.cargarDatos(seleccionado, listaObservableServicios, listaImpuestos, listaDescuentos);
-            Stage stageEditar = new Stage();
-            stageEditar.setTitle("Editando Servicio");
-            stageEditar.initModality(Modality.APPLICATION_MODAL);
-            stageEditar.setResizable(false);
-            Scene escenaEditar = new Scene(root);
-            stageEditar.setScene(escenaEditar);
-            stageEditar.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.EDITAR_SERVICIO_VIEW,
+                "Editando Servicio", getVentana(),
+                (EditarServicioControlador c)->{
+                    c.cargarDatos(seleccionado, listaObservableServicios, listaImpuestos, listaDescuentos);
+                }
+        );
     }
 
     private void ejecutarConCatalogosListos(BiConsumer<List<ImpuestoDTO>, List<DescuentoDTO>> accionVisual) {
@@ -249,22 +240,13 @@ public class GestionServiciosControlador {
     }
 
     private void abrirModalCrear(List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
-        String rutaFxml = RutasVista.CREAR_SERVICIO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            CrearServicioControlador controlador = loader.getController();
-            controlador.cargarDatos(listaObservableServicios, listaImpuestos, listaDescuentos);
-            Stage stageCrear = new Stage();
-            stageCrear.setTitle("Creando Servicio");
-            stageCrear.initModality(Modality.APPLICATION_MODAL);
-            stageCrear.setResizable(false);
-            Scene escenaCrear = new Scene(root);
-            stageCrear.setScene(escenaCrear);
-            stageCrear.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.CREAR_SERVICIO_VIEW,
+                "Creando Servicio", getVentana(),
+                (CrearServicioControlador c)->{
+                    c.cargarDatos(listaObservableServicios, listaImpuestos, listaDescuentos);
+                }
+        );
     }
 
 

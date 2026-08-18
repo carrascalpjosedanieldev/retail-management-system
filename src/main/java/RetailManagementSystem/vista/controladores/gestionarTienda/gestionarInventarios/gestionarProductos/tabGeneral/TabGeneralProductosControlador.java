@@ -3,7 +3,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.*;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -17,19 +16,13 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
@@ -102,7 +95,7 @@ public class TabGeneralProductosControlador {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico", null,
-                        "Verifica tu conexion y Notificale este Error al Administrador\n" +
+                        "Verifica tu conexión y Notificale este Error al Administrador\n" +
                                 causa.getMessage()
                 );
             });
@@ -244,23 +237,10 @@ public class TabGeneralProductosControlador {
 
     @FXML
     void abrirSelectorNuevoProducto(ActionEvent event) {
-        String rutaFxml = RutasVista.CREAR_PRODUCTO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            CrearProductoControlador controlador = loader.getController();
-            controlador.recibirIdInventario(this.idInventario);
-            Stage modalStage = new Stage();
-            modalStage.setTitle("Crear Nuevo Producto");
-            modalStage.setScene(new Scene(root));
-            modalStage.initModality(Modality.APPLICATION_MODAL);
-            modalStage.setResizable(false);
-            Stage ventanaPadre = (Stage) tablaProductos.getScene().getWindow();
-            modalStage.initOwner(ventanaPadre);
-            modalStage.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.CREAR_PRODUCTO_VIEW,
+                "Crear Nuevo Producto", getVentana()
+        );
     }
 
 
@@ -327,23 +307,13 @@ public class TabGeneralProductosControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.MANEJAR_STOCK_PRODUCTO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            ManejarStockControlador controlador = loader.getController();
-            controlador.cargarDatos(productoSeleccionado, this.idInventario, listaObservable);
-            Stage modalStage = new Stage();
-            modalStage.setTitle("Manejar Stock Producto");
-            modalStage.setScene(new Scene(root));
-            modalStage.initModality(Modality.APPLICATION_MODAL);
-            modalStage.setResizable(false);
-            Stage ventanaPadre = (Stage) tablaProductos.getScene().getWindow();
-            modalStage.initOwner(ventanaPadre);
-            modalStage.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.MANEJAR_STOCK_PRODUCTO_VIEW,
+                "Manejar Stock Producto", getVentana(),
+                (ManejarStockControlador c)->{
+                    c.cargarDatos(productoSeleccionado, this.idInventario, listaObservable);
+                }
+        );
     }
 
 
@@ -357,23 +327,13 @@ public class TabGeneralProductosControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.MOVER_PRODUCTO_INVENTARIO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            MoverProductoAOtroInventarioControlador controlador = loader.getController();
-            controlador.cargarDatos(this.idInventario, seleccionado, listaObservable);
-            Stage modalStage = new Stage();
-            modalStage.setTitle("Mover Producto");
-            modalStage.setScene(new Scene(root));
-            modalStage.initModality(Modality.APPLICATION_MODAL);
-            modalStage.setResizable(false);
-            Stage ventanaPadre = (Stage) tablaProductos.getScene().getWindow();
-            modalStage.initOwner(ventanaPadre);
-            modalStage.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.MOVER_PRODUCTO_INVENTARIO_VIEW,
+                "Mover Producto", getVentana(),
+                (MoverProductoAOtroInventarioControlador c)->{
+                    c.cargarDatos(this.idInventario, seleccionado, listaObservable);
+                }
+        );
     }
 
 

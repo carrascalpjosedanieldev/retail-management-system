@@ -31,6 +31,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -80,6 +81,10 @@ public class TabPerecederosControlador {
     public void recibirIdInventario(int idInventario) {
         this.idInventario = idInventario;
         cargarDatosTabla();
+    }
+
+    private Window getVentana(){
+        return tablaPerecederos.getScene().getWindow();
     }
 
 
@@ -279,7 +284,7 @@ public class TabPerecederosControlador {
             }
         } catch (RuntimeException e) {
             GestorAlertas.mostrarAlertaError(
-                    "Error Crítico de Carga",
+                    getVentana(), "Error Crítico de Carga",
                     "No se pudieron cargar los datos del inventario.",
                     "Ocurrió un error al cargar los productos perecederos. La ventana se cerrará por seguridad.\nDetalle: " + e.getMessage()
             );
@@ -296,7 +301,7 @@ public class TabPerecederosControlador {
         DatosTotalesProductoPerecederoDTO productoSeleccionado = tablaPerecederos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Selección Requerida", null,
+                    getVentana(), "Selección Requerida", null,
                     "Por favor, Seleccione un Producto Perecedero en la Tabla para Editarlo."
             );
             return;
@@ -331,13 +336,13 @@ public class TabPerecederosControlador {
         DatosTotalesProductoPerecederoDTO seleccionado = this.tablaPerecederos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    "Selección Requerida", null,
+                    getVentana(), "Selección Requerida", null,
                     "Por favor, Seleccione un Producto Perecedero de la Tabla para Cambiar su Estado."
             );
             return;
         }
         if (!GestorAlertas.mostrarConfirmacion(
-                "Confirmar Cambio de Estado", null,
+                getVentana(), "Confirmar Cambio de Estado", null,
                 "¿Está Seguro que desea Cambiar el Estado del Producto:\n"
                         + seleccionado.codigo() + " - " + seleccionado.nombre() + "?")
         ){
@@ -364,7 +369,7 @@ public class TabPerecederosControlador {
                 int indice = listaMaestraPerecederos.indexOf(seleccionado);
                 listaMaestraPerecederos.set(indice, actualizado);
                 GestorAlertas.mostrarAlertaInformacion(
-                        "Estado Actualizado", null,
+                        getVentana(), "Estado Actualizado", null,
                         "El Estado del Producto se Actualizó Correctamente."
                 );
             })
@@ -372,7 +377,7 @@ public class TabPerecederosControlador {
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
-                        "NO se pudo Completar la Acción", null,
+                        getVentana(), "NO se pudo Completar la Acción", null,
                         "Error:  " + causa.getMessage()
                 );
             });

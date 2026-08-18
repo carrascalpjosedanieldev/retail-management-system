@@ -150,43 +150,25 @@ public class GestionPoliticasVencimientoControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.EDITAR_POLITICA_V_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            EditarPoliticaVencimientoControlador controlador = loader.getController();
-            controlador.cargarDatos(seleccionado, listaObservablePoliticasVencimiento);
-            Stage stageEdicion = new Stage();
-            stageEdicion.setTitle("Editando Política de Vencimiento");
-            stageEdicion.initModality(Modality.APPLICATION_MODAL);
-            stageEdicion.setResizable(false);
-            Scene escenaEdicion = new Scene(root);
-            stageEdicion.setScene(escenaEdicion);
-            stageEdicion.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.EDITAR_POLITICA_V_VIEW,
+                "Editando Política de Vencimiento", getVentana(),
+                (EditarPoliticaVencimientoControlador c)->{
+                    c.cargarDatos(seleccionado, listaObservablePoliticasVencimiento);
+                }
+        );
     }
 
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        String rutaFxml = RutasVista.CREAR_POLITiCA_V_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            CrearPoliticaVencimiento controlador = loader.getController();
-            controlador.cargarDatos(listaObservablePoliticasVencimiento);
-            Stage stageEdicion = new Stage();
-            stageEdicion.setTitle("Creando Política de Vencimiento");
-            stageEdicion.initModality(Modality.APPLICATION_MODAL);
-            stageEdicion.setResizable(false);
-            Scene escenaEdicion = new Scene(root);
-            stageEdicion.setScene(escenaEdicion);
-            stageEdicion.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.CREAR_POLITiCA_V_VIEW,
+                "Creando Política de Vencimiento", getVentana(),
+                (CrearPoliticaVencimiento c)->{
+                    c.cargarDatos(listaObservablePoliticasVencimiento);
+                }
+        );
     }
 
 
@@ -208,7 +190,6 @@ public class GestionPoliticasVencimientoControlador {
                 "¿Estás Seguro de Cambiar el Estado de la Política de Vencimiento?")) {
             return;
         }
-
         CompletableFuture.runAsync(()->
             this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(politicaSeleccionado.idPoliticaVencimiento())
         ).thenRun(()->

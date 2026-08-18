@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDesc
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -14,17 +13,12 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
@@ -146,43 +140,25 @@ public class GestionDescuentosControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.EDITAR_DESCUENTO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            EditarDescuentoControlador controlador = loader.getController();
-            controlador.cargarDatos(seleccionado, listaObservableDescuentos);
-            Stage stageEdicion = new Stage();
-            stageEdicion.setTitle("Editando Descuento");
-            stageEdicion.initModality(Modality.APPLICATION_MODAL);
-            stageEdicion.setResizable(false);
-            Scene escenaEdicion = new Scene(root);
-            stageEdicion.setScene(escenaEdicion);
-            stageEdicion.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.EDITAR_DESCUENTO_VIEW,
+                "Editando Descuento", getVentana(),
+                (EditarDescuentoControlador c)->{
+                    c.cargarDatos(seleccionado, listaObservableDescuentos);
+                }
+        );
     }
 
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        String rutaFxml = RutasVista.CREAR_DESCUENTO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            CrearDescuentoControlador controlador = loader.getController();
-            controlador.cargarDatos(listaObservableDescuentos);
-            Stage stageEdicion = new Stage();
-            stageEdicion.setTitle("Creando Descuento");
-            stageEdicion.initModality(Modality.APPLICATION_MODAL);
-            stageEdicion.setResizable(false);
-            Scene escenaEdicion = new Scene(root);
-            stageEdicion.setScene(escenaEdicion);
-            stageEdicion.showAndWait();
-        } catch (IOException e) {
-            throw new CargarVistaException(rutaFxml, "NO se pudo Cargar el Archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.CREAR_DESCUENTO_VIEW,
+                "Creando Descuento", getVentana(),
+                (CrearDescuentoControlador c)->{
+                    c.cargarDatos(listaObservableDescuentos);
+                }
+        );
     }
 
 

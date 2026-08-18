@@ -14,12 +14,8 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -143,14 +139,10 @@ public class PanelDeControlControlador {
 
     @FXML
     public void abrirHistorialVentas(ActionEvent event) {
-        Parent root = CargadorVistas.cargarVista(RutasVista.HISTORIAL_VENTAS_VIEW);
-        Stage modalStage = new Stage();
-        modalStage.setTitle("Generar Reporte de Recaudo");
-        modalStage.initModality(Modality.APPLICATION_MODAL);
-        modalStage.initStyle(StageStyle.DECORATED);
-        Scene scene = new Scene(root);
-        modalStage.setScene(scene);
-        modalStage.showAndWait();
+        CargadorVistas.abrirModalInyectada(
+                RutasVista.HISTORIAL_VENTAS_VIEW,
+                "Generar Reporte de Recaudo", getVentana()
+        );
     }
 
 
