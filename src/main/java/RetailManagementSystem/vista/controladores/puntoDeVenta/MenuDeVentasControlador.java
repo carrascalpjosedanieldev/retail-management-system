@@ -384,7 +384,7 @@ public class MenuDeVentasControlador {
             return;
         }
         String titulo = esAumento ? "Aumentar" : "Reducir";
-        DialogoCantidadControlador controladorDialogo = CargadorVistas.abrirModalInyectada(
+        DialogoCantidadControlador controladorDialogo = CargadorVistas.abrirModalConInyeccion(
                 RutasVista.DIALOGO_CANTIDAD_VIEW,
                 titulo, getVentana(),
                 (DialogoCantidadControlador c)->{
@@ -487,7 +487,7 @@ public class MenuDeVentasControlador {
     }
 
     private void mostrarVentanaFactura(FacturaDTO factura) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.FACTURA_GENERADA_VIEW,
                 "Factura Generada - " + factura.numeroFactura(), getVentana(),
                 (FacturaGeneradaControlador c)->{

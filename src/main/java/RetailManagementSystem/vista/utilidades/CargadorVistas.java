@@ -43,7 +43,7 @@ public class CargadorVistas {
         return loader;
     }
 
-    public static <T> T abrirModalInyectada(
+    public static <T> T abrirModalConInyeccion(
             String rutaFxml, String tituloModal, Window ventanaPadre, Consumer<T> inicializadorControlador
     ) {
         try {
@@ -72,8 +72,8 @@ public class CargadorVistas {
         }
     }
 
-    public static <T> T abrirModalInyectada(String rutaFxml, String tituloModal, Window ventanaPadre) {
-        return abrirModalInyectada(rutaFxml, tituloModal, ventanaPadre, null);
+    public static <T> T abrirModalSinInyeccion(String rutaFxml, String tituloModal, Window ventanaPadre) {
+        return abrirModalConInyeccion(rutaFxml, tituloModal, ventanaPadre, null);
     }
 
     public static <T> void cambiarPantallaInyectada(String rutaFxml, Window ventana, Consumer<T> inicializadorControlador){

@@ -139,7 +139,7 @@ public class PanelDeControlControlador {
 
     @FXML
     public void abrirHistorialVentas(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalSinInyeccion(
                 RutasVista.HISTORIAL_VENTAS_VIEW,
                 "Generar Reporte de Recaudo", getVentana()
         );

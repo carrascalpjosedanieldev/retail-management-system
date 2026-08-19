@@ -48,22 +48,17 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == EditarPerecederoControlador.class){
             return new EditarPerecederoControlador(
-                    ContenedorDependencias.getServicioImpuestos(),
-                    ContenedorDependencias.getServicioDescuentos(),
-                    ContenedorDependencias.getServicioPoliticaVencimiento(),
-                    ContenedorDependencias.getServicioProductos(),
-                    ContenedorDependencias.getEnsambladorDTOImpuesto(),
-                    ContenedorDependencias.getEnsambladorDTODescuento(),
-                    ContenedorDependencias.getEnsambladorDTOPoliticaVencimiento()
+                    ContenedorDependencias.getOrquestadorImpuestos(),
+                    ContenedorDependencias.getOrquestadorDescuentos(),
+                    ContenedorDependencias.getOrquestadorPoliticaVencimiento(),
+                    ContenedorDependencias.getOrquestadorProductos()
             );
         }
         if (claseControlador == EditarRopaControlador.class){
             return new EditarRopaControlador(
-                    ContenedorDependencias.getServicioImpuestos(),
-                    ContenedorDependencias.getServicioDescuentos(),
-                    ContenedorDependencias.getServicioProductos(),
-                    ContenedorDependencias.getEnsambladorDTOImpuesto(),
-                    ContenedorDependencias.getEnsambladorDTODescuento()
+                    ContenedorDependencias.getOrquestadorImpuestos(),
+                    ContenedorDependencias.getOrquestadorDescuentos(),
+                    ContenedorDependencias.getOrquestadorProductos()
             );
         }
         if (claseControlador == GestionDescuentosControlador.class) {
@@ -101,14 +96,12 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == TabPerecederosControlador.class){
             return new TabPerecederosControlador(
-                    ContenedorDependencias.getServicioProductos(),
-                    ContenedorDependencias.getEnsambladorDTOProducto()
+                    ContenedorDependencias.getOrquestadorProductos()
             );
         }
         if (claseControlador == TabRopaControlador.class){
             return new TabRopaControlador(
-                    ContenedorDependencias.getServicioProductos(),
-                    ContenedorDependencias.getEnsambladorDTOProducto()
+                    ContenedorDependencias.getOrquestadorProductos()
             );
         }
         if (claseControlador == PanelDeControlControlador.class){

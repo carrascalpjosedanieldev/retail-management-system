@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
-import RetailManagementSystem.dominio.excepciones.*;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -20,6 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -95,9 +95,12 @@ public class TabGeneralProductosControlador {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico", null,
-                        "Verifica tu conexión y Notificale este Error al Administrador\n" +
+                        "Ocurrió un Error al cargar los Productos Perecederos. La Ventana se Cerrará por Seguridad.\n" +
+                                "Verifica tu conexión y Notificale este Error al Administrador\n" +
                                 causa.getMessage()
                 );
+                Stage stageActual = (Stage) tablaProductos.getScene().getWindow();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
             });
             return null;
         });
@@ -237,7 +240,7 @@ public class TabGeneralProductosControlador {
 
     @FXML
     void abrirSelectorNuevoProducto(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalSinInyeccion(
                 RutasVista.CREAR_PRODUCTO_VIEW,
                 "Crear Nuevo Producto", getVentana()
         );
@@ -307,7 +310,7 @@ public class TabGeneralProductosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.MANEJAR_STOCK_PRODUCTO_VIEW,
                 "Manejar Stock Producto", getVentana(),
                 (ManejarStockControlador c)->{
@@ -327,7 +330,7 @@ public class TabGeneralProductosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.MOVER_PRODUCTO_INVENTARIO_VIEW,
                 "Mover Producto", getVentana(),
                 (MoverProductoAOtroInventarioControlador c)->{

@@ -4,9 +4,7 @@ import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerec
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -21,23 +19,16 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TabPerecederosControlador {
@@ -61,9 +52,7 @@ public class TabPerecederosControlador {
 
     private int idInventario;
 
-    private final ServicioProductos servicioProductos;
-
-    private final EnsambladorDTOProducto ensambladorDTOProducto;
+    private final OrquestadorProductos orquestadorProductos;
 
     private final ObservableList<DatosTotalesProductoPerecederoDTO> listaMaestraPerecederos = FXCollections.observableArrayList();
 
@@ -71,20 +60,47 @@ public class TabPerecederosControlador {
 
     //CONSTRUCTOR:
 
-    public TabPerecederosControlador(ServicioProductos servicioProductos, EnsambladorDTOProducto ensambladorDTOProducto) {
-        this.servicioProductos = servicioProductos;
-        this.ensambladorDTOProducto = ensambladorDTOProducto;
+    public TabPerecederosControlador(OrquestadorProductos orquestadorProductos) {
+        this.orquestadorProductos = orquestadorProductos;
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaPerecederos.getScene().getWindow();
+    }
+
 
     public void recibirIdInventario(int idInventario) {
         this.idInventario = idInventario;
         cargarDatosTabla();
     }
 
-    private Window getVentana(){
-        return tablaPerecederos.getScene().getWindow();
+    private void cargarDatosTabla() {
+        CompletableFuture.supplyAsync(()->
+                this.orquestadorProductos.obtenerProductosPerecederosDeInventario(this.idInventario)
+        ).thenAccept(listaPerecederos->
+            Platform.runLater(()->{
+                listaMaestraPerecederos.clear();
+                if (listaPerecederos != null && !listaPerecederos.isEmpty()) {
+                    listaMaestraPerecederos.addAll(listaPerecederos);
+                }
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        getVentana(), "Error Crítico de Carga",
+                        "No se pudieron cargar los datos del inventario.",
+                        "Ocurrió un Error al cargar los Productos Perecederos. La Ventana se Cerrará por Seguridad.\n" +
+                                "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
+                                causa.getMessage()
+                );
+                Stage stageActual = (Stage) getVentana();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+            });
+            return null;
+        });
     }
 
 
@@ -95,11 +111,14 @@ public class TabPerecederosControlador {
     }
 
     private void configurarColumnas() {
-        colCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().codigo()));
+        colCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(
+                cellData.getValue().codigo())
+        );
         colCodigo.setCellFactory(columna -> new TableCell<>() {
             private final Tooltip tooltipFlotante = new Tooltip();
             {
-                tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
+                tooltipFlotante.getStyleClass().add("tooltip-codigo");
+                getStyleClass().add("codigo-copiable");
                 tooltipFlotante.setShowDelay(Duration.millis(100));
                 setAlignment(Pos.CENTER);
             }
@@ -116,7 +135,6 @@ public class TabPerecederosControlador {
                     setText(codigoCorto);
                     tooltipFlotante.setText(codigo + "\n(Clic para copiar)");
                     setTooltip(tooltipFlotante);
-                    setStyle("-fx-cursor: hand; -fx-text-fill: #3b82f6;");
                     setOnMouseClicked(evt -> {
                         ClipboardContent contenido = new ClipboardContent();
                         contenido.putString(codigo);
@@ -129,8 +147,8 @@ public class TabPerecederosControlador {
                 cellData.getValue().nombre())
         );
         colEstaVencido.setCellValueFactory(cellData -> {
-            boolean esActivo = cellData.getValue().estaVencido();
-            String estado = esActivo ? "Activo" : "Inactivo";
+            boolean estaVencido = cellData.getValue().estaVencido();
+            String estado = estaVencido ? "Vencido" : "Vigente";
             return new SimpleStringProperty(estado);
         });
         colEstaVencido.setCellFactory(col -> new TableCell<>() {
@@ -140,15 +158,18 @@ public class TabPerecederosControlador {
             @Override
             protected void updateItem(String estadoVencido, boolean empty) {
                 super.updateItem(estadoVencido, empty);
+                getStyleClass().removeAll("estado-vencido", "estado-al-dia");
                 if (empty || estadoVencido == null) {
                     setText(null);
                     setStyle("");
                 } else {
                     setText(estadoVencido);
-                    boolean esVencido = estadoVencido.equalsIgnoreCase("Sí") || estadoVencido.equalsIgnoreCase("Vencido");
-                    setStyle(esVencido
-                            ? "-fx-text-fill: #ef4444; -fx-font-weight: bold;"
-                            : "-fx-text-fill: #10b981; -fx-font-weight: bold;");
+                    boolean esVencido = estadoVencido.equalsIgnoreCase("Vencido");
+                    if (esVencido) {
+                        getStyleClass().add("estado-vencido");
+                    } else {
+                        getStyleClass().add("estado-al-dia");
+                    }
                 }
             }
         });
@@ -162,24 +183,24 @@ public class TabPerecederosControlador {
             @Override
             protected void updateItem(Integer stock, boolean empty) {
                 super.updateItem(stock, empty);
+                getStyleClass().removeAll("stock-sin-existencias", "stock-bajo", "stock-normal");
                 if (empty || stock == null) {
                     setText(null);
-                    setStyle("");
+                    return;
+                }
+                setText(String.valueOf(stock));
+                if (stock <= 0) {
+                    getStyleClass().add("stock-sin-existencias");
+                } else if (stock <= 5) {
+                    getStyleClass().add("stock-bajo");
                 } else {
-                    setText(String.valueOf(stock));
-                    if (stock <= 0) {
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    } else if (stock <= 5) {
-                        setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    }
+                    getStyleClass().add("stock-normal");
                 }
             }
         });
         colDisponible.setCellValueFactory(cellData -> {
-            boolean estaDisponible = cellData.getValue().estaVencido();
-            String disponible = estaDisponible ? "Disponible" : "NO Disponible";
+            boolean esActivo = cellData.getValue().activo();
+            String disponible = esActivo ? "Disponible" : "NO Disponible";
             return new SimpleStringProperty(disponible);
         });
         colDisponible.setCellFactory(columna -> new TableCell<>() {
@@ -189,14 +210,16 @@ public class TabPerecederosControlador {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-disponible", "estado-no-disponible");
                 if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
+                    return;
+                }
+                setText(estado);
+                if (estado.equalsIgnoreCase("Disponible")) {
+                    getStyleClass().add("estado-disponible");
                 } else {
-                    setText(estado);
-                    setStyle(estado.equalsIgnoreCase("Activo") || estado.equalsIgnoreCase("Disponible")
-                            ? "-fx-text-fill: #10b981; -fx-font-weight: bold;"
-                            : "-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                    getStyleClass().add("estado-no-disponible");
                 }
             }
         });
@@ -273,28 +296,6 @@ public class TabPerecederosControlador {
         tablaPerecederos.setItems(listaOrdenada);
     }
 
-    private void cargarDatosTabla() {
-        try {
-            List<DatosTotalesProductoPerecederoDTO> datosBD = this.ensambladorDTOProducto.ensamblarDetalleProductosPerecedero(
-                    this.servicioProductos.obtenerProductosPerecederoDeInventario(this.idInventario)
-            );
-            listaMaestraPerecederos.clear();
-            if (datosBD != null && !datosBD.isEmpty()) {
-                listaMaestraPerecederos.addAll(datosBD);
-            }
-        } catch (RuntimeException e) {
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(), "Error Crítico de Carga",
-                    "No se pudieron cargar los datos del inventario.",
-                    "Ocurrió un error al cargar los productos perecederos. La ventana se cerrará por seguridad.\nDetalle: " + e.getMessage()
-            );
-            if (tablaPerecederos != null && tablaPerecederos.getScene() != null) {
-                Stage stageActual = (Stage) tablaPerecederos.getScene().getWindow();
-                stageActual.close();
-            }
-        }
-    }
-
 
     @FXML
     void abrirEditorPerecedero(ActionEvent event) {
@@ -306,24 +307,13 @@ public class TabPerecederosControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.EDITAR_PERECEDERO_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            EditarPerecederoControlador controladorEditor = loader.getController();
-            controladorEditor.cargarDatosProducto(productoSeleccionado, this.idInventario);
-            Stage stageEditor = new Stage();
-            stageEditor.setScene(new Scene(root));
-            stageEditor.setTitle("Editar Producto Perecedero");
-            stageEditor.initModality(Modality.WINDOW_MODAL);
-            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stageEditor.initOwner(ventanaPadre);
-            stageEditor.setResizable(false);
-            stageEditor.showAndWait();
-            cargarDatosTabla();
-        } catch (IOException | IllegalStateException e) {
-            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalConInyeccion(
+                RutasVista.EDITAR_PERECEDERO_VIEW,
+                "Editar Producto Perecedero", getVentana(),
+                (EditarPerecederoControlador c)->{
+                    c.cargarDatos(productoSeleccionado, this.idInventario, listaMaestraPerecederos);
+                }
+        );
     }
 
 
@@ -349,7 +339,7 @@ public class TabPerecederosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
+                this.orquestadorProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
         ).thenRun(()->
             Platform.runLater(()->{
                 DatosTotalesProductoPerecederoDTO actualizado = new DatosTotalesProductoPerecederoDTO(

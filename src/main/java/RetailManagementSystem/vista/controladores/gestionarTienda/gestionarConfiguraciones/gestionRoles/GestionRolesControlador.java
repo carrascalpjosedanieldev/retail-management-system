@@ -131,7 +131,7 @@ public class GestionRolesControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.MODIFICAR_DATOS_ROL_VIEW,
                 "Editando Rol -" + rolSeleccionado.nombre() + "-", getVentana(),
                 (ModificarDatosRolControlador c)->{

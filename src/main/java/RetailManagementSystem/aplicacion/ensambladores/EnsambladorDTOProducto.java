@@ -57,11 +57,17 @@ public class EnsambladorDTOProducto {
                     perecedero.getCodigo(), perecedero.getNombre(), perecedero.getValorCompra(),
                     perecedero.getPorcentajeGanancia(), perecedero.getValorVenta(fecha), perecedero.getStock(),
                     datosImpuesto, datosDescuento, perecedero.getFechaVencimiento(), datosPoliticaVencimiento,
-                    perecedero.isActivo(), perecedero.estaVencido(fecha)
+                    perecedero.estaVencido(fecha), perecedero.isActivo()
             );
         } else {
             throw new IllegalStateException("Tipo de Producto no soportado por el Sistema");
         }
+    }
+
+    public DatosTotalesProductoRopaDTO ensamblarDatosProductoRopa(
+            Producto producto, LocalDate fecha
+    ) {
+        return (DatosTotalesProductoRopaDTO) this.ensamblarDatosTotalesProducto(producto, fecha);
     }
 
     public List<DatosTotalesProductoRopaDTO> ensamblarDetalleProductosRopa(List<Producto> productosRopa, LocalDate fecha){
@@ -71,6 +77,12 @@ public class EnsambladorDTOProducto {
             datosProductosRopa.add(productoResumen);
         }
         return datosProductosRopa;
+    }
+
+    public DatosTotalesProductoPerecederoDTO ensamblarDatosProductoPerecedero(
+            ProductoPerecedero perecedero, LocalDate fecha
+    ) {
+        return (DatosTotalesProductoPerecederoDTO) this.ensamblarDatosTotalesProducto(perecedero, fecha);
     }
 
     public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(List<Producto> productosRopa){

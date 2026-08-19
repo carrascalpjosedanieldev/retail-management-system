@@ -32,6 +32,12 @@ public class OrquestadorPoliticaVencimiento {
         );
     }
 
+    public List<PoliticaVencimientoDTO> obtenerPoliticasVActivas() {
+        return this.ensambladorDTOPoliticaVencimiento.ensamblarDetallePoliticasVencimiento(
+                this.servicioPoliticaVencimiento.obtenerPoliticasVencimientoActivas()
+        );
+    }
+
     public PoliticaVencimientoDTO registrarPoliticaVencimiento(
             String nombre, int diasUmbral, BigDecimal porcentaje, boolean activo
     ) {

@@ -6,7 +6,6 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -21,15 +20,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -198,7 +192,7 @@ public class GestionServiciosControlador {
     }
 
     private void abrirModalEdicion(ServicioDTO seleccionado, List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.EDITAR_SERVICIO_VIEW,
                 "Editando Servicio", getVentana(),
                 (EditarServicioControlador c)->{
@@ -240,7 +234,7 @@ public class GestionServiciosControlador {
     }
 
     private void abrirModalCrear(List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_SERVICIO_VIEW,
                 "Creando Servicio", getVentana(),
                 (CrearServicioControlador c)->{

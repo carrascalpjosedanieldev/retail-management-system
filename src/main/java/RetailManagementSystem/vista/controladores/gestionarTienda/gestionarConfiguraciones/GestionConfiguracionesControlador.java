@@ -14,7 +14,7 @@ public class GestionConfiguracionesControlador {
 
     @FXML
     void abrirConfiguracionNombre(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalSinInyeccion(
                 RutasVista.EDITAR_NOMBRE_TIENDA_VIEW,
                 "Configuración de Tienda",
                 ((Node) event.getSource()).getScene().getWindow()

@@ -2,7 +2,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoli
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -16,16 +15,10 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
@@ -150,7 +143,7 @@ public class GestionPoliticasVencimientoControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.EDITAR_POLITICA_V_VIEW,
                 "Editando Política de Vencimiento", getVentana(),
                 (EditarPoliticaVencimientoControlador c)->{
@@ -162,7 +155,7 @@ public class GestionPoliticasVencimientoControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_POLITiCA_V_VIEW,
                 "Creando Política de Vencimiento", getVentana(),
                 (CrearPoliticaVencimiento c)->{

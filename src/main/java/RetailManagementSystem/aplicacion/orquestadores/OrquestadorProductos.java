@@ -1,9 +1,12 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
+import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerecederoDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -41,6 +44,43 @@ public class OrquestadorProductos {
 
     public void cambiarEstadoProducto(int idInventario, String codigoProducto){
         this.servicioProductos.cambiarEstadoProducto(idInventario, codigoProducto);
+    }
+
+    public List<DatosTotalesProductoRopaDTO> obtenerProductosRopaDeInventario(int idInventario, LocalDate fecha){
+        return this.ensambladorDTOProducto.ensamblarDetalleProductosRopa(
+                this.servicioProductos.obtenerProductosRopaDeInventario(idInventario), fecha
+        );
+    }
+
+    public DatosTotalesProductoRopaDTO actualizarProductoRopaDeInventario(
+            int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
+            BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento
+    ) {
+        return this.ensambladorDTOProducto.ensamblarDatosProductoRopa(
+                this.servicioProductos.actualizarProductoRopaDeInventario(
+                        idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
+                        idImpuesto, idDescuento
+                ), LocalDate.now()
+        );
+    }
+
+    public List<DatosTotalesProductoPerecederoDTO> obtenerProductosPerecederosDeInventario(int idInventario){
+        return this.ensambladorDTOProducto.ensamblarDetalleProductosPerecedero(
+                this.servicioProductos.obtenerProductosPerecederoDeInventario(idInventario)
+        );
+    }
+
+    public DatosTotalesProductoPerecederoDTO actualizarProductoPerecederoDeInventario(
+            int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
+            BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento,
+            LocalDate fecha
+    ) {
+        return this.ensambladorDTOProducto.ensamblarDatosProductoPerecedero(
+                this.servicioProductos.actualizarProductoPerecederoDeInventario(
+                        idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
+                        idImpuesto, idDescuento, idPoliticaVencimiento
+                ) , fecha
+        );
     }
 
 }//===================================================================================================================//

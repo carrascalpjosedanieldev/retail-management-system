@@ -1,12 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabRopa;
 
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
-import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -22,23 +20,16 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TabRopaControlador {
@@ -60,9 +51,7 @@ public class TabRopaControlador {
 
     private int idInventario;
 
-    private final ServicioProductos servicioProductos;
-
-    private final EnsambladorDTOProducto ensambladorDTOProducto;
+    private final OrquestadorProductos orquestadorProductos;
 
     private final ObservableList<DatosTotalesProductoRopaDTO> listaObservable = FXCollections.observableArrayList();
 
@@ -70,9 +59,8 @@ public class TabRopaControlador {
 
     //CONSTRUCTOR:
 
-    public TabRopaControlador(ServicioProductos servicioProductos, EnsambladorDTOProducto ensambladorDTOProducto) {
-        this.servicioProductos = servicioProductos;
-        this.ensambladorDTOProducto = ensambladorDTOProducto;
+    public TabRopaControlador(OrquestadorProductos orquestadorProductos) {
+        this.orquestadorProductos = orquestadorProductos;
     }
 
     //MÉTODOS:
@@ -88,24 +76,28 @@ public class TabRopaControlador {
 
 
     private void cargarDatosTabla() {
-        try {
-            LocalDate fechaActual = LocalDate.now();
-            List<DatosTotalesProductoRopaDTO> listaRopa = this.ensambladorDTOProducto.ensamblarDetalleProductosRopa(
-                    this.servicioProductos.obtenerProductosRopaDeInventario(this.idInventario), fechaActual
-            );
-            listaObservable.clear();
-            listaObservable.setAll(listaRopa);
-        } catch (RuntimeException e) {
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(), "Error Crítico de Carga",
-                    "No se pudieron cargar los datos del inventario.",
-                    "Ocurrió un error al cargar los productos ropa. La ventana se cerrará por seguridad.\nDetalle: " + e.getMessage()
-            );
-            if (tablaRopa != null && tablaRopa.getScene() != null) {
-                Stage stageActual = (Stage) tablaRopa.getScene().getWindow();
-                stageActual.close();
-            }
-        }
+        CompletableFuture.supplyAsync(()->
+                this.orquestadorProductos.obtenerProductosRopaDeInventario(this.idInventario, LocalDate.now())
+        ).thenAccept(listaRopa->
+            Platform.runLater(()->{
+                listaObservable.clear();
+                listaObservable.setAll(listaRopa);
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        getVentana(), "Error Crítico de Carga",
+                        "NO se pudieron Cargar los Datos del Inventario.",
+                        "Ocurrió un Error al Cargar los Productos Ropa. La Ventana se Cerrará por Seguridad.\n" +
+                                "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
+                                causa.getMessage()
+                );
+                Stage stageActual = (Stage) getVentana();
+                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+            });
+            return null;
+        });
     }
 
 
@@ -116,11 +108,14 @@ public class TabRopaControlador {
     }
 
     private void configurarColumnas() {
-        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(celda.getValue().codigo()));
+        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(
+                celda.getValue().codigo())
+        );
         colCodigo.setCellFactory(columna -> new TableCell<>() {
             private final Tooltip tooltipFlotante = new Tooltip();
             {
-                tooltipFlotante.setStyle("-fx-background-color: #1e293b; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 5px 10px;");
+                tooltipFlotante.getStyleClass().add("tooltip-codigo");
+                getStyleClass().add("codigo-copiable");
                 tooltipFlotante.setShowDelay(Duration.millis(100));
                 setAlignment(Pos.CENTER);
             }
@@ -137,7 +132,6 @@ public class TabRopaControlador {
                     setText(codigoCorto);
                     tooltipFlotante.setText(codigo + "\n(Clic para copiar)");
                     setTooltip(tooltipFlotante);
-                    setStyle("-fx-cursor: hand; -fx-text-fill: #3b82f6;");
                     setOnMouseClicked(evt -> {
                         ClipboardContent contenido = new ClipboardContent();
                         contenido.putString(codigo);
@@ -165,11 +159,17 @@ public class TabRopaControlador {
                 setText((empty || talla == null) ? null : talla.name());
             }
         });
-        colCompra.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().valorCompra()));
+        colCompra.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().valorCompra())
+        );
         colCompra.setCellFactory(col -> crearCeldaMoneda());
-        colVentaFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().valorVentaFinal()));
+        colVentaFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().valorVentaFinal())
+        );
         colVentaFinal.setCellFactory(col -> crearCeldaMoneda());
-        colGanancia.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().porcentajeGanancia()));
+        colGanancia.setCellValueFactory(celda -> new SimpleObjectProperty<>(
+                celda.getValue().porcentajeGanancia())
+        );
         colGanancia.setCellFactory(col -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -204,24 +204,24 @@ public class TabRopaControlador {
             @Override
             protected void updateItem(Integer stock, boolean empty) {
                 super.updateItem(stock, empty);
+                getStyleClass().removeAll("stock-sin-existencias", "stock-bajo", "stock-normal");
                 if (empty || stock == null) {
                     setText(null);
-                    setStyle("");
+                    return;
+                }
+                setText(String.valueOf(stock));
+                if (stock <= 0) {
+                    getStyleClass().add("stock-sin-existencias");
+                } else if (stock <= 5) {
+                    getStyleClass().add("stock-bajo");
                 } else {
-                    setText(String.valueOf(stock));
-                    if (stock <= 0) {
-                        setStyle("-fx-text-fill: #ef4444; -fx-font-weight: bold;");
-                    } else if (stock <= 5) {
-                        setStyle("-fx-text-fill: #f59e0b; -fx-font-weight: bold;");
-                    } else {
-                        setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold;");
-                    }
+                    getStyleClass().add("stock-normal");
                 }
             }
         });
         colEstado.setCellValueFactory(celda -> {
             boolean esActivo = celda.getValue().activo();
-            String estado = esActivo ? "Activo" : "Inactivo";
+            String estado = esActivo ? "Disponible" : "NO Disponible";
             return new SimpleStringProperty(estado);
         });
         colEstado.setCellFactory(columna -> new TableCell<>() {
@@ -231,14 +231,16 @@ public class TabRopaControlador {
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-disponible", "estado-no-disponible");
                 if (empty || estado == null) {
                     setText(null);
-                    setStyle("");
+                    return;
+                }
+                setText(estado);
+                if (estado.equalsIgnoreCase("Disponible")) {
+                    getStyleClass().add("estado-disponible");
                 } else {
-                    setText(estado);
-                    setStyle(estado.equalsIgnoreCase("Activo") || estado.equalsIgnoreCase("Disponible")
-                            ? "-fx-text-fill: #10b981; -fx-font-weight: bold;"
-                            : "-fx-text-fill: #ef4444; -fx-font-weight: bold;");
+                    getStyleClass().add("estado-no-disponible");
                 }
             }
         });
@@ -284,24 +286,13 @@ public class TabRopaControlador {
             );
             return;
         }
-        String rutaFxml = RutasVista.EDITAR_ROPA_VIEW;
-        try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(rutaFxml);
-            Parent root = loader.load();
-            EditarRopaControlador controladorEditor = loader.getController();
-            controladorEditor.cargarDatosProducto(productoSeleccionado, this.idInventario);
-            Stage stageEditor = new Stage();
-            stageEditor.setScene(new Scene(root));
-            stageEditor.setTitle("Editar Prenda de Ropa");
-            stageEditor.initModality(Modality.WINDOW_MODAL);
-            Stage ventanaPadre = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stageEditor.initOwner(ventanaPadre);
-            stageEditor.setResizable(false);
-            stageEditor.showAndWait();
-            cargarDatosTabla();
-        } catch (IOException | IllegalStateException e) {
-            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
-        }
+        CargadorVistas.abrirModalConInyeccion(
+                RutasVista.EDITAR_ROPA_VIEW,
+                "Editar Prenda de Ropa", getVentana(),
+                (EditarRopaControlador c)->{
+                    c.cargarDatosProducto(productoSeleccionado, this.idInventario, listaObservable);
+                }
+        );
     }
 
 
@@ -319,16 +310,15 @@ public class TabRopaControlador {
             );
             return;
         }
-
         if (!GestorAlertas.mostrarConfirmacion(
                 getVentana(), "Confirmar Cambio de Estado", null,
                 "¿Está Seguro que desea Cambiar el Estado del Producto:\n"
-                        + seleccionado.codigo() + " - " + seleccionado.nombre() + "?"
-        )){
+                        + seleccionado.codigo() + " - " + seleccionado.nombre() + "?")
+        ){
             return;
         }
         CompletableFuture.runAsync(()->
-                this.servicioProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
+                this.orquestadorProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
         ).thenRun(()->
             Platform.runLater(()->{
                 DatosTotalesProductoRopaDTO actualizado = new DatosTotalesProductoRopaDTO(

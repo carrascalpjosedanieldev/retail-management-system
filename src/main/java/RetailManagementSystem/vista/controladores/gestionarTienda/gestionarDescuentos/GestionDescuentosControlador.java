@@ -140,7 +140,7 @@ public class GestionDescuentosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.EDITAR_DESCUENTO_VIEW,
                 "Editando Descuento", getVentana(),
                 (EditarDescuentoControlador c)->{
@@ -152,7 +152,7 @@ public class GestionDescuentosControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_DESCUENTO_VIEW,
                 "Creando Descuento", getVentana(),
                 (CrearDescuentoControlador c)->{

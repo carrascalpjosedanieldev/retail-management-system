@@ -152,7 +152,7 @@ public class GestionInventariosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.EDITAR_INVENTARIO_VIEW,
                 "Editando Inventario", getVentana(),
                 (EditarInventarioControlador c)->{
@@ -164,7 +164,7 @@ public class GestionInventariosControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_INVENTARIO_VIEW,
                 "Creando Inventario", getVentana(),
                 (CrearInventarioControlador c)->{

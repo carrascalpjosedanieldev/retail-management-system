@@ -140,7 +140,7 @@ public class GestionImpuestosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.EDITAR_IMPUESTO_VIEW,
                 "Editando Impuesto", getVentana(),
                 (EditarImpuestoControlador c)->{
@@ -152,7 +152,7 @@ public class GestionImpuestosControlador {
 
     @FXML
     void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_IMPUESTO_VIEW,
                 "Creando Impuesto", getVentana(),
                 (CrearImpuestoControlador c)->{

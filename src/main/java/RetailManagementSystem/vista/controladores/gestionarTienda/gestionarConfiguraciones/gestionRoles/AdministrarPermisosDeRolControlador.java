@@ -109,7 +109,7 @@ public class AdministrarPermisosDeRolControlador {
 
     @FXML
     void anadirPermiso(ActionEvent event) {
-        CargadorVistas.abrirModalInyectada(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.ANADIR_PERMISO_AL_ROL_VIEW,
                 "Administrar Permisos", getVentana(),
                 (AnadirPermisoAlRolControlador c) -> c.cargarDatos(listaObservablePermisos)

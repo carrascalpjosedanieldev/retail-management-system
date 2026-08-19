@@ -60,7 +60,7 @@ public class ServicioProductos {
         this.repositorioProducto.actualizarProducto(producto, idInventario);
     }
 
-    public void actualizarProductoRopaDeInventario(
+    public Producto actualizarProductoRopaDeInventario(
             int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
             BigDecimal porcentajeGanancia,int idImpuesto, int idDescuento
             ) {
@@ -73,23 +73,25 @@ public class ServicioProductos {
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
         producto.cambiarDescuento(descuento);
         this.actualizarProductoDeInventario(idInventario, producto);
+        return producto;
     }
 
-    public void actualizarProductoPerecederoDeInventario(
+    public ProductoPerecedero actualizarProductoPerecederoDeInventario(
             int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
             BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento
     ) {
-        ProductoPerecedero producto = this.repositorioProducto.obtenerPerecederoDeInventario(idInventario, codigoProducto);
-        producto.cambiarNombreProducto(nombreNuevo);
-        producto.cambiarValorCompra(valorCompra);
-        producto.cambiarValorVentaPorPorcentaje(porcentajeGanancia);
+        ProductoPerecedero perecedero = this.repositorioProducto.obtenerPerecederoDeInventario(idInventario, codigoProducto);
+        perecedero.cambiarNombreProducto(nombreNuevo);
+        perecedero.cambiarValorCompra(valorCompra);
+        perecedero.cambiarValorVentaPorPorcentaje(porcentajeGanancia);
         Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
-        producto.cambiarImpuesto(impuesto);
+        perecedero.cambiarImpuesto(impuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
-        producto.cambiarDescuento(descuento);
+        perecedero.cambiarDescuento(descuento);
         PoliticaVencimiento politicaVencimiento = this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        producto.cambiarPoliticaVencimiento(politicaVencimiento);
-        this.actualizarProductoDeInventario(idInventario, producto);
+        perecedero.cambiarPoliticaVencimiento(politicaVencimiento);
+        this.actualizarProductoDeInventario(idInventario, perecedero);
+        return perecedero;
     }
 
     public Producto reducirStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
