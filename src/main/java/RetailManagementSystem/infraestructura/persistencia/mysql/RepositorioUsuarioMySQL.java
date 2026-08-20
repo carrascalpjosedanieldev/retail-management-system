@@ -80,20 +80,22 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                 "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
                         "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
                         "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
-                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.modulo, p.activo AS permiso_activo " +
+                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.id_modulo, p.activo AS permiso_activo, " +
+                        "m.nombre AS nombre_modulo " +
                         "FROM usuarios u " +
                         "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
                         "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
                         "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
                         "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
+                        "LEFT JOIN modulos m ON p.id_modulo = m.id_modulo " +
                         "WHERE u.email = ?";
 
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, email);
+            pstmt.setString(1, email);
 
-            try (ResultSet rs = stmt.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
 
                 Usuario usuario = null;
                 Map<Integer, Rol> rolesMap = new HashMap<>();
@@ -136,7 +138,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                                     idPermiso,
                                     rs.getString("nombre_permiso"),
                                     rs.getString("descripcion"),
-                                    rs.getString("modulo"),
+                                    rs.getString("nombre_modulo"),
                                     rs.getBoolean("permiso_activo")
                             );
                             rol.anadirPermisoNuevo(permiso);
@@ -157,7 +159,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error al buscar el Usuario por email", e);
+            e.printStackTrace();
+            throw new PersistenciaException("Error al buscar el Usuario por email" + e.getMessage(), e);
         }
     }
 

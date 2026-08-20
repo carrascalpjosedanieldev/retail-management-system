@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="450.0" styleClass="fondo-panel" stylesheets="@../../css/gestionarUsuarios/estilosCssRegistrarUsuario.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarUsuarios.RegistrarUsuarioControlador">
+
+    <VBox alignment="CENTER_LEFT" styleClass="panel-encabezado">
+        <Label styleClass="titulo-principal" text="Registrar Nuevo Usuario" />
+    </VBox>
+
+    <VBox spacing="15.0" styleClass="panel-formulario" VBox.vgrow="ALWAYS">
+        <VBox spacing="5.0">
+            <Label styleClass="label-formulario" text="Nombre:" />
+            <TextField fx:id="txtNombre" promptText="Ingrese el nombre..." styleClass="campo-texto" />
+        </VBox>
+
+        <VBox spacing="5.0">
+            <Label styleClass="label-formulario" text="Apellido:" />
+            <TextField fx:id="txtApellido" promptText="Ingrese el apellido..." styleClass="campo-texto" />
+        </VBox>
+
+        <VBox spacing="5.0">
+            <Label styleClass="label-formulario" text="Correo Electrónico (Email):" />
+            <TextField fx:id="txtEmail" promptText="ejemplo@correo.com" styleClass="campo-texto" />
+        </VBox>
+
+        <VBox spacing="5.0">
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+            <CheckBox fx:id="chkActivo" mnemonicParsing="false" selected="true" styleClass="checkbox-personalizado" text="Usuario Activo en el Sistema" />
+        </VBox>
+
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="15.0" styleClass="panel-botones">
+        <Button mnemonicParsing="false" onAction="#guardarUsuario" prefWidth="130.0" styleClass="btn-guardar" text="Guardar" />
+        <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#cerrarVentana" prefWidth="110.0" styleClass="btn-cancelar" text="Cancelar" />
+    </HBox>
+
+</VBox>

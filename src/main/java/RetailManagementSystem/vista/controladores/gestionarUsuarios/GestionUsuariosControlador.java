@@ -148,13 +148,19 @@ public class GestionUsuariosControlador {
 
 
     @FXML
-    void abrirFormularioEdicion(ActionEvent event) {
-
+    void abrirFormularioNuevo(ActionEvent event) {
+        CargadorVistas.abrirModalConInyeccion(
+                RutasVista.REGISTRAR_USUARIO_VIEW,
+                "Registrando Usuario", getVentana(),
+                (RegistrarUsuarioControlador c)-> {
+                    c.cargarDatos(listaObservableUsuarios);
+                }
+        );
     }
 
 
     @FXML
-    void abrirFormularioNuevo(ActionEvent event) {
+    void abrirFormularioEdicion(ActionEvent event) {
 
     }
 

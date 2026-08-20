@@ -1,9 +1,11 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.ResultadoRegistroDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 public class OrquestadorUsuarios {
@@ -26,6 +28,27 @@ public class OrquestadorUsuarios {
     public List<UsuarioDTO> obtenerTodosLosUsuarios(){
         return this.ensambladorDTOUsuario.ensamblarDetalleUsuarios(
                 this.servicioUsuario.obtenerTodosLosUsuarios()
+        );
+    }
+
+    public ResultadoRegistroDTO registrarUsuarioYObtenerContrasenaTemporal(
+            String nombre, String apellido, String email, boolean activo
+    ) {
+        String caracteresPermitidos = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        SecureRandom random = new SecureRandom();
+        StringBuilder claveTemporal = new StringBuilder(6);
+        for (int i = 0; i < 6; i++) {
+            claveTemporal.append(caracteresPermitidos.charAt(random.nextInt(caracteresPermitidos.length())));
+        }
+        char[] claveOriginal = claveTemporal.toString().toCharArray();
+        char[] copiaParaServicio = claveOriginal.clone();
+        UsuarioDTO usuarioDTO = this.ensambladorDTOUsuario.ensamblarDTOUsuario(
+                this.servicioUsuario.registrarUsuario(
+                        nombre, apellido, email, copiaParaServicio, activo
+                )
+        );
+        return this.ensambladorDTOUsuario.ensamblarDTOResultadoregistro(
+                usuarioDTO, claveOriginal
         );
     }
 

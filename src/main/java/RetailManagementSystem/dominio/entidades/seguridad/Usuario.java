@@ -152,7 +152,7 @@ public class Usuario {
             String nombre, String apellido, String email, String hash, boolean activo
     ){
         return new Usuario(null, nombre, apellido, email, 0, null, hash,
-                activo, false);
+                activo, true);
     }
 
     //MÉTODOS PARA ACTUALIZAR DATOS:

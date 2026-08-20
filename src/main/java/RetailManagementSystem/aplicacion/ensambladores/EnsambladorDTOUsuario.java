@@ -1,5 +1,6 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.ResultadoRegistroDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 
@@ -23,6 +24,10 @@ public class EnsambladorDTOUsuario {
                 usuario.getIdUsuario(), usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
                 usuario.isActivo(), usuario.isDebeCambiarContrasena(), usuario.obtenerNombresRoles(),
                 usuario.obtenerPermisosTotales());
+    }
+
+    public ResultadoRegistroDTO ensamblarDTOResultadoregistro(UsuarioDTO usuario, char[] contrasena){
+        return new ResultadoRegistroDTO(usuario, contrasena);
     }
 
     public List<UsuarioDTO> ensamblarDetalleUsuarios(List<Usuario> listaUsuarios){
