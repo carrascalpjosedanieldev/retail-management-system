@@ -9,7 +9,7 @@ import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.aplicacion.servicios.ServicioServicios;
 import RetailManagementSystem.dominio.entidades.ventas.*;
-import RetailManagementSystem.dominio.excepciones.CarritoVacioException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CarritoVacioException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

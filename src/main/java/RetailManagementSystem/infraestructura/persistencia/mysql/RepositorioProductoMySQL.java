@@ -5,10 +5,10 @@ import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.Talla;
-import RetailManagementSystem.dominio.excepciones.ProductoNoDisponibleException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoNoDisponibleException;
 import RetailManagementSystem.dominio.puertos.RepositorioProducto;
-import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
-import RetailManagementSystem.dominio.excepciones.ProductoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;

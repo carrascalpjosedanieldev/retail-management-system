@@ -5,7 +5,7 @@ import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
 import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.puertos.RepositorioFacturas;
-import RetailManagementSystem.dominio.excepciones.StockInsuficienteException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;

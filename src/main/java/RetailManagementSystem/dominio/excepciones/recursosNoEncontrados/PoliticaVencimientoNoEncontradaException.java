@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.excepciones;
+package RetailManagementSystem.dominio.excepciones.recursosNoEncontrados;
 
 public class PoliticaVencimientoNoEncontradaException extends RuntimeException {
     public PoliticaVencimientoNoEncontradaException(String message) {

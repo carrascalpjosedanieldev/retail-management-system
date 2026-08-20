@@ -1,7 +1,7 @@
 package RetailManagementSystem.dominio.entidades.ventas;
 
 import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
-import RetailManagementSystem.dominio.excepciones.StockInsuficienteException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

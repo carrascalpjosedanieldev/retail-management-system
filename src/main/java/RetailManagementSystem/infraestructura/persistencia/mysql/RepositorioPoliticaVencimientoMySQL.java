@@ -2,7 +2,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.puertos.RepositorioPoliticaVencimiento;
-import RetailManagementSystem.dominio.excepciones.PoliticaVencimientoNoEncontradaException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PoliticaVencimientoNoEncontradaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;

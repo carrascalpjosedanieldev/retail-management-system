@@ -1,6 +1,6 @@
 package RetailManagementSystem.dominio.entidades.gestion;
 
-import RetailManagementSystem.dominio.excepciones.CapacidadInventarioExcedidaException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 
 public class Inventario {
 

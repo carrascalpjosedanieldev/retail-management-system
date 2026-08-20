@@ -4,7 +4,9 @@ import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
 import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
-import RetailManagementSystem.dominio.excepciones.*;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.*;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -218,7 +220,7 @@ public class MenuDeVentasControlador {
                             "Error:  " + causa.getMessage()
                     );
                 } else if (causa instanceof ProductoNoDisponibleException ||
-                        causa instanceof ServicioNoDisponibleExeption){
+                        causa instanceof ServicioNoDisponibleException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Item NO Disponible", null,
                             causa.getMessage() + " NO sera agregado al Carrito"

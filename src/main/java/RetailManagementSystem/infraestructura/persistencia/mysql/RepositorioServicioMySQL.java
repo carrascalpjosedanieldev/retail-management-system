@@ -3,10 +3,10 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.comercial.Servicio;
-import RetailManagementSystem.dominio.excepciones.ServicioNoDisponibleExeption;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ServicioNoDisponibleException;
 import RetailManagementSystem.dominio.puertos.RepositorioServicio;
-import RetailManagementSystem.dominio.excepciones.ImpuestoNoEncontradoException;
-import RetailManagementSystem.dominio.excepciones.ServicioNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ImpuestoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
@@ -226,7 +226,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                     boolean activo = rs.getBoolean("activo");
 
                     if (!activo){
-                        throw new ServicioNoDisponibleExeption("Error de negocio: El Servicio con Código -" +
+                        throw new ServicioNoDisponibleException("Error de negocio: El Servicio con Código -" +
                                 codigoServicio + "- NO esta Disponible");
                     }
 

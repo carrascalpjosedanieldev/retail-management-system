@@ -3,7 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
-import RetailManagementSystem.dominio.excepciones.CapacidadExcedidaException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -129,7 +129,7 @@ public class MoverProductoAOtroInventarioControlador {
                             getVentana(), "NO se pudo Completar la Acción", null,
                             "Error:  " + causa.getMessage()
                     );
-                } else if (causa instanceof CapacidadExcedidaException){
+                } else if (causa instanceof CapacidadInventarioExcedidaException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Capacidad Excedida", null,
                             "El Inventario -" + inventarioDestino.nombre() + "- NO puede recibir esa Cantidad.\n" +

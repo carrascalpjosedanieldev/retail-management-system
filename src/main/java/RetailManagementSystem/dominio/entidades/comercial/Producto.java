@@ -3,7 +3,7 @@ package RetailManagementSystem.dominio.entidades.comercial;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.enums.TipoItem;
-import RetailManagementSystem.dominio.excepciones.StockInsuficienteException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

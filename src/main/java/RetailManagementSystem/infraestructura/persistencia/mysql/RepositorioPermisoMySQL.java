@@ -1,8 +1,7 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
-import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
-import RetailManagementSystem.dominio.excepciones.PermisoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PermisoNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.RepositorioPermiso;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 

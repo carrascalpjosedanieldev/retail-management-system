@@ -3,7 +3,7 @@ package RetailManagementSystem.dominio.entidades.comercial;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
-import RetailManagementSystem.dominio.excepciones.ProductoVencidoException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoVencidoException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

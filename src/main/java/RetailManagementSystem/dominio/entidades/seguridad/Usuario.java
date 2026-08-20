@@ -1,6 +1,6 @@
 package RetailManagementSystem.dominio.entidades.seguridad;
 
-import RetailManagementSystem.dominio.excepciones.RolNoDisponibleException;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.RolNoDisponibleException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

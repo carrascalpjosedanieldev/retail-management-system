@@ -3,10 +3,10 @@ package RetailManagementSystem.aplicacion.servicios;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
-import RetailManagementSystem.dominio.excepciones.CredencialesInvalidasException;
-import RetailManagementSystem.dominio.excepciones.EmailDuplicadoException;
-import RetailManagementSystem.dominio.excepciones.UsuarioBloqueadoException;
-import RetailManagementSystem.dominio.excepciones.UsuarioInactivoException;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.CredencialesInvalidasException;
+import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioBloqueadoException;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioInactivoException;
 import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
 
 import java.security.SecureRandom;

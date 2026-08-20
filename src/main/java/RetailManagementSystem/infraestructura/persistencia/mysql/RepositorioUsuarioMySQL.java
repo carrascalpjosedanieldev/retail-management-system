@@ -3,8 +3,8 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
-import RetailManagementSystem.dominio.excepciones.EmailDuplicadoException;
-import RetailManagementSystem.dominio.excepciones.UsuarioNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.UsuarioNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 

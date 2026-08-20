@@ -2,7 +2,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
-import RetailManagementSystem.dominio.excepciones.DescuentoNoEncontradoExeption;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.DescuentoNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
@@ -79,7 +79,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                     return Descuento.reconstruirDesdeBD(idReal, nombre, porcentaje, activo);
                 }
 
-                throw new DescuentoNoEncontradoExeption("NO existe un Descuento con el ID: " + idDescuento);
+                throw new DescuentoNoEncontradoException("NO existe un Descuento con el ID: " + idDescuento);
 
             }
 
@@ -158,7 +158,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new DescuentoNoEncontradoExeption("No se pudo actualizar: El Descuento con ID -" + descuento.getId() + "- no existe.");
+                throw new DescuentoNoEncontradoException("No se pudo actualizar: El Descuento con ID -" + descuento.getId() + "- no existe.");
             }
 
         } catch (SQLException e) {
