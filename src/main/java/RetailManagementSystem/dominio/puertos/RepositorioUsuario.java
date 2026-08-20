@@ -2,6 +2,7 @@ package RetailManagementSystem.dominio.puertos;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RepositorioUsuario {
@@ -15,6 +16,8 @@ public interface RepositorioUsuario {
     Optional<Usuario> obtenerUsuarioPorEmail(String email);
 
     Usuario obtenerUsuarioPorId(int idUsuario);
+
+    List<Usuario> obtenerTodosLosUsuarios();
 
     //UPDATE:
 

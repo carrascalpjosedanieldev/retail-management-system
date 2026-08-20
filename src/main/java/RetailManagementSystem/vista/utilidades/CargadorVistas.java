@@ -17,16 +17,6 @@ public class CargadorVistas {
 
     private static final FabricaControladores FABRICA_C = new FabricaControladores();
 
-    public static Parent cargarVista(String rutaFxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(CargadorVistas.class.getResource(rutaFxml));
-            loader.setControllerFactory(FABRICA_C);
-            return loader.load();
-        } catch (IOException e){
-            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
-        }
-    }
-
     public static void cambiarPantalla(Stage stageActual, String rutaFxml){
         Parent nuevaVista = cargarVista(rutaFxml);
         if (stageActual.getScene() != null) {
@@ -34,6 +24,16 @@ public class CargadorVistas {
         } else {
             Scene escena = new Scene(nuevaVista);
             stageActual.setScene(escena);
+        }
+    }
+
+    public static Parent cargarVista(String rutaFxml) {
+        try {
+            FXMLLoader loader = new FXMLLoader(CargadorVistas.class.getResource(rutaFxml));
+            loader.setControllerFactory(FABRICA_C);
+            return loader.load();
+        } catch (IOException e){
+            throw new CargarVistaException(rutaFxml, "No se pudo cargar el archivo FXML.", e);
         }
     }
 

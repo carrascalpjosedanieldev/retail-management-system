@@ -21,7 +21,7 @@
 
         <TableView fx:id="tablaUsuarios" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="colId" prefWidth="80.0" text="ID" />
+                <TableColumn fx:id="colId" text="ID" />
                 <TableColumn fx:id="colNombre" prefWidth="211.99999237060547" text="NOMBRE" />
                 <TableColumn fx:id="colApellido" prefWidth="208.00003051757812" text="APELLIDO" />
                 <TableColumn fx:id="colEmail" prefWidth="271.2000732421875" text="EMAIL" />
@@ -37,10 +37,10 @@
         <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 0 0 20 0;" text="Acciones" />
 
         <Button onAction="#abrirFormularioNuevo" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion, btn-nuevo" text="➕ Registrar Nuevo" />
-        <Button onAction="#abrirFormularioEdicion" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="✏ Editar Usuario" />
-        <Button onAction="#cambiarEstadoUsuario" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="🔄 Cambiar Estado" />
-        <Button onAction="#gestionarRolesUsuario" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="🔑 Gestionar Roles" />
-        <Button onAction="#restablecerContrasena" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="🔒 Restablecer Contraseña" />
+        <Button fx:id="btnEditar" onAction="#abrirFormularioEdicion" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="✏ Editar Usuario" />
+        <Button fx:id="btnCambiarEstado" onAction="#cambiarEstadoUsuario" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="🔄 Cambiar Estado" />
+        <Button fx:id="btnGestionarRoles" onAction="#gestionarRolesUsuario" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="🔑 Gestionar Roles" />
+        <Button fx:id="btnRestablecerClave" onAction="#restablecerContrasena" prefHeight="50.0" prefWidth="270.0" styleClass="btn-accion" text="🔒 Restablecer Contraseña" />
 
         <VBox VBox.vgrow="ALWAYS" />
 

@@ -147,6 +147,12 @@ public class RutasVista {
             "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabPerecedero/editarPerecedero.fxml";
 
 
+    //GESTIONAR USUARIOS:
+
+    public static final String GESTIONAR_USUARIOS_VIEW =
+            "/vista/gestionarUsuarios/GestionUsuarios.fxml";
+
+
     //LOGIN:
 
 

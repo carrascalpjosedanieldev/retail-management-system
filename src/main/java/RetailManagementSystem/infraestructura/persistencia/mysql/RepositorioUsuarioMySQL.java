@@ -11,6 +11,7 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.Persisten
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -248,6 +249,13 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             throw new PersistenciaException("Error al buscar el Usuario por email", e);
         }
     }
+
+
+    @Override
+    public List<Usuario> obtenerTodosLosUsuarios() {
+        return List.of();
+    }
+
 
     //UPDATE:
 

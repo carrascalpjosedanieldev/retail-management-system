@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.List;
 
 public class ServicioUsuario {
 
@@ -40,6 +41,10 @@ public class ServicioUsuario {
     }
 
     //MÉTODOS:
+
+    public List<Usuario> obtenerTodosLosUsuarios(){
+        return this.repositorioUsuario.obtenerTodosLosUsuarios();
+    }
 
     public Usuario validarYObtenerUsuarioValido(String email, char[] contrasenaPlana, LocalDateTime fechaReferencia) {
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorEmail(email).orElse(null);

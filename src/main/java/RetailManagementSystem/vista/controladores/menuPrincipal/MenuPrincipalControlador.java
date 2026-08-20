@@ -41,6 +41,11 @@ public class MenuPrincipalControlador {
 
     //MÉTODOS:
 
+    private Window getVentana(){
+        return btnSalir.getScene().getWindow();
+    }
+
+
     @FXML
     public void initialize() {
         iniciarReloj();
@@ -60,9 +65,8 @@ public class MenuPrincipalControlador {
             Platform.runLater(() -> {
                 lblVersion.setText("Versión --");
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
-                Window ventana = btnSalir.getScene().getWindow();
                 GestorAlertas.mostrarAlertaError(
-                        ventana, "Error de Carga", "Error al Cargar la Version",
+                        getVentana(), "Error de Carga", "Error al Cargar la Version",
                         "NO se pudo Cargar la Versión de la Tienda: " + causa.getMessage() + ".\n" +
                                 "Contacte al Administrador o Verifica tu Conexión."
                 );
@@ -99,9 +103,8 @@ public class MenuPrincipalControlador {
             Platform.runLater(() -> {
                 lblNombreTienda.setText("Tienda (Modo Offline)");
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
-                Window ventana = btnSalir.getScene().getWindow();
                 GestorAlertas.mostrarAlertaError(
-                        ventana, "Error de Carga",
+                        getVentana(), "Error de Carga",
                         "Error al Obtener el Nombre de la Tienda",
                         "NO se pudo Leer la Configuración Local: " + causa.getMessage() + "\n" +
                                 "Vertica tu conexión para seguir utilizando la App."
@@ -114,26 +117,27 @@ public class MenuPrincipalControlador {
 
     @FXML
     public void abrirPuntoDeVenta(ActionEvent event) {
-        Stage stageActual = (Stage) btnSalir.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
     }
 
 
     @FXML
     void abrirGestionarTienda(ActionEvent event) {
-        Stage stageActual = (Stage) btnSalir.getScene().getWindow();
+        Stage stageActual = (Stage) getVentana();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
     @FXML
     void abrirGestionarUsuarios(ActionEvent event){
-
+        Stage stageActual = (Stage) getVentana();
+        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_USUARIOS_VIEW);
     }
 
 
     @FXML
     void salirDelSistema(ActionEvent event) {
-        Window ventanaPadre = btnSalir.getScene().getWindow();
+        Window ventanaPadre = getVentana();
         GestorAlertas.mostrarAlertaSalirDelSistema(ventanaPadre);
     }
 

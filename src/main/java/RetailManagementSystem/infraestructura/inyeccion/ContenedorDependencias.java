@@ -79,6 +79,7 @@ public class ContenedorDependencias {
     private static OrquestadorInventarioProducto orquestadorInventarioProducto;
     private static OrquestadorRoles orquestadorRoles;
     private static OrquestadorServicios orquestadorServicios;
+    private static OrquestadorUsuarios orquestadorUsuarios;
     private static OrquestadorVentas orquestadorVentas;
 
     //BANDERA SEGURIDAD:
@@ -168,6 +169,7 @@ public class ContenedorDependencias {
         orquestadorServicios = new OrquestadorServicios(
                 servicioServicios, ensambladorDTOServicio
         );
+        orquestadorUsuarios = new OrquestadorUsuarios(servicioUsuario, ensambladorDTOUsuario);
         orquestadorVentas = new OrquestadorVentas(
                 servicioFacturas, servicioCarrito, servicioProductos, servicioServicios,
                 ensambladorDTOFactura, ensambladorDTOCarrito
@@ -404,7 +406,7 @@ public class ContenedorDependencias {
         return orquestadorProductos;
     }
 
-    public static OrquestadorInventarioProducto getOrquestadorProductoInventario() {
+    public static OrquestadorInventarioProducto getOrquestadorInventarioProducto() {
         validarInicializado();
         return orquestadorInventarioProducto;
     }
@@ -417,6 +419,11 @@ public class ContenedorDependencias {
     public static OrquestadorServicios getOrquestadorServicios() {
         validarInicializado();
         return orquestadorServicios;
+    }
+
+    public static OrquestadorUsuarios getOrquestadorUsuarios() {
+        validarInicializado();
+        return orquestadorUsuarios;
     }
 
     public static OrquestadorVentas getOrquestadorVentas() {

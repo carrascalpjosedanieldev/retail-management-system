@@ -24,6 +24,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServi
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.*;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.PermisosVistaControlador;
+import RetailManagementSystem.vista.controladores.gestionarUsuarios.GestionUsuariosControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.*;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.*;
 
@@ -44,7 +45,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorDependencias.getOrquestadorDescuentos(),
                     ContenedorDependencias.getOrquestadorPoliticaVencimiento(),
                     ContenedorDependencias.getFabricaProductos(),
-                    ContenedorDependencias.getOrquestadorProductoInventario()
+                    ContenedorDependencias.getOrquestadorInventarioProducto()
             );
         }
         if (claseControlador == EditarPerecederoControlador.class){
@@ -193,12 +194,12 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == CrearInventarioControlador.class){
             return new CrearInventarioControlador(
-                    ContenedorDependencias.getOrquestadorProductoInventario()
+                    ContenedorDependencias.getOrquestadorInventarioProducto()
             );
         }
         if (claseControlador == EditarInventarioControlador.class){
             return new EditarInventarioControlador(
-                    ContenedorDependencias.getOrquestadorProductoInventario()
+                    ContenedorDependencias.getOrquestadorInventarioProducto()
             );
         }
         if (claseControlador == CrearServicioControlador.class){
@@ -213,13 +214,18 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == ManejarStockControlador.class){
             return new ManejarStockControlador(
-                    ContenedorDependencias.getOrquestadorProductoInventario(),
+                    ContenedorDependencias.getOrquestadorInventarioProducto(),
                     ContenedorDependencias.getOrquestadorProductos()
             );
         }
         if (claseControlador == MoverProductoAOtroInventarioControlador.class){
             return new MoverProductoAOtroInventarioControlador(
-                    ContenedorDependencias.getOrquestadorProductoInventario()
+                    ContenedorDependencias.getOrquestadorInventarioProducto()
+            );
+        }
+        if (claseControlador == GestionUsuariosControlador.class){
+            return new GestionUsuariosControlador(
+                    ContenedorDependencias.getOrquestadorUsuarios()
             );
         }
         try {

@@ -51,7 +51,6 @@ public class GestionarTiendaControlador {
     @FXML
     void volverAlMenu(ActionEvent event) {
         cambiarVentana(RutasVista.MENU_PRINCIPAL_VIEW);
-
     }
 
 }//===================================================================================================================//
