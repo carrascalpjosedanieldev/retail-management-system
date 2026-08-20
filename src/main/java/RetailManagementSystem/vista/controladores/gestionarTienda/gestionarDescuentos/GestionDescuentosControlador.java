@@ -47,7 +47,7 @@ public class GestionDescuentosControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaDescuentos.getScene().getWindow();
+        return tablaDescuentos.getScene() != null ? tablaDescuentos.getScene().getWindow() : null;
     }
 
 
@@ -219,8 +219,7 @@ public class GestionDescuentosControlador {
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

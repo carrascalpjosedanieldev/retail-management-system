@@ -18,7 +18,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
@@ -51,7 +50,7 @@ public class GestionInventariosControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaInventarios.getScene().getWindow();
+        return tablaInventarios.getScene() != null ? tablaInventarios.getScene().getWindow() : null;
     }
 
 
@@ -196,8 +195,7 @@ public class GestionInventariosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

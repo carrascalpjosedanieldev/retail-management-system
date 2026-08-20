@@ -81,7 +81,7 @@ public class CrearProductoControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return boxRopa.getScene().getWindow();
+        return boxRopa.getScene() != null ? boxRopa.getScene().getWindow() : null;
     }
 
 
@@ -338,8 +338,10 @@ public class CrearProductoControlador {
     }
 
     private void cerrarVentana() {
-        Stage stage = (Stage) txtNombre.getScene().getWindow();
-        stage.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

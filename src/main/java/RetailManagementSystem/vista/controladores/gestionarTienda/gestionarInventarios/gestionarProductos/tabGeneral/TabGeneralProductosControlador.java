@@ -57,7 +57,7 @@ public class TabGeneralProductosControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaProductos.getScene().getWindow();
+        return tablaProductos.getScene() != null ? tablaProductos.getScene().getWindow() : null;
     }
 
     public void recibirIdInventario(int idInventario) {
@@ -96,8 +96,7 @@ public class TabGeneralProductosControlador {
                                 "Verifica tu conexión y Notificale este Error al Administrador\n" +
                                 causa.getMessage()
                 );
-                Stage stageActual = (Stage) tablaProductos.getScene().getWindow();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
             });
             return null;
         });

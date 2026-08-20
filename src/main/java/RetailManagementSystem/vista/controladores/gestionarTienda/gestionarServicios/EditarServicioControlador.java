@@ -6,8 +6,8 @@ import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,7 +17,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 
@@ -54,7 +53,7 @@ public class EditarServicioControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -186,8 +185,10 @@ public class EditarServicioControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

@@ -20,7 +20,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -64,7 +63,7 @@ public class TabPerecederosControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaPerecederos.getScene().getWindow();
+        return tablaPerecederos.getScene() != null ? tablaPerecederos.getScene().getWindow() : null;
     }
 
 
@@ -93,8 +92,7 @@ public class TabPerecederosControlador {
                                 "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
                                 causa.getMessage()
                 );
-                Stage stageActual = (Stage) getVentana();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
             });
             return null;
         });

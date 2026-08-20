@@ -15,7 +15,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.List;
@@ -53,7 +52,7 @@ public class AnadirPermisoAlRolControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaPermisos.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -156,10 +155,10 @@ public class AnadirPermisoAlRolControlador {
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Crítico",
                         "No se pudieron cargar los permisos",
-                        "Hubo un fallo al conectar con la Base de Datos: " + ex.getMessage() + "\n" +
+                        "Hubo un fallo al conectar con la Base de Datos: " + causa.getMessage() + "\n" +
                                 "Comunicate con el Administrador y Revisa tu conexión."
                 );
-                ((Stage) getVentana()).close();
+                cerrarModal();
             });
             return null;
         });
@@ -199,15 +198,20 @@ public class AnadirPermisoAlRolControlador {
             return;
         }
         this.permisosDelRol.add(permisoSeleccionado);
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        cerrarModal();
     }
 
 
     @FXML
     void accionCancelar(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        cerrarModal();
+    }
+
+    private void cerrarModal(){
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 }//===================================================================================================================//

@@ -6,16 +6,19 @@ import RetailManagementSystem.vista.utilidades.RutasVista;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class GestionarTiendaControlador {
 
     @FXML
     private Button btnSalir;
 
+    private Window getVentana(){
+        return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
+    }
+
     private void cambiarVentana(String ruta){
-        Stage stageActual = (Stage) btnSalir.getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, ruta);
+        CargadorVistas.cambiarPantalla(getVentana(), ruta);
     }
 
     @FXML

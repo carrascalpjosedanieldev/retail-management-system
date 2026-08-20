@@ -47,7 +47,7 @@ public class GestionRolesControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaRoles.getScene().getWindow();
+        return tablaRoles.getScene() != null ? tablaRoles.getScene().getWindow() : null;
     }
 
 
@@ -90,8 +90,7 @@ public class GestionRolesControlador {
                         "Detalle: " + causa.getMessage() + "\n" +
                                 "Notificale el error al Administrador y Verifica tu conexión,"
                 );
-                Stage stageActual = (Stage) getVentana();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
             });
             return null;
         });
@@ -116,8 +115,7 @@ public class GestionRolesControlador {
 
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.CREAR_ROL_NUEVO_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.CREAR_ROL_NUEVO_VIEW);
     }
 
 
@@ -163,8 +161,7 @@ public class GestionRolesControlador {
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
     }
 
 

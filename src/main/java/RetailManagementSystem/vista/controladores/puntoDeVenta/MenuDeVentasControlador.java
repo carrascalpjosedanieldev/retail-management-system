@@ -21,7 +21,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Window;
 
@@ -71,7 +70,7 @@ public class MenuDeVentasControlador {
     }
 
     private Window getVentana(){
-        return btnVolver.getScene().getWindow();
+        return btnVolver.getScene() != null ? btnVolver.getScene().getWindow() : null;
     }
 
 
@@ -184,8 +183,7 @@ public class MenuDeVentasControlador {
                 return null;
             });
         }
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.PANEL_DE_CONTROL_POS_VIEW);
     }
 
 

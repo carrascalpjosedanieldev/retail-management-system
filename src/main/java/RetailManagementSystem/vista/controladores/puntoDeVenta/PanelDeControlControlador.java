@@ -14,7 +14,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -47,7 +46,7 @@ public class PanelDeControlControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return btnVolver.getScene().getWindow();
+        return btnVolver.getScene() != null ? btnVolver.getScene().getWindow() : null;
     }
 
 
@@ -128,8 +127,7 @@ public class PanelDeControlControlador {
 
     @FXML
     public void abrirNuevaVenta(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_DE_VENTAS_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_DE_VENTAS_VIEW);
     }
 
 
@@ -144,8 +142,7 @@ public class PanelDeControlControlador {
 
     @FXML
     public void volverAlMenu(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_PRINCIPAL_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_PRINCIPAL_VIEW);
     }
 
 

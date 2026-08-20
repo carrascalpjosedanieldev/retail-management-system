@@ -5,41 +5,48 @@ import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.stage.Window;
 
 public class GestionConfiguracionesControlador {
 
+    //ATRIBUTOS:
+
+    @FXML
+    private Button btnSalir;
+
     //MÉTODOS:
+
+    private Window getVentana(){
+        return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
+    }
+
 
     @FXML
     void abrirConfiguracionNombre(ActionEvent event) {
         CargadorVistas.abrirModalSinInyeccion(
                 RutasVista.EDITAR_NOMBRE_TIENDA_VIEW,
                 "Configuración de Tienda",
-                ((Node) event.getSource()).getScene().getWindow()
+                getVentana()
                 );
     }
 
 
     @FXML
     public void abrirGestionRoles(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
     }
 
 
     @FXML
     void abrirGestionPermisos(ActionEvent event){
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.PERMISOS_VISTA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.PERMISOS_VISTA_VIEW);
     }
 
 
     @FXML
     public void volverPanelGestion(ActionEvent event) {
-        Stage stageActual = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 }//===================================================================================================================//

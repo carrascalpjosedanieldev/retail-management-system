@@ -50,7 +50,7 @@
                 <Button mnemonicParsing="false" onAction="#abrirGestionPermisos" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Gestión de Permisos" GridPane.rowIndex="2" />
             </GridPane>
 
-            <Button id="btnSalir" onAction="#volverPanelGestion" prefHeight="55.0" prefWidth="300.0" text="⬅ VOLVER A GESTIÓN" />
+            <Button fx:id="btnSalir" id="btnSalir" onAction="#volverPanelGestion" prefHeight="55.0" prefWidth="300.0" text="⬅ VOLVER A GESTIÓN" />
 
         </VBox>
 

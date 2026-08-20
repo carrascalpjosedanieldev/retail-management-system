@@ -42,7 +42,7 @@ public class ModificarDatosRolControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -73,8 +73,10 @@ public class ModificarDatosRolControlador {
     }
 
     private void cerrarVentanaSeguro(){
-        Stage stageModal = (Stage) getVentana();
-        stageModal.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

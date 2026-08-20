@@ -17,7 +17,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
@@ -141,7 +140,7 @@ public class GestionUsuariosControlador {
                         "Se Cerrara la Ventana por Seguridad.\n" +
                                 "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                CargadorVistas.cambiarPantalla((Stage) getVentana(), RutasVista.MENU_PRINCIPAL_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_PRINCIPAL_VIEW);
             });
             return null;
         });
@@ -180,8 +179,7 @@ public class GestionUsuariosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) tablaUsuarios.getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.MENU_PRINCIPAL_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_PRINCIPAL_VIEW);
     }
 
 }//===================================================================================================================//

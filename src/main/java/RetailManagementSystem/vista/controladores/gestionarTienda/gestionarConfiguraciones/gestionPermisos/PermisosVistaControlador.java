@@ -16,7 +16,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.List;
@@ -55,7 +54,7 @@ public class PermisosVistaControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaPermisos.getScene().getWindow();
+        return tablaPermisos.getScene() != null ? tablaPermisos.getScene().getWindow() : null;
     }
 
 
@@ -123,10 +122,10 @@ public class PermisosVistaControlador {
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Crítico",
                         "No se pudieron cargar los permisos",
-                        "Hubo un fallo al conectar con la Base de Datos: " + ex.getMessage() + "\n" +
+                        "Hubo un fallo al conectar con la Base de Datos: " + causa.getMessage() + "\n" +
                                 "Comunicate con el Administrador y Revisa tu conexión."
                 );
-                ((Stage) getVentana()).close();
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
             });
             return null;
         });
@@ -231,8 +230,7 @@ public class PermisosVistaControlador {
 
     @FXML
     public void accionSalir(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
     }
 
 

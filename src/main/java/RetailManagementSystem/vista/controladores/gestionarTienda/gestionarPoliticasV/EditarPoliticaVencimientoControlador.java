@@ -13,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -57,7 +56,7 @@ public class EditarPoliticaVencimientoControlador {
     }
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -132,8 +131,10 @@ public class EditarPoliticaVencimientoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

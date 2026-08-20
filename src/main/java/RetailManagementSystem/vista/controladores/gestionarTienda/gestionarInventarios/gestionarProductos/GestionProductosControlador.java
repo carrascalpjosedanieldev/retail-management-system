@@ -44,8 +44,7 @@ public class GestionProductosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) tabPaneProductos.getScene().getWindow();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+        CargadorVistas.cambiarPantalla(tabPaneProductos.getScene().getWindow(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
     }
 
 

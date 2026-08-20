@@ -1,13 +1,13 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class DialogoCantidadControlador {
@@ -35,6 +35,11 @@ public class DialogoCantidadControlador {
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
+    }
+
 
     public void configurarDialogo(String accion, int cantidadInicial, String nombreItem) {
         lblAccionCabecera.setText(accion);
@@ -73,9 +78,7 @@ public class DialogoCantidadControlador {
         try {
             this.cantidadFinal = Integer.parseInt(texto);
             this.confirmado = true;
-            Window ventana = btnCancelar.getScene().getWindow();
-            ventana.hide();
-
+            cerrarVentana();
         } catch (NumberFormatException e) {
             GestorAlertas.mostrarAlertaError(
                     btnCancelar.getScene().getWindow(), "Número Inválido", null,
@@ -85,15 +88,17 @@ public class DialogoCantidadControlador {
         }
     }
 
-    private void cerrarVentana(ActionEvent event) {
-        Stage stage = (Stage) btnCancelar.getScene().getWindow();
-        stage.close();
+    private void cerrarVentana() {
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 
     @FXML
     void cancelar(ActionEvent event) {
-        cerrarVentana(event);
+        cerrarVentana();
     }
 
 }//===================================================================================================================//

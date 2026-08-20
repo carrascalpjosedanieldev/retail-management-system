@@ -87,7 +87,7 @@ public class EditarPerecederoControlador {
     }
 
     private Window getVentana(){
-        return txtCodigo.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -280,8 +280,10 @@ public class EditarPerecederoControlador {
     }
 
     private void cerrarVentana() {
-        Stage stage = (Stage) getVentana();
-        stage.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

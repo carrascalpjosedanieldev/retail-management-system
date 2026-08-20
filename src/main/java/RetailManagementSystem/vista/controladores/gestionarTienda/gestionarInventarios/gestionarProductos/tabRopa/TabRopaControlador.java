@@ -21,7 +21,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -68,7 +67,7 @@ public class TabRopaControlador {
     }
 
     private Window getVentana(){
-        return tablaRopa.getScene().getWindow();
+        return tablaRopa.getScene() != null ? tablaRopa.getScene().getWindow() : null;
     }
 
 
@@ -90,8 +89,7 @@ public class TabRopaControlador {
                                 "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
                                 causa.getMessage()
                 );
-                Stage stageActual = (Stage) getVentana();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
             });
             return null;
         });

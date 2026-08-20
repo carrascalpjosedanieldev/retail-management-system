@@ -44,7 +44,7 @@ public class CrearImpuestoControlador {
     }
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -92,8 +92,10 @@ public class CrearImpuestoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

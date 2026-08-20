@@ -61,7 +61,7 @@ public class CrearRolNuevoControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaPermisosAgregados.getScene().getWindow();
+        return tablaPermisosAgregados.getScene() != null ? tablaPermisosAgregados.getScene().getWindow() : null;
     }
 
 
@@ -70,6 +70,7 @@ public class CrearRolNuevoControlador {
         configurarColumnasDisp();
         configurarColumnasAgreg();
         configurarFiltroModulos();
+        configurarEstructuraFiltros();
         cargarDatosDesdeBD();
         tablaPermisosAgregados.setItems(listaPermisosAgregados);
         lblContadorPermisos.textProperty().bind(
@@ -132,8 +133,7 @@ public class CrearRolNuevoControlador {
                         "Hubo un fallo al conectar con la base de datos: " + causa.getMessage() + "\n" +
                                 "Notificale el error al Administrador y Verifica tu Conexión."
                 );
-                Stage stageActual = (Stage) getVentana();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
             });
             return null;
         });
@@ -241,17 +241,16 @@ public class CrearRolNuevoControlador {
         String nombreProcesado = nombre.trim();
         boolean estaActivo = chkActivo.isSelected();
         List<PermisoDTO> permisosSeleccionados = new ArrayList<>(listaPermisosAgregados);
-        CompletableFuture.supplyAsync(()->
+        CompletableFuture.runAsync(()->
                 this.orquestadorRoles.registrarRolNuevo(nombreProcesado, estaActivo, permisosSeleccionados)
-        ).thenAccept(rolRegistrado->
+        ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Operación Exitosa",
                         "Rol Guardado",
                         "Rol creado correctamente."
                 );
-                Stage stageActual = (Stage) cbModulos.getScene().getWindow();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
@@ -277,8 +276,7 @@ public class CrearRolNuevoControlador {
 
     @FXML
     private void cancelar(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
     }
 
 }//===================================================================================================================//

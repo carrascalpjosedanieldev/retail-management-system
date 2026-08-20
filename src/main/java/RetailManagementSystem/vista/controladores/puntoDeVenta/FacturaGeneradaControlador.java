@@ -12,12 +12,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -53,7 +51,7 @@ public class FacturaGeneradaControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return lblFechaFactura.getScene().getWindow();
+        return lblFechaFactura.getScene() != null ? lblFechaFactura.getScene().getWindow() : null;
     }
 
 
@@ -136,8 +134,10 @@ public class FacturaGeneradaControlador {
 
     @FXML
     public void cerrarFactura(ActionEvent event) {
-        Stage stage = (Stage) getVentana();
-        stage.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

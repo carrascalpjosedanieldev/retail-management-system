@@ -7,7 +7,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 public class EdicionTiendaControlador {
@@ -29,7 +28,7 @@ public class EdicionTiendaControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -58,7 +57,7 @@ public class EdicionTiendaControlador {
                     getVentana(), "Cambios Guardados", null,
                     "La Información de la Tienda se Actualizó con Éxito."
             );
-            cerrarVentana(event);
+            cerrarPantalla();
         } catch (IllegalArgumentException e) {
             GestorAlertas.mostrarAlertaError(
                     getVentana(), "Error en los Datos", null,
@@ -67,10 +66,17 @@ public class EdicionTiendaControlador {
         }
     }
 
+    private void cerrarPantalla(){
+        Window ventana = getVentana();
+        if (ventana != null) {
+            ventana.hide();
+        }
+    }
+
+
     @FXML
     private void cerrarVentana(ActionEvent event) {
-        Stage stage = (Stage) getVentana();
-        stage.close();
+        cerrarPantalla();
     }
 
 

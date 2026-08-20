@@ -18,7 +18,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -63,7 +62,7 @@ public class GestionServiciosControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaServicios.getScene().getWindow();
+        return tablaServicios.getScene() != null ? tablaServicios.getScene().getWindow() : null;
     }
 
 
@@ -165,8 +164,7 @@ public class GestionServiciosControlador {
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                Stage stageActual = (Stage) getVentana();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
         });
@@ -299,8 +297,7 @@ public class GestionServiciosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

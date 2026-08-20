@@ -17,14 +17,21 @@ public class CargadorVistas {
 
     private static final FabricaControladores FABRICA_C = new FabricaControladores();
 
-    public static void cambiarPantalla(Stage stageActual, String rutaFxml){
-        Parent nuevaVista = cargarVista(rutaFxml);
-        if (stageActual.getScene() != null) {
-            stageActual.getScene().setRoot(nuevaVista);
-        } else {
-            Scene escena = new Scene(nuevaVista);
-            stageActual.setScene(escena);
+    public static void cambiarPantalla(Window ventanaActual, String rutaFxml){
+        if (ventanaActual == null) {
+            throw new IllegalArgumentException("La Ventana Actual NO Puede ser Nula para Cambiar de Pantalla.");
         }
+        Parent nuevaVista = cargarVista(rutaFxml);
+        if (ventanaActual.getScene() != null) {
+            ventanaActual.getScene().setRoot(nuevaVista);
+        } else if (ventanaActual instanceof Stage stage) {
+            stage.setScene(new Scene(nuevaVista));
+        } else {
+            throw new IllegalStateException(
+                    "Imposible cambiar la pantalla: La ventana no es un Stage y no tiene Escena."
+            );
+        }
+
     }
 
     public static Parent cargarVista(String rutaFxml) {
@@ -58,7 +65,9 @@ public class CargadorVistas {
             stageModal.setScene(new Scene(root));
             stageModal.initModality(Modality.APPLICATION_MODAL);
             stageModal.setResizable(false);
-            stageModal.initOwner(ventanaPadre);
+            if (ventanaPadre != null){
+                stageModal.initOwner(ventanaPadre);
+            }
             stageModal.showAndWait();
             return controlador;
         } catch (IOException e) {

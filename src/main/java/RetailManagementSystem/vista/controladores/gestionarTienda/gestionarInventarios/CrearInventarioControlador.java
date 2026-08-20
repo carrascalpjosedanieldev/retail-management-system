@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
@@ -41,7 +40,7 @@ public class CrearInventarioControlador {
     }
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -108,8 +107,10 @@ public class CrearInventarioControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

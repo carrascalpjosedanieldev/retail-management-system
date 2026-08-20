@@ -51,7 +51,7 @@ public class AdministrarPermisosDeRolControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaPermisosRol.getScene().getWindow();
+        return tablaPermisosRol.getScene() != null ? tablaPermisosRol.getScene().getWindow() : null;
     }
 
 
@@ -168,8 +168,7 @@ public class AdministrarPermisosDeRolControlador {
     }
 
     private void volverAlPanel(){
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTION_ROLES_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
     }
 
 

@@ -47,7 +47,7 @@ public class GestionImpuestosControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaImpuestos.getScene().getWindow();
+        return tablaImpuestos.getScene() != null ? tablaImpuestos.getScene().getWindow() : null;
     }
 
 
@@ -112,9 +112,9 @@ public class GestionImpuestosControlador {
         CompletableFuture.supplyAsync(
                 this.orquestadorImpuestos::obtenerTodosLosImpuestos
         ).thenAccept(listaImpuestos ->
-            Platform.runLater(()-> {
-                listaObservableImpuestos.setAll(listaImpuestos);
-            })
+            Platform.runLater(()->
+                listaObservableImpuestos.setAll(listaImpuestos)
+            )
         ).exceptionally(ex ->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
@@ -123,8 +123,7 @@ public class GestionImpuestosControlador {
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                Stage stageActual = (Stage) getVentana();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
         });
@@ -181,9 +180,9 @@ public class GestionImpuestosControlador {
                 "¿Estás Seguro de Cambiar el Estado del Impuesto?")) {
             return;
         }
-        CompletableFuture.runAsync(()-> {
-            this.orquestadorImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto());
-        }).thenRun(()->{
+        CompletableFuture.runAsync(()->
+            this.orquestadorImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto())
+        ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
@@ -200,8 +199,8 @@ public class GestionImpuestosControlador {
                         actualizado,
                         item -> item.idImpuesto() == actualizado.idImpuesto()
                 );
-            });
-        }).exceptionally(ex -> {
+            })
+        ).exceptionally(ex -> {
             Platform.runLater(() -> {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
@@ -217,8 +216,7 @@ public class GestionImpuestosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

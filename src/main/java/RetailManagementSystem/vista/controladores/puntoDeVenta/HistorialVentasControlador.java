@@ -39,7 +39,7 @@ public class HistorialVentasControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return btnCerrar.getScene().getWindow();
+        return btnCerrar.getScene() != null ? btnCerrar.getScene().getWindow() : null;
     }
 
 
@@ -105,8 +105,10 @@ public class HistorialVentasControlador {
 
     @FXML
     public void cerrarModal(ActionEvent event) {
-        Stage stage = (Stage) getVentana();
-        stage.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

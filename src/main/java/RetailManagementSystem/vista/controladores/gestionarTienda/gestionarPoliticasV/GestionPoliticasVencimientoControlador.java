@@ -5,8 +5,8 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencim
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
-
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,7 +17,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -48,7 +47,7 @@ public class GestionPoliticasVencimientoControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return tablaPoliticasVencimiento.getScene().getWindow();
+        return tablaPoliticasVencimiento.getScene() != null ? tablaPoliticasVencimiento.getScene().getWindow() : null;
     }
 
     @FXML
@@ -126,8 +125,7 @@ public class GestionPoliticasVencimientoControlador {
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                Stage stageActual = (Stage) getVentana();
-                CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
             });
             return null;
         });
@@ -221,8 +219,7 @@ public class GestionPoliticasVencimientoControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
 

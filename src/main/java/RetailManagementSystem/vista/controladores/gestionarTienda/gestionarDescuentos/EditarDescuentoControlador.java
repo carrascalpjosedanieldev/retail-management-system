@@ -55,7 +55,7 @@ public class EditarDescuentoControlador {
     }
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
 
@@ -81,11 +81,11 @@ public class EditarDescuentoControlador {
             );
             return;
         }
-        CompletableFuture.supplyAsync(()-> {
-            return this.orquestadorDescuentos.actualizarDescuento(
+        CompletableFuture.supplyAsync(()->
+            this.orquestadorDescuentos.actualizarDescuento(
                     this.datosDescuento.idDescuento(), nombre, porcentaje
-            );
-        }).thenAccept(descuentoActualizado ->
+            )
+        ).thenAccept(descuentoActualizado ->
             Platform.runLater(() -> {
                 UtilidadesLista.reemplazarPorIdentidad(
                         listaObservable,
@@ -113,8 +113,10 @@ public class EditarDescuentoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

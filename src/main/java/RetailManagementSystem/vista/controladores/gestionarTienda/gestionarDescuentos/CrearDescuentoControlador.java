@@ -44,7 +44,7 @@ public class CrearDescuentoControlador {
     }
 
     private Window getVentana(){
-        return btnCancelar.getScene().getWindow();
+        return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
     }
 
     @FXML
@@ -70,9 +70,9 @@ public class CrearDescuentoControlador {
             );
             return;
         }
-        CompletableFuture.supplyAsync(()-> {
-            return this.orquestadorDescuentos.registrarDescuento(nombre, porcentaje, activo);
-        }).thenAccept(descuentoRegistrado ->
+        CompletableFuture.supplyAsync(()->
+            this.orquestadorDescuentos.registrarDescuento(nombre, porcentaje, activo)
+        ).thenAccept(descuentoRegistrado ->
             Platform.runLater(() -> {
                 listaObservable.add(descuentoRegistrado);
                 cerrarPantalla();
@@ -90,8 +90,10 @@ public class CrearDescuentoControlador {
     }
 
     private void cerrarPantalla(){
-        Stage stageActual = (Stage) getVentana();
-        stageActual.close();
+        Window ventana = getVentana();
+        if (ventana != null){
+            ventana.hide();
+        }
     }
 
 

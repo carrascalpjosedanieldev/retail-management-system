@@ -12,7 +12,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -42,7 +41,7 @@ public class MenuPrincipalControlador {
     //MÉTODOS:
 
     private Window getVentana(){
-        return btnSalir.getScene().getWindow();
+        return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
     }
 
 
@@ -117,21 +116,18 @@ public class MenuPrincipalControlador {
 
     @FXML
     public void abrirPuntoDeVenta(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.PANEL_DE_CONTROL_POS_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.PANEL_DE_CONTROL_POS_VIEW);
     }
 
 
     @FXML
     void abrirGestionarTienda(ActionEvent event) {
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
     }
 
     @FXML
     void abrirGestionarUsuarios(ActionEvent event){
-        Stage stageActual = (Stage) getVentana();
-        CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_USUARIOS_VIEW);
+        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_USUARIOS_VIEW);
     }
 
 
