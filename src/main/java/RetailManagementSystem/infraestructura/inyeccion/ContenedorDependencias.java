@@ -70,6 +70,7 @@ public class ContenedorDependencias {
         //ORQUESTADORES:
 
     private static OrquestadorDescuentos orquestadorDescuentos;
+    private static OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
     private static OrquestadorImpuestos orquestadorImpuestos;
     private static OrquestadorLogin orquestadorLogin;
     private static OrquestadorPermisos orquestadorPermisos;
@@ -152,6 +153,7 @@ public class ContenedorDependencias {
         //INSTANCIACIÓN DE ORQUESTADORES:
 
         orquestadorDescuentos = new OrquestadorDescuentos(servicioDescuentos, ensambladorDTODescuento);
+        orquestadorHistoricoDeVentas = new OrquestadorHistoricoDeVentas(servicioFacturas, ensambladorDTOFactura);
         orquestadorImpuestos = new OrquestadorImpuestos(servicioImpuestos, ensambladorDTOImpuesto);
         orquestadorLogin = new OrquestadorLogin(servicioUsuario, ensambladorDTOUsuario);
         orquestadorPermisos = new OrquestadorPermisos(ensambladorDTOPermiso, servicioPermiso);
@@ -223,10 +225,12 @@ public class ContenedorDependencias {
     }
 
     public static EnsambladorDTOPermiso getEnsambladorDTOPermiso() {
+        validarInicializado();
         return ensambladorDTOPermiso;
     }
 
     public static EnsambladorDTORol getEnsambladorDTORol() {
+        validarInicializado();
         return ensambladorDTORol;
     }
 
@@ -276,10 +280,12 @@ public class ContenedorDependencias {
     }
 
     public static RepositorioPermiso getRepositorioPermiso() {
+        validarInicializado();
         return repositorioPermiso;
     }
 
     public static RepositorioRol getRepositorioRol() {
+        validarInicializado();
         return repositorioRol;
     }
 
@@ -344,10 +350,12 @@ public class ContenedorDependencias {
     }
 
     public static ServicioPermiso getServicioPermiso() {
+        validarInicializado();
         return servicioPermiso;
     }
 
     public static ServicioRol getServicioRol() {
+        validarInicializado();
         return servicioRol;
     }
 
@@ -357,30 +365,42 @@ public class ContenedorDependencias {
     }
 
     public static FabricaProductos getFabricaProductos() {
+        validarInicializado();
         return fabricaProductos;
     }
 
     public static OrquestadorDescuentos getOrquestadorDescuentos() {
+        validarInicializado();
         return orquestadorDescuentos;
     }
 
+    public static OrquestadorHistoricoDeVentas getOrquestadorHistoricoDeVentas() {
+        validarInicializado();
+        return orquestadorHistoricoDeVentas;
+    }
+
     public static OrquestadorImpuestos getOrquestadorImpuestos() {
+        validarInicializado();
         return orquestadorImpuestos;
     }
 
     public static OrquestadorLogin getOrquestadorLogin() {
+        validarInicializado();
         return orquestadorLogin;
     }
 
     public static OrquestadorPermisos getOrquestadorPermisos() {
+        validarInicializado();
         return orquestadorPermisos;
     }
 
     public static OrquestadorPoliticaVencimiento getOrquestadorPoliticaVencimiento() {
+        validarInicializado();
         return orquestadorPoliticaVencimiento;
     }
 
     public static OrquestadorProductos getOrquestadorProductos() {
+        validarInicializado();
         return orquestadorProductos;
     }
 
@@ -390,10 +410,12 @@ public class ContenedorDependencias {
     }
 
     public static OrquestadorRoles getOrquestadorRoles() {
+        validarInicializado();
         return orquestadorRoles;
     }
 
     public static OrquestadorServicios getOrquestadorServicios() {
+        validarInicializado();
         return orquestadorServicios;
     }
 

@@ -1,7 +1,6 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
-import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -37,15 +36,12 @@ public class PanelDeControlControlador {
     @FXML public Label lblReloj;
     @FXML public Label lblVersion;
 
-    private final ServicioFacturas servicioFacturas;
-
-    private final EnsambladorDTOFactura ensambladorDTOFactura;
+    private final OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
 
     //CONTROLADOR:
 
-    public PanelDeControlControlador(ServicioFacturas servicioFacturas, EnsambladorDTOFactura ensambladorDTOFactura) {
-        this.servicioFacturas = servicioFacturas;
-        this.ensambladorDTOFactura = ensambladorDTOFactura;
+    public PanelDeControlControlador(OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas) {
+        this.orquestadorHistoricoDeVentas = orquestadorHistoricoDeVentas;
     }
 
     //MÉTODOS:
@@ -83,8 +79,8 @@ public class PanelDeControlControlador {
         lblCantidadFacturas.setText("...");
         lblTotalVentasHoy.setText("Calculando...");
         lblUltimaVenta.setText("Cargando...");
-        CompletableFuture.supplyAsync(()->
-                ensambladorDTOFactura.ensamblarResumenVentaDia(servicioFacturas.obtenerResumenHoy())
+        CompletableFuture.supplyAsync(
+                this.orquestadorHistoricoDeVentas::obtenerResumenHoy
         ).thenAccept(resumenVentaDia ->
             Platform.runLater(()->{
                 lblCantidadFacturas.setText(String.valueOf(resumenVentaDia.cantidadFacturas()));

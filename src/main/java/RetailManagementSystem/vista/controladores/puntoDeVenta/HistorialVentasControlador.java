@@ -1,8 +1,7 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.ventas.ReporteRecaudoDTO;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
-import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -29,15 +28,12 @@ public class HistorialVentasControlador {
     @FXML public Label lblImpuestos;
     @FXML public Label lblTotalGeneral;
 
-    private final ServicioFacturas servicioFacturas;
-
-    private final EnsambladorDTOFactura ensambladorDTOFactura;
+    private final OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
 
     //CONSTRUCTOR:
 
-    public HistorialVentasControlador(ServicioFacturas servicioFacturas, EnsambladorDTOFactura ensambladorDTOFactura) {
-        this.servicioFacturas = servicioFacturas;
-        this.ensambladorDTOFactura = ensambladorDTOFactura;
+    public HistorialVentasControlador(OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas) {
+        this.orquestadorHistoricoDeVentas = orquestadorHistoricoDeVentas;
     }
 
     //MÉTODOS:
@@ -80,9 +76,7 @@ public class HistorialVentasControlador {
         lblTotalGeneral.setText("Calculando...");
         btnGenerar.setDisable(true);
         CompletableFuture.supplyAsync(()->
-            this.ensambladorDTOFactura.ensamblarReporteRecaudo(
-                    servicioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin)
-            )
+            this.orquestadorHistoricoDeVentas.obtenerReporteRecaudoEntre(fechaInicio, fechaFin)
         ).thenAccept(reporteRecaudo ->
             Platform.runLater(()->{
                 actualizarTarjetas(reporteRecaudo);

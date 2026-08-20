@@ -107,14 +107,12 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == PanelDeControlControlador.class){
             return new PanelDeControlControlador(
-                    ContenedorDependencias.getServicioFacturas(),
-                    ContenedorDependencias.getEnsambladorDTOFactura()
+                    ContenedorDependencias.getOrquestadorHistoricoDeVentas()
             );
         }
         if (claseControlador == HistorialVentasControlador.class){
             return new HistorialVentasControlador(
-                    ContenedorDependencias.getServicioFacturas(),
-                    ContenedorDependencias.getEnsambladorDTOFactura()
+                    ContenedorDependencias.getOrquestadorHistoricoDeVentas()
             );
         }
         if (claseControlador == MenuDeVentasControlador.class){
