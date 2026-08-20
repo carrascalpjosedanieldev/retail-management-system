@@ -2,31 +2,39 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 
-<HBox prefHeight="720.0" prefWidth="1280.0" stylesheets="@../../css/menuPrincipal/estilosCssMenuPrincipal.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador">
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" stylesheets="@../../css/menuPrincipal/estilosCssMenuPrincipal.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador">
 
-    <VBox alignment="TOP_CENTER" prefHeight="720.0" prefWidth="326.0" style="-fx-background-color: #f0f0f0; -fx-padding: 60 30 30 30; -fx-spacing: 20;" styleClass="sidebar">
-        <Label fx:id="lblVersion" alignment="CENTER" prefHeight="51.0" prefWidth="242.0" style="-fx-font-size: 28px; -fx-font-weight: bold;" text="Cargando version ..." />
-        <Label fx:id="lblNombreTienda" alignment="CENTER" prefHeight="44.0" prefWidth="242.0" style="-fx-font-size: 22px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando tienda..." />
+    <VBox alignment="TOP_CENTER" prefWidth="326.0" style="-fx-background-color: #f0f0f0; -fx-padding: 60 30 30 30; -fx-spacing: 20;" styleClass="sidebar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Label fx:id="lblVersion" alignment="CENTER" prefHeight="51.0" prefWidth="281.0" style="-fx-font-size: 26px; -fx-font-weight: bold;" text="Cargando Version ..." />
+        <Label fx:id="lblNombreTienda" alignment="CENTER" prefHeight="31.0" prefWidth="242.0" style="-fx-font-size: 22px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Tienda..." />
 
         <Button onAction="#abrirPuntoDeVenta" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Punto de Venta" />
         <Button onAction="#abrirGestionarTienda" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Tienda" />
+        <Button onAction="#abrirGestionarUsuarios" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Usuarios" />
         <Button id="btnSalir" fx:id="btnSalir" onAction="#salirDelSistema" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Salir del Sistema" />
+
+        <Region VBox.vgrow="ALWAYS" />
+        <VBox>
+            <Label fx:id="lblNombreUsuario" alignment="CENTER" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Usuario..."/>
+            <Line endX="163.2929229736328" endY="0.8929054141044617" startX="-100.0"/>
+
+            <Label fx:id="lblRoles" alignment="CENTER" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Roles..."/>
+        </VBox>
     </VBox>
 
-    <VBox alignment="CENTER" prefHeight="720.0" prefWidth="972.0" style="-fx-background-color: #ffffff; -fx-spacing: 30;" HBox.hgrow="ALWAYS">
+    <VBox alignment="CENTER" style="-fx-background-color: #ffffff; -fx-spacing: 30;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="326.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <VBox alignment="CENTER" maxWidth="600.0" prefHeight="118.0" prefWidth="600.0" styleClass="welcome-box">
             <Label alignment="CENTER" style="-fx-text-fill: #0f172a; -fx-font-size: 42px; -fx-font-weight: bold; -fx-font-family: 'Arial';" styleClass="welcome-text" text="Bienvenido al Sistema" />
         </VBox>
 
         <VBox alignment="CENTER" maxWidth="337.0" prefHeight="66.0" prefWidth="337.0" styleClass="clock-box">
-            <Label fx:id="lblReloj" alignment="CENTER" prefHeight="32.0" prefWidth="238.0" style="-fx-text-fill: #0369a1; -fx-font-size: 28px; -fx-font-weight: bold; -fx-font-family: 'Arial';" styleClass="clock-text" text="Cargando hora..." />
+            <Label fx:id="lblReloj" alignment="CENTER" prefHeight="32.0" prefWidth="238.0" style="-fx-text-fill: #0369a1; -fx-font-size: 28px; -fx-font-weight: bold; -fx-font-family: 'Arial';" styleClass="clock-text" text="Cargando hora ..." />
         </VBox>
-
     </VBox>
 
-</HBox>
-
-
+</AnchorPane>

@@ -24,10 +24,12 @@ public class MenuPrincipalControlador {
 
     //ATRIBUTOS:
 
-    @FXML public Button btnSalir;
-    @FXML public Label lblVersion;
-    @FXML private Label lblReloj;
+    @FXML private Button btnSalir;
     @FXML private Label lblNombreTienda;
+    @FXML private Label lblNombreUsuario;
+    @FXML private Label lblReloj;
+    @FXML private Label lblRoles;
+    @FXML private Label lblVersion;
 
     private final ServicioConfiguraciones servicioConfiguraciones;
 
@@ -121,6 +123,11 @@ public class MenuPrincipalControlador {
     void abrirGestionarTienda(ActionEvent event) {
         Stage stageActual = (Stage) btnSalir.getScene().getWindow();
         CargadorVistas.cambiarPantalla(stageActual, RutasVista.GESTIONAR_TIENDA_VIEW);
+    }
+
+    @FXML
+    void abrirGestionarUsuarios(ActionEvent event){
+
     }
 
 
