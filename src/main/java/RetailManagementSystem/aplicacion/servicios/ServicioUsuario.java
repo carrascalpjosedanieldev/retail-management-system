@@ -22,6 +22,8 @@ public class ServicioUsuario {
 
     private static final String CONF_MINUTOS_BLOQUEO = "SEGURIDAD_MINUTOS_BLOQUEO";
 
+    private static final String HASH_FALSO = "$argon2id$v=19$m=65536,t=3,p=1$c2FsdGdlbmVyYWRv$hashfalsoejemplo...";
+
     private final RepositorioUsuario repositorioUsuario;
 
     private final CodificadorContrasenas codificadorContrasenas;
@@ -40,39 +42,52 @@ public class ServicioUsuario {
     //MÉTODOS:
 
     public Usuario validarYObtenerUsuarioValido(String email, char[] contrasenaPlana, LocalDateTime fechaReferencia) {
-        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorEmail(email)
-                .orElseThrow(() -> new CredencialesInvalidasException("Credenciales Inválidas."));
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorEmail(email).orElse(null);
+        String hashAVerificar = usuario != null ? usuario.getHash() : HASH_FALSO;
+        boolean claveCorrecta;
+        try {
+            claveCorrecta = this.codificadorContrasenas.verificar(contrasenaPlana, hashAVerificar);
+        } finally {
+            Arrays.fill(contrasenaPlana, '\0');
+        }
+        if (usuario == null || !claveCorrecta) {
+            if (usuario != null) {
+                registrarFalloYPosibleBloqueo(usuario, fechaReferencia);
+            }
+            throw new CredencialesInvalidasException("Credenciales Inválidas.");
+        }
         if (!usuario.isActivo()){
             throw new UsuarioInactivoException(
                     "Lo sentimos, NO puedes Ingresar porque NO estas Activo. Para mas información habla con el Administrador"
             );
         }
-        LocalDateTime bloqueo = usuario.getBloqueadoHasta();
-        if (bloqueo != null && bloqueo.isAfter(fechaReferencia)) {
-            long minutosRestantes = ChronoUnit.MINUTES.between(fechaReferencia, bloqueo);
-            throw new UsuarioBloqueadoException("Usuario bloqueado. Intenta de nuevo en " + minutosRestantes + " minutos.");
-        }
-        boolean claveCorrecta;
-        try {
-            claveCorrecta = this.codificadorContrasenas.verificar(contrasenaPlana, usuario.getHash());
-        } finally {
-            Arrays.fill(contrasenaPlana, '\0');
-        }
-        if (!claveCorrecta){
-            int maxIntentos = Integer.parseInt(
-                    this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MAX_INTENTOS)
-            );
-            int minutosBloqueo = Integer.parseInt(
-                    this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MINUTOS_BLOQUEO)
-            );
-            usuario.registrarIntentoFallido(maxIntentos, minutosBloqueo, fechaReferencia);
-            this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
-            throw new CredencialesInvalidasException("Credenciales Invalidas");
-        }
+        validarBloqueoTemporal(usuario, fechaReferencia);
         usuario.limpiarIntentosFallidosYBloqueo();
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
         return usuario;
     }
+
+    private void registrarFalloYPosibleBloqueo(Usuario usuario, LocalDateTime fechaReferencia){
+        int maxIntentos = Integer.parseInt(
+                this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MAX_INTENTOS)
+        );
+        int minutosBloqueo = Integer.parseInt(
+                this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MINUTOS_BLOQUEO)
+        );
+        usuario.registrarIntentoFallido(maxIntentos, minutosBloqueo, fechaReferencia);
+        this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
+    }
+
+    private void validarBloqueoTemporal(Usuario usuario, LocalDateTime fechaReferencia){
+        LocalDateTime bloqueo = usuario.getBloqueadoHasta();
+        if (bloqueo != null && bloqueo.isAfter(fechaReferencia)) {
+            long minutosRestantes = ChronoUnit.MINUTES.between(fechaReferencia, bloqueo);
+            throw new UsuarioBloqueadoException(
+                    "Usuario Bloqueado. Intenta de Nuevo en " + minutosRestantes + " Minutos."
+            );
+        }
+    }
+
 
     public Usuario registrarUsuario(String nombre, String apellido, String email, char[] contrasenaPlana, boolean activo){
         this.repositorioUsuario.obtenerUsuarioPorEmail(email)
@@ -89,6 +104,7 @@ public class ServicioUsuario {
         return this.repositorioUsuario.insertarUsuarioNuevo(usuarioNuevo);
     }
 
+
     public void actualizarDatosUsuario(
             int idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail, boolean activo
     ){
@@ -96,7 +112,7 @@ public class ServicioUsuario {
         if (!usuario.getEmail().equalsIgnoreCase(nuevoEmail)) {
             this.repositorioUsuario.obtenerUsuarioPorEmail(nuevoEmail)
                     .ifPresent(u -> {
-                        throw new EmailDuplicadoException("El Correo Electrónico -" + nuevoApellido + "- Ya está Registrado.");
+                        throw new EmailDuplicadoException("El Correo Electrónico -" + nuevoEmail + "- Ya está Registrado.");
                     });
         }
         usuario.cambiarNombre(nuevoNombre);
@@ -105,6 +121,7 @@ public class ServicioUsuario {
         usuario.cambiarEstado(activo);
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
     }
+
 
     public String restablecerContrasenaPorAdmin(int idUsuario) {
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
@@ -125,6 +142,7 @@ public class ServicioUsuario {
         this.repositorioUsuario.actualizarSeguridad(usuario);
         return claveTemporal.toString();
     }
+
 
     public void cambiarContrasenaDefinitiva(int idUsuario, char[] nuevaContrasenaPlana) {
         if (nuevaContrasenaPlana == null || nuevaContrasenaPlana.length < 8) {
