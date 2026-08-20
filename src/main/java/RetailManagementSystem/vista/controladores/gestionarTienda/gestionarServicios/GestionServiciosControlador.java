@@ -6,10 +6,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
-import RetailManagementSystem.vista.utilidades.CargadorVistas;
-import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
-import RetailManagementSystem.vista.utilidades.GestorAlertas;
-import RetailManagementSystem.vista.utilidades.RutasVista;
+import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -279,8 +276,11 @@ public class GestionServiciosControlador {
                         seleccionado.datosImpuesto(),
                         seleccionado.datosDescuento()
                 );
-                int indice = listaObservableServicios.indexOf(seleccionado);
-                listaObservableServicios.set(indice, actualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservableServicios,
+                        actualizado,
+                        item-> item.codigo().equals(actualizado.codigo())
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "El Estado del Servicio ha sido Actualizado Correctamente."

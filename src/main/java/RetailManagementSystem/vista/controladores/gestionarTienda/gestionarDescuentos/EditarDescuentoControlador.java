@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -86,8 +87,11 @@ public class EditarDescuentoControlador {
             );
         }).thenAccept(descuentoActualizado ->
             Platform.runLater(() -> {
-                int indice = listaObservable.indexOf(this.datosDescuento);
-                listaObservable.set(indice, descuentoActualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        descuentoActualizado,
+                        item-> item.idDescuento() == descuentoActualizado.idDescuento()
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "El Descuento se ha Actualizado con Éxito."

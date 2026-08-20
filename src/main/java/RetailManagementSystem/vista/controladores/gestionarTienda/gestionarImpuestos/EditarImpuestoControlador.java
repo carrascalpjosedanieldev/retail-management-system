@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -86,8 +87,11 @@ public class EditarImpuestoControlador {
             )
         ).thenAccept(impuestoActualizado ->
             Platform.runLater(()->{
-                int indice = listaObservable.indexOf(this.datosImpuesto);
-                listaObservable.set(indice, impuestoActualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        impuestoActualizado,
+                        item -> item.idImpuesto() == impuestoActualizado.idImpuesto()
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "El Impuesto se ha Actualizado con Éxito."

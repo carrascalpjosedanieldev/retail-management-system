@@ -138,21 +138,13 @@ public class RutasVista {
 
     public static final String GESTIONAR_PRODUCTOS_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/gestionProductos/GestionProductos.fxml";
-    public static final String ESTILOS_CSS_PRODUCTOS =
-            "/css/gestionarTienda/gestionarInventarios/gestionarProductos/estilosCssGestionProductos.css";
-
 
 
     public static final String EDITAR_ROPA_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabRopa/editarRopa.fxml";
-    public static final String ESTILOS_CSS_EDITAR_ROPA =
-            "/css/gestionarTienda/gestionarInventarios/gestionarProductos/tabRopaYtabPerecedero/estilosCssEditarRopaOPerecedero.css";
 
     public static final String EDITAR_PERECEDERO_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabPerecedero/editarPerecedero.fxml";
-    public static final String ESTILOS_CSS_EDITAR_PERECEDERO =
-            "/css/gestionarTienda/gestionarInventarios/gestionarProductos/tabRopaYtabPerecedero/estilosCssEditarRopaOPerecedero.css";
-
 
 
     //LOGIN:

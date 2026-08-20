@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -74,8 +75,11 @@ public class EditarInventarioControlador {
                 this.orquestadorInventarioProducto.actualizarInventario(this.datosInventario.idInventario(), nuevoNombre)
         ).thenAccept(inventarioActualizado->
             Platform.runLater(()->{
-                int indice = listaObservable.indexOf(this.datosInventario);
-                listaObservable.set(indice, inventarioActualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        inventarioActualizado,
+                        item-> item.idInventario().equals(inventarioActualizado.idInventario())
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "El Inventario se ha Actualizado con Éxito."

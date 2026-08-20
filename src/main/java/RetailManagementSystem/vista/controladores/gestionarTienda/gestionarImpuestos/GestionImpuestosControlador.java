@@ -6,6 +6,7 @@ import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -194,8 +195,11 @@ public class GestionImpuestosControlador {
                         impuestoSeleccionado.porcentaje(),
                         !impuestoSeleccionado.activo()
                 );
-                int indice = listaObservableImpuestos.indexOf(impuestoSeleccionado);
-                listaObservableImpuestos.set(indice, actualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservableImpuestos,
+                        actualizado,
+                        item -> item.idImpuesto() == actualizado.idImpuesto()
+                );
             });
         }).exceptionally(ex -> {
             Platform.runLater(() -> {

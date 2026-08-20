@@ -6,6 +6,7 @@ import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -205,6 +206,11 @@ public class PermisosVistaControlador {
                         permisoSeleccionado.descripcion(),
                         permisoSeleccionado.modulo(),
                         !permisoSeleccionado.activo()
+                );
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaMaestraPermisos,
+                        actualizado,
+                        item -> item.idPermiso() == actualizado.idPermiso()
                 );
                 int indice = listaMaestraPermisos.indexOf(permisoSeleccionado);
                 listaMaestraPermisos.set(indice, actualizado);

@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -93,8 +94,11 @@ public class ModificarDatosRolControlador {
                 this.orquestadorRoles.actualizarDatosRol(this.rol.idRol(), nombreActualizado, activo)
         ).thenAccept(rolActualizado->
             Platform.runLater(()->{
-                int indice = listaObservable.indexOf(this.rol);
-                listaObservable.set(indice, rolActualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        rolActualizado,
+                        item -> item.idRol() == rolActualizado.idRol()
+                );
                 cerrarVentanaSeguro();
             })
         ).exceptionally(ex->{

@@ -7,6 +7,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -153,8 +154,11 @@ public class EditarServicioControlador {
                 )
         ).thenAccept(servicioActualizado->
             Platform.runLater(()->{
-                int indice = listaObservable.indexOf(this.servicioSeleccionado);
-                listaObservable.set(indice, servicioActualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        servicioActualizado,
+                        item-> item.codigo().equals(servicioActualizado.codigo())
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "El Servicio se ha Actualizado con Éxito"

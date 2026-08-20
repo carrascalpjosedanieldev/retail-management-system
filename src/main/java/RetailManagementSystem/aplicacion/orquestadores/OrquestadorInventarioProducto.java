@@ -35,9 +35,13 @@ public class OrquestadorInventarioProducto {
 
     //MÉTODOS:
 
-    public void validarEspacioInventarioYGuardarProducto(int idInventario, Producto producto){
+    public ProductoResumenDTO validarEspacioInventarioYGuardarProducto(
+            int idInventario, Producto producto, LocalDate fecha
+    )
+    {
         this.servicioInventario.verificarEspacioDisponible(idInventario, producto.getStock());
         this.servicioProductos.registrarProducto(idInventario, producto);
+        return this.ensambladorDTOProducto.ensamblarProductoResumen(producto, fecha);
     }
 
     public ProductoResumenDTO validarEspacioInventarioYAumentarStockProducto(

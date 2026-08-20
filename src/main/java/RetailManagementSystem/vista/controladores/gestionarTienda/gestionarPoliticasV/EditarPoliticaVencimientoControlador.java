@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencim
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -105,8 +106,11 @@ public class EditarPoliticaVencimientoControlador {
             )
         ).thenAccept( politicaVActualizada ->
             Platform.runLater(()->{
-                int indice = listaObservable.indexOf(this.datosPoliticaV);
-                listaObservable.set(indice, politicaVActualizada);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        politicaVActualizada,
+                        item-> item.idPoliticaVencimiento() == politicaVActualizada.idPoliticaVencimiento()
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "La Política de Vencimiento se ha Actualizado con Éxito."

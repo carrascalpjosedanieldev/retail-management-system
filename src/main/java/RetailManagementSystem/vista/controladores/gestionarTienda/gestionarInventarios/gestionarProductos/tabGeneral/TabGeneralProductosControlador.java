@@ -2,10 +2,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
-import RetailManagementSystem.vista.utilidades.CargadorVistas;
-import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
-import RetailManagementSystem.vista.utilidades.GestorAlertas;
-import RetailManagementSystem.vista.utilidades.RutasVista;
+import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -240,9 +237,12 @@ public class TabGeneralProductosControlador {
 
     @FXML
     void abrirSelectorNuevoProducto(ActionEvent event) {
-        CargadorVistas.abrirModalSinInyeccion(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_PRODUCTO_VIEW,
-                "Crear Nuevo Producto", getVentana()
+                "Crear Nuevo Producto", getVentana(),
+                (CrearProductoControlador c)-> {
+                    c.cargarDatos(this.idInventario, listaObservable);
+                }
         );
     }
 
@@ -280,8 +280,11 @@ public class TabGeneralProductosControlador {
                         seleccionado.stock(),
                         !seleccionado.activo()
                 );
-                int indice = listaObservable.indexOf(seleccionado);
-                listaObservable.set(indice, actualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        actualizado,
+                        item -> item.codigoProducto().equals(actualizado.codigoProducto())
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "El Estado del Producto - " + seleccionado.nombre() + " - ha sido Actualizado con Éxito."

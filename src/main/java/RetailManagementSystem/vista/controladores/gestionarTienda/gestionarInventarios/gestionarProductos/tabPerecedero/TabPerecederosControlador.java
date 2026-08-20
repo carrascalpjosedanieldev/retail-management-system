@@ -5,10 +5,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
-import RetailManagementSystem.vista.utilidades.CargadorVistas;
-import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
-import RetailManagementSystem.vista.utilidades.GestorAlertas;
-import RetailManagementSystem.vista.utilidades.RutasVista;
+import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -356,8 +353,11 @@ public class TabPerecederosControlador {
                         seleccionado.estaVencido(),
                         !seleccionado.activo()
                 );
-                int indice = listaMaestraPerecederos.indexOf(seleccionado);
-                listaMaestraPerecederos.set(indice, actualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaMaestraPerecederos,
+                        actualizado,
+                        item-> item.codigo().equals(actualizado.codigo())
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Estado Actualizado", null,
                         "El Estado del Producto se Actualizó Correctamente."

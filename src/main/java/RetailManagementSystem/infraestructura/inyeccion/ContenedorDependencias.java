@@ -1,6 +1,7 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
 import RetailManagementSystem.aplicacion.ensambladores.*;
+import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.*;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
@@ -61,6 +62,10 @@ public class ContenedorDependencias {
     private static ServicioPermiso servicioPermiso;
     private static ServicioRol servicioRol;
     private static ServicioUsuario servicioUsuario;
+
+        //FABRICAS:
+
+    private static FabricaProductos fabricaProductos;
 
         //ORQUESTADORES:
 
@@ -139,6 +144,10 @@ public class ContenedorDependencias {
         servicioPermiso = new ServicioPermiso(repositorioPermiso);
         servicioRol = new ServicioRol(repositorioRol);
         servicioUsuario = new ServicioUsuario(repositorioUsuario, codificadorContrasenas, proveedorConfiguracion);
+
+        //INSTANCIACIÓN DE ORQUESTADORES:
+
+        fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPoliticaVencimiento);
 
         //INSTANCIACIÓN DE ORQUESTADORES:
 
@@ -345,6 +354,10 @@ public class ContenedorDependencias {
     public static ServicioUsuario getServicioUsuario() {
         validarInicializado();
         return servicioUsuario;
+    }
+
+    public static FabricaProductos getFabricaProductos() {
+        return fabricaProductos;
     }
 
     public static OrquestadorDescuentos getOrquestadorDescuentos() {

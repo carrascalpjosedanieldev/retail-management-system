@@ -5,10 +5,7 @@ import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
-import RetailManagementSystem.vista.utilidades.CargadorVistas;
-import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
-import RetailManagementSystem.vista.utilidades.GestorAlertas;
-import RetailManagementSystem.vista.utilidades.RutasVista;
+import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -333,8 +330,11 @@ public class TabRopaControlador {
                         seleccionado.talla(),
                         !seleccionado.activo()
                 );
-                int indice = listaObservable.indexOf(seleccionado);
-                listaObservable.set(indice, actualizado);
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservable,
+                        actualizado,
+                        item-> item.codigo().equals(actualizado.codigo())
+                );
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Estado Actualizado", null,
                         "El Estado del Producto se Actualizó Correctamente."

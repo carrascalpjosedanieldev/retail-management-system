@@ -1,8 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
-import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
-import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
-import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
+import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.dominio.enums.TipoProducto;
@@ -12,14 +13,14 @@ import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.dominio.excepciones.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
-import RetailManagementSystem.dominio.excepciones.InventarioNoEncontradoException;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -29,6 +30,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class CrearProductoControlador {
 
@@ -50,9 +52,13 @@ public class CrearProductoControlador {
 
     private int idInventario;
 
-    private final ServicioImpuestos servicioImpuestos;
-    private final ServicioDescuentos servicioDescuentos;
-    private final ServicioPoliticaVencimiento servicioPolitica;
+    private ObservableList<ProductoResumenDTO> listaObservable;
+
+    private final OrquestadorImpuestos orquestadorImpuestos;
+
+    private final OrquestadorDescuentos orquestadorDescuentos;
+
+    private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
 
     private final FabricaProductos fabricaProductos;
 
@@ -61,13 +67,14 @@ public class CrearProductoControlador {
     //CONSTRUCTOR:
 
     public CrearProductoControlador(
-            ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos,
-            ServicioPoliticaVencimiento servicioPolitica, OrquestadorInventarioProducto orquestadorInventarioProducto
+            OrquestadorImpuestos orquestadorImpuestos, OrquestadorDescuentos orquestadorDescuentos,
+            OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento, FabricaProductos fabricaProductos,
+            OrquestadorInventarioProducto orquestadorInventarioProducto
     ) {
-        this.servicioImpuestos = servicioImpuestos;
-        this.servicioDescuentos = servicioDescuentos;
-        this.servicioPolitica = servicioPolitica;
-        this.fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPolitica);
+        this.orquestadorImpuestos = orquestadorImpuestos;
+        this.orquestadorDescuentos = orquestadorDescuentos;
+        this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
+        this.fabricaProductos = fabricaProductos;
         this.orquestadorInventarioProducto = orquestadorInventarioProducto;
     }
 
@@ -78,7 +85,7 @@ public class CrearProductoControlador {
     }
 
 
-    public void recibirIdInventario(int idInventario) {
+    public void cargarDatos(int idInventario, ObservableList<ProductoResumenDTO> listaObservable) {
         if (idInventario <=0 ){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "ID del Inventario Invalido", null,
@@ -87,20 +94,7 @@ public class CrearProductoControlador {
             return;
         }
         this.idInventario = idInventario;
-    }
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        DialogPane panelAlerta = alerta.getDialogPane();
-        panelAlerta.setMinHeight(Region.USE_PREF_SIZE);
-//        URL urlCss = getClass().getResource(RutasVista.ESTILOS_CSS_CREAR_PRODUCTOS);
-//        if (urlCss != null) {
-//            panelAlerta.getStylesheets().add(urlCss.toExternalForm());
-//        }
-        alerta.showAndWait();
+        this.listaObservable = listaObservable;
     }
 
 
@@ -115,7 +109,7 @@ public class CrearProductoControlador {
     private void configurarFiltrosTexto() {
         txtStock.setTextFormatter(new TextFormatter<>(change ->
                 change.getText().matches("\\d*") ? change : null));
-        String regexDecimal = "\\d*(\\.\\d*)?";
+        String regexDecimal = "^[0-9]*\\.?[0-9]*$";
         txtValorCompra.setTextFormatter(new TextFormatter<>(change ->
                 change.getControlNewText().matches(regexDecimal) ? change : null));
         txtGanancia.setTextFormatter(new TextFormatter<>(change ->
@@ -167,24 +161,39 @@ public class CrearProductoControlador {
     }
 
     private void cargarDatosComboBoxes() {
-        List<ImpuestoDTO> impuestos = servicioImpuestos.obtenerImpuestosActivos().stream()
-            .map(i -> new ImpuestoDTO(i.getId(), i.getNombre(), i.getPorcentaje(), true))
-            .toList();
-        cbImpuesto.setItems(FXCollections.observableArrayList(impuestos));
-        List<DescuentoDTO> descuentos = servicioDescuentos.obtenerDescuentosActivos().stream()
-                .map(d -> new DescuentoDTO(d.getId(), d.getNombre(), d.getPorcentaje(), true))
-                .toList();
-        cbDescuento.setItems(FXCollections.observableArrayList(descuentos));
-        List<PoliticaVencimientoDTO> politicas = servicioPolitica.obtenerPoliticasVencimientoActivas().stream()
-                .map(p -> new PoliticaVencimientoDTO(
-                        p.getIdPolitica(),
-                        p.getNombre(),
-                        p.getDiasUmbral(),
-                        p.getPorcentajeDescuento(),
-                        true
-                ))
-                .toList();
-        cbPolitica.setItems(FXCollections.observableArrayList(politicas));
+        CompletableFuture<List<ImpuestoDTO>> futureImpuestos =
+                CompletableFuture.supplyAsync(this.orquestadorImpuestos::obtenerImpuestosActivos);
+        CompletableFuture<List<DescuentoDTO>> futureDescuentos =
+                CompletableFuture.supplyAsync(this.orquestadorDescuentos::obtenerDescuentosActivos);
+        CompletableFuture<List<PoliticaVencimientoDTO>> futurePoliticasV =
+                CompletableFuture.supplyAsync(this.orquestadorPoliticaVencimiento::obtenerPoliticasVActivas);
+        CompletableFuture.allOf(
+                futureImpuestos, futureDescuentos, futurePoliticasV
+        ).thenAccept(v -> {
+            List<ImpuestoDTO> impuestos = futureImpuestos.join();
+            List<DescuentoDTO> descuentos = futureDescuentos.join();
+            List<PoliticaVencimientoDTO> politicas = futurePoliticasV.join();
+            Platform.runLater(() -> {
+                if (!impuestos.isEmpty()) cbImpuesto.getItems().setAll(impuestos);
+                if (!descuentos.isEmpty()) cbDescuento.getItems().setAll(descuentos);
+                if (!politicas.isEmpty()) cbPolitica.getItems().setAll(politicas);
+            });
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> {
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        getVentana(),
+                        "Error de Conexión",
+                        "Faltan Datos Obligatorios para Operar.",
+                        "No se pudieron cargar las listas desplegables desde la base de datos.\n" +
+                                "Se Cerrará la Ventana por Seguridad.\n" +
+                                "Verifica tu Conexión y Notifícale este Error al Administrador:\n" +
+                                causa.getMessage()
+                );
+                cerrarVentana();
+            });
+            return null;
+        });
     }
 
 
@@ -194,70 +203,131 @@ public class CrearProductoControlador {
     }
 
     private void guardarProducto(){
+        String nombre = txtNombre.getText().trim();
+        String valorCompraTexto = txtValorCompra.getText().trim();
+        String gananciaTexto = txtGanancia.getText().trim();
+        String stockTexto = txtStock.getText().trim();
+        if (nombre.isBlank() || valorCompraTexto.isBlank() || gananciaTexto.isBlank() || stockTexto.isBlank()) {
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Campos de Texto Vacíos", null,
+                    "Todos los Campos de Texto son Obligatorios."
+            );
+            return;
+        }
+        BigDecimal valorCompra;
+        BigDecimal ganancia;
+        int stock;
         try {
-            if (txtNombre.getText().isBlank() || txtValorCompra.getText().isBlank() ||
-                    txtGanancia.getText().isBlank() || txtStock.getText().isBlank()) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Campos de Texto Vacíos",
-                        "Todos los Campos de Texto son Obligatorios.");
-                return;
-            }
-            String nombre = txtNombre.getText();
-            BigDecimal valorCompra = new BigDecimal(txtValorCompra.getText());
-            BigDecimal ganancia = new BigDecimal(txtGanancia.getText());
-            int stock = Integer.parseInt(txtStock.getText());
-            ImpuestoDTO impuestoSel = cbImpuesto.getValue();
-            DescuentoDTO descuentoSel = cbDescuento.getValue();
-            if (impuestoSel == null || descuentoSel == null) {
-                mostrarAlerta(Alert.AlertType.WARNING, "Impuesto NO Seleccionado",
-                        "Debes seleccionar un Impuesto y un Descuento.");
-                return;
-            }
-            TipoProducto tipoSeleccionado = (TipoProducto) grupoTipo.getSelectedToggle().getUserData();
-            Producto producto = null;
-            if (tipoSeleccionado == TipoProducto.ROPA) {
-                String tallaSel = cbTalla.getValue();
-                if (tallaSel == null) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Talla NO Seleccionada",
-                            "Debes Seleccionar una Talla.");
-                    return;
-                }
-                producto = fabricaProductos.fabricarProductoRopa(
-                        nombre, valorCompra, ganancia, stock,
-                        impuestoSel.idImpuesto(), descuentoSel.idDescuento(), tallaSel
-                );
-            } else if (tipoSeleccionado == TipoProducto.PERECEDERO) {
-                LocalDate fechaVenc = dpFechaVencimiento.getValue();
-                PoliticaVencimientoDTO politicaSel = cbPolitica.getValue();
-                if (fechaVenc == null || politicaSel == null) {
-                    mostrarAlerta(Alert.AlertType.WARNING, "Campos NO Seleccionados",
-                            "Debes seleccionar Fecha y Política de Vencimiento.");
-                    return;
-                }
-                producto = fabricaProductos.fabricarProductoPerecedero(
-                        nombre, valorCompra, ganancia, stock,
-                        impuestoSel.idImpuesto(), descuentoSel.idDescuento(),
-                        fechaVenc, politicaSel.idPoliticaVencimiento(), LocalDate.now()
-                );
-            } else {
-                mostrarAlerta(Alert.AlertType.ERROR, "Tipo de Producto NO Identificado",
-                        "Tipo de Producto Invalido");
-                return;
-            }
-            this.orquestadorInventarioProducto.validarEspacioInventarioYGuardarProducto(this.idInventario, producto);
-            mostrarAlerta(Alert.AlertType.INFORMATION, "Éxito",
-                    "Producto Creado Correctamente.");
-            cerrarVentana();
-        } catch (InventarioNoEncontradoException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Inventario NO Encontrado",
-                    "Error:  " + e.getMessage());
-        } catch (CapacidadInventarioExcedidaException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Capacidad Excedida", e.getMessage());
+            valorCompra = new BigDecimal(valorCompraTexto);
+            ganancia = new BigDecimal(gananciaTexto);
+            stock = Integer.parseInt(stockTexto);
         } catch (NumberFormatException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Error de Formato en los Números",
-                    "Verifica que los Campos Numéricos (Valor, Ganancia, Stock) Contengan Solo números Válidos y sin Espacios.");
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Error de Formato en los Números", null,
+                    "Verifica que los Campos Numéricos (Valor, Ganancia, Stock) Contengan Solo números Válidos y sin Espacios."
+            );
+            return;
         } catch (IllegalArgumentException e) {
-            mostrarAlerta(Alert.AlertType.WARNING, "Error al Registrar el Producto",
-                    "Hay un Error en los Datos Ingresados:\n" + e.getMessage());
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Error al Registrar el Producto", null,
+                    "Hay un Error en los Datos Ingresados:\n" + e.getMessage()
+            );
+            return;
+        }
+        ImpuestoDTO impuestoSel = cbImpuesto.getValue();
+        DescuentoDTO descuentoSel = cbDescuento.getValue();
+        if (impuestoSel == null || descuentoSel == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Impuesto NO Seleccionado", null,
+                    "Debes seleccionar un Impuesto y un Descuento."
+            );
+            return;
+        }
+        TipoProducto tipoSeleccionado = (TipoProducto) grupoTipo.getSelectedToggle().getUserData();
+        Producto producto = crearProductoDesdeFormulario(
+                tipoSeleccionado, nombre, valorCompra, ganancia, stock, impuestoSel.idImpuesto(),
+                descuentoSel.idDescuento()
+        );
+        if (producto == null){
+            return;
+        }
+        CompletableFuture.supplyAsync(()->
+                this.orquestadorInventarioProducto.validarEspacioInventarioYGuardarProducto(
+                        this.idInventario, producto, LocalDate.now()
+                )
+        ).thenAccept(productoRegistrado->
+            Platform.runLater(()->{
+                listaObservable.add(productoRegistrado);
+                GestorAlertas.mostrarAlertaInformacion(
+                        getVentana(), "Éxito", null,
+                        "Producto Creado Correctamente."
+                );
+                cerrarVentana();
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                if (causa instanceof IllegalArgumentException ||
+                    causa instanceof IllegalStateException){
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error en los Datos Ingresados", null,
+                            "Verifica los Datos que Ingresaste, Detalle del Error:\n" +
+                                    causa.getMessage()
+                    );
+                } else if (causa instanceof CapacidadInventarioExcedidaException){
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(),"Capacidad del Inventario Excedida", null,
+                            causa.getMessage()
+                    );
+                } else {
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error Critico", null,
+                            "Verifica tu Conexión y Notificale este Error al Administrador:\n"
+                                    + causa.getMessage()
+                    );
+                }
+            });
+            return null;
+        });
+    }
+
+    private Producto crearProductoDesdeFormulario(
+            TipoProducto tipoSeleccionado, String nombre, BigDecimal valorCompra, BigDecimal ganancia,
+            int stock, int idImpuesto, int idDescuento
+    ) {
+        if (tipoSeleccionado == TipoProducto.ROPA) {
+            String tallaSel = cbTalla.getValue();
+            if (tallaSel == null) {
+                GestorAlertas.mostrarAlertaWarning(
+                        getVentana(), "Talla NO Seleccionada", null,
+                        "Debes Seleccionar una Talla."
+                );
+                return null;
+            }
+            return fabricaProductos.fabricarProductoRopa(
+                    nombre, valorCompra, ganancia, stock,
+                    idImpuesto, idDescuento, tallaSel
+            );
+        } else if (tipoSeleccionado == TipoProducto.PERECEDERO) {
+            LocalDate fechaVenc = dpFechaVencimiento.getValue();
+            PoliticaVencimientoDTO politicaSel = cbPolitica.getValue();
+            if (fechaVenc == null || politicaSel == null) {
+                GestorAlertas.mostrarAlertaWarning(
+                        getVentana(), "Campos NO Seleccionados", null,
+                        "Debes seleccionar Fecha y Política de Vencimiento."
+                );
+                return null;
+            }
+            return fabricaProductos.fabricarProductoPerecedero(
+                    nombre, valorCompra, ganancia, stock,
+                    idImpuesto, idDescuento, fechaVenc,
+                    politicaSel.idPoliticaVencimiento(), LocalDate.now()
+            );
+        } else {
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Error", null,
+                    "Tipo Invalido");
+            return null;
         }
     }
 

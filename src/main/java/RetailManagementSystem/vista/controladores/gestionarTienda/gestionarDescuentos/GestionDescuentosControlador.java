@@ -6,6 +6,7 @@ import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -193,6 +194,11 @@ public class GestionDescuentosControlador {
                         descuentoSeleccionado.nombre(),
                         descuentoSeleccionado.porcentaje(),
                         !descuentoSeleccionado.activo()
+                );
+                UtilidadesLista.reemplazarPorIdentidad(
+                        listaObservableDescuentos,
+                        actualizado,
+                        item -> item.idDescuento() == actualizado.idDescuento()
                 );
                 int indice = listaObservableDescuentos.indexOf(descuentoSeleccionado);
                 listaObservableDescuentos.set(indice, actualizado);
