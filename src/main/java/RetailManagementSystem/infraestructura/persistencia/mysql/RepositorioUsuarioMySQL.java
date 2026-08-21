@@ -10,10 +10,7 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.Persisten
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
@@ -53,7 +50,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
-                    int idReal = gk.getInt(1);
+                    Long idReal = gk.getLong(1);
                     return Usuario.reconstruirDesdeBD(
                             idReal, usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
                             usuario.getIntentosFallidos(), usuario.getBloqueadoHasta(), usuario.getHash(),
@@ -106,7 +103,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                         Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
                         LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
                         usuario = Usuario.reconstruirDesdeBD(
-                                rs.getInt("id_usuario"),
+                                rs.getLong("id_usuario"),
                                 rs.getString("nombre"),
                                 rs.getString("apellido"),
                                 rs.getString("email"),
@@ -159,27 +156,29 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
             throw new PersistenciaException("Error al buscar el Usuario por email" + e.getMessage(), e);
         }
     }
 
+
+    private static final String SQL_OBTENER_USUARIO_POR_ID =
+            "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
+                    "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
+                    "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+                    "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.id_modulo, p.activo AS permiso_activo, " +
+                    "m.nombre AS nombre_modulo " +
+                    "FROM usuarios u " +
+                    "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
+                    "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
+                    "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
+                    "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
+                    "LEFT JOIN modulos m ON p.id_modulo = m.id_modulo " +
+                    "WHERE u.id_usuario = ?";
+
     @Override
     public Usuario obtenerUsuarioPorId(int idUsuario) {
-        String sql =
-                "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
-                        "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
-                        "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
-                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p,modulo, p.activo AS permiso_activo " +
-                        "FROM usuarios u " +
-                        "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
-                        "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
-                        "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
-                        "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
-                        "WHERE u.id_usuario = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_ID)) {
 
             pstmt.setInt(1, idUsuario);
 
@@ -194,7 +193,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                         Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
                         LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
                         usuario = Usuario.reconstruirDesdeBD(
-                                rs.getInt("id_usuario"),
+                                rs.getLong("id_usuario"),
                                 rs.getString("nombre"),
                                 rs.getString("apellido"),
                                 rs.getString("email"),
@@ -254,9 +253,94 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
     }
 
 
+    private static final String SQL_OBTENER_TODOS_LOS_USUARIOS =
+            "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
+                    "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
+                    "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+                    "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.id_modulo, p.activo AS permiso_activo, " +
+                    "m.nombre AS nombre_modulo " +
+                    "FROM usuarios u " +
+                    "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
+                    "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
+                    "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
+                    "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
+                    "LEFT JOIN modulos m ON p.id_modulo = m.id_modulo " +
+                    "ORDER BY u.activo DESC, u.id_usuario ASC ";
+
     @Override
     public List<Usuario> obtenerTodosLosUsuarios() {
-        return List.of();
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_USUARIOS);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            Map<Long, Usuario> mapaUsuarios = new HashMap<>();
+
+            while (rs.next()){
+
+                long idUsuario = rs.getLong("id_usuario");
+
+                Usuario usuario = null;
+
+                if (!mapaUsuarios.containsKey(idUsuario)){
+                    Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
+                    LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
+                    usuario = Usuario.reconstruirDesdeBD(
+                            idUsuario,
+                            rs.getString("nombre"),
+                            rs.getString("apellido"),
+                            rs.getString("email"),
+                            rs.getInt("intentos_fallidos"),
+                            fechaBloqueo,
+                            rs.getString("password_hash"),
+                            rs.getBoolean("activo"),
+                            rs.getBoolean("debe_cambiar_contrasena")
+                    );
+                    mapaUsuarios.put(idUsuario, usuario);
+                } else {
+                    usuario = mapaUsuarios.get(idUsuario);
+                }
+
+
+                Integer idRol = (Integer) rs.getObject("rol_id_rol");
+                if (idRol != null) {
+
+                    Rol rol = null;
+                    for (Rol r : usuario.getRoles()) {
+                        if (r.getIdRol().equals(idRol)) {
+                            rol = r;
+                            break;
+                        }
+                    }
+
+                    if (rol == null) {
+                        rol = Rol.reconstruirDesdeBD(
+                                idRol,
+                                rs.getString("nombre_rol"),
+                                rs.getBoolean("rol_activo")
+                        );
+                        usuario.recuperarRolDeBD(rol);
+                    }
+
+                    Integer idPermiso = (Integer) rs.getObject("id_permiso");
+                    if (idPermiso != null) {
+                        Permiso permiso = Permiso.reconstruirDesdeBD(
+                                idPermiso,
+                                rs.getString("nombre_permiso"),
+                                rs.getString("descripcion"),
+                                rs.getString("nombre_modulo"),
+                                rs.getBoolean("permiso_activo")
+                        );
+                        rol.recuperarPermisoDeBD(permiso);
+                    }
+                }
+
+            }
+
+            return new ArrayList<>(mapaUsuarios.values());
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al Listar los Usuarios.", e);
+        }
     }
 
 
@@ -277,7 +361,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                 pstmt.setNull(2, Types.TIMESTAMP);
             }
 
-            pstmt.setInt(3, usuario.getIdUsuario());
+            pstmt.setLong(3, usuario.getIdUsuario());
 
             int filasAfectadas = pstmt.executeUpdate();
 
@@ -301,7 +385,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             pstmt.setString(2, usuario.getApellido());
             pstmt.setString(3, usuario.getEmail());
             pstmt.setBoolean(4, usuario.isActivo());
-            pstmt.setInt(5, usuario.getIdUsuario());
+            pstmt.setLong(5, usuario.getIdUsuario());
 
             int filasAfectadas = pstmt.executeUpdate();
 
@@ -332,7 +416,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                 pstmt.setNull(4, Types.TIMESTAMP);
             }
 
-            pstmt.setInt(5, usuario.getIdUsuario());
+            pstmt.setLong(5, usuario.getIdUsuario());
 
             int filasAfectadas = pstmt.executeUpdate();
 

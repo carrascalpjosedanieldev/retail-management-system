@@ -3,7 +3,7 @@ package RetailManagementSystem.aplicacion.dto.seguridad;
 import java.util.Set;
 
 public record UsuarioDTO(
-        int idUsuario, String nombre, String apellido, String email, boolean activo, boolean debeCambiarContrasena,
+        Long idUsuario, String nombre, String apellido, String email, boolean activo, boolean debeCambiarContrasena,
         Set<String> roles, Set<String> permisos
 ) {
     public String getNombreCompleto() {

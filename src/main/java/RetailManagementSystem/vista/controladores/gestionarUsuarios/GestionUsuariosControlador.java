@@ -25,7 +25,7 @@ public class GestionUsuariosControlador {
 
     //ATRIBUTOS:
 
-    @FXML private TableColumn<UsuarioDTO, Integer> colId;
+    @FXML private TableColumn<UsuarioDTO, Long> colId;
     @FXML private TableColumn<UsuarioDTO, String> colNombre;
     @FXML private TableColumn<UsuarioDTO, String> colApellido;
     @FXML private TableColumn<UsuarioDTO, String> colEmail;

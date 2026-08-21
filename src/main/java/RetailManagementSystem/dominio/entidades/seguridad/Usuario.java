@@ -12,7 +12,7 @@ public class Usuario {
 
     //ATRIBUTOS:
 
-    private final Integer idUsuario;
+    private final Long idUsuario;
 
     private String nombre;
 
@@ -36,7 +36,7 @@ public class Usuario {
 
     //GETTERS Y SETTERS:
 
-    public Integer getIdUsuario() {
+    public Long getIdUsuario() {
         return idUsuario;
     }
 
@@ -107,7 +107,7 @@ public class Usuario {
     //CONSTRUCTORES:
 
     private Usuario(
-            Integer idUsuario, String nombre, String apellido, String email,
+            Long idUsuario, String nombre, String apellido, String email,
             int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, boolean activo,
             boolean debeCambiarContrasena
     ) {
@@ -140,7 +140,7 @@ public class Usuario {
     }
 
     public static Usuario reconstruirDesdeBD(
-            Integer id_usuario, String nombre, String apellido, String email,
+            Long id_usuario, String nombre, String apellido, String email,
             int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, boolean activo,
             boolean debeCambiarContrasena
     ){
@@ -231,8 +231,18 @@ public class Usuario {
         }
     }
 
+    public void recuperarRolDeBD(Rol rol){
+        if (this.roles.add(rol)) {
+            actualizarCachePermisos();
+        }
+    }
+
     public boolean tienePermiso(String nombrePermiso) {
         return this.permisosCacheados.contains(nombrePermiso.toUpperCase());
+    }
+
+    public boolean tieneRol(Rol rol){
+        return this.roles.contains(rol);
     }
 
     private void actualizarCachePermisos() {
