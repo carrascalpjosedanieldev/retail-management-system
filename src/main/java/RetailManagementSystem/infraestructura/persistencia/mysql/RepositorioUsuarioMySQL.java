@@ -178,11 +178,11 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                     "WHERE u.id_usuario = ?";
 
     @Override
-    public Usuario obtenerUsuarioPorId(int idUsuario) {
+    public Usuario obtenerUsuarioPorId(Long idUsuario) {
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_ID)) {
 
-            pstmt.setInt(1, idUsuario);
+            pstmt.setLong(1, idUsuario);
 
             try (ResultSet rs = pstmt.executeQuery()) {
 

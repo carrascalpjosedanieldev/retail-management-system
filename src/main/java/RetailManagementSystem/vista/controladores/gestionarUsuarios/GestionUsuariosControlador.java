@@ -161,7 +161,21 @@ public class GestionUsuariosControlador {
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
-
+        UsuarioDTO seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null){
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Selecciona un Usuario", null,
+                    "Debes seleccionar us Usuario para poder Editarlo."
+            );
+            return;
+        }
+        CargadorVistas.abrirModalConInyeccion(
+                RutasVista.EDITAR_USUARIO_VIEW,
+                "Editando Usuario", getVentana(),
+                (EditarUsuarioControlador c)-> {
+                    c.cargarDatos(seleccionado, listaObservableUsuarios);
+                }
+        );
     }
 
 

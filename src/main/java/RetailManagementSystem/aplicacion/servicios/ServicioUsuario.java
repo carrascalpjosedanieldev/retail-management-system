@@ -110,8 +110,8 @@ public class ServicioUsuario {
     }
 
 
-    public void actualizarDatosUsuario(
-            int idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail, boolean activo
+    public Usuario actualizarDatosUsuario(
+            Long idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail
     ){
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
         if (!usuario.getEmail().equalsIgnoreCase(nuevoEmail)) {
@@ -123,12 +123,12 @@ public class ServicioUsuario {
         usuario.cambiarNombre(nuevoNombre);
         usuario.cambiarApellido(nuevoApellido);
         usuario.cambiarEmail(nuevoEmail);
-        usuario.cambiarEstado(activo);
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
+        return usuario;
     }
 
 
-    public String restablecerContrasenaPorAdmin(int idUsuario) {
+    public String restablecerContrasenaPorAdmin(Long idUsuario) {
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
         String caracteresPermitidos = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         SecureRandom random = new SecureRandom();
@@ -149,7 +149,7 @@ public class ServicioUsuario {
     }
 
 
-    public void cambiarContrasenaDefinitiva(int idUsuario, char[] nuevaContrasenaPlana) {
+    public void cambiarContrasenaDefinitiva(Long idUsuario, char[] nuevaContrasenaPlana) {
         if (nuevaContrasenaPlana == null || nuevaContrasenaPlana.length < 8) {
             throw new IllegalArgumentException("La Nueva Contraseña debe tener al menos 8 Caracteres.");
         }

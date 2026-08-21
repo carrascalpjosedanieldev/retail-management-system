@@ -155,6 +155,9 @@ public class RutasVista {
     public static final String REGISTRAR_USUARIO_VIEW =
             "/vista/gestionarUsuarios/RegistrarUsuario.fxml";
 
+    public static final String EDITAR_USUARIO_VIEW =
+            "/vista/gestionarUsuarios/EditarUsuario.fxml";
+
 
     //LOGIN:
 

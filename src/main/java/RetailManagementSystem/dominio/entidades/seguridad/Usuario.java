@@ -192,10 +192,6 @@ public class Usuario {
         setActivo(false);
     }
 
-    public void cambiarEstado(boolean estado){
-        setActivo(estado);
-    }
-
     //MÉTODOS DE VALIDACIÓN LOGIN:
 
     public void registrarIntentoFallido(int maxIntentosFallidos, int minutosDeBloqueo, LocalDateTime fechaReferencia){

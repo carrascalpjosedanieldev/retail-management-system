@@ -15,7 +15,7 @@ public interface RepositorioUsuario {
 
     Optional<Usuario> obtenerUsuarioPorEmail(String email);
 
-    Usuario obtenerUsuarioPorId(int idUsuario);
+    Usuario obtenerUsuarioPorId(Long idUsuario);
 
     List<Usuario> obtenerTodosLosUsuarios();
 

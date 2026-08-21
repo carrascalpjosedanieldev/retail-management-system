@@ -52,5 +52,15 @@ public class OrquestadorUsuarios {
         );
     }
 
+    public UsuarioDTO actualizarDatosUsuario(
+            Long idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail
+    ) {
+        return this.ensambladorDTOUsuario.ensamblarDTOUsuario(
+                this.servicioUsuario.actualizarDatosUsuario(
+                        idUsuario, nuevoNombre, nuevoApellido, nuevoEmail
+                )
+        );
+    }
+
 }//===================================================================================================================//
 
