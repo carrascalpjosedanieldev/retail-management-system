@@ -3,6 +3,8 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.puertos.RepositorioPoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PoliticaVencimientoNoEncontradaException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
@@ -14,12 +16,13 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
     //CREATE:
 
+    private static final String SQL_INSERTAR_POLITICA_V =
+            "INSERT INTO politicas_vencimiento (nombre_politica, dias_umbral, porcentaje_descuento) VALUES (?, ?, ?)";
+
     @Override
     public PoliticaVencimiento insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
-        String sql = "INSERT INTO politicas_vencimiento (nombre_politica, dias_umbral, porcentaje_descuento) VALUES (?, ?, ?)";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_POLITICA_V, Statement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, politicaVencimiento.getNombre());
             pstmt.setInt(2, politicaVencimiento.getDiasUmbral());
@@ -28,7 +31,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new RuntimeException("La Inserción falló: Ninguna fila fue afectada en la Base de Datos.");
+                throw new IncersionFallidaException("La Inserción falló: Ninguna fila fue afectada en la Base de Datos.");
             }
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
@@ -38,7 +41,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                             politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
                             politicaVencimiento.isActiva());
                 } else {
-                    throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new IdAutogeneradoNoRecibidoException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
             }
 
@@ -55,17 +58,18 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
     //READ:
 
+    private static final String SQL_OBTENER_POLITICA_V =
+            "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
+            "FROM politicas_vencimiento " +
+            "WHERE id_politica = ?";
+
     @Override
     public PoliticaVencimiento obtenerPoliticaVencimiento(int idPoliticaVencimiento) {
         if (idPoliticaVencimiento <= 0){
             throw new IllegalArgumentException("El ID a buscar debe ser positivo");
         }
-        String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento " +
-                "WHERE id_politica = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_POLITICA_V)){
 
             pstmt.setInt(1, idPoliticaVencimiento);
 
@@ -81,26 +85,26 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                     return PoliticaVencimiento.reconstruirDesdeBD(idReal, nombre, diasUmbral, porcentaje, activo);
                 }
 
-                throw new PoliticaVencimientoNoEncontradaException("No existe una Politica de Vencimiento con el " +
+                throw new PoliticaVencimientoNoEncontradaException("No existe una Política de Vencimiento con el " +
                         "ID: " + idPoliticaVencimiento);
 
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error de base de datos al obtener la Politica de Vencimiento", e);
+            throw new PersistenciaException("Error de base de datos al obtener la Política de Vencimiento", e);
         }
     }
 
 
+    private static final String SQL_OBTENER_POLITICAS_V_ACTIVAS =
+            "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
+            "FROM politicas_vencimiento WHERE activa = true";
+
     @Override
     public List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas() {
         List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
-
-        String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento WHERE activa = true";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_POLITICAS_V_ACTIVAS);
              ResultSet rs = pstmt.executeQuery();){
 
             while (rs.next()){
@@ -121,15 +125,16 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
     }
 
 
+    private static final String SQL_OBTENER_TODAS_LAS_POLITICAS_V =
+            "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
+            "FROM politicas_vencimiento ORDER BY activa DESC, id_politica ASC";
+
     @Override
     public List<PoliticaVencimiento> obtenerTodasLasPoliticasDeVencimiento() {
         List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
 
-        String sql = "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
-                "FROM politicas_vencimiento ORDER BY activa DESC, id_politica ASC";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODAS_LAS_POLITICAS_V);
              ResultSet rs = pstmt.executeQuery();){
 
             while (rs.next()){
@@ -152,14 +157,15 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
     //UPDATE:
 
+    private static final String SQL_ACTUALIZAR_POLITICA_V =
+            "UPDATE politicas_vencimiento " +
+            "SET nombre_politica = ?, dias_umbral = ?, porcentaje_descuento = ?, activa = ? " +
+            "WHERE id_politica = ?";
+
     @Override
     public void actualizarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
-        String sql = "UPDATE politicas_vencimiento " +
-                "SET nombre_politica = ?, dias_umbral = ?, porcentaje_descuento = ?, activa = ? " +
-                "WHERE id_politica = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_POLITICA_V)){
 
             pstmt.setString(1, politicaVencimiento.getNombre());
             pstmt.setInt(2, politicaVencimiento.getDiasUmbral());

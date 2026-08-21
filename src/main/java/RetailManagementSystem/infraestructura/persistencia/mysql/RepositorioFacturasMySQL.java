@@ -6,30 +6,35 @@ import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.puertos.RepositorioFacturas;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
     //CREATE:
 
-    private String generarSiguienteNumeroFactura(Connection con) throws SQLException {
-        String sqlBloqueo = "SELECT prefijo, siguiente_valor FROM secuencias_factura WHERE prefijo = 'FAC-' FOR UPDATE";
-        String sqlUpdate = "UPDATE secuencias_factura SET siguiente_valor = siguiente_valor + 1 WHERE prefijo = 'FAC-'";
+    private static final String SQL_OBTENER_SECUENCIA_FACTURA =
+            "SELECT prefijo, siguiente_valor FROM secuencias_factura WHERE prefijo = 'FAC-' FOR UPDATE";
 
-        try (PreparedStatement psLook = con.prepareStatement(sqlBloqueo);
+    private static final String SQL_ACTUALIZAR_SECUENCIA_FACTURA =
+            "UPDATE secuencias_factura SET siguiente_valor = siguiente_valor + 1 WHERE prefijo = 'FAC-'";
+
+    private String generarSiguienteNumeroFactura(Connection con) throws SQLException {
+        try (PreparedStatement psLook = con.prepareStatement(SQL_OBTENER_SECUENCIA_FACTURA);
              ResultSet rs = psLook.executeQuery()) {
 
             if (rs.next()) {
                 String prefijo = rs.getString("prefijo");
                 int siguienteValor = rs.getInt("siguiente_valor");
 
-                try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdate)) {
+                try (PreparedStatement psUpdate = con.prepareStatement(SQL_ACTUALIZAR_SECUENCIA_FACTURA)) {
                     psUpdate.executeUpdate();
                 }
 
@@ -40,11 +45,12 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
         }
     }
 
-    private int insertarCabeceraFactura(Connection conn, Factura factura) throws SQLException {
-        String sql = "INSERT INTO facturas (numero_factura, fecha, subtotal, total_impuestos, total_general) " +
-                "VALUES (?, ?, ?, ?, ?)";
+    private static final String SQL_INSERTAR_CABECERA_FACTURA =
+            "INSERT INTO facturas (numero_factura, fecha, subtotal, total_impuestos, total_general) " +
+                    "VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    private int insertarCabeceraFactura(Connection conn, Factura factura) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(SQL_INSERTAR_CABECERA_FACTURA, Statement.RETURN_GENERATED_KEYS)) {
 
             ps.setString(1, factura.getNumeroFactura());
             ps.setObject(2, factura.getFechaHoraEmision());
@@ -60,7 +66,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                     return generatedKeys.getInt(1);
 
                 } else {
-                    throw new SQLException("Error crítico: No se pudo obtener el ID autogenerado de la factura.");
+                    throw new IdAutogeneradoNoRecibidoException("Error crítico: No se pudo obtener el ID autogenerado de la factura.");
                 }
             }
         }
@@ -81,6 +87,15 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
         ps.addBatch();
     }
 
+    private static final String SQL_INSERTAR_DETALLE_FACTURA =
+            "INSERT INTO detalle_facturas " +
+                    "(id_factura, tipo_item, codigo_referencia, nombre_item, cantidad, " +
+                    "precio_unitario, subtotal_neto, porcentaje_impuesto, monto_impuesto, total_linea) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    private static final String SQL_ACTUALIZAR_STOCK =
+            "UPDATE productos SET stock = stock - ? WHERE codigo_producto = ? AND stock >= ?";
+
     @Override
     public Factura insertarFactura(List<ItemVendido> items) {
 
@@ -89,40 +104,32 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             conn = AdministradorConexion.obtenerConexion();
             conn.setAutoCommit(false);
 
+            items.sort(Comparator.comparing(ItemVendido::getCodigo));
+
             String numeroGenerado = generarSiguienteNumeroFactura(conn);
 
             Factura factura = Factura.crearNueva(items, numeroGenerado, LocalDateTime.now());
 
             int idFacturaBD = insertarCabeceraFactura(conn, factura);
 
-            String sqlDetalle = "INSERT INTO detalle_facturas " +
-                    "(id_factura, tipo_item, codigo_referencia, nombre_item, cantidad, " +
-                    "precio_unitario, subtotal_neto, porcentaje_impuesto, monto_impuesto, total_linea) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            try (PreparedStatement psDetalle = conn.prepareStatement(sqlDetalle)) {
+            try (PreparedStatement psDetalle = conn.prepareStatement(SQL_INSERTAR_DETALLE_FACTURA);
+                 PreparedStatement psStock = conn.prepareStatement(SQL_ACTUALIZAR_STOCK)) {
 
                 for (ItemVendido item : items) {
                     if (item.getTipoItem() == TipoItem.PRODUCTO){
-                        String sqlUpdateStock = "UPDATE productos SET stock = stock - ? " +
-                                "WHERE codigo_producto = ? AND stock >= ?";
 
-                        try (PreparedStatement psStock = conn.prepareStatement(sqlUpdateStock)) {
-                            psStock.setInt(1, item.getCantidad());
-                            psStock.setString(2, item.getCodigo());
-                            psStock.setInt(3, item.getCantidad());
+                        psStock.setInt(1, item.getCantidad());
+                        psStock.setString(2, item.getCodigo());
+                        psStock.setInt(3, item.getCantidad());
 
-                            int filasAfectadas = psStock.executeUpdate();
-
-                            if (filasAfectadas == 0) {
-                                throw new StockInsuficienteException("NO hay Stock suficiente para el Producto " + item.getCodigo() + ". Requerido: " + item.getCantidad());
-                            }
+                        int filasAfectadas = psStock.executeUpdate();
+                        if (filasAfectadas == 0) {
+                            throw new StockInsuficienteException("NO hay Stock suficiente para: " + item.getCodigo());
                         }
                     }
                     agregarLineaDetalleAlBatch(psDetalle, idFacturaBD, item);
                 }
                 psDetalle.executeBatch();
-
             }
 
             conn.commit();
@@ -161,18 +168,19 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
     //READ:
 
+    private static final String SQL_OBTENER_REPORTE_RECAUDO =
+            "SELECT " +
+            "COUNT(id_factura) AS cantidad, " +
+            "COALESCE(SUM(subtotal), 0) AS suma_subtotal, " +
+            "COALESCE(SUM(total_impuestos), 0) AS suma_impuestos, " +
+            "COALESCE(SUM(total_general), 0) AS suma_general " +
+            "FROM facturas " +
+            "WHERE DATE(fecha) BETWEEN ? AND ?";
+
     @Override
     public ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin) {
-        String sql = "SELECT " +
-                "COUNT(id_factura) AS cantidad, " +
-                "COALESCE(SUM(subtotal), 0) AS suma_subtotal, " +
-                "COALESCE(SUM(total_impuestos), 0) AS suma_impuestos, " +
-                "COALESCE(SUM(total_general), 0) AS suma_general " +
-                "FROM facturas " +
-                "WHERE DATE(fecha) BETWEEN ? AND ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_REPORTE_RECAUDO)) {
 
             ps.setDate(1, java.sql.Date.valueOf(fechaInicio));
             ps.setDate(2, java.sql.Date.valueOf(fechaFin));
@@ -185,7 +193,9 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                     BigDecimal sumaImpuestos = rs.getBigDecimal("suma_impuestos");
                     BigDecimal sumaGeneral = rs.getBigDecimal("suma_general");
 
-                    return ReporteRecaudo.reconstruirDesdeBD(fechaInicio, fechaFin, cantidad, sumaSubtotal, sumaImpuestos, sumaGeneral);
+                    return ReporteRecaudo.reconstruirDesdeBD(
+                            fechaInicio, fechaFin, cantidad, sumaSubtotal, sumaImpuestos, sumaGeneral
+                    );
                 }
             }
         } catch (SQLException e) {
@@ -198,12 +208,13 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
     }
 
 
+    private static final String SQL_OBTENER_ULTIMA_VENTA =
+            "SELECT total_general FROM facturas WHERE DATE(fecha) = ? ORDER BY fecha DESC LIMIT 1";
+
     @Override
     public BigDecimal obtenerTotalUltimaVenta(LocalDate fecha) {
-        String sql = "SELECT total_general FROM facturas WHERE DATE(fecha) = ? ORDER BY fecha DESC LIMIT 1";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_ULTIMA_VENTA)) {
 
             ps.setDate(1, java.sql.Date.valueOf(fecha));
 

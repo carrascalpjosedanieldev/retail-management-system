@@ -16,18 +16,20 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
     //READ:
 
+    private static final String SQL_OBTENER_PERMISO =
+            "SELECT p.id_permiso, p.id_modulo, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
+            "FROM permisos p " +
+            "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
+            "WHERE p.id_permiso = ? ";
+
+
     @Override
     public Permiso obtenerPermiso(int idPermiso) {
         if (idPermiso <= 0){
             throw new IllegalArgumentException("El ID del Permiso debe ser un Numero Positivo.");
         }
-        String sql = "SELECT p.id_permiso, p.id_modulo, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
-                "FROM permisos p " +
-                "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
-                "WHERE p.id_permiso = ? ";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISO)){
 
             pstmt.setInt(1, idPermiso);
 
@@ -69,15 +71,17 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
     }
 
 
+    private static final String SQL_OBTENER_PERMISOS_POR_ESTADO =
+            "SELECT p.id_permiso, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
+            "FROM permisos p " +
+            "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
+            "WHERE p.activo = ?";
+
+
     private List<Permiso> obtenerPermisosPorEstado(boolean estado) {
         List<Permiso> permisos = new ArrayList<>();
-        String sql = "SELECT p.id_permiso, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
-                "FROM permisos p " +
-                "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
-                "WHERE p.activo = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISOS_POR_ESTADO)) {
 
             pstmt.setBoolean(1, estado);
 

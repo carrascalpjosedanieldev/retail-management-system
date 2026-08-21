@@ -3,6 +3,8 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.DescuentoNoEncontradoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
@@ -14,12 +16,13 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
     //CREATE:
 
+    private static final String SQL_INSERTAR_DESCUENTO =
+            "INSERT INTO descuentos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
+
     @Override
     public Descuento insertarDescuento(Descuento descuento) {
-        String sql = "INSERT INTO descuentos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DESCUENTO, Statement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, descuento.getNombre());
             pstmt.setBigDecimal(2, descuento.getPorcentaje());
@@ -28,7 +31,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new RuntimeException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
+                throw new IncersionFallidaException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
             }
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
@@ -41,13 +44,13 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                             descuento.isActivo()
                     );
                 } else {
-                    throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new IdAutogeneradoNoRecibidoException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
             }
 
         } catch (SQLException e) {
             if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Ya existe un Descuento registrado con el nombre: " + descuento.getNombre());
+                throw new IllegalArgumentException("Ya existe un Descuento registrado con el Nombre: " + descuento.getNombre());
             }
             throw new PersistenciaException("Error crítico de persistencia al guardar el Descuento: " + e.getMessage(), e);
         }
@@ -56,15 +59,16 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
     //READ:
 
+    private static final String SQL_OBTENER_DESCUENTO =
+            "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE id_descuento = ?";
+
     @Override
     public Descuento obtenerDescuento(int idDescuento) {
         if (idDescuento<=0) {
             throw new IllegalStateException("El ID a buscar debe ser un número positivo.");
         }
-        String sql = "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE id_descuento = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCUENTO)){
 
             pstmt.setInt(1, idDescuento);
 
@@ -89,13 +93,14 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     }
 
 
+    private static final String SQL_OBTENER_DESCUENTOS_ACTIVOS =
+            "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE activo = true";
+
     @Override
     public List<Descuento> obtenerDescuentosActivos() {
         List<Descuento> descuentos = new ArrayList<>();
-        String sql = "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE activo = true";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCUENTOS_ACTIVOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -115,13 +120,14 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     }
 
 
+    private static final String SQL_OBTENER_TODOS_LOS_DESCUENTOS =
+            "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos ORDER BY activo DESC, id_descuento ASC";
+
     @Override
     public List<Descuento> obtenerTodosLosDescuentos() {
         List<Descuento> descuentos = new ArrayList<>();
-        String sql = "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos ORDER BY activo DESC, id_descuento ASC";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_DESCUENTOS);
 
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -143,12 +149,13 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
     //UPDATE:
 
+    private static final String SQL_ACTUALIZAR_DESCUENTOS =
+            "UPDATE descuentos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_descuento = ?";
+
     @Override
     public void actualizarDescuento(Descuento descuento) {
-        String sql = "UPDATE descuentos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_descuento = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DESCUENTOS)) {
 
             pstmt.setString(1, descuento.getNombre());
             pstmt.setBigDecimal(2, descuento.getPorcentaje());

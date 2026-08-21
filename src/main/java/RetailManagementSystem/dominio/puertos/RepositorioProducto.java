@@ -15,8 +15,6 @@ public interface RepositorioProducto {
 
     Producto obtenerProductoDeInventario(int idInventario, String  codigoProducto);
 
-    ProductoPerecedero obtenerPerecederoDeInventario(int idInventario, String codigoProducto);
-
     List<Producto> obtenerProductosPorInventario(int idInventario);
 
     List<Producto> obtenerProductosRopaPorInventario(int idInventario);

@@ -9,12 +9,13 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
 
     //READ:
 
+    private static final String SQL_OBTENER_VALOR_CONFIGURACION =
+            "SELECT valor FROM configuraciones_sistema WHERE clave = ?";
+
     @Override
     public String obtenerValorConfiguracion(String clave) {
-        String sql = "SELECT valor FROM configuraciones_sistema WHERE clave = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_VALOR_CONFIGURACION)) {
 
             pstmt.setString(1, clave);
 
@@ -30,12 +31,14 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
         }
     }
 
+
+    private static final String SQL_OBTENER_DESCRIPCION_CONFIGURACION =
+            "SELECT descripcion FROM configuraciones_sistema WHERE clave = ?";
+
     @Override
     public String obtenerDescripcionConfiguracion(String clave) {
-        String sql = "SELECT descripcion FROM configuraciones_sistema WHERE clave = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCRIPCION_CONFIGURACION)) {
 
             pstmt.setString(1, clave);
 
@@ -53,12 +56,13 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
 
     //UPDATE:
 
+    private static final String SQL_ACTUALIZAR_VALOR_CONFIGURACION =
+            "UPDATE configuraciones_sistema SET valor = ? WHERE clave = ?";
+
     @Override
     public void actualizarValorConfiguracion(String clave, String valor) {
-        String sql = "UPDATE configuraciones_sistema SET valor = ? WHERE clave = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_VALOR_CONFIGURACION)) {
 
             if (valor != null){
                 pstmt.setString(1, valor);
@@ -79,12 +83,14 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
         }
     }
 
+
+    private static final String SQL_ACTUALIZAR_DESCRIPCION_CONFIGURACION =
+            "UPDATE configuraciones_sistema SET descripcion = ? WHERE clave = ?";
+
     @Override
     public void actualizarDescripcionConfiguracion(String clave, String descripcion) {
-        String sql = "UPDATE configuraciones_sistema SET descripcion = ? WHERE clave = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DESCRIPCION_CONFIGURACION)) {
 
             if (descripcion != null){
                 pstmt.setString(1, descripcion);
@@ -105,12 +111,14 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
         }
     }
 
+
+    private static final String SQL_ACTUALIZAR_VALOR_Y_DESCRIPCION =
+            "UPDATE configuraciones_sistema SET valor = ? , descripcion = ? WHERE clave = ?";
+
     @Override
     public void actualizarValorYDescripcionConfiguracion(String clave, String valor, String descripcion) {
-        String sql = "UPDATE configuraciones_sistema SET valor = ? , descripcion = ? WHERE clave = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_VALOR_Y_DESCRIPCION)) {
 
             if (valor != null){
                 pstmt.setString(1, valor);

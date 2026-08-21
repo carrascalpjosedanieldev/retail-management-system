@@ -3,6 +3,8 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.puertos.RepositorioImpuestos;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ImpuestoNoEncontradoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
@@ -14,12 +16,13 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
     //CREATE:
 
+    private static final String SQL_INSERTAR_IMPUESTO =
+            "INSERT INTO impuestos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
+
     @Override
     public Impuesto insertarImpuesto(Impuesto impuesto) {
-        String sql = "INSERT INTO impuestos (nombre, porcentaje, activo) VALUES (?, ?, ?)";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_IMPUESTO, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, impuesto.getNombre());
             pstmt.setBigDecimal(2, impuesto.getPorcentaje());
@@ -28,7 +31,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new RuntimeException("La Inserción falló: Ninguna fila fue afectada en la Base de Datos.");
+                throw new IncersionFallidaException("La Inserción falló: Ninguna fila fue afectada en la Base de Datos.");
             }
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
@@ -41,13 +44,13 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
                             impuesto.isActivo()
                     );
                 } else {
-                    throw new PersistenciaException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new IdAutogeneradoNoRecibidoException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
             }
 
         } catch (SQLException e) {
             if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Ya existe un Impuesto registrado con el nombre: " + impuesto.getNombre());
+                throw new IllegalArgumentException("Ya existe un Impuesto registrado con el Nombre: " + impuesto.getNombre());
             }
             throw new PersistenciaException("Error crítico de persistencia al guardar el Impuesto: " + e.getMessage(), e);
         }
@@ -56,14 +59,16 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
     //READ:
 
+    private static final String SQL_OBTENER_IMPUESTO =
+            "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE id_impuesto = ?";
+
     @Override
     public Impuesto obtenerImpuesto(int idImpuesto) {
         if (idImpuesto <= 0) {
             throw new IllegalStateException("El ID a buscar debe ser un número positivo.");
         }
-        String sql = "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE id_impuesto = ?";
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_IMPUESTO)) {
 
             pstmt.setInt(1, idImpuesto);
 
@@ -88,13 +93,14 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     }
 
 
+    private static final String SQL_OBTENER_IMPUESTOS_ACTIVOS =
+            "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE activo = true";
+
     @Override
     public List<Impuesto> obtenerImpuestosActivos() {
         List<Impuesto> impuestos = new ArrayList<>();
-        String sql = "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE activo = true";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_IMPUESTOS_ACTIVOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -114,13 +120,14 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     }
 
 
+    private static final String SQL_OBTENER_TODOS_LOS_IMPUESTOS =
+            "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos ORDER BY activo DESC, id_impuesto ASC";
+
     @Override
     public List<Impuesto> obtenerTodosLosImpuestos() {
         List<Impuesto> impuestos = new ArrayList<>();
-        String sql = "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos ORDER BY activo DESC, id_impuesto ASC";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_IMPUESTOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -141,12 +148,13 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
     //UPDATE:
 
+    private static final String SQL_ACTUALIZAR_IMPUESTO =
+            "UPDATE impuestos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_impuesto = ?";
+
     @Override
     public void actualizarImpuesto(Impuesto impuesto) {
-        String sql = "UPDATE impuestos SET nombre = ?, porcentaje = ?, activo = ? WHERE id_impuesto = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_IMPUESTO)) {
 
             pstmt.setString(1, impuesto.getNombre());
             pstmt.setBigDecimal(2, impuesto.getPorcentaje());

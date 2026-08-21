@@ -80,7 +80,7 @@ public class ServicioProductos {
             int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
             BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento
     ) {
-        ProductoPerecedero perecedero = this.repositorioProducto.obtenerPerecederoDeInventario(idInventario, codigoProducto);
+        ProductoPerecedero perecedero = (ProductoPerecedero) this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
         perecedero.cambiarNombreProducto(nombreNuevo);
         perecedero.cambiarValorCompra(valorCompra);
         perecedero.cambiarValorVentaPorPorcentaje(porcentajeGanancia);

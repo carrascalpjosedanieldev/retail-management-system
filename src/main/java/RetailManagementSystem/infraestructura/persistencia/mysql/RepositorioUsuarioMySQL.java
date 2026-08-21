@@ -6,6 +6,8 @@ import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.UsuarioNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.sql.*;
@@ -16,15 +18,15 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     //CREATE:
 
+    private static final String SQL_INSERTAR_USUARIO =
+            "INSERT INTO usuarios (nombre, apellido, email, password_hash, intentos_fallidos, " +
+            "bloqueado_hasta, activo, debe_cambiar_contrasena) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
     @Override
     public Usuario insertarUsuarioNuevo(Usuario usuario) {
-        String sql =
-                "INSERT INTO usuarios (nombre, apellido, email, password_hash, intentos_fallidos, " +
-                "bloqueado_hasta, activo, debe_cambiar_contrasena) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
         try(Connection conn = AdministradorConexion.obtenerConexion();
-            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_USUARIO, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, usuario.getNombre());
             pstmt.setString(2, usuario.getApellido());
@@ -45,7 +47,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new RuntimeException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
+                throw new IncersionFallidaException("La Inserción falló: Ninguna fila fue afectada en la base de datos.");
             }
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
@@ -56,7 +58,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                             usuario.getIntentosFallidos(), usuario.getBloqueadoHasta(), usuario.getHash(),
                             usuario.isActivo(), usuario.isDebeCambiarContrasena());
                 } else {
-                    throw new RuntimeException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new IdAutogeneradoNoRecibidoException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
             }
 
@@ -71,24 +73,24 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     //READ:
 
+    private static final String SQL_OBTENER_USUARIO_POR_EMAIL =
+            "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
+            "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
+            "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.id_modulo, p.activo AS permiso_activo, " +
+            "m.nombre AS nombre_modulo " +
+            "FROM usuarios u " +
+            "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
+            "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
+            "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
+            "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
+            "LEFT JOIN modulos m ON p.id_modulo = m.id_modulo " +
+            "WHERE u.email = ?";
+
     @Override
     public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
-        String sql =
-                "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
-                        "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
-                        "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
-                        "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.id_modulo, p.activo AS permiso_activo, " +
-                        "m.nombre AS nombre_modulo " +
-                        "FROM usuarios u " +
-                        "LEFT JOIN usuario_rol urol ON u.id_usuario = urol.id_usuario " +
-                        "LEFT JOIN roles r ON urol.id_rol = r.id_rol " +
-                        "LEFT JOIN rol_permiso rolp ON r.id_rol = rolp.id_rol " +
-                        "LEFT JOIN permisos p ON rolp.id_permiso = p.id_permiso " +
-                        "LEFT JOIN modulos m ON p.id_modulo = m.id_modulo " +
-                        "WHERE u.email = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_EMAIL)) {
 
             pstmt.setString(1, email);
 
@@ -346,12 +348,13 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     //UPDATE:
 
+    private static final String SQL_ACTUALIZAR_DATOS_LOGIN =
+            "UPDATE usuarios SET intentos_fallidos = ?, bloqueado_hasta = ? WHERE id_usuario = ?";
+
     @Override
     public void actualizarDatosLoginUsuario(Usuario usuario) {
-        String sql = "UPDATE usuarios SET intentos_fallidos = ?, bloqueado_hasta = ? WHERE id_usuario = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DATOS_LOGIN)) {
 
             pstmt.setInt(1, usuario.getIntentosFallidos());
 
@@ -374,12 +377,14 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
         }
     }
 
+
+    private static final String SQL_ACTUALIZAR_DATOS_USUARIO =
+            "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, activo = ? WHERE id_usuario = ?";
+
     @Override
     public void actualizarDatosUsuario(Usuario usuario) {
-        String sql = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, activo = ? WHERE id_usuario = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DATOS_USUARIO)) {
 
             pstmt.setString(1, usuario.getNombre());
             pstmt.setString(2, usuario.getApellido());
@@ -398,13 +403,15 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
         }
     }
 
+
+    private static final String SQL_ACTUALIZAR_SEGURIDAD =
+            "UPDATE usuarios SET password_hash = ?, debe_cambiar_contrasena = ?, " +
+            "intentos_fallidos = ?, bloqueado_hasta = ? WHERE id = ?";
+
     @Override
     public void actualizarSeguridad(Usuario usuario) {
-        String sql = "UPDATE usuarios SET password_hash = ?, debe_cambiar_contrasena = ?, " +
-                "intentos_fallidos = ?, bloqueado_hasta = ? WHERE id = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_SEGURIDAD)) {
 
             pstmt.setString(1, usuario.getHash());
             pstmt.setBoolean(2, usuario.isDebeCambiarContrasena());

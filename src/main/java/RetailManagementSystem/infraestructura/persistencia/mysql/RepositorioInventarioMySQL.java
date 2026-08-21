@@ -4,6 +4,8 @@ import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 import RetailManagementSystem.dominio.puertos.RepositorioInventario;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.conflictos.InventarioNoVacioException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.sql.*;
@@ -14,11 +16,13 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
     //CREATE:
 
+    private static final String SQL_INSERTAR_INVENTARIO =
+            "INSERT INTO inventarios (nombre, capacidad_maxima) VALUES (?, ?)";
+
     @Override
     public Inventario insertarInventario(Inventario borrador) {
-        String sql = "INSERT INTO inventarios (nombre, capacidad_maxima) VALUES (?, ?)";
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_INVENTARIO, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, borrador.getNombre());
             pstmt.setInt(2, borrador.getCapacidadMaxima());
@@ -26,7 +30,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new RuntimeException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
+                throw new IncersionFallidaException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
             }
 
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
@@ -39,7 +43,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
                             0
                     );
                 } else {
-                    throw new RuntimeException("La inserción fue exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new IdAutogeneradoNoRecibidoException("La inserción fue exitosa, pero no se pudo obtener el ID autogenerado.");
                 }
             }
 
@@ -50,19 +54,20 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
     //READ:
 
+    private static final String SQL_OBTENER_INVENTARIO =
+            "SELECT i.id_inventario, i.nombre, i.capacidad_maxima, COALESCE(SUM(p.stock), 0) AS capacidad_ocupada " +
+            "FROM inventarios i " +
+            "LEFT JOIN productos p ON i.id_inventario = p.id_inventario " +
+            "WHERE i.id_inventario = ? " +
+            "GROUP BY i.id_inventario";
+
     @Override
     public Inventario obtenerInventario(int idInventario) {
         if (idInventario <= 0) {
             throw new IllegalArgumentException("El ID a buscar debe ser un Número Positivo.");
         }
-        String sql = "SELECT i.id_inventario, i.nombre, i.capacidad_maxima, COALESCE(SUM(p.stock), 0) AS capacidad_ocupada " +
-                "FROM inventarios i " +
-                "LEFT JOIN productos p ON i.id_inventario = p.id_inventario " +
-                "WHERE i.id_inventario = ? " +
-                "GROUP BY i.id_inventario";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_INVENTARIO)){
 
             pstmt.setInt(1, idInventario);
 
@@ -87,16 +92,17 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
     }
 
 
+    private static final String SQL_OBTENER_TODOS_LOS_INVENTARIOS =
+            "SELECT i.id_inventario, i.nombre, i.capacidad_maxima, COALESCE(SUM(p.stock), 0) AS capacidad_ocupada " +
+            "FROM inventarios i " +
+            "LEFT JOIN productos p ON i.id_inventario = p.id_inventario " +
+            "GROUP BY i.id_inventario";
+
     @Override
     public List<Inventario> obtenerTodosInventariosConCapacidadOcupada() {
         List<Inventario> inventarios = new ArrayList<>();
-        String sql = "SELECT i.id_inventario, i.nombre, i.capacidad_maxima, COALESCE(SUM(p.stock), 0) AS capacidad_ocupada " +
-                "FROM inventarios i " +
-                "LEFT JOIN productos p ON i.id_inventario = p.id_inventario " +
-                "GROUP BY i.id_inventario";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_INVENTARIOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -117,11 +123,13 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
     //UPDATE:
 
+    private static final String SQL_ACTUALIZAR_INVENTARIO =
+            "UPDATE inventarios SET nombre = ?, capacidad_maxima = ? WHERE id_inventario = ?";
+
     @Override
     public void actualizarInventario(Inventario inventario) {
-        String sql = "UPDATE inventarios SET nombre = ?, capacidad_maxima = ? WHERE id_inventario = ?";
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_INVENTARIO)) {
 
             pstmt.setString(1, inventario.getNombre());
             pstmt.setInt(2, inventario.getCapacidadMaxima());
@@ -141,12 +149,13 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
     //DELETE:
 
+    private static final String SQL_ELIMINAR_INVENTARIO =
+            "DELETE FROM inventarios WHERE id_inventario = ?";
+
     @Override
     public void eliminarInventario(int idInventario) {
-        String sql = "DELETE FROM inventarios WHERE id_inventario = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmtDelete = conn.prepareStatement(sql)) {
+             PreparedStatement pstmtDelete = conn.prepareStatement(SQL_ELIMINAR_INVENTARIO)) {
 
             pstmtDelete.setInt(1, idInventario);
 

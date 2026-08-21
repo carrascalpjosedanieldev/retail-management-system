@@ -7,6 +7,7 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ServicioNoDisp
 import RetailManagementSystem.dominio.puertos.RepositorioServicio;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.math.BigDecimal;
@@ -18,13 +19,14 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     //CREATE:
 
+    private static final String SQL_INSERTAR_SERVICIO =
+            "INSERT INTO servicios (codigo_servicio, nombre, precio_base, id_impuesto, id_descuento) " +
+            "VALUES (?, ?, ?, ?, ?)";
+
     @Override
     public void insertarServicio(Servicio servicio){
-        String sql = "INSERT INTO servicios (codigo_servicio, nombre, precio_base, id_impuesto, id_descuento) " +
-                "VALUES (?, ?, ?, ?, ?)";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_SERVICIO)){
 
             pstmt.setString(1, servicio.getCodigo());
             pstmt.setString(2, servicio.getNombre());
@@ -35,7 +37,7 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new RuntimeException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
+                throw new IncersionFallidaException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
             }
 
         } catch (SQLException e) {
@@ -52,47 +54,28 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     //READ:
 
+    private static final String SQL_OBTENER_SERVICIO =
+            "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
+            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+            "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+            "des.activo AS activo_descuento " +
+            "FROM servicios s " +
+            "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
+            "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
+            "WHERE s.codigo_servicio = ?";
+
     @Override
     public Servicio obtenerServicio(String codigoServicio) {
-        String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
-                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-                "des.activo AS descuento_activo " +
-                "FROM servicios s " +
-                "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
-                "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
-                "WHERE s.codigo_servicio = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIO)) {
 
             pstmt.setString(1, codigoServicio);
 
             try (ResultSet rs = pstmt.executeQuery()){
 
                 if (rs.next()){
-
-                    String codigo = rs.getString("codigo_servicio");
-                    String  nombre = rs.getString("nombre");
-                    BigDecimal precioBase = rs.getBigDecimal("precio_base");
-                    boolean activo = rs.getBoolean("activo");
-
-                    int idImpuesto = rs.getInt("id_impuesto");
-                    String  nombreImp = rs.getString("nombre_impuesto");
-                    BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
-                    boolean activoImp = rs.getBoolean("activo_impuesto");
-                    Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
-
-                    int idDescuento = rs.getInt("id_descuento");
-                    String nombreDesc = rs.getString("nombre_descuento");
-                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
-                    boolean activoDesc = rs.getBoolean("descuento_activo");
-                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
-
-                    return Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, activo);
-
+                    return mapearServicioDesdeResultSet(rs);
                 }
-
                 throw new ServicioNoEncontradoException("Error de negocio: El Servicio con código -" + codigoServicio + "- no existe");
 
             }
@@ -102,45 +85,49 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
         }
     }
 
+    private Servicio mapearServicioDesdeResultSet(ResultSet rs) throws SQLException {
+        String codigo = rs.getString("codigo_servicio");
+        String nombre = rs.getString("nombre");
+        BigDecimal precioBase = rs.getBigDecimal("precio_base");
+        boolean activo = rs.getBoolean("activo");
+
+        Impuesto impuesto = Impuesto.reconstruirDesdeBD(
+                rs.getInt("id_impuesto"),
+                rs.getString("nombre_impuesto"),
+                rs.getBigDecimal("porcentaje_impuesto"),
+                rs.getBoolean("activo_impuesto")
+        );
+
+        Descuento descuento = Descuento.reconstruirDesdeBD(
+                rs.getInt("id_descuento"),
+                rs.getString("nombre_descuento"),
+                rs.getBigDecimal("porcentaje_descuento"),
+                rs.getBoolean("activo_descuento")
+        );
+
+        return Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, activo);
+    }
+
+
+    private static final String SQL_OBTENER_SERVICIOS_ACTIVOS =
+            "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.id_descuento, s.activo, " +
+            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+            "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento," +
+            " des.activo AS activo_descuento " +
+            "FROM servicios s " +
+            "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
+            "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
+            "WHERE s.activo = true ";
 
     @Override
     public List<Servicio> obtenerServiciosActivos() {
         List<Servicio> servicios = new ArrayList<>();
-        String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.id_descuento, s.activo, " +
-                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
-                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento," +
-                " des.activo AS activo_descuento " +
-                "FROM servicios s " +
-                "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
-                "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
-                "WHERE s.activo = true ";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIOS_ACTIVOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()){
-
-                String codigo = rs.getString("codigo_servicio");
-                String  nombre = rs.getString("nombre");
-                BigDecimal precioBase = rs.getBigDecimal("precio_base");
-                boolean activo = rs.getBoolean("activo");
-
-                int idImpuesto = rs.getInt("id_impuesto");
-                String  nombreImp = rs.getString("nombre_impuesto");
-                BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
-                boolean activoImp = rs.getBoolean("activo_impuesto");
-                Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
-
-                int idDescuento = rs.getInt("id_descuento");
-                String nombreDesc = rs.getString("nombre_descuento");
-                BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
-                boolean activoDesc = rs.getBoolean("activo_descuento");
-                Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
-
-                Servicio servicio = Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, activo);
-                servicios.add(servicio);
-
+                servicios.add(mapearServicioDesdeResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -151,46 +138,25 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
 
 
+    private static final String SQL_OBTENER_TODOS_LOS_SERVICIOS =
+            "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
+            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+            "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+            "des.activo AS activo_descuento " +
+            "FROM servicios s " +
+            "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
+            "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
+            "ORDER BY s.activo DESC, s.codigo_servicio ASC ";
+
     @Override
     public List<Servicio> obtenerTodosLosServicios() {
         List<Servicio> servicios = new ArrayList<>();
-        String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
-                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-                "des.activo AS activo_descuento " +
-                "FROM servicios s " +
-                "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
-                "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
-                "ORDER BY s.activo DESC, s.codigo_servicio ASC ";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_SERVICIOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()){
-
-                String codigo = rs.getString("codigo_servicio");
-                String  nombre = rs.getString("nombre");
-                BigDecimal precioBase = rs.getBigDecimal("precio_base");
-                boolean activo = rs.getBoolean("activo");
-
-                int idImpuesto = rs.getInt("id_impuesto");
-                String  nombreImp = rs.getString("nombre_impuesto");
-                BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
-                boolean activoImp = rs.getBoolean("activo_impuesto");
-                Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
-
-                int idDescuento = rs.getInt("id_descuento");
-                String nombreDesc = rs.getString("nombre_descuento");
-                BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
-                boolean activoDesc = rs.getBoolean("activo_descuento");
-                Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
-
-                Servicio servicio = Servicio.reconstruirDesdeBD(
-                        codigo, nombre, precioBase, impuesto, descuento, activo
-                );
-                servicios.add(servicio);
-
+                servicios.add(mapearServicioDesdeResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -200,50 +166,32 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
     }
 
 
+    private static final String SQL_OBTENER_SERVICIO_POR_CODIGO =
+            "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
+            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+            "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
+            "des.activo AS activo_descuento " +
+            "FROM servicios s " +
+            "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
+            "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
+            "WHERE s.codigo_servicio = ?";
+
     @Override
     public Servicio obtenerServicioActivoSoloPorCodigo(String codigoServicio) {
-        String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
-                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-                "des.activo AS descuento_activo " +
-                "FROM servicios s " +
-                "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
-                "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
-                "WHERE s.codigo_servicio = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIO_POR_CODIGO)) {
 
             pstmt.setString(1, codigoServicio);
 
             try (ResultSet rs = pstmt.executeQuery()){
 
                 if (rs.next()){
-
-                    String codigo = rs.getString("codigo_servicio");
-                    String  nombre = rs.getString("nombre");
-                    BigDecimal precioBase = rs.getBigDecimal("precio_base");
-                    boolean activo = rs.getBoolean("activo");
-
-                    if (!activo){
-                        throw new ServicioNoDisponibleException("Error de negocio: El Servicio con Código -" +
-                                codigoServicio + "- NO esta Disponible");
+                    Servicio servicio = mapearServicioDesdeResultSet(rs);
+                    if (!servicio.isActivo()) {
+                        throw new ServicioNoDisponibleException("El Servicio con Código -" + codigoServicio +
+                                "- NO esta Disponible");
                     }
-
-                    int idImpuesto = rs.getInt("id_impuesto");
-                    String  nombreImp = rs.getString("nombre_impuesto");
-                    BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
-                    boolean activoImp = rs.getBoolean("activo_impuesto");
-                    Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
-
-                    int idDescuento = rs.getInt("id_descuento");
-                    String nombreDesc = rs.getString("nombre_descuento");
-                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
-                    boolean activoDesc = rs.getBoolean("descuento_activo");
-                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
-
-                    return Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, true);
-
+                    return servicio;
                 }
 
                 throw new ServicioNoEncontradoException("Error de negocio: El Servicio con código -" + codigoServicio + "- no existe");
@@ -255,67 +203,36 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
         }
     }
 
+
+    private static final String SQL_EXISTE_SERVICIO =
+            "SELECT 1 FROM servicios WHERE codigo_servicio = ?";
+
     @Override
     public boolean existeServicio(String codigoServicio) {
-        String sql = "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-                "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
-                "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-                "des.activo AS descuento_activo " +
-                "FROM servicios s " +
-                "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
-                "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
-                "WHERE s.codigo_servicio = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(SQL_EXISTE_SERVICIO)) {
 
             pstmt.setString(1, codigoServicio);
 
-            try (ResultSet rs = pstmt.executeQuery()){
-
-                if (rs.next()){
-
-                    String codigo = rs.getString("codigo_servicio");
-                    String  nombre = rs.getString("nombre");
-                    BigDecimal precioBase = rs.getBigDecimal("precio_base");
-                    boolean activo = rs.getBoolean("activo");
-
-                    int idImpuesto = rs.getInt("id_impuesto");
-                    String  nombreImp = rs.getString("nombre_impuesto");
-                    BigDecimal porcentajeImp = rs.getBigDecimal("porcentaje_impuesto");
-                    boolean activoImp = rs.getBoolean("activo_impuesto");
-                    Impuesto impuesto = Impuesto.reconstruirDesdeBD(idImpuesto, nombreImp, porcentajeImp, activoImp);
-
-                    int idDescuento = rs.getInt("id_descuento");
-                    String nombreDesc = rs.getString("nombre_descuento");
-                    BigDecimal porcentajeDesc = rs.getBigDecimal("porcentaje_descuento");
-                    boolean activoDesc = rs.getBoolean("descuento_activo");
-                    Descuento descuento = Descuento.reconstruirDesdeBD(idDescuento, nombreDesc, porcentajeDesc, activoDesc);
-
-                    Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, activo);
-                    return true;
-
-                }
-
-                return false;
-
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
             }
-
         } catch (SQLException e) {
-            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
+            throw new PersistenciaException("Error crítico de infraestructura al intentar verificar el Servicio", e);
         }
     }
 
 
     //UPDATE:
 
+    private static final String SQL_ACTUALIZAR_SERVICIO =
+            "UPDATE servicios SET id_impuesto = ?, nombre = ?, precio_base = ?, id_descuento = ?, activo = ? " +
+            "WHERE codigo_servicio = ?";
+
     @Override
     public void actualizarServicio(Servicio servicio) {
-        String sql = "UPDATE servicios SET id_impuesto = ?, nombre = ?, precio_base = ?, id_descuento = ?, activo = ? " +
-                "WHERE codigo_servicio = ?";
-
         try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_SERVICIO)){
 
             pstmt.setInt(1, servicio.getIdImpuesto());
             pstmt.setString(2, servicio.getNombre());
