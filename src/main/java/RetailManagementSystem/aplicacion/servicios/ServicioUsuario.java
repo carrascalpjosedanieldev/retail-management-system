@@ -128,6 +128,17 @@ public class ServicioUsuario {
     }
 
 
+    public void cambiarEstadoUsuario(Long idUsuario){
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
+        if (usuario.isActivo()){
+            usuario.desactivarUsuario();
+        } else {
+            usuario.activarUsuario();
+        }
+        this.repositorioUsuario.actualizarDatosUsuario(usuario);
+    }
+
+
     public String restablecerContrasenaPorAdmin(Long idUsuario) {
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
         String caracteresPermitidos = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";

@@ -62,5 +62,9 @@ public class OrquestadorUsuarios {
         );
     }
 
+    public void cambiarEstadoUsuario(Long idUsuario){
+        this.servicioUsuario.cambiarEstadoUsuario(idUsuario);
+    }
+
 }//===================================================================================================================//
 

@@ -41,13 +41,13 @@ public class EditarUsuarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(UsuarioDTO datosUsusario, ObservableList<UsuarioDTO> listaObservable){
-        this.datosUsuario = datosUsusario;
+    public void cargarDatos(UsuarioDTO datosUsuario, ObservableList<UsuarioDTO> listaObservable){
+        this.datosUsuario = datosUsuario;
         this.listaObservable = listaObservable;
-        lblIdUsuario.setText(String.valueOf(datosUsusario.idUsuario()));
-        txtNombre.setText(datosUsusario.nombre());
-        txtApellido.setText(datosUsusario.apellido());
-        txtEmail.setText(datosUsusario.email());
+        lblIdUsuario.setText(String.valueOf(datosUsuario.idUsuario()));
+        txtNombre.setText(datosUsuario.nombre());
+        txtApellido.setText(datosUsuario.apellido());
+        txtEmail.setText(datosUsuario.email());
         Platform.runLater(()-> btnCancelar.requestFocus());
     }
 

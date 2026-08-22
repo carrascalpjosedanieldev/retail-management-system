@@ -6,6 +6,7 @@ import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
+import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleObjectProperty;
@@ -165,7 +166,7 @@ public class GestionUsuariosControlador {
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Selecciona un Usuario", null,
-                    "Debes seleccionar us Usuario para poder Editarlo."
+                    "Debes seleccionar un Usuario para poder Editarlo."
             );
             return;
         }
@@ -181,7 +182,54 @@ public class GestionUsuariosControlador {
 
     @FXML
     void cambiarEstadoUsuario(ActionEvent event) {
-
+        UsuarioDTO seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null){
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Selecciona un Usuario", null,
+                    "Debes seleccionar us Usuario para poder Cambiar su Estado."
+            );
+            return;
+        }
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
+                "¿Estás Seguro de Cambiar el Estado del Usuario -" + seleccionado.getNombreCompleto() + "-?")) {
+            return;
+        }
+        CompletableFuture.runAsync(()->
+                this.orquestadorUsuarios.cambiarEstadoUsuario(seleccionado.idUsuario())
+        ).thenRun(()->
+                Platform.runLater(()->{
+                    UsuarioDTO actualizado = new UsuarioDTO(
+                            seleccionado.idUsuario(),
+                            seleccionado.nombre(),
+                            seleccionado.apellido(),
+                            seleccionado.email(),
+                            !seleccionado.activo(),
+                            seleccionado.debeCambiarContrasena(),
+                            seleccionado.roles(),
+                            seleccionado.permisos()
+                    );
+                    UtilidadesLista.reemplazarPorIdentidad(
+                            listaObservableUsuarios,
+                            actualizado,
+                            item -> item.idUsuario().equals(actualizado.idUsuario())
+                    );
+                    GestorAlertas.mostrarAlertaInformacion(
+                            getVentana(), "Éxito", null,
+                            "El Estado ha sido cambiado con Éxito."
+                    );
+                })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        getVentana(), "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Verifica tu Conexión y Notificale al Administrador este Error:\n" +
+                                causa.getMessage()
+                );
+            });
+            return null;
+        });
     }
 
 
