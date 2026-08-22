@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="380.0" prefWidth="480.0" styleClass="fondo-panel" stylesheets="@../../css/gestionarUsuarios/estilosCssReestablecerContrasena.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarUsuarios.RestablecerContrasenaControlador">
+
+    <VBox alignment="CENTER_LEFT" styleClass="panel-encabezado">
+        <Label styleClass="titulo-principal" text="Contraseña Restablecida" />
+    </VBox>
+
+    <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="panel-formulario" VBox.vgrow="ALWAYS">
+
+        <Label fx:id="lblMensajeUsuario" styleClass="texto-normal" text="Se ha generado una contraseña temporal para (nombre usuario)." textAlignment="CENTER" wrapText="true" />
+
+        <VBox alignment="CENTER" spacing="8.0" styleClass="contenedor-contrasena">
+            <Label styleClass="label-formulario" text="Contraseña temporal:" />
+            <Label fx:id="lblContrasenaTemporal" styleClass="label-contrasena" text="Cargando..." />
+        </VBox>
+
+        <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="panel-advertencia">
+            <Label styleClass="texto-advertencia" text="⚠️ Comunícale esta contraseña al usuario por un medio seguro." wrapText="true" />
+            <Label styleClass="texto-advertencia" text="El usuario deberá crear una nueva contraseña al iniciar sesión." wrapText="true" />
+        </VBox>
+
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" prefHeight="80.0" prefWidth="480.0" spacing="15.0" styleClass="panel-botones">
+        <Button fx:id="btnCopiar" mnemonicParsing="false" onAction="#copiarContrasena" prefHeight="45.0" prefWidth="180.0" styleClass="btn-copiar" text="📋 Copiar Contraseña" />
+        <Button fx:id="btnCerrar" mnemonicParsing="false" onAction="#cerrarVentana" prefHeight="45.0" prefWidth="110.0" styleClass="btn-cancelar" text="Cerrar" />
+    </HBox>
+
+</VBox>
