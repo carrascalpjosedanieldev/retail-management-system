@@ -158,6 +158,9 @@ public class RutasVista {
     public static final String EDITAR_USUARIO_VIEW =
             "/vista/gestionarUsuarios/EditarUsuario.fxml";
 
+    public static final String GESTIONAR_ROLES_USUARIO_VIEW =
+            "/vista/gestionarUsuarios/GestionarRolesDeUsuario.fxml";
+
     public static final String RESTABLECER_CONTRASENA_VIEW =
             "/vista/gestionarUsuarios/ReestablecerContrasena.fxml";
 

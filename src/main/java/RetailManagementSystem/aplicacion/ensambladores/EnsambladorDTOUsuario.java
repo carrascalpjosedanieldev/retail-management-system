@@ -1,6 +1,7 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.ResultadoRegistroDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
@@ -10,9 +11,14 @@ import java.util.List;
 
 public class EnsambladorDTOUsuario {
 
+    //ATRIBUTOS:
+
+    private final EnsambladorDTORol ensambladorDTORol;
+
     //CONSTRUCTOR:
 
-    public EnsambladorDTOUsuario() {
+    public EnsambladorDTOUsuario(EnsambladorDTORol ensambladorDTORol) {
+        this.ensambladorDTORol = ensambladorDTORol;
     }
 
     //MÉTODOS:
@@ -21,10 +27,11 @@ public class EnsambladorDTOUsuario {
         if (usuario == null){
             throw new IllegalArgumentException("NO puedes ensamblar un Usuario Nulo.");
         }
+        List<RolDTO> rolesUsuario = this.ensambladorDTORol.ensamblarDetalleRoles(usuario.getRoles());
         return new UsuarioDTOCompleto(
                 usuario.getIdUsuario(), usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
-                usuario.isActivo(), usuario.isDebeCambiarContrasena(), usuario.obtenerNombresRoles(),
-                usuario.obtenerPermisosTotales());
+                usuario.isActivo(), usuario.isDebeCambiarContrasena(), rolesUsuario,
+                usuario.obtenerPermisosTotales().stream().toList());
     }
 
     public UsuarioDTOBasico ensamblarDTOUsuarioBasico(Usuario usuario){

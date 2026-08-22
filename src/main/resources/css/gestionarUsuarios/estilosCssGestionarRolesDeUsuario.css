@@ -108,6 +108,18 @@
 }
 
 
+.estado-activo {
+    -fx-text-fill: #10b981;
+    -fx-font-weight: bold;
+}
+
+.estado-inactivo {
+    -fx-text-fill: #ef4444;
+    -fx-font-weight: bold;
+}
+
+
+
 
 
 .btn-guardar {

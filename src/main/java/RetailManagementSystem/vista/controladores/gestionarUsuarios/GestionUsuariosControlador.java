@@ -233,7 +233,21 @@ public class GestionUsuariosControlador {
 
     @FXML
     void gestionarRolesUsuario(ActionEvent event) {
-
+        UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null){
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Selecciona un Usuario", null,
+                    "Debes seleccionar us Usuario para poder Gestionar sus Roles."
+            );
+            return;
+        }
+        CargadorVistas.abrirModalConInyeccion(
+                RutasVista.GESTIONAR_ROLES_USUARIO_VIEW,
+                "Gestionando Roles", getVentana(),
+                (GestionarRolesDeUsuarioControlador c)->{
+                    c.cargarDatos(seleccionado.idUsuario());
+                }
+        );
     }
 
 

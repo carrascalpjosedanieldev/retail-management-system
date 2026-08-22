@@ -107,7 +107,7 @@ public class ContenedorDependencias {
         );
         ensambladorDTOPermiso = new EnsambladorDTOPermiso();
         ensambladorDTORol = new EnsambladorDTORol(ensambladorDTOPermiso);
-        ensambladorDTOUsuario = new EnsambladorDTOUsuario();
+        ensambladorDTOUsuario = new EnsambladorDTOUsuario(ensambladorDTORol);
 
         //INSTANCIACIÓN DE REPOSITORIOS:
 

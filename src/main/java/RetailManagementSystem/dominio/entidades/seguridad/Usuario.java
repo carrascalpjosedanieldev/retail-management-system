@@ -3,9 +3,7 @@ package RetailManagementSystem.dominio.entidades.seguridad;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.RolNoDisponibleException;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Usuario {
@@ -61,8 +59,8 @@ public class Usuario {
         this.email = email;
     }
 
-    public Set<Rol> getRoles() {
-        return Collections.unmodifiableSet(this.roles);
+    public List<Rol> getRoles() {
+        return List.copyOf(this.roles);
     }
 
     public Set<String> getPermisosCacheados() {
