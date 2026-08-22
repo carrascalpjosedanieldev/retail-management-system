@@ -36,7 +36,7 @@ public class OrquestadorLogin {
             Usuario usuario = this.servicioUsuario.validarYObtenerUsuarioValido(
                     email.trim(), contrasenaPlana, LocalDateTime.now()
             );
-            return this.ensambladorDTOUsuario.ensamblarDTOUsuario(usuario);
+            return this.ensambladorDTOUsuario.ensamblarDTOUsuarioCompleto(usuario);
         } finally {
             Arrays.fill(contrasenaPlana, '\0');
         }

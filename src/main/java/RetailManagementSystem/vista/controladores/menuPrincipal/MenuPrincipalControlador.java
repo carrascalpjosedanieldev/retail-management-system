@@ -106,7 +106,7 @@ public class MenuPrincipalControlador {
                         getVentana(), "Error de Carga",
                         "Error al Obtener el Nombre de la Tienda",
                         "NO se pudo Leer la Configuración Local: " + causa.getMessage() + "\n" +
-                                "Vertica tu conexión para seguir utilizando la App."
+                                "Verifica tu conexión para seguir utilizando la App."
                 );
             });
             return null;

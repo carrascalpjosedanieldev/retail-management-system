@@ -27,6 +27,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfi
 import RetailManagementSystem.vista.controladores.gestionarUsuarios.EditarUsuarioControlador;
 import RetailManagementSystem.vista.controladores.gestionarUsuarios.GestionUsuariosControlador;
 import RetailManagementSystem.vista.controladores.gestionarUsuarios.RegistrarUsuarioControlador;
+import RetailManagementSystem.vista.controladores.gestionarUsuarios.RestablecerContrasenaControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.*;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.*;
 
@@ -237,6 +238,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == EditarUsuarioControlador.class){
             return new EditarUsuarioControlador(
+                    ContenedorDependencias.getOrquestadorUsuarios()
+            );
+        }
+        if (claseControlador == RestablecerContrasenaControlador.class){
+            return new RestablecerContrasenaControlador(
                     ContenedorDependencias.getOrquestadorUsuarios()
             );
         }

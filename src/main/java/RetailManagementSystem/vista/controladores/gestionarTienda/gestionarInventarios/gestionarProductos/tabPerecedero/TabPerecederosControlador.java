@@ -90,7 +90,7 @@ public class TabPerecederosControlador {
                         "No se pudieron cargar los datos del inventario.",
                         "Ocurrió un Error al cargar los Productos Perecederos. La Ventana se Cerrará por Seguridad.\n" +
                                 "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
-                                causa.getMessage()
+                                causa.getMessage() + ex.getMessage()
                 );
                 CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
             });

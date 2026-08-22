@@ -1,6 +1,7 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.ResultadoRegistroDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
@@ -25,7 +26,7 @@ public class OrquestadorUsuarios {
 
     //MÉTODOS:
 
-    public List<UsuarioDTOCompleto> obtenerTodosLosUsuarios(){
+    public List<UsuarioDTOBasico> obtenerTodosLosUsuarios(){
         return this.ensambladorDTOUsuario.ensamblarDetalleUsuarios(
                 this.servicioUsuario.obtenerTodosLosUsuarios()
         );
@@ -42,20 +43,20 @@ public class OrquestadorUsuarios {
         }
         char[] claveOriginal = claveTemporal.toString().toCharArray();
         char[] copiaParaServicio = claveOriginal.clone();
-        UsuarioDTOCompleto usuarioDTOCompleto = this.ensambladorDTOUsuario.ensamblarDTOUsuario(
+        UsuarioDTOBasico usuarioDTOCompleto = this.ensambladorDTOUsuario.ensamblarDTOUsuarioBasico(
                 this.servicioUsuario.registrarUsuario(
                         nombre, apellido, email, copiaParaServicio, activo
                 )
         );
-        return this.ensambladorDTOUsuario.ensamblarDTOResultadoregistro(
+        return this.ensambladorDTOUsuario.ensamblarDTOResultadoRegistro(
                 usuarioDTOCompleto, claveOriginal
         );
     }
 
-    public UsuarioDTOCompleto actualizarDatosUsuario(
+    public UsuarioDTOBasico actualizarDatosUsuario(
             Long idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail
     ) {
-        return this.ensambladorDTOUsuario.ensamblarDTOUsuario(
+        return this.ensambladorDTOUsuario.ensamblarDTOUsuarioBasico(
                 this.servicioUsuario.actualizarDatosUsuario(
                         idUsuario, nuevoNombre, nuevoApellido, nuevoEmail
                 )
@@ -64,6 +65,16 @@ public class OrquestadorUsuarios {
 
     public void cambiarEstadoUsuario(Long idUsuario){
         this.servicioUsuario.cambiarEstadoUsuario(idUsuario);
+    }
+
+    public UsuarioDTOCompleto obtenerDatosTotalesUsuario(Long idUsuario){
+        return this.ensambladorDTOUsuario.ensamblarDTOUsuarioCompleto(
+                this.servicioUsuario.obtenerUsuario(idUsuario)
+        );
+    }
+
+    public char[] restablecerContrasenaPorAdmin(Long idUsuario){
+        return this.servicioUsuario.restablecerContrasenaPorAdmin(idUsuario);
     }
 
 }//===================================================================================================================//

@@ -42,6 +42,10 @@ public class ServicioUsuario {
 
     //MÉTODOS:
 
+    public Usuario obtenerUsuario(Long idUsuario){
+        return this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
+    }
+
     public List<Usuario> obtenerTodosLosUsuarios(){
         return this.repositorioUsuario.obtenerTodosLosUsuarios();
     }
@@ -139,24 +143,24 @@ public class ServicioUsuario {
     }
 
 
-    public String restablecerContrasenaPorAdmin(Long idUsuario) {
+    public char[] restablecerContrasenaPorAdmin(Long idUsuario) {
         Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
         String caracteresPermitidos = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         SecureRandom random = new SecureRandom();
-        StringBuilder claveTemporal = new StringBuilder(6);
+        char[] claveOriginal = new char[6];
         for (int i = 0; i < 6; i++) {
-            claveTemporal.append(caracteresPermitidos.charAt(random.nextInt(caracteresPermitidos.length())));
+            claveOriginal[i] = caracteresPermitidos.charAt(random.nextInt(caracteresPermitidos.length()));
         }
-        char[] clavePlana = claveTemporal.toString().toCharArray();
+        char[] copiaParaServicio = claveOriginal.clone();
         String hashTemporal;
         try {
-            hashTemporal = this.codificadorContrasenas.codificar(clavePlana);
+            hashTemporal = this.codificadorContrasenas.codificar(copiaParaServicio);
         } finally {
-            Arrays.fill(clavePlana, '\0');
+            Arrays.fill(copiaParaServicio, '\0');
         }
         usuario.asignarContrasenaTemporal(hashTemporal);
         this.repositorioUsuario.actualizarSeguridad(usuario);
-        return claveTemporal.toString();
+        return claveOriginal;
     }
 
 

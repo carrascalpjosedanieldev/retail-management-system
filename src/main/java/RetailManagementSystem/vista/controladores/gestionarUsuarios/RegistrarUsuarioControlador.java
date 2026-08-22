@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 
@@ -31,7 +32,7 @@ public class RegistrarUsuarioControlador {
 
     private final OrquestadorUsuarios orquestadorUsuarios;
 
-    private ObservableList<UsuarioDTOCompleto> listaObservable;
+    private ObservableList<UsuarioDTOBasico> listaObservable;
 
     //CONSTRUCTOR:
 
@@ -41,7 +42,7 @@ public class RegistrarUsuarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<UsuarioDTOCompleto> listaObservable){
+    public void cargarDatos(ObservableList<UsuarioDTOBasico> listaObservable){
         this.listaObservable = listaObservable;
         Platform.runLater(()-> btnCancelar.requestFocus());
     }

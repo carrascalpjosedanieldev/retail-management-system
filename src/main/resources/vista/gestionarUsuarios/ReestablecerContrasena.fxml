@@ -5,15 +5,20 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="380.0" prefWidth="480.0" styleClass="fondo-panel" stylesheets="@../../css/gestionarUsuarios/estilosCssReestablecerContrasena.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarUsuarios.RestablecerContrasenaControlador">
+<VBox prefHeight="433.0" prefWidth="480.0" styleClass="fondo-panel" stylesheets="@../../css/gestionarUsuarios/estilosCssReestablecerContrasena.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarUsuarios.RestablecerContrasenaControlador">
 
     <VBox alignment="CENTER_LEFT" styleClass="panel-encabezado">
         <Label styleClass="titulo-principal" text="Contraseña Restablecida" />
     </VBox>
 
     <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="panel-formulario" VBox.vgrow="ALWAYS">
-
-        <Label fx:id="lblMensajeUsuario" styleClass="texto-normal" text="Se ha generado una contraseña temporal para (nombre usuario)." textAlignment="CENTER" wrapText="true" />
+      <HBox>
+         <children>
+      
+              <Label styleClass="texto-normal" text="Se ha generado una contraseña temporal para " textAlignment="CENTER" wrapText="true" />
+            <Label fx:id="lblNombreUsuario" styleClass="texto-normal" text="Cargando Nombre ..." />
+         </children>
+      </HBox>
 
         <VBox alignment="CENTER" spacing="8.0" styleClass="contenedor-contrasena">
             <Label styleClass="label-formulario" text="Contraseña temporal:" />
@@ -21,8 +26,10 @@
         </VBox>
 
         <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="panel-advertencia">
-            <Label styleClass="texto-advertencia" text="⚠️ Comunícale esta contraseña al usuario por un medio seguro." wrapText="true" />
+            <Label styleClass="texto-advertencia" text="⚠ Comunícale esta contraseña al usuario por un medio seguro." wrapText="true" />
             <Label styleClass="texto-advertencia" text="El usuario deberá crear una nueva contraseña al iniciar sesión." wrapText="true" />
+         <Label styleClass="texto-advertencia" text="Tienes 30 segundos despues de haber copiado la Contraseña" />
+         <Label styleClass="texto-advertencia" text="Debes pegarla antes de esos 30 segundos." />
         </VBox>
 
     </VBox>

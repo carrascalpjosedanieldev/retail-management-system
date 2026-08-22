@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="550.0" prefWidth="930.0" styleClass="fondo-panel" stylesheets="@../../css/gestionarUsuarios/estilosCssGestionarRolesDeUsuario.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarUsuarios.GestionarRolesDeUsuarioControlador">
+<VBox prefHeight="550.0" prefWidth="1000.0" styleClass="fondo-panel" stylesheets="@../../css/gestionarUsuarios/estilosCssGestionarRolesDeUsuario.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarUsuarios.GestionarRolesDeUsuarioControlador">
 
     <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="panel-encabezado">
         <Label styleClass="titulo-principal" text="Gestionar Roles del Usuario" />
@@ -21,10 +21,11 @@
 
         <VBox spacing="10.0" HBox.hgrow="ALWAYS">
             <Label styleClass="label-tabla-titulo" text="✅ Roles Asignados" />
-            <TableView fx:id="tablaRolesActuales" VBox.vgrow="ALWAYS">
+            <TableView fx:id="tablaRolesActuales" prefHeight="300.0" prefWidth="386.0" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="colIdActual" prefWidth="60.0" text="ID" />
-                    <TableColumn fx:id="colNombreActual" prefWidth="280.0" text="NOMBRE DEL ROL" />
+                    <TableColumn fx:id="colNombreActual" prefWidth="288.0000190734863" text="NOMBRE DEL ROL" />
+                    <TableColumn fx:id="colActivoActual" prefWidth="112.79998779296875" text="ACTIVO" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -35,10 +36,11 @@
 
         <VBox spacing="10.0" HBox.hgrow="ALWAYS">
             <Label styleClass="label-tabla-titulo" text="➕ Roles Disponibles" />
-            <TableView fx:id="tablaRolesDisponibles" VBox.vgrow="ALWAYS">
+            <TableView fx:id="tablaRolesDisponibles" prefHeight="297.0" prefWidth="409.0" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="colIdDisponible" prefWidth="60.0" text="ID" />
-                    <TableColumn fx:id="colNombreDisponible" prefWidth="280.0" text="NOMBRE DEL ROL" />
+                    <TableColumn fx:id="colNombreDisponible" prefWidth="301.59998321533203" text="NOMBRE DEL ROL" />
+                    <TableColumn fx:id="colActivoDisponible" prefWidth="123.199951171875" text="ACTIVO" />
                 </columns>
                 <columnResizePolicy>
                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

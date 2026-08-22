@@ -252,7 +252,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     private static final String SQL_OBTENER_PERECEDEROS_DE_INVENTARIO =
             "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, " +
-            "p.stock, p.activo, per.fecha_vencimiento, per.id_politica, " +
+            "p.stock, p.activo, per.fecha_vencimiento, per.id_politica, r.talla, " +
             "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
             "i.activo AS impuesto_activo, " +
             "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
@@ -263,6 +263,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
             "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
             "INNER JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
+            "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
             "INNER JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
             "WHERE p.id_inventario = ?";
 
@@ -281,7 +282,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario, e);
+            throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario + e.getMessage(), e);
         }
         return productosPerecederos;
     }

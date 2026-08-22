@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -26,12 +26,12 @@ public class GestionUsuariosControlador {
 
     //ATRIBUTOS:
 
-    @FXML private TableColumn<UsuarioDTOCompleto, Long> colId;
-    @FXML private TableColumn<UsuarioDTOCompleto, String> colNombre;
-    @FXML private TableColumn<UsuarioDTOCompleto, String> colApellido;
-    @FXML private TableColumn<UsuarioDTOCompleto, String> colEmail;
-    @FXML private TableColumn<UsuarioDTOCompleto, String> colEstado;
-    @FXML private TableView<UsuarioDTOCompleto> tablaUsuarios;
+    @FXML private TableColumn<UsuarioDTOBasico, Long> colId;
+    @FXML private TableColumn<UsuarioDTOBasico, String> colNombre;
+    @FXML private TableColumn<UsuarioDTOBasico, String> colApellido;
+    @FXML private TableColumn<UsuarioDTOBasico, String> colEmail;
+    @FXML private TableColumn<UsuarioDTOBasico, String> colEstado;
+    @FXML private TableView<UsuarioDTOBasico> tablaUsuarios;
     @FXML private TextField txtBuscar;
     @FXML private Button btnEditar;
     @FXML private Button btnCambiarEstado;
@@ -40,7 +40,7 @@ public class GestionUsuariosControlador {
 
     private final OrquestadorUsuarios orquestadorUsuarios;
 
-    private final ObservableList<UsuarioDTOCompleto> listaObservableUsuarios = FXCollections.observableArrayList();
+    private final ObservableList<UsuarioDTOBasico> listaObservableUsuarios = FXCollections.observableArrayList();
 
     //CONSTRUCTOR:
 
@@ -89,7 +89,7 @@ public class GestionUsuariosControlador {
             String estado = esActivo ? "Activo" : "Inactivo";
             return new SimpleStringProperty(estado);
         });
-        colEstado.setCellFactory(columna-> new TableCell<UsuarioDTOCompleto, String>(){
+        colEstado.setCellFactory(columna-> new TableCell<UsuarioDTOBasico, String>(){
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
@@ -106,7 +106,7 @@ public class GestionUsuariosControlador {
     }
 
     private void configurarFiltroBusqueda(){
-        FilteredList<UsuarioDTOCompleto> listaFiltrada = new FilteredList<>(
+        FilteredList<UsuarioDTOBasico> listaFiltrada = new FilteredList<>(
                 listaObservableUsuarios, b-> true
         );
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo)->{
@@ -120,7 +120,7 @@ public class GestionUsuariosControlador {
                         usuario.email().toLowerCase().contains(filtro);
             });
         });
-        SortedList<UsuarioDTOCompleto> listaOrdenada = new SortedList<>(listaFiltrada);
+        SortedList<UsuarioDTOBasico> listaOrdenada = new SortedList<>(listaFiltrada);
         listaOrdenada.comparatorProperty().bind(tablaUsuarios.comparatorProperty());
         tablaUsuarios.setItems(listaOrdenada);
     }
@@ -162,7 +162,7 @@ public class GestionUsuariosControlador {
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
-        UsuarioDTOCompleto seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Selecciona un Usuario", null,
@@ -182,7 +182,7 @@ public class GestionUsuariosControlador {
 
     @FXML
     void cambiarEstadoUsuario(ActionEvent event) {
-        UsuarioDTOCompleto seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Selecciona un Usuario", null,
@@ -198,15 +198,13 @@ public class GestionUsuariosControlador {
                 this.orquestadorUsuarios.cambiarEstadoUsuario(seleccionado.idUsuario())
         ).thenRun(()->
                 Platform.runLater(()->{
-                    UsuarioDTOCompleto actualizado = new UsuarioDTOCompleto(
+                    UsuarioDTOBasico actualizado = new UsuarioDTOBasico(
                             seleccionado.idUsuario(),
                             seleccionado.nombre(),
                             seleccionado.apellido(),
                             seleccionado.email(),
                             !seleccionado.activo(),
-                            seleccionado.debeCambiarContrasena(),
-                            seleccionado.roles(),
-                            seleccionado.permisos()
+                            seleccionado.debeCambiarContrasena()
                     );
                     UtilidadesLista.reemplazarPorIdentidad(
                             listaObservableUsuarios,
@@ -241,7 +239,25 @@ public class GestionUsuariosControlador {
 
     @FXML
     void restablecerContrasena(ActionEvent event) {
-
+        UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null){
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Selecciona un Usuario", null,
+                    "Debes seleccionar us Usuario para poder Restablecer su Contraseña."
+            );
+            return;
+        }
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
+                "¿Estás Seguro de Restablecer la Contraseña del Usuario -" + seleccionado.getNombreCompleto() + "-?")) {
+            return;
+        }
+        CargadorVistas.abrirModalConInyeccion(
+                RutasVista.RESTABLECER_CONTRASENA_VIEW,
+                "Restableciendo Contraseña", getVentana(),
+                (RestablecerContrasenaControlador c)-> {
+                    c.cargarDatos(seleccionado.idUsuario(), seleccionado.getNombreCompleto());
+                }
+        );
     }
 
 
