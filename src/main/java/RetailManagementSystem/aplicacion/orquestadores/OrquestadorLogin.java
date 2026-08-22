@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
@@ -25,7 +25,7 @@ public class OrquestadorLogin {
 
     //MÉTODOS:
 
-    public UsuarioDTO autenticar(String email, char[] contrasenaPlana){
+    public UsuarioDTOCompleto autenticar(String email, char[] contrasenaPlana){
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("El Correo Electrónico NO puede estar Vacío.");
         }

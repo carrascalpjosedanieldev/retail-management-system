@@ -1,7 +1,7 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.ResultadoRegistroDTO;
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
 
@@ -25,7 +25,7 @@ public class OrquestadorUsuarios {
 
     //MÉTODOS:
 
-    public List<UsuarioDTO> obtenerTodosLosUsuarios(){
+    public List<UsuarioDTOCompleto> obtenerTodosLosUsuarios(){
         return this.ensambladorDTOUsuario.ensamblarDetalleUsuarios(
                 this.servicioUsuario.obtenerTodosLosUsuarios()
         );
@@ -42,17 +42,17 @@ public class OrquestadorUsuarios {
         }
         char[] claveOriginal = claveTemporal.toString().toCharArray();
         char[] copiaParaServicio = claveOriginal.clone();
-        UsuarioDTO usuarioDTO = this.ensambladorDTOUsuario.ensamblarDTOUsuario(
+        UsuarioDTOCompleto usuarioDTOCompleto = this.ensambladorDTOUsuario.ensamblarDTOUsuario(
                 this.servicioUsuario.registrarUsuario(
                         nombre, apellido, email, copiaParaServicio, activo
                 )
         );
         return this.ensambladorDTOUsuario.ensamblarDTOResultadoregistro(
-                usuarioDTO, claveOriginal
+                usuarioDTOCompleto, claveOriginal
         );
     }
 
-    public UsuarioDTO actualizarDatosUsuario(
+    public UsuarioDTOCompleto actualizarDatosUsuario(
             Long idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail
     ) {
         return this.ensambladorDTOUsuario.ensamblarDTOUsuario(

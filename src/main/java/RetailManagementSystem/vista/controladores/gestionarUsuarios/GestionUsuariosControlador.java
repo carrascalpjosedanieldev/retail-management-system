@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -26,12 +26,12 @@ public class GestionUsuariosControlador {
 
     //ATRIBUTOS:
 
-    @FXML private TableColumn<UsuarioDTO, Long> colId;
-    @FXML private TableColumn<UsuarioDTO, String> colNombre;
-    @FXML private TableColumn<UsuarioDTO, String> colApellido;
-    @FXML private TableColumn<UsuarioDTO, String> colEmail;
-    @FXML private TableColumn<UsuarioDTO, String> colEstado;
-    @FXML private TableView<UsuarioDTO> tablaUsuarios;
+    @FXML private TableColumn<UsuarioDTOCompleto, Long> colId;
+    @FXML private TableColumn<UsuarioDTOCompleto, String> colNombre;
+    @FXML private TableColumn<UsuarioDTOCompleto, String> colApellido;
+    @FXML private TableColumn<UsuarioDTOCompleto, String> colEmail;
+    @FXML private TableColumn<UsuarioDTOCompleto, String> colEstado;
+    @FXML private TableView<UsuarioDTOCompleto> tablaUsuarios;
     @FXML private TextField txtBuscar;
     @FXML private Button btnEditar;
     @FXML private Button btnCambiarEstado;
@@ -40,7 +40,7 @@ public class GestionUsuariosControlador {
 
     private final OrquestadorUsuarios orquestadorUsuarios;
 
-    private final ObservableList<UsuarioDTO> listaObservableUsuarios = FXCollections.observableArrayList();
+    private final ObservableList<UsuarioDTOCompleto> listaObservableUsuarios = FXCollections.observableArrayList();
 
     //CONSTRUCTOR:
 
@@ -89,7 +89,7 @@ public class GestionUsuariosControlador {
             String estado = esActivo ? "Activo" : "Inactivo";
             return new SimpleStringProperty(estado);
         });
-        colEstado.setCellFactory(columna-> new TableCell<UsuarioDTO, String>(){
+        colEstado.setCellFactory(columna-> new TableCell<UsuarioDTOCompleto, String>(){
             @Override
             protected void updateItem(String estado, boolean empty) {
                 super.updateItem(estado, empty);
@@ -106,7 +106,7 @@ public class GestionUsuariosControlador {
     }
 
     private void configurarFiltroBusqueda(){
-        FilteredList<UsuarioDTO> listaFiltrada = new FilteredList<>(
+        FilteredList<UsuarioDTOCompleto> listaFiltrada = new FilteredList<>(
                 listaObservableUsuarios, b-> true
         );
         txtBuscar.textProperty().addListener((observable, valorViejo, valorNuevo)->{
@@ -120,7 +120,7 @@ public class GestionUsuariosControlador {
                         usuario.email().toLowerCase().contains(filtro);
             });
         });
-        SortedList<UsuarioDTO> listaOrdenada = new SortedList<>(listaFiltrada);
+        SortedList<UsuarioDTOCompleto> listaOrdenada = new SortedList<>(listaFiltrada);
         listaOrdenada.comparatorProperty().bind(tablaUsuarios.comparatorProperty());
         tablaUsuarios.setItems(listaOrdenada);
     }
@@ -162,7 +162,7 @@ public class GestionUsuariosControlador {
 
     @FXML
     void abrirFormularioEdicion(ActionEvent event) {
-        UsuarioDTO seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        UsuarioDTOCompleto seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Selecciona un Usuario", null,
@@ -182,7 +182,7 @@ public class GestionUsuariosControlador {
 
     @FXML
     void cambiarEstadoUsuario(ActionEvent event) {
-        UsuarioDTO seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+        UsuarioDTOCompleto seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Selecciona un Usuario", null,
@@ -198,7 +198,7 @@ public class GestionUsuariosControlador {
                 this.orquestadorUsuarios.cambiarEstadoUsuario(seleccionado.idUsuario())
         ).thenRun(()->
                 Platform.runLater(()->{
-                    UsuarioDTO actualizado = new UsuarioDTO(
+                    UsuarioDTOCompleto actualizado = new UsuarioDTOCompleto(
                             seleccionado.idUsuario(),
                             seleccionado.nombre(),
                             seleccionado.apellido(),

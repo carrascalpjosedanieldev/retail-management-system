@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -27,9 +27,9 @@ public class EditarUsuarioControlador {
     @FXML private TextField txtEmail;
     @FXML private TextField txtNombre;
 
-    private UsuarioDTO datosUsuario;
+    private UsuarioDTOCompleto datosUsuario;
 
-    private ObservableList<UsuarioDTO> listaObservable;
+    private ObservableList<UsuarioDTOCompleto> listaObservable;
 
     private final OrquestadorUsuarios orquestadorUsuarios;
 
@@ -41,7 +41,7 @@ public class EditarUsuarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(UsuarioDTO datosUsuario, ObservableList<UsuarioDTO> listaObservable){
+    public void cargarDatos(UsuarioDTOCompleto datosUsuario, ObservableList<UsuarioDTOCompleto> listaObservable){
         this.datosUsuario = datosUsuario;
         this.listaObservable = listaObservable;
         lblIdUsuario.setText(String.valueOf(datosUsuario.idUsuario()));

@@ -1,6 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
@@ -31,7 +31,7 @@ public class RegistrarUsuarioControlador {
 
     private final OrquestadorUsuarios orquestadorUsuarios;
 
-    private ObservableList<UsuarioDTO> listaObservable;
+    private ObservableList<UsuarioDTOCompleto> listaObservable;
 
     //CONSTRUCTOR:
 
@@ -41,7 +41,7 @@ public class RegistrarUsuarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<UsuarioDTO> listaObservable){
+    public void cargarDatos(ObservableList<UsuarioDTOCompleto> listaObservable){
         this.listaObservable = listaObservable;
         Platform.runLater(()-> btnCancelar.requestFocus());
     }
