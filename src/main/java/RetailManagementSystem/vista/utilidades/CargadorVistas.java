@@ -34,6 +34,33 @@ public class CargadorVistas {
 
     }
 
+    public static <T> void cambiarPantallaConInyeccion(Window ventanaActual, String rutaFxml, Consumer<T> inyector) {
+        if (ventanaActual == null) {
+            throw new IllegalArgumentException("La Ventana NO puede ser Nula.");
+        }
+        try {
+            FXMLLoader loader = obtenerLoaderConfigurado(rutaFxml);
+            Parent nuevaVista = loader.load();
+            T controlador = loader.getController();
+            if (inyector != null) {
+                inyector.accept(controlador);
+            }
+            if (ventanaActual.getScene() != null) {
+                ventanaActual.getScene().setRoot(nuevaVista);
+            }
+            if (ventanaActual instanceof Stage stage) {
+                stage.setResizable(true);
+                stage.setMinWidth(1024);
+                stage.setMinHeight(600);
+                stage.setWidth(1280);
+                stage.setHeight(720);
+                stage.centerOnScreen();
+            }
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "Error al Inyectar y Cargar la vista.", e);
+        }
+    }
+
     public static Parent cargarVista(String rutaFxml) {
         try {
             FXMLLoader loader = new FXMLLoader(CargadorVistas.class.getResource(rutaFxml));
@@ -44,11 +71,13 @@ public class CargadorVistas {
         }
     }
 
+
     public static FXMLLoader obtenerLoaderConfigurado(String rutaFxml) {
         FXMLLoader loader = new FXMLLoader(CargadorVistas.class.getResource(rutaFxml));
         loader.setControllerFactory(FABRICA_C);
         return loader;
     }
+
 
     public static <T> T abrirModalConInyeccion(
             String rutaFxml, String tituloModal, Window ventanaPadre, Consumer<T> inicializadorControlador
@@ -81,9 +110,11 @@ public class CargadorVistas {
         }
     }
 
+
     public static <T> T abrirModalSinInyeccion(String rutaFxml, String tituloModal, Window ventanaPadre) {
         return abrirModalConInyeccion(rutaFxml, tituloModal, ventanaPadre, null);
     }
+
 
     public static <T> void cambiarPantallaInyectada(String rutaFxml, Window ventana, Consumer<T> inicializadorControlador){
         if (ventana == null || ventana.getScene() == null) {
@@ -107,6 +138,7 @@ public class CargadorVistas {
             );
         }
     }
+
 
 }//===================================================================================================================//
 

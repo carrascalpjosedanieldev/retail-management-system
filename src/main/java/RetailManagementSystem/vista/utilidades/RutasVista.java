@@ -167,6 +167,8 @@ public class RutasVista {
 
     //LOGIN:
 
+    public static final String LOGIN_PRINCIPAL_VIEW =
+            "/vista/login/Login.fxml";
 
 
     //PUNTO DE VENTA:

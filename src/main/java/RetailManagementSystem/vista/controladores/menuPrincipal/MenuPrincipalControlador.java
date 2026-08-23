@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.menuPrincipal;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
@@ -30,6 +31,8 @@ public class MenuPrincipalControlador {
     @FXML private Label lblRoles;
     @FXML private Label lblVersion;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     private final ServicioConfiguraciones servicioConfiguraciones;
 
     //CONSTRUCTOR:
@@ -39,6 +42,10 @@ public class MenuPrincipalControlador {
     }
 
     //MÉTODOS:
+
+    public void recibirUsuarioActual(UsuarioDTOCompleto usuarioActual){
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;

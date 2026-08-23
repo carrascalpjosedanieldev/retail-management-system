@@ -29,22 +29,21 @@ public class App extends Application {
         ContenedorDependencias.inicializar();
         PermisosApp.inicializarYValidarSincronizacionPermisos();
         try {
-            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.MENU_PRINCIPAL_VIEW);
+            FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.LOGIN_PRINCIPAL_VIEW);
             Parent root = loader.load();
             stagePrincipal.setOnCloseRequest(event -> {
                 event.consume();
                 GestorAlertas.mostrarAlertaSalirDelSistema(stagePrincipal);
             });
-            Scene escena = new Scene(root, 1280, 720);
+            Scene escena = new Scene(root, 600, 600);
             stagePrincipal.setTitle("Sistema de Gestión de Tienda - JavaFX");
             stagePrincipal.setScene(escena);
-            stagePrincipal.setResizable(true);
-            stagePrincipal.setMinWidth(1024);
+            stagePrincipal.setResizable(false);
+            stagePrincipal.setMinWidth(600);
             stagePrincipal.setMinHeight(600);
             stagePrincipal.show();
         } catch (Exception e) {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
-            alerta.initOwner(stagePrincipal);
             alerta.setTitle("Error Crítico de Inicialización");
             alerta.setHeaderText("NO se pudo Iniciar la Aplicación");
             alerta.setContentText("""
@@ -53,7 +52,7 @@ public class App extends Application {
                     Por favor, verifique los archivos de vista o contacte al Soporte Técnico o al Creador Original 😎 Jose Daniel 😎.
                     
                     """ + "Detalle:  " + e.getMessage());
-            alerta.getDialogPane().setPrefSize(480, 200);
+            alerta.getDialogPane().setPrefSize(480, 250);
             alerta.showAndWait();
         }
     }

@@ -1,9 +1,7 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
-
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
