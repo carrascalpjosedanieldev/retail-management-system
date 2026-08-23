@@ -211,8 +211,6 @@ public class PermisosVistaControlador {
                         actualizado,
                         item -> item.idPermiso() == actualizado.idPermiso()
                 );
-                int indice = listaMaestraPermisos.indexOf(permisoSeleccionado);
-                listaMaestraPermisos.set(indice, actualizado);
             });
         }).exceptionally(ex->{
             Platform.runLater(()->{

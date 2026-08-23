@@ -32,7 +32,7 @@ public class OrquestadorRoles {
         );
     }
 
-    public RolDTO registrarRolNuevo(String nombreRol, boolean activo, List<PermisoDTO> permisos) {
+    public void registrarRolNuevo(String nombreRol, boolean activo, List<PermisoDTO> permisos) {
         List<Permiso> permisosParaELRol = new ArrayList<>();
         for (PermisoDTO permisoDTO:permisos){
             Permiso permiso = Permiso.reconstruirDesdeBD(
@@ -44,9 +44,7 @@ public class OrquestadorRoles {
             );
             permisosParaELRol.add(permiso);
         }
-        return this.ensambladorDTORol.ensamblarDatosRol(
-                this.servicioRol.registrarRol(nombreRol.toUpperCase(), activo, permisosParaELRol)
-        );
+        this.servicioRol.registrarRol(nombreRol.toUpperCase(), activo, permisosParaELRol);
     }
 
     public RolDTO actualizarDatosRol(int idRol, String nombreNuevo, boolean activo){

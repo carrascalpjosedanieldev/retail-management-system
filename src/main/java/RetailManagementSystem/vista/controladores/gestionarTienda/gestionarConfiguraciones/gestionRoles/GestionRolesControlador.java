@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -68,6 +69,20 @@ public class GestionRolesControlador {
         colEstado.setCellValueFactory(cellData -> {
             boolean estaActivo = cellData.getValue().activo();
             return new SimpleStringProperty(estaActivo ? "Activo" : "Inactivo");
+        });
+        colEstado.setCellFactory(columna -> new TableCell<RolDTO, String>(){
+            @Override
+            protected void updateItem(String estado, boolean empty) {
+                super.updateItem(estado, empty);
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
+                if (empty || estado == null) {
+                    setText(null);
+                } else {
+                    setText(estado);
+                    String estiloCss = estado.equalsIgnoreCase("Activo") ? "estado-activo" : "estado-inactivo";
+                    getStyleClass().add(estiloCss);
+                }
+            }
         });
     }
 

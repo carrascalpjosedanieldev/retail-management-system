@@ -97,11 +97,11 @@ public class GestionarRolesDeUsuarioControlador {
             return listaModificable.stream()
                     .filter(rol -> !idsQueYaTiene.contains(rol.idRol()))
                     .toList();
-        }).thenAccept(listaRolesFiltrados->{
-            Platform.runLater(()->{
-                listaRolesDisponibles.addAll(listaRolesFiltrados);
-            });
-        }).exceptionally(ex->{
+        }).thenAccept(listaRolesFiltrados->
+            Platform.runLater(()->
+                listaRolesDisponibles.addAll(listaRolesFiltrados)
+            )
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
@@ -181,21 +181,52 @@ public class GestionarRolesDeUsuarioControlador {
 
     @FXML
     void anadirRol(ActionEvent event) {
-
+        RolDTO seleccionado = tablaRolesDisponibles.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Atención", null,
+                    "Por favor, Selecciona un Rol de la Tabla de Roles Disponibles para Agregarlo."
+            );
+            return;
+        }
+        listaRolesActuales.add(seleccionado);
+        listaRolesDisponibles.remove(seleccionado);
+        tablaRolesDisponibles.getSelectionModel().clearSelection();
     }
+
+
+    @FXML
+    void quitarRol(ActionEvent event) {
+        RolDTO seleccionado = tablaRolesActuales.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Atención", null,
+                    "Por favor, Selecciona un Rol de la Tabla de Roles Actuales para Agregarlo."
+            );
+            return;
+        }
+        listaRolesDisponibles.add(seleccionado);
+        listaRolesActuales.remove(seleccionado);
+        tablaRolesActuales.getSelectionModel().clearSelection();
+    }
+
 
     @FXML
     void guardarCambios(ActionEvent event) {
 
-    }
 
-    @FXML
-    void quitarRol(ActionEvent event) {
 
     }
+
 
     @FXML
     void cerrarVentana(ActionEvent event) {
+        if (!GestorAlertas.mostrarConfirmacion(
+                getVentana(), "¿Estas Seguro de Salir?", null,
+                "Si Sales Ahora, se Descartaran los Cambios Realizados."
+        )){
+            return;
+        }
         cerrarModal();
     }
 
