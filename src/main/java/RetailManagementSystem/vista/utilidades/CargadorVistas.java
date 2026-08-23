@@ -45,15 +45,12 @@ public class CargadorVistas {
             if (inyector != null) {
                 inyector.accept(controlador);
             }
-            if (ventanaActual.getScene() != null) {
-                ventanaActual.getScene().setRoot(nuevaVista);
-            }
             if (ventanaActual instanceof Stage stage) {
+                Scene nuevaEscena = new Scene(nuevaVista, 1280, 720);
+                stage.setScene(nuevaEscena);
                 stage.setResizable(true);
                 stage.setMinWidth(1024);
                 stage.setMinHeight(600);
-                stage.setWidth(1280);
-                stage.setHeight(720);
                 stage.centerOnScreen();
             }
         } catch (IOException e) {

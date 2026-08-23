@@ -117,8 +117,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                         );
                     }
 
-                    Integer idRol = (Integer) rs.getObject("rol_id_rol");
-                    if (idRol != null){
+                    int idRol = rs.getInt("rol_id_rol");
+                    if (!rs.wasNull()){
 
                         Rol rol = rolesMap.get(idRol);
                         if (rol == null) {
@@ -130,8 +130,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                             rolesMap.put(idRol, rol);
                         }
 
-                        Integer idPermiso = (Integer) rs.getObject("id_permiso");
-                        if (idPermiso != null){
+                        int idPermiso = rs.getInt("id_permiso");
+                        if (!rs.wasNull()){
 
                             Permiso permiso = Permiso.reconstruirDesdeBD(
                                     idPermiso,

@@ -63,6 +63,7 @@ public class ServicioUsuario {
         if (usuario == null || !claveCorrecta) {
             if (usuario != null) {
                 registrarFalloYPosibleBloqueo(usuario, fechaReferencia);
+                validarBloqueoTemporal(usuario, fechaReferencia);
             }
             throw new CredencialesInvalidasException("Credenciales Inválidas.");
         }
@@ -71,7 +72,6 @@ public class ServicioUsuario {
                     "Lo sentimos, NO puedes Ingresar porque NO estas Activo. Para mas información habla con el Administrador"
             );
         }
-        validarBloqueoTemporal(usuario, fechaReferencia);
         usuario.limpiarIntentosFallidosYBloqueo();
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
         return usuario;

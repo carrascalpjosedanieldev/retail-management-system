@@ -93,15 +93,15 @@ public class LoginControlador {
                     txtPasswordVisible.clear();
                 });
             }
-        }).thenAccept(usuarioAutenticado->{
+        }).thenAccept(usuarioAutenticado->
             Platform.runLater(()->{
                 CargadorVistas.cambiarPantallaConInyeccion(
                         getVentana(),
                         RutasVista.MENU_PRINCIPAL_VIEW,
                         (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
                 );
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 switch (causa) {

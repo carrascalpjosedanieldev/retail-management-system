@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.menuPrincipal;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
@@ -44,7 +45,21 @@ public class MenuPrincipalControlador {
     //MÉTODOS:
 
     public void recibirUsuarioActual(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
         this.usuarioActual = usuarioActual;
+        lblNombreUsuario.setText(usuarioActual.getNombreCompleto());
+        if (usuarioActual.roles().isEmpty()){
+            lblRoles.setText("Sin Roles");
+        } else {
+            StringBuilder roles = new StringBuilder();
+            for (RolDTO rol:usuarioActual.roles()){
+                roles.append(rol.nombre());
+                roles.append(System.lineSeparator());
+            }
+            lblRoles.setText(roles.toString());
+        }
     }
 
     private Window getVentana(){
