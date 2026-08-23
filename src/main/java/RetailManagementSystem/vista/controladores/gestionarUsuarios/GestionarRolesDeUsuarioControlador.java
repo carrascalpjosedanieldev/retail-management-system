@@ -213,9 +213,33 @@ public class GestionarRolesDeUsuarioControlador {
 
     @FXML
     void guardarCambios(ActionEvent event) {
-
-
-
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
+                "¿Quieres guardar los cambios en el Usuario?")){
+            return;
+        }
+        CompletableFuture.runAsync(()->{
+            List<RolDTO> listaRoles = new ArrayList<>(listaRolesActuales);
+            this.orquestadorUsuarios.actualizarRolesUsuario(this.datosUsuario.idUsuario(), listaRoles);
+        }).thenRun(()->
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaInformacion(
+                        getVentana(), "Éxito", null,
+                        "Se han guardado los cambios con Éxito."
+                );
+                cerrarModal();
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                GestorAlertas.mostrarAlertaError(
+                        getVentana(), "Error Critico",
+                        "NO se pudo Completar la Acción.",
+                        "Verifica tu conexión y Notificale al Administrador este Error:\n"
+                                + causa.getMessage()
+                );
+            });
+            return null;
+        });
     }
 
 

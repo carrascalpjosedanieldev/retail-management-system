@@ -1,12 +1,12 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
-import RetailManagementSystem.aplicacion.dto.seguridad.ResultadoRegistroDTO;
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
+import RetailManagementSystem.aplicacion.dto.seguridad.*;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
+import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrquestadorUsuarios {
@@ -75,6 +75,19 @@ public class OrquestadorUsuarios {
 
     public char[] restablecerContrasenaPorAdmin(Long idUsuario){
         return this.servicioUsuario.restablecerContrasenaPorAdmin(idUsuario);
+    }
+
+    public void actualizarRolesUsuario(Long idUsuario, List<RolDTO> listaRolesActualizada){
+        List<Rol> rolesParaElUsuario = new ArrayList<>();
+        for (RolDTO rolDTO:listaRolesActualizada){
+            Rol rol = Rol.reconstruirDesdeBD(
+                    rolDTO.idRol(),
+                    rolDTO.nombre(),
+                    rolDTO.activo()
+            );
+            rolesParaElUsuario.add(rol);
+        }
+        this.servicioUsuario.actualizarRolesUsuario(idUsuario, rolesParaElUsuario);
     }
 
 }//===================================================================================================================//

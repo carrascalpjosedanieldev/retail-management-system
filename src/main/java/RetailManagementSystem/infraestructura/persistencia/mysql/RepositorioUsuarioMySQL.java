@@ -207,8 +207,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                         );
                     }
 
-                    Integer idRol = (Integer) rs.getObject("rol_id_rol");
-                    if (idRol != null){
+                    int idRol = rs.getInt("rol_id_rol");
+                    if (!rs.wasNull()){
 
                         Rol rol = rolesMap.get(idRol);
                         if (rol == null) {
@@ -220,14 +220,14 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                             rolesMap.put(idRol, rol);
                         }
 
-                        Integer idPermiso = (Integer) rs.getObject("id_permiso");
-                        if (idPermiso != null){
+                        int idPermiso = rs.getInt("id_permiso");
+                        if (!rs.wasNull()){
 
                             Permiso permiso = Permiso.reconstruirDesdeBD(
                                     idPermiso,
                                     rs.getString("nombre_permiso"),
                                     rs.getString("descripcion"),
-                                    rs.getString("modulo"),
+                                    rs.getString("nombre_modulo"),
                                     rs.getBoolean("permiso_activo")
                             );
                             rol.recuperarPermisoDeBD(permiso);
@@ -382,6 +382,71 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
         } catch (SQLException e) {
             throw new PersistenciaException("Error al actualizar la Seguridad del Usuario", e);
+        }
+    }
+
+
+    @Override
+    public void actualizarRolesUsuario(Usuario usuario) {
+        if (usuario == null){
+            throw new IllegalArgumentException("NO puedes Actualizar un Usuario Nulo");
+        }
+
+        try (Connection conn = AdministradorConexion.obtenerConexion()) {
+
+            try {
+                conn.setAutoCommit(false);
+
+                this.borrarRelacionesUsuarioRolViejas(conn, usuario.getIdUsuario());
+
+                if (!usuario.getRoles().isEmpty()) {
+                    this.insertarPermisosActualizados(conn, usuario);
+                }
+
+                conn.commit();
+
+            } catch (SQLException originalException) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    originalException.addSuppressed(rollbackEx);
+                }
+                throw new PersistenciaException("Error en la Transacción de Actualización de Roles", originalException);
+            } finally {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException ignored) { }
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error de Base de Datos al Actualizar los Roles del Usuario", e);
+        }
+    }
+
+    private static final String SQL_DELETE_ROLES =
+            "DELETE FROM usuario_rol WHERE id_usuario = ?";
+
+    private void borrarRelacionesUsuarioRolViejas(Connection conn, Long idUsuario) throws SQLException{
+        try (PreparedStatement psDelete = conn.prepareStatement(SQL_DELETE_ROLES)) {
+            psDelete.setLong(1, idUsuario);
+            psDelete.executeUpdate();
+        }
+    }
+
+    private static final String SQL_INSERT_DE_ROLES_ACTUALIZADOS =
+            "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, ?)";
+
+    private void insertarPermisosActualizados(Connection conn, Usuario usuario) throws SQLException{
+        try (PreparedStatement psInsert = conn.prepareStatement(SQL_INSERT_DE_ROLES_ACTUALIZADOS)) {
+
+            psInsert.setLong(1, usuario.getIdUsuario());
+            for (Rol rol: usuario.getRoles()){
+                psInsert.setInt(2, rol.getIdRol());
+                psInsert.addBatch();
+            }
+
+            psInsert.executeBatch();
+
         }
     }
 

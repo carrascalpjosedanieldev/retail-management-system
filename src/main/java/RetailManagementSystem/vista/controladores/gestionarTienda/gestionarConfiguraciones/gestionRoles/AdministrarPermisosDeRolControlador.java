@@ -144,15 +144,15 @@ public class AdministrarPermisosDeRolControlador {
         CompletableFuture.runAsync(()->{
             List<PermisoDTO> listaPermisos = new ArrayList<>(listaObservablePermisos);
             this.orquestadorRoles.actualizarPermisosRol(this.datosRol.idRol(), listaPermisos);
-        }).thenRun(()->{
+        }).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
                         "Se han guardado los cambios con Éxito."
                 );
                 volverAlPanel();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(

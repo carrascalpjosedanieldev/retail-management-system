@@ -27,5 +27,7 @@ public interface RepositorioUsuario {
 
     void actualizarSeguridad(Usuario usuario);
 
+    void actualizarRolesUsuario(Usuario usuario);
+
 }
 

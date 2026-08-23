@@ -2,6 +2,7 @@ package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
+import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.CredencialesInvalidasException;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
@@ -177,6 +178,18 @@ public class ServicioUsuario {
         }
         usuario.establecerContrasenaDefinitiva(nuevoHash);
         this.repositorioUsuario.actualizarSeguridad(usuario);
+    }
+
+
+    public void actualizarRolesUsuario(Long idUsuario, List<Rol> listaRolesActualizada){
+        Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
+        for (Rol r:usuario.getRoles()){
+            usuario.quitarRol(r);
+        }
+        for (Rol rol:listaRolesActualizada){
+            usuario.anadirRol(rol);
+        }
+        this.repositorioUsuario.actualizarRolesUsuario(usuario);
     }
 
 }//===================================================================================================================//

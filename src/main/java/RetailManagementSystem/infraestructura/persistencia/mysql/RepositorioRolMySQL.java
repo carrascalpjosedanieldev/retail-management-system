@@ -312,7 +312,8 @@ public class RepositorioRolMySQL implements RepositorioRol {
         }
     }
 
-    private static final String SQL_DELETE_DE_PERMISOS = "DELETE FROM rol_permiso WHERE id_rol = ?";
+    private static final String SQL_DELETE_DE_PERMISOS =
+            "DELETE FROM rol_permiso WHERE id_rol = ?";
 
     private void borrarRelacionesRolPermisoViejas(Connection conn, int idRol) throws SQLException {
         try (PreparedStatement psDelete = conn.prepareStatement(SQL_DELETE_DE_PERMISOS)) {

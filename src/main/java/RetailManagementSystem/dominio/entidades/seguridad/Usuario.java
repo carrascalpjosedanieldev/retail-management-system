@@ -1,7 +1,5 @@
 package RetailManagementSystem.dominio.entidades.seguridad;
 
-import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.RolNoDisponibleException;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -217,9 +215,6 @@ public class Usuario {
     //MÉTODOS PARA ROLES Y PERMISOS:
 
     public void anadirRol(Rol rolNuevo){
-        if (!rolNuevo.isActivo()){
-            throw new RolNoDisponibleException("El Rol que quieres Agregar NO esta Activo");
-        }
         if (this.roles.add(rolNuevo)) {
             actualizarCachePermisos();
         }

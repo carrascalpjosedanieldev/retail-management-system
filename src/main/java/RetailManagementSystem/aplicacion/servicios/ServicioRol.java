@@ -21,12 +21,12 @@ public class ServicioRol {
 
     //MÉTODOS:
 
-    public Rol registrarRol(String nombre, boolean activo, List<Permiso> permisos){
+    public void registrarRol(String nombre, boolean activo, List<Permiso> permisos){
         Rol rolNuevo = Rol.crearNuevo(nombre, activo);
         for (Permiso permiso:permisos){
             rolNuevo.anadirPermisoNuevo(permiso);
         }
-        return this.repositorioRol.insertarRol(rolNuevo);
+        this.repositorioRol.insertarRol(rolNuevo);
     }
 
     public Rol actualzarDatosRol(int idRol, String nombreNuevo, boolean activo){
