@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="600.0" prefWidth="600.0" styleClass="fondo-ventana" stylesheets="@../../css/login/estilosCssLogin.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.login.LoginControlador">
+
+    <VBox fx:id="vboxBaseBlanca" alignment="CENTER" maxWidth="400.0" prefHeight="480.0" spacing="30.0" styleClass="tarjeta-login">
+        <VBox alignment="CENTER" spacing="5.0">
+            <Label styleClass="icono-login" text="🔒" />
+            <Label styleClass="titulo-principal" text="Iniciar Sesión" />
+            <Label styleClass="subtitulo" text="Ingresa tus credenciales para continuar" />
+        </VBox>
+
+        <VBox spacing="15.0">
+            <VBox spacing="5.0">
+                <Label styleClass="label-formulario" text="Correo Electrónico:" />
+                <TextField fx:id="txtEmail" promptText="usuario@ejemplo.com" styleClass="campo-texto" />
+            </VBox>
+
+            <VBox spacing="5.0">
+                <Label styleClass="label-formulario" text="Contraseña:" />
+
+                <StackPane alignment="CENTER_RIGHT">
+
+                    <TextField fx:id="txtPasswordVisible" promptText="••••••••••••" styleClass="campo-contrasena" visible="false" />
+
+                    <PasswordField fx:id="txtPassword" promptText="••••••••••••" styleClass="campo-contrasena" />
+
+                    <Button fx:id="btnVerContrasena" mnemonicParsing="false" onAction="#alternarVisibilidadContrasena" styleClass="btn-ver-contrasena" text="👁" />
+
+                </StackPane>
+
+            </VBox>
+        </VBox>
+
+        <VBox spacing="15.0" style="-fx-padding: 10 0 0 0;">
+            <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#ingresarAlSistema" prefHeight="45.0" styleClass="btn-ingresar" text="Ingresar al Sistema" />
+
+            <Button cancelButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#salirDeLaApp" prefHeight="45.0" styleClass="btn-salir" text="Salir de la Aplicación" />
+        </VBox>
+
+    </VBox>
+
+</StackPane>
