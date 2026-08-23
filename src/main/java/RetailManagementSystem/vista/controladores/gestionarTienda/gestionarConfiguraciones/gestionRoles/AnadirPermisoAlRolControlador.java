@@ -35,6 +35,8 @@ public class AnadirPermisoAlRolControlador {
     @FXML private TableView<PermisoDTO> tablaPermisos;
     @FXML private TextField txtBuscar;
 
+    private Runnable notificadorCambios;
+
     private final OrquestadorPermisos orquestadorPermisos;
 
     private final ObservableList<PermisoDTO> listaObservable = FXCollections.observableArrayList();
@@ -56,8 +58,9 @@ public class AnadirPermisoAlRolControlador {
     }
 
 
-    public void cargarDatos(List<PermisoDTO> permisosDelRol){
+    public void cargarDatos(List<PermisoDTO> permisosDelRol, Runnable notificadorCambios){
         this.permisosDelRol = permisosDelRol;
+        this.notificadorCambios = notificadorCambios;
         llenarTablaPermisosYComboBox();
     }
 
@@ -198,6 +201,9 @@ public class AnadirPermisoAlRolControlador {
             return;
         }
         this.permisosDelRol.add(permisoSeleccionado);
+        if (this.notificadorCambios != null) {
+            this.notificadorCambios.run();
+        }
         cerrarModal();
     }
 

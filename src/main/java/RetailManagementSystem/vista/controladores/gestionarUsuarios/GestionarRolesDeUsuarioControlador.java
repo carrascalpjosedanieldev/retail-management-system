@@ -36,6 +36,8 @@ public class GestionarRolesDeUsuarioControlador {
     @FXML private TableView<RolDTO> tablaRolesActuales;
     @FXML private TableView<RolDTO> tablaRolesDisponibles;
 
+    private boolean hayCambios = false;
+
     private UsuarioDTOCompleto datosUsuario;
 
     private final OrquestadorUsuarios orquestadorUsuarios;
@@ -192,6 +194,7 @@ public class GestionarRolesDeUsuarioControlador {
         listaRolesActuales.add(seleccionado);
         listaRolesDisponibles.remove(seleccionado);
         tablaRolesDisponibles.getSelectionModel().clearSelection();
+        hayCambios = true;
     }
 
 
@@ -208,6 +211,7 @@ public class GestionarRolesDeUsuarioControlador {
         listaRolesDisponibles.add(seleccionado);
         listaRolesActuales.remove(seleccionado);
         tablaRolesActuales.getSelectionModel().clearSelection();
+        hayCambios = true;
     }
 
 
@@ -245,13 +249,16 @@ public class GestionarRolesDeUsuarioControlador {
 
     @FXML
     void cerrarVentana(ActionEvent event) {
-        if (!GestorAlertas.mostrarConfirmacion(
-                getVentana(), "¿Estas Seguro de Salir?", null,
-                "Si Sales Ahora, se Descartaran los Cambios Realizados."
-        )){
-            return;
+        if (hayCambios){
+            if (GestorAlertas.mostrarConfirmacion(
+                    getVentana(), "¿Estas Seguro de Salir?", null,
+                    "Si Sales Ahora, se Descartaran los Cambios Realizados."
+            )){
+                cerrarModal();
+            }
+        } else {
+            cerrarModal();
         }
-        cerrarModal();
     }
 
     private void cerrarModal(){

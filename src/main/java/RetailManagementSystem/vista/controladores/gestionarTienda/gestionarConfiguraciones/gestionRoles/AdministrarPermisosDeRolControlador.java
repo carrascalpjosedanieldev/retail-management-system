@@ -35,6 +35,8 @@ public class AdministrarPermisosDeRolControlador {
     @FXML private TableColumn<PermisoDTO, String> colEstado;
     @FXML private Label lblNombreRol;
 
+    private Boolean hayCambios = false;
+
     private final OrquestadorRoles orquestadorRoles;
 
     private final ObservableList<PermisoDTO> listaObservablePermisos = FXCollections.observableArrayList();
@@ -111,7 +113,7 @@ public class AdministrarPermisosDeRolControlador {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.ANADIR_PERMISO_AL_ROL_VIEW,
                 "Administrar Permisos", getVentana(),
-                (AnadirPermisoAlRolControlador c) -> c.cargarDatos(listaObservablePermisos)
+                (AnadirPermisoAlRolControlador c) -> c.cargarDatos(listaObservablePermisos, ()-> this.hayCambios = true)
         );
     }
 
@@ -132,6 +134,7 @@ public class AdministrarPermisosDeRolControlador {
         }
         listaObservablePermisos.remove(seleccionado);
         tablaPermisosRol.getSelectionModel().clearSelection();
+        hayCambios = true;
     }
 
 
@@ -173,11 +176,14 @@ public class AdministrarPermisosDeRolControlador {
 
     @FXML
     void cancelar(ActionEvent event) {
-        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Salir?", "Estas seguro de salir",
-                "Si sales ahora se descartaran los cambios realizados.")){
-            return;
+        if (hayCambios){
+            if (GestorAlertas.mostrarConfirmacion(getVentana(), "Salir?", "Estas seguro de salir",
+                    "Si sales ahora se descartaran los cambios realizados.")){
+                volverAlPanel();
+            }
+        } else {
+            volverAlPanel();
         }
-        volverAlPanel();
     }
 
 
