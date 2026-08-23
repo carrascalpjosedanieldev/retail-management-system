@@ -13,9 +13,5 @@ public record UsuarioDTOCompleto(
     public boolean tienePermiso(String permisoRequerido) {
         return permisos.contains(permisoRequerido);
     }
-
-    public boolean tieneRol(String rolRequerido) {
-        return roles.contains(rolRequerido);
-    }
 }
 

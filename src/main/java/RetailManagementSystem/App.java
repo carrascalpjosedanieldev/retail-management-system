@@ -4,6 +4,7 @@ package RetailManagementSystem;
 // Get-ChildItem -Recurse -Filter *.java | Get-Content | Out-File proyecto_completo.txt
 
 import RetailManagementSystem.infraestructura.inyeccion.ContenedorDependencias;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -26,6 +27,7 @@ public class App extends Application {
     public void start(Stage stagePrincipal){
         ConfiguradorExcepciones.inicializarManejadorGlobal(stagePrincipal);
         ContenedorDependencias.inicializar();
+        PermisosApp.inicializarYValidarSincronizacionPermisos();
         try {
             FXMLLoader loader = CargadorVistas.obtenerLoaderConfigurado(RutasVista.MENU_PRINCIPAL_VIEW);
             Parent root = loader.load();
@@ -49,7 +51,8 @@ public class App extends Application {
                     Ocurrió un fallo grave al cargar la pantalla principal del sistema.
                     
                     Por favor, verifique los archivos de vista o contacte al Soporte Técnico o al Creador Original 😎 Jose Daniel 😎.
-                    """);
+                    
+                    """ + "Detalle:  " + e.getMessage());
             alerta.getDialogPane().setPrefSize(480, 200);
             alerta.showAndWait();
         }

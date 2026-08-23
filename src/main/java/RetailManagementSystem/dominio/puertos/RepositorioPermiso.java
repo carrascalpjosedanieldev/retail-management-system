@@ -14,6 +14,8 @@ public interface RepositorioPermiso {
 
     List<Permiso> obtenerPermisosInactivos();
 
+    List<String> obtenerNombresTodosLosPermisos();
+
     //UPDATE:
 
     void cambiarEstado(int idPermiso, boolean activo);

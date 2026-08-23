@@ -2,8 +2,8 @@ package RetailManagementSystem.vista.configuracion;
 
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
+
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 public class ConfiguradorExcepciones {
@@ -40,15 +40,6 @@ public class ConfiguradorExcepciones {
             causa = causa.getCause();
         }
         return causa;
-    }
-
-    private static void mostrarAlertaGenerica() {
-        Alert alerta = new Alert(Alert.AlertType.ERROR);
-        alerta.setTitle("Error Interno");
-        alerta.setHeaderText("Fallo Crítico del Sistema");
-        alerta.setContentText("Ocurrió un error inesperado al procesar la solicitud.\n"
-                + "El problema ha sido registrado. Por favor, contacte a soporte técnico.");
-        alerta.showAndWait();
     }
 
 }

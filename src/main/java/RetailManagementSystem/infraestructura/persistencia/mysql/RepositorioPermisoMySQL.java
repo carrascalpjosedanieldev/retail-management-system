@@ -104,6 +104,34 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
     }
 
 
+    private static final String SQL_OBTENER_NOMBRES_PERMISOS =
+            "SELECT nombre FROM permisos ORDER BY id_permiso ASC";
+
+    @Override
+    public List<String> obtenerNombresTodosLosPermisos() {
+        List<String> permisos = new ArrayList<>();
+
+        try (Connection conn = AdministradorConexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_NOMBRES_PERMISOS)) {
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+
+                    String nombrePermiso = rs.getString("nombre");
+                    permisos.add(nombrePermiso);
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al listar los Nombres de los Permisos.", e);
+        }
+        return permisos;
+    }
+
+
     //UPDATE:
 
     private static final String SQL_CAMBIAR_ESTADO =
