@@ -170,6 +170,9 @@ public class RutasVista {
     public static final String LOGIN_PRINCIPAL_VIEW =
             "/vista/login/Login.fxml";
 
+    public static final String CAMBIO_CONTRASENA_VIEW =
+            "/vista/login/CambioContrasena.fxml";
+
 
     //PUNTO DE VENTA:
 

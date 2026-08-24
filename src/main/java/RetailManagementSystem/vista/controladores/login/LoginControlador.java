@@ -94,13 +94,21 @@ public class LoginControlador {
                 });
             }
         }).thenAccept(usuarioAutenticado->
-            Platform.runLater(()->{
-                CargadorVistas.cambiarPantallaConInyeccion(
-                        getVentana(),
-                        RutasVista.MENU_PRINCIPAL_VIEW,
-                        (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
-                );
-            })
+                    Platform.runLater(()->{
+                        if (usuarioAutenticado.debeCambiarContrasena()){
+                            CargadorVistas.cambiarPantallaInyectada(
+                                    RutasVista.CAMBIO_CONTRASENA_VIEW,
+                                    getVentana(),
+                                    (CambioContrasenaControlador c) -> c.cargarDatos(usuarioAutenticado)
+                            );
+                        } else {
+                            CargadorVistas.cambiarPantallaConInyeccionYCambiarTamano(
+                                    getVentana(),
+                                    RutasVista.MENU_PRINCIPAL_VIEW,
+                                    (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
+                            );
+                        }
+                    })
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;

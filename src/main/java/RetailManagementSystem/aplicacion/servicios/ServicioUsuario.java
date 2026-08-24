@@ -128,7 +128,7 @@ public class ServicioUsuario {
         usuario.cambiarNombre(nuevoNombre);
         usuario.cambiarApellido(nuevoApellido);
         usuario.cambiarEmail(nuevoEmail);
-        this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
+        this.repositorioUsuario.actualizarDatosUsuario(usuario);
         return usuario;
     }
 

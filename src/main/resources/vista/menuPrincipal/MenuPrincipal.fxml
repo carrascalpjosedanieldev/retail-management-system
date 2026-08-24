@@ -16,14 +16,14 @@
         <Button onAction="#abrirPuntoDeVenta" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Punto de Venta" />
         <Button onAction="#abrirGestionarTienda" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Tienda" />
         <Button onAction="#abrirGestionarUsuarios" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Usuarios" />
-        <Button id="btnSalir" fx:id="btnSalir" onAction="#salirDelSistema" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Salir del Sistema" />
+        <Button id="btnSalir" fx:id="btnSalir" onAction="#cerrarSesion" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Cerrar Sesion" />
 
         <Region VBox.vgrow="ALWAYS" />
         <VBox>
-            <Label fx:id="lblNombreUsuario" alignment="CENTER" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Usuario..."/>
-            <Line endX="163.2929229736328" endY="0.8929054141044617" startX="-100.0"/>
+            <Label fx:id="lblNombreUsuario" alignment="CENTER" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Usuario..." />
+            <Line endX="163.2929229736328" endY="0.8929054141044617" startX="-100.0" />
 
-            <Label fx:id="lblRoles" alignment="CENTER" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Roles..."/>
+            <Label fx:id="lblRoles" alignment="CENTER" style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Roles..." />
         </VBox>
     </VBox>
 

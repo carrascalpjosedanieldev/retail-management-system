@@ -152,13 +152,11 @@ public class MenuPrincipalControlador {
         CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_USUARIOS_VIEW);
     }
 
-
     @FXML
-    void salirDelSistema(ActionEvent event) {
+    public void cerrarSesion(ActionEvent event) {
         Window ventanaPadre = getVentana();
         GestorAlertas.mostrarAlertaSalirDelSistema(ventanaPadre);
     }
-
 
 }//===================================================================================================================//
 

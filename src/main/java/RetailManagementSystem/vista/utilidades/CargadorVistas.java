@@ -34,7 +34,7 @@ public class CargadorVistas {
 
     }
 
-    public static <T> void cambiarPantallaConInyeccion(Window ventanaActual, String rutaFxml, Consumer<T> inyector) {
+    public static <T> void cambiarPantallaConInyeccionYCambiarTamano(Window ventanaActual, String rutaFxml, Consumer<T> inyector) {
         if (ventanaActual == null) {
             throw new IllegalArgumentException("La Ventana NO puede ser Nula.");
         }

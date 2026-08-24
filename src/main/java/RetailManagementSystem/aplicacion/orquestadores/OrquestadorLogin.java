@@ -42,5 +42,9 @@ public class OrquestadorLogin {
         }
     }
 
+    public void cambiarContrasenaDefinitiva(Long idUsuario, char[] nuevaContrasenaPlana){
+        this.servicioUsuario.cambiarContrasenaDefinitiva(idUsuario, nuevaContrasenaPlana);
+    }
+
 }//===================================================================================================================//
 
