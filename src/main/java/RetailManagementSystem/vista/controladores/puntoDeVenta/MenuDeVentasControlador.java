@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorVentas;
@@ -7,6 +8,7 @@ import RetailManagementSystem.dominio.entidades.ventas.SesionVenta;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.*;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -57,6 +59,8 @@ public class MenuDeVentasControlador {
 
     private SesionVenta sesionVenta;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public MenuDeVentasControlador(OrquestadorVentas orquestadorVentas) {
@@ -67,6 +71,27 @@ public class MenuDeVentasControlador {
 
     private LocalDate obtenerFecha(){
         return LocalDate.now();
+    }
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        this.usuarioActual = usuarioActual;
+        if (!usuarioActual.tienePermiso(PermisosApp.PROCESAR_VENTA)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Procesar una Venta."
+            );
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.PANEL_DE_CONTROL_POS_VIEW,
+                    (PanelDeControlControlador c) -> {
+                        c.cargarUsuario(usuarioActual);
+                    }
+            );
+        }
     }
 
     private Window getVentana(){
@@ -166,7 +191,7 @@ public class MenuDeVentasControlador {
                 return;
             }
             CompletableFuture.supplyAsync(()->
-                    this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta, obtenerFecha())
+                    this.orquestadorVentas.cancelarCompraTotal(this.usuarioActual, this.sesionVenta, obtenerFecha())
             ).thenAccept(carritoActualizado->
                 Platform.runLater(()->{
                     actualizarTablaYTotales(carritoActualizado.carritoItems());
@@ -183,7 +208,13 @@ public class MenuDeVentasControlador {
                 return null;
             });
         }
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.PANEL_DE_CONTROL_POS_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.PANEL_DE_CONTROL_POS_VIEW,
+                (PanelDeControlControlador c) -> {
+                    c.cargarUsuario(usuarioActual);
+                }
+        );
     }
 
 
@@ -198,7 +229,7 @@ public class MenuDeVentasControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-            this.orquestadorVentas.agregarItemAlCarrito(this.sesionVenta, codigo, obtenerFecha())
+            this.orquestadorVentas.agregarItemAlCarrito(this.usuarioActual, this.sesionVenta, codigo, obtenerFecha())
         ).thenAccept(carritoActualizado ->
             Platform.runLater(()->{
                 actualizarTablaYTotales(carritoActualizado.carritoItems());
@@ -300,7 +331,7 @@ public class MenuDeVentasControlador {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorVentas.eliminarItemDelCarrito(
-                    this.sesionVenta, itemSeleccionado.codigoArticulo(), obtenerFecha()
+                    this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), obtenerFecha()
             )
         ).thenAccept(carritoActualizado->
             Platform.runLater(()->
@@ -344,7 +375,7 @@ public class MenuDeVentasControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorVentas.cancelarCompraTotal(this.sesionVenta, obtenerFecha())
+                this.orquestadorVentas.cancelarCompraTotal(this.usuarioActual, this.sesionVenta, obtenerFecha())
         ).thenAccept(carritoActualizado->
             Platform.runLater(()->{
                 actualizarTablaYTotales(carritoActualizado.carritoItems());
@@ -403,10 +434,10 @@ public class MenuDeVentasControlador {
         CompletableFuture.supplyAsync(() -> {
             if (esAumento) {
                 return this.orquestadorVentas.aumentarCantidadItem(
-                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+                        this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
             } else {
                 return this.orquestadorVentas.reducirCantidadItem(
-                        this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+                        this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
             }
         }).thenAccept(carritoActualizado ->
                 Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()))
@@ -452,7 +483,7 @@ public class MenuDeVentasControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorVentas.procesarVentaYObtenerFactura(this.sesionVenta, obtenerFecha())
+                this.orquestadorVentas.procesarVentaYObtenerFactura(this.usuarioActual, this.sesionVenta, obtenerFecha())
         ).thenAccept(facturaGenerada ->
             Platform.runLater(()->{
                 mostrarVentanaFactura(facturaGenerada);

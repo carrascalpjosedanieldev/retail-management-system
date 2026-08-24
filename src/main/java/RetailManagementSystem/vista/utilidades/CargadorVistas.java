@@ -81,6 +81,8 @@ public class CargadorVistas {
                     GestorAlertas.mostrarAlertaSalirDelSistema(stage, true);
                 });
                 stage.setResizable(true);
+                stage.setWidth(1280);
+                stage.setHeight(720);
                 stage.setMinWidth(1024);
                 stage.setMinHeight(600);
                 stage.centerOnScreen();

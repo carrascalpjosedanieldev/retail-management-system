@@ -78,30 +78,30 @@ public class MenuPrincipalControlador {
 
     private void configurarVisibilidadModulos() {
         boolean accesoPuntoVenta = tieneAccesoAlModulo(List.of(
-                PermisosApp.PROCESAR_VENTA.toUpperCase(),
-                PermisosApp.VER_HISTORIAL_VENTAS.toUpperCase()
+                PermisosApp.PROCESAR_VENTA,
+                PermisosApp.VER_HISTORIAL_VENTAS
         ));
         btnPuntoVenta.setVisible(accesoPuntoVenta);
         btnPuntoVenta.setManaged(accesoPuntoVenta);
         boolean accesoUsuarios = tieneAccesoAlModulo(List.of(
-                PermisosApp.GESTIONAR_USUARIOS.toUpperCase()
+                PermisosApp.GESTIONAR_USUARIOS
         ));
         btnGestionarUsuarios.setVisible(accesoUsuarios);
         btnGestionarUsuarios.setManaged(accesoUsuarios);
         boolean accesoTienda = tieneAccesoAlModulo(List.of(
-                PermisosApp.VER_INVENTARIOS.toUpperCase(),
-                PermisosApp.ADMINISTRAR_INVENTARIOS.toUpperCase(),
-                PermisosApp.VER_PRODUCTOS.toUpperCase(),
-                PermisosApp.ADMINISTRAR_PRODUCTOS.toUpperCase(),
-                PermisosApp.TRASLADAR_PRODUCTOS.toUpperCase(),
-                PermisosApp.VER_SERVICIOS.toUpperCase(),
-                PermisosApp.ADMINISTRAR_SERVICIOS.toUpperCase(),
-                PermisosApp.ADMINISTRAR_IMPUESTOS.toUpperCase(),
-                PermisosApp.ADMINISTRAR_DESCUENTOS.toUpperCase(),
-                PermisosApp.POLITICAS_DE_VENCIMIENTO.toUpperCase(),
-                PermisosApp.EDITAR_PERFIL_DE_TIENDA.toUpperCase(),
-                PermisosApp.GESTIONAR_ROLES.toUpperCase(),
-                PermisosApp.GESTIONAR_PERMISOS.toUpperCase()
+                PermisosApp.VER_INVENTARIOS,
+                PermisosApp.ADMINISTRAR_INVENTARIOS,
+                PermisosApp.VER_PRODUCTOS,
+                PermisosApp.ADMINISTRAR_PRODUCTOS,
+                PermisosApp.TRASLADAR_PRODUCTOS,
+                PermisosApp.VER_SERVICIOS,
+                PermisosApp.ADMINISTRAR_SERVICIOS,
+                PermisosApp.ADMINISTRAR_IMPUESTOS,
+                PermisosApp.ADMINISTRAR_DESCUENTOS,
+                PermisosApp.POLITICAS_DE_VENCIMIENTO,
+                PermisosApp.EDITAR_PERFIL_DE_TIENDA,
+                PermisosApp.GESTIONAR_ROLES,
+                PermisosApp.GESTIONAR_PERMISOS
         ));
         btnGestionarTienda.setVisible(accesoTienda);
         btnGestionarTienda.setManaged(accesoTienda);

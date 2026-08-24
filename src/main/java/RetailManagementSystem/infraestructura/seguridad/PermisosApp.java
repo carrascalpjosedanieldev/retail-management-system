@@ -51,37 +51,37 @@ public class PermisosApp {
 
     //PERMISOS:
 
-    public static final String PROCESAR_VENTA = "Procesar Venta";
+    public static final String PROCESAR_VENTA = "PROCESAR VENTA";
 
-    public static final String VER_HISTORIAL_VENTAS = "Ver Historial de Ventas";
+    public static final String VER_HISTORIAL_VENTAS = "VER HISTORIAL DE VENTAS";
 
-    public static final String VER_INVENTARIOS = "Ver Inventarios";
+    public static final String VER_INVENTARIOS = "VER INVENTARIOS";
 
-    public static final String ADMINISTRAR_INVENTARIOS = "Administrar Inventarios";
+    public static final String ADMINISTRAR_INVENTARIOS = "ADMINISTRAR INVENTARIOS";
 
-    public static final String VER_PRODUCTOS = "Ver Productos";
+    public static final String VER_PRODUCTOS = "VER PRODUCTOS";
 
-    public static final String ADMINISTRAR_PRODUCTOS = "Administrar Productos";
+    public static final String ADMINISTRAR_PRODUCTOS = "ADMINISTRAR PRODUCTOS";
 
-    public static final String TRASLADAR_PRODUCTOS = "Trasladar Productos";
+    public static final String TRASLADAR_PRODUCTOS = "TRASLADAR PRODUCTOS";
 
-    public static final String VER_SERVICIOS = "Ver Servicios";
+    public static final String VER_SERVICIOS = "VER SERVICIOS";
 
-    public static final String ADMINISTRAR_SERVICIOS = "Administrar Servicios";
+    public static final String ADMINISTRAR_SERVICIOS = "ADMINISTRAR SERVICIOS";
 
-    public static final String ADMINISTRAR_IMPUESTOS = "Administrar Impuestos";
+    public static final String ADMINISTRAR_IMPUESTOS = "ADMINISTRAR IMPUESTOS";
 
-    public static final String ADMINISTRAR_DESCUENTOS = "Administrar Descuentos";
+    public static final String ADMINISTRAR_DESCUENTOS = "ADMINISTRAR DESCUENTOS";
 
-    public static final String POLITICAS_DE_VENCIMIENTO = "Políticas de Vencimiento";
+    public static final String POLITICAS_DE_VENCIMIENTO = "POLÍTICAS DE VENCIMIENTO";
 
-    public static final String EDITAR_PERFIL_DE_TIENDA = "Editar Perfil de Tienda";
+    public static final String EDITAR_PERFIL_DE_TIENDA = "EDITAR PERFIL DE TIENDA";
 
-    public static final String GESTIONAR_ROLES = "Gestionar Roles";
+    public static final String GESTIONAR_ROLES = "GESTIONAR ROLES";
 
-    public static final String GESTIONAR_PERMISOS = "Gestionar Permisos";
+    public static final String GESTIONAR_PERMISOS = "GESTIONAR PERMISOS";
 
-    public static final String GESTIONAR_USUARIOS = "Gestionar Usuarios";
+    public static final String GESTIONAR_USUARIOS = "GESTIONAR USUARIOS";
 
 }//===================================================================================================================//
 

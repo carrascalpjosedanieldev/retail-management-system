@@ -3,6 +3,8 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -55,6 +57,14 @@ public class PanelDeControlControlador {
         }
         this.usuarioActual = usuarioActual;
         lblNombreCajero.setText(usuarioActual.getNombreCompleto());
+        protegerBoton(btnNuevaVenta, PermisosApp.PROCESAR_VENTA);
+        protegerBoton(btnHistorialVentas, PermisosApp.VER_HISTORIAL_VENTAS);
+    }
+
+    private void protegerBoton(Button boton, String permisoRequerido) {
+        boolean tieneAcceso = this.usuarioActual.tienePermiso(permisoRequerido);
+        boton.setVisible(tieneAcceso);
+        boton.setManaged(tieneAcceso);
     }
 
     private Window getVentana(){
@@ -139,22 +149,37 @@ public class PanelDeControlControlador {
 
     @FXML
     public void abrirNuevaVenta(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_DE_VENTAS_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.MENU_DE_VENTAS_VIEW,
+                (MenuDeVentasControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 
     @FXML
     public void abrirHistorialVentas(ActionEvent event) {
-        CargadorVistas.abrirModalSinInyeccion(
+        CargadorVistas.abrirModalConInyeccion(
                 RutasVista.HISTORIAL_VENTAS_VIEW,
-                "Generar Reporte de Recaudo", getVentana()
+                "Generar Reporte de Recaudo", getVentana(),
+                (HistorialVentasControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
         );
     }
 
 
     @FXML
     public void volverAlMenu(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_PRINCIPAL_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.MENU_PRINCIPAL_VIEW,
+                (MenuPrincipalControlador c) -> {
+                    c.recibirUsuarioActual(this.usuarioActual);
+                }
+        );
     }
 
 

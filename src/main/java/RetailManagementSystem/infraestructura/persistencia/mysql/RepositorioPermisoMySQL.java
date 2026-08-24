@@ -119,7 +119,7 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
                 while (rs.next()) {
 
                     String nombrePermiso = rs.getString("nombre");
-                    permisos.add(nombrePermiso);
+                    permisos.add(nombrePermiso.toUpperCase());
 
                 }
 

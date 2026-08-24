@@ -1,7 +1,10 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ReporteRecaudoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -9,7 +12,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.time.LocalDate;
@@ -28,6 +30,8 @@ public class HistorialVentasControlador {
     @FXML public Label lblImpuestos;
     @FXML public Label lblTotalGeneral;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     private final OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
 
     //CONSTRUCTOR:
@@ -37,6 +41,21 @@ public class HistorialVentasControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        this.usuarioActual = usuarioActual;
+        if (!this.usuarioActual.tienePermiso(PermisosApp.VER_HISTORIAL_VENTAS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para ver el Historial de Ventas."
+            );
+            cerrarPantalla();
+        }
+    }
 
     private Window getVentana(){
         return btnCerrar.getScene() != null ? btnCerrar.getScene().getWindow() : null;
@@ -76,7 +95,7 @@ public class HistorialVentasControlador {
         lblTotalGeneral.setText("Calculando...");
         btnGenerar.setDisable(true);
         CompletableFuture.supplyAsync(()->
-            this.orquestadorHistoricoDeVentas.obtenerReporteRecaudoEntre(fechaInicio, fechaFin)
+            this.orquestadorHistoricoDeVentas.obtenerReporteRecaudoEntre(this.usuarioActual, fechaInicio, fechaFin)
         ).thenAccept(reporteRecaudo ->
             Platform.runLater(()->{
                 actualizarTarjetas(reporteRecaudo);
@@ -85,10 +104,17 @@ public class HistorialVentasControlador {
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
-                GestorAlertas.mostrarAlertaError(
-                        getVentana(), "Error en los Datos Ingresados", null,
-                        "Hubo un Problema al Generar el Reporte\n" + "Error:  " + causa.getMessage()
-                );
+                if (causa instanceof AccesoDenegadoException){
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Acceso Denegado", null,
+                            causa.getMessage()
+                    );
+                } else {
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error en los Datos Ingresados", null,
+                            "Hubo un Problema al Generar el Reporte\n" + "Error:  " + causa.getMessage()
+                    );
+                }
                 btnGenerar.setDisable(false);
             });
             return null;
@@ -105,6 +131,10 @@ public class HistorialVentasControlador {
 
     @FXML
     public void cerrarModal(ActionEvent event) {
+        cerrarPantalla();
+    }
+
+    private void cerrarPantalla(){
         Window ventana = getVentana();
         if (ventana != null){
             ventana.hide();
