@@ -250,7 +250,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error al buscar el Usuario por email", e);
+            throw new PersistenciaException("Error al buscar el Usuario por ID", e);
         }
     }
 

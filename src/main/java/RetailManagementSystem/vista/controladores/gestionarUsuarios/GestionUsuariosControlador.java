@@ -1,6 +1,7 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -38,6 +39,8 @@ public class GestionUsuariosControlador {
     @FXML private Button btnGestionarRoles;
     @FXML private Button btnRestablecerClave;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     private final OrquestadorUsuarios orquestadorUsuarios;
 
     private final ObservableList<UsuarioDTOBasico> listaObservableUsuarios = FXCollections.observableArrayList();
@@ -49,6 +52,13 @@ public class GestionUsuariosControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return tablaUsuarios.getScene() != null ? tablaUsuarios.getScene().getWindow() : null;

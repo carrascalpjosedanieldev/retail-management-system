@@ -4,6 +4,10 @@ import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
+import RetailManagementSystem.vista.controladores.gestionarUsuarios.GestionUsuariosControlador;
+import RetailManagementSystem.vista.controladores.puntoDeVenta.PanelDeControlControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -19,6 +23,7 @@ import javafx.util.Duration;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class MenuPrincipalControlador {
@@ -31,6 +36,9 @@ public class MenuPrincipalControlador {
     @FXML private Label lblReloj;
     @FXML private Label lblRoles;
     @FXML private Label lblVersion;
+    @FXML private Button btnGestionarTienda;
+    @FXML private Button btnPuntoVenta;
+    @FXML private Button btnGestionarUsuarios;
 
     private UsuarioDTOCompleto usuarioActual;
 
@@ -60,7 +68,45 @@ public class MenuPrincipalControlador {
             }
             lblRoles.setText(roles.toString());
         }
+        configurarVisibilidadModulos();
     }
+
+    private boolean tieneAccesoAlModulo(List<String> permisosDelModulo) {
+        return permisosDelModulo.stream()
+                .anyMatch(permiso -> this.usuarioActual.tienePermiso(permiso));
+    }
+
+    private void configurarVisibilidadModulos() {
+        boolean accesoPuntoVenta = tieneAccesoAlModulo(List.of(
+                PermisosApp.PROCESAR_VENTA.toUpperCase(),
+                PermisosApp.VER_HISTORIAL_VENTAS.toUpperCase()
+        ));
+        btnPuntoVenta.setVisible(accesoPuntoVenta);
+        btnPuntoVenta.setManaged(accesoPuntoVenta);
+        boolean accesoUsuarios = tieneAccesoAlModulo(List.of(
+                PermisosApp.GESTIONAR_USUARIOS.toUpperCase()
+        ));
+        btnGestionarUsuarios.setVisible(accesoUsuarios);
+        btnGestionarUsuarios.setManaged(accesoUsuarios);
+        boolean accesoTienda = tieneAccesoAlModulo(List.of(
+                PermisosApp.VER_INVENTARIOS.toUpperCase(),
+                PermisosApp.ADMINISTRAR_INVENTARIOS.toUpperCase(),
+                PermisosApp.VER_PRODUCTOS.toUpperCase(),
+                PermisosApp.ADMINISTRAR_PRODUCTOS.toUpperCase(),
+                PermisosApp.TRASLADAR_PRODUCTOS.toUpperCase(),
+                PermisosApp.VER_SERVICIOS.toUpperCase(),
+                PermisosApp.ADMINISTRAR_SERVICIOS.toUpperCase(),
+                PermisosApp.ADMINISTRAR_IMPUESTOS.toUpperCase(),
+                PermisosApp.ADMINISTRAR_DESCUENTOS.toUpperCase(),
+                PermisosApp.POLITICAS_DE_VENCIMIENTO.toUpperCase(),
+                PermisosApp.EDITAR_PERFIL_DE_TIENDA.toUpperCase(),
+                PermisosApp.GESTIONAR_ROLES.toUpperCase(),
+                PermisosApp.GESTIONAR_PERMISOS.toUpperCase()
+        ));
+        btnGestionarTienda.setVisible(accesoTienda);
+        btnGestionarTienda.setManaged(accesoTienda);
+    }
+
 
     private Window getVentana(){
         return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
@@ -138,18 +184,36 @@ public class MenuPrincipalControlador {
 
     @FXML
     public void abrirPuntoDeVenta(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.PANEL_DE_CONTROL_POS_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.PANEL_DE_CONTROL_POS_VIEW,
+                (PanelDeControlControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 
     @FXML
     void abrirGestionarTienda(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_TIENDA_VIEW,
+                (GestionarTiendaControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
     @FXML
     void abrirGestionarUsuarios(ActionEvent event){
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_USUARIOS_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_USUARIOS_VIEW,
+                (GestionUsuariosControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
     @FXML

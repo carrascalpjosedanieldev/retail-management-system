@@ -97,8 +97,8 @@ public class LoginControlador {
                     Platform.runLater(()->{
                         if (usuarioAutenticado.debeCambiarContrasena()){
                             CargadorVistas.cambiarPantallaInyectada(
-                                    RutasVista.CAMBIO_CONTRASENA_VIEW,
                                     getVentana(),
+                                    RutasVista.CAMBIO_CONTRASENA_VIEW,
                                     (CambioContrasenaControlador c) -> c.cargarDatos(usuarioAutenticado)
                             );
                         } else {

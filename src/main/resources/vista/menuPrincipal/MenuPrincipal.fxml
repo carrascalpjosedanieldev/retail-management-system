@@ -13,9 +13,9 @@
         <Label fx:id="lblVersion" alignment="CENTER" prefHeight="51.0" prefWidth="281.0" style="-fx-font-size: 26px; -fx-font-weight: bold;" text="Cargando Version ..." />
         <Label fx:id="lblNombreTienda" alignment="CENTER" prefHeight="31.0" prefWidth="242.0" style="-fx-font-size: 22px; -fx-font-weight: 600; -fx-text-fill: #475569;" text="Cargando Tienda..." />
 
-        <Button onAction="#abrirPuntoDeVenta" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Punto de Venta" />
-        <Button onAction="#abrirGestionarTienda" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Tienda" />
-        <Button onAction="#abrirGestionarUsuarios" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Usuarios" />
+        <Button fx:id="btnPuntoVenta" onAction="#abrirPuntoDeVenta" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Punto de Venta" />
+        <Button fx:id="btnGestionarTienda" onAction="#abrirGestionarTienda" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Tienda" />
+        <Button fx:id="btnGestionarUsuarios" onAction="#abrirGestionarUsuarios" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Gestión de Usuarios" />
         <Button id="btnSalir" fx:id="btnSalir" onAction="#cerrarSesion" prefHeight="55.0" prefWidth="250.0" style="-fx-font-size: 16px;" text="Cerrar Sesion" />
 
         <Region VBox.vgrow="ALWAYS" />

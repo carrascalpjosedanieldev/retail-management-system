@@ -238,7 +238,7 @@ public class Usuario {
         this.permisosCacheados.clear();
         for (Rol rol : this.roles) {
             for (Permiso permiso : rol.getPermisos()) {
-                this.permisosCacheados.add(permiso.getNombre().toUpperCase());
+                this.permisosCacheados.add(permiso.getNombre());
             }
         }
     }

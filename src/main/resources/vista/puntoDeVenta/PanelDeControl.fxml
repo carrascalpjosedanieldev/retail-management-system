@@ -72,7 +72,8 @@
 
     <bottom>
         <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="barra-estado" BorderPane.alignment="CENTER">
-            <Label styleClass="texto-estado" text="👤 Cajero: Administrador" />
+            <Label styleClass="texto-estado" text="👤 Cajero: " />
+         <Label fx:id="lblNombreCajero" styleClass="texto-estado" text="Cargando Nombre ..." />
             <Label styleClass="texto-estado" text="|" />
             <Label styleClass="texto-estado" text="🖥 Terminal: Caja Principal 01" />
 

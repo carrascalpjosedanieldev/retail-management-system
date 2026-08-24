@@ -184,8 +184,8 @@ public class GestionInventariosControlador {
             return;
         }
         CargadorVistas.cambiarPantallaInyectada(
-                RutasVista.GESTIONAR_PRODUCTOS_VIEW,
                 getVentana(),
+                RutasVista.GESTIONAR_PRODUCTOS_VIEW,
                 (GestionProductosControlador c)->{
                     c.inicializarConInventario(seleccionado.idInventario());
                 }

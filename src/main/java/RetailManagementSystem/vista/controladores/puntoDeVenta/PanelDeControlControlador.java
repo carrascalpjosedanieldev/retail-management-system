@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
@@ -34,6 +35,9 @@ public class PanelDeControlControlador {
     @FXML public Label lblTotalVentasHoy;
     @FXML public Label lblReloj;
     @FXML public Label lblVersion;
+    @FXML private Label lblNombreCajero;
+
+    private UsuarioDTOCompleto usuarioActual;
 
     private final OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
 
@@ -44,6 +48,14 @@ public class PanelDeControlControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        this.usuarioActual = usuarioActual;
+        lblNombreCajero.setText(usuarioActual.getNombreCompleto());
+    }
 
     private Window getVentana(){
         return btnVolver.getScene() != null ? btnVolver.getScene().getWindow() : null;

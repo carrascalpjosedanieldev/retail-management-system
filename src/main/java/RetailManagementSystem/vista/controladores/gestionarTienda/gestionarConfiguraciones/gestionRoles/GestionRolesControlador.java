@@ -164,8 +164,8 @@ public class GestionRolesControlador {
             return;
         }
         CargadorVistas.cambiarPantallaInyectada(
-                RutasVista.ADMINISTRAR_PERMISOS_DE_ROL_VIEW,
                 getVentana(),
+                RutasVista.ADMINISTRAR_PERMISOS_DE_ROL_VIEW,
                 (AdministrarPermisosDeRolControlador c)->{
                     c.cargarDatos(rolSeleccionado);
                 }

@@ -28,10 +28,15 @@ public class EnsambladorDTOUsuario {
             throw new IllegalArgumentException("NO puedes ensamblar un Usuario Nulo.");
         }
         List<RolDTO> rolesUsuario = this.ensambladorDTORol.ensamblarDetalleRoles(usuario.getRoles());
+        List<String> permisosNombres = usuario.getRoles().stream()
+                .flatMap(rol -> rol.getPermisos().stream())
+                .map(permiso -> permiso.getNombre().trim().toUpperCase())
+                .distinct()
+                .toList();
         return new UsuarioDTOCompleto(
                 usuario.getIdUsuario(), usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
                 usuario.isActivo(), usuario.isDebeCambiarContrasena(), rolesUsuario,
-                usuario.obtenerPermisosTotales().stream().toList());
+                permisosNombres);
     }
 
     public UsuarioDTOBasico ensamblarDTOUsuarioBasico(Usuario usuario){

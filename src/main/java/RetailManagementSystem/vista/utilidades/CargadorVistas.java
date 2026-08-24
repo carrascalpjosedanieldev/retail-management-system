@@ -145,7 +145,7 @@ public class CargadorVistas {
     }
 
 
-    public static <T> void cambiarPantallaInyectada(String rutaFxml, Window ventana, Consumer<T> inicializadorControlador){
+    public static <T> void cambiarPantallaInyectada(Window ventana, String rutaFxml, Consumer<T> inicializadorControlador){
         if (ventana == null || ventana.getScene() == null) {
             throw new IllegalStateException("Imposible Navegar: La Ventana Origen o su Escena son Nulas.");
         }

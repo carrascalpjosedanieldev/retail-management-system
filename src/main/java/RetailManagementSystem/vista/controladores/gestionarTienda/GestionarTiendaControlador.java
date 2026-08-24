@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -10,8 +11,20 @@ import javafx.stage.Window;
 
 public class GestionarTiendaControlador {
 
-    @FXML
-    private Button btnSalir;
+    //ATRIBUTOS:
+
+    @FXML private Button btnSalir;
+
+    private UsuarioDTOCompleto usuarioActual;
+
+    //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
