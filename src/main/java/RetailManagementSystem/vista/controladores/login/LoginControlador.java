@@ -102,7 +102,7 @@ public class LoginControlador {
                                     (CambioContrasenaControlador c) -> c.cargarDatos(usuarioAutenticado)
                             );
                         } else {
-                            CargadorVistas.cambiarPantallaConInyeccionYCambiarTamano(
+                            CargadorVistas.cambiarPantallaConInyeccionYTamanoNormal(
                                     getVentana(),
                                     RutasVista.MENU_PRINCIPAL_VIEW,
                                     (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
@@ -157,7 +157,7 @@ public class LoginControlador {
     @FXML
     void salirDeLaApp(ActionEvent event) {
         Window ventana = getVentana();
-        GestorAlertas.mostrarAlertaSalirDelSistema(ventana);
+        GestorAlertas.mostrarAlertaSalirDelSistema(ventana, false);
     }
 
 

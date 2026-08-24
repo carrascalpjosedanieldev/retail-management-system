@@ -132,7 +132,7 @@ public class CambioContrasenaControlador {
             }
         }).thenRun(()->
                 Platform.runLater(()->
-                        CargadorVistas.cambiarPantallaConInyeccionYCambiarTamano(
+                        CargadorVistas.cambiarPantallaConInyeccionYTamanoNormal(
                                 getVentana(),
                                 RutasVista.MENU_PRINCIPAL_VIEW,
                                 (MenuPrincipalControlador c) -> c.recibirUsuarioActual(this.usuarioActual)

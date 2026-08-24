@@ -154,8 +154,13 @@ public class MenuPrincipalControlador {
 
     @FXML
     public void cerrarSesion(ActionEvent event) {
-        Window ventanaPadre = getVentana();
-        GestorAlertas.mostrarAlertaSalirDelSistema(ventanaPadre);
+        if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Cerrar Sesión?", null,
+                "Estas Seguro de que quieres cerrar Sesión?")){
+            return;
+        }
+        CargadorVistas.cambiarPantallaConTamanoPequeno(
+                getVentana(), RutasVista.LOGIN_PRINCIPAL_VIEW
+        );
     }
 
 }//===================================================================================================================//

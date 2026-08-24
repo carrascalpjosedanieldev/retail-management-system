@@ -37,7 +37,7 @@ public class App extends Application {
             Parent root = loader.load();
             stagePrincipal.setOnCloseRequest(event -> {
                 event.consume();
-                GestorAlertas.mostrarAlertaSalirDelSistema(stagePrincipal);
+                GestorAlertas.mostrarAlertaSalirDelSistema(stagePrincipal, false);
             });
             Scene escena = new Scene(root, 600, 600);
             stagePrincipal.setTitle("Sistema de Gestión de Tienda - JavaFX");

@@ -59,7 +59,7 @@ public class GestorAlertas {
     }
 
 
-    public static void mostrarAlertaSalirDelSistema(Window ventanaPadre) {
+    public static void mostrarAlertaSalirDelSistema(Window ventanaPadre, boolean haySesionActiva) {
         Label iconoAmigable = new Label("👋");
         iconoAmigable.setId("iconoAlerta");
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
@@ -68,7 +68,10 @@ public class GestorAlertas {
         }
         alerta.setTitle("Confirmar Salida");
         alerta.setHeaderText(null);
-        alerta.setContentText("¿Estás Seguro de que deseas Salir del Sistema?");
+        String textoAlerta = haySesionActiva
+                ? "¿Estás Seguro de que deseas Cerrar Sesión y Salir del Sistema?"
+                : "¿Estás Seguro de que deseas Salir del Sistema?";
+        alerta.setContentText(textoAlerta);
         alerta.setGraphic(iconoAmigable);
         DialogPane panelAlerta = alerta.getDialogPane();
         URL urlCss = GestorAlertas.class.getResource(RutasVista.ESTILOS_CSS_ALERTA_SALIR_DEL_SISTEMA);

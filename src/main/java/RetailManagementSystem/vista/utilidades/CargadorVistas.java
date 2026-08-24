@@ -28,13 +28,41 @@ public class CargadorVistas {
             stage.setScene(new Scene(nuevaVista));
         } else {
             throw new IllegalStateException(
-                    "Imposible cambiar la pantalla: La ventana no es un Stage y no tiene Escena."
+                    "Imposible cambiar la pantalla: La Ventana NO es un Stage y NO tiene Escena."
             );
         }
 
     }
 
-    public static <T> void cambiarPantallaConInyeccionYCambiarTamano(Window ventanaActual, String rutaFxml, Consumer<T> inyector) {
+    public static void cambiarPantallaConTamanoPequeno(Window ventanaActual, String rutaFxml){
+        if (ventanaActual == null) {
+            throw new IllegalArgumentException("La Ventana Actual NO Puede ser Nula para Cambiar de Pantalla.");
+        }
+        Parent nuevaVista = cargarVista(rutaFxml);
+        if (ventanaActual instanceof Stage stage) {
+            Scene nuevaEscena = new Scene(nuevaVista, 600, 600);
+            stage.setTitle("Sistema de Gestión de Tienda - JavaFX");
+            stage.setMaximized(false);
+            stage.setScene(nuevaEscena);
+            stage.setOnCloseRequest(e -> {
+                e.consume();
+                GestorAlertas.mostrarAlertaSalirDelSistema(stage, false);
+            });
+            stage.setWidth(600);
+            stage.setHeight(600);
+            stage.setMinWidth(600);
+            stage.setMinHeight(600);
+            stage.setResizable(false);
+            stage.centerOnScreen();
+        } else {
+            throw new IllegalStateException(
+                    "Imposible cambiar la pantalla: La Ventana NO es un Stage y NO tiene Escena."
+            );
+        }
+
+    }
+
+    public static <T> void cambiarPantallaConInyeccionYTamanoNormal(Window ventanaActual, String rutaFxml, Consumer<T> inyector) {
         if (ventanaActual == null) {
             throw new IllegalArgumentException("La Ventana NO puede ser Nula.");
         }
@@ -48,6 +76,10 @@ public class CargadorVistas {
             if (ventanaActual instanceof Stage stage) {
                 Scene nuevaEscena = new Scene(nuevaVista, 1280, 720);
                 stage.setScene(nuevaEscena);
+                stage.setOnCloseRequest(e -> {
+                    e.consume();
+                    GestorAlertas.mostrarAlertaSalirDelSistema(stage, true);
+                });
                 stage.setResizable(true);
                 stage.setMinWidth(1024);
                 stage.setMinHeight(600);
