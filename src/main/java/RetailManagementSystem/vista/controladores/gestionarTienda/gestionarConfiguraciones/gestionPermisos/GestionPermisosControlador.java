@@ -1,7 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -21,7 +24,7 @@ import javafx.stage.Window;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class PermisosVistaControlador {
+public class GestionPermisosControlador {
 
     //ATRIBUTO:
 
@@ -45,13 +48,31 @@ public class PermisosVistaControlador {
 
     private FilteredList<PermisoDTO> listaFiltrada;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
-    public PermisosVistaControlador(OrquestadorPermisos orquestadorPermisos) {
+    public GestionPermisosControlador(OrquestadorPermisos orquestadorPermisos) {
         this.orquestadorPermisos = orquestadorPermisos;
     }
 
     //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar Permisos."
+            );
+            volverAConfiguraciones();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return tablaPermisos.getScene() != null ? tablaPermisos.getScene().getWindow() : null;
@@ -192,7 +213,9 @@ public class PermisosVistaControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.orquestadorPermisos.cambiarEstadoPermiso(permisoSeleccionado.idPermiso(), permisoSeleccionado.activo())
+                this.orquestadorPermisos.cambiarEstadoPermiso(
+                        this.usuarioActual, permisoSeleccionado.idPermiso(), permisoSeleccionado.activo()
+                )
         ).thenRun(()->{
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
@@ -228,7 +251,17 @@ public class PermisosVistaControlador {
 
     @FXML
     public void accionSalir(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+        volverAConfiguraciones();
+    }
+
+    private void volverAConfiguraciones(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
+                (GestionConfiguracionesControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

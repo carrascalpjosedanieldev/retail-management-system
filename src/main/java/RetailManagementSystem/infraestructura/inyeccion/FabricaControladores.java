@@ -23,7 +23,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServi
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.GestionServiciosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.*;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.PermisosVistaControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.GestionPermisosControlador;
 import RetailManagementSystem.vista.controladores.gestionarUsuarios.*;
 import RetailManagementSystem.vista.controladores.login.CambioContrasenaControlador;
 import RetailManagementSystem.vista.controladores.login.LoginControlador;
@@ -133,8 +133,8 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorDependencias.getServicioConfiguraciones()
             );
         }
-        if (claseControlador == PermisosVistaControlador.class) {
-            return new PermisosVistaControlador(
+        if (claseControlador == GestionPermisosControlador.class) {
+            return new GestionPermisosControlador(
                     ContenedorDependencias.getOrquestadorPermisos()
             );
         }

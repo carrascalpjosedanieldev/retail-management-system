@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
+import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -101,7 +102,13 @@ public class GestionarTiendaControlador {
 
     @FXML
     void volverAlMenu(ActionEvent event) {
-        cambiarVentana(RutasVista.MENU_PRINCIPAL_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.MENU_PRINCIPAL_VIEW,
+                (MenuPrincipalControlador c) -> {
+                    c.recibirUsuarioActual(this.usuarioActual);
+                }
+        );
     }
 
 }//===================================================================================================================//
