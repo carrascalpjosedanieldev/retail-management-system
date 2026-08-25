@@ -1,11 +1,13 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos;
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
+
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,7 +15,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -34,6 +35,8 @@ public class EditarDescuentoControlador {
 
     private final OrquestadorDescuentos orquestadorDescuentos;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EditarDescuentoControlador(OrquestadorDescuentos orquestadorDescuentos) {
@@ -42,7 +45,22 @@ public class EditarDescuentoControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(DescuentoDTO datosDescuento, ObservableList<DescuentoDTO> listaObservable) {
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, DescuentoDTO datosDescuento, ObservableList<DescuentoDTO> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_DESCUENTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Descuentos."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (datosDescuento == null) {
             throw new IllegalArgumentException("No puedes editar un Descuento Vacío.");
         }
@@ -83,7 +101,7 @@ public class EditarDescuentoControlador {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorDescuentos.actualizarDescuento(
-                    this.datosDescuento.idDescuento(), nombre, porcentaje
+                    this.usuarioActual, this.datosDescuento.idDescuento(), nombre, porcentaje
             )
         ).thenAccept(descuentoActualizado ->
             Platform.runLater(() -> {

@@ -1,7 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos;
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -38,7 +41,25 @@ public class GestionDescuentosControlador {
 
     private final ObservableList<DescuentoDTO> listaObservableDescuentos = FXCollections.observableArrayList();
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_DESCUENTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Descuentos."
+            );
+            volverAGestionarTienda();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     public GestionDescuentosControlador(OrquestadorDescuentos orquestadorDescuentos) {
         this.orquestadorDescuentos = orquestadorDescuentos;
@@ -145,7 +166,7 @@ public class GestionDescuentosControlador {
                 RutasVista.EDITAR_DESCUENTO_VIEW,
                 "Editando Descuento", getVentana(),
                 (EditarDescuentoControlador c)->{
-                    c.cargarDatos(seleccionado, listaObservableDescuentos);
+                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservableDescuentos);
                 }
         );
     }
@@ -157,7 +178,7 @@ public class GestionDescuentosControlador {
                 RutasVista.CREAR_DESCUENTO_VIEW,
                 "Creando Descuento", getVentana(),
                 (CrearDescuentoControlador c)->{
-                    c.cargarDatos(listaObservableDescuentos);
+                    c.cargarDatos(this.usuarioActual, listaObservableDescuentos);
                 }
         );
     }
@@ -182,7 +203,7 @@ public class GestionDescuentosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-            this.orquestadorDescuentos.cambiarEstadoDescuento(descuentoSeleccionado.idDescuento())
+            this.orquestadorDescuentos.cambiarEstadoDescuento(this.usuarioActual, descuentoSeleccionado.idDescuento())
         ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
@@ -219,7 +240,17 @@ public class GestionDescuentosControlador {
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+        volverAGestionarTienda();
+    }
+
+    private void volverAGestionarTienda(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_TIENDA_VIEW,
+                (GestionarTiendaControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

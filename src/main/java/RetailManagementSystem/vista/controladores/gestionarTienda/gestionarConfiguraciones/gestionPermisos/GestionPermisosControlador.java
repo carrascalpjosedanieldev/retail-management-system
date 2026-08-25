@@ -62,7 +62,7 @@ public class GestionPermisosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_PERMISOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
