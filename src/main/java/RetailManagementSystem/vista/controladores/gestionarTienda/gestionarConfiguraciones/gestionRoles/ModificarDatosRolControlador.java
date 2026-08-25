@@ -1,10 +1,12 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
+
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,7 +15,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
@@ -32,6 +33,8 @@ public class ModificarDatosRolControlador {
     private RolDTO rol;
 
     private ObservableList<RolDTO> listaObservable;
+
+    private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
@@ -55,7 +58,22 @@ public class ModificarDatosRolControlador {
         });
     }
 
-    public void cargarDatos(RolDTO rol, ObservableList<RolDTO> listaObservable) {
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, RolDTO rol, ObservableList<RolDTO> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Modificar Roles."
+            );
+            cerrarVentanaSeguro();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (rol == null) {
             GestorAlertas.mostrarAlertaError(
                     getVentana(), "Error",
@@ -93,7 +111,9 @@ public class ModificarDatosRolControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorRoles.actualizarDatosRol(this.rol.idRol(), nombreActualizado, activo)
+                this.orquestadorRoles.actualizarDatosRol(
+                        this.usuarioActual, this.rol.idRol(), nombreActualizado, activo
+                )
         ).thenAccept(rolActualizado->
             Platform.runLater(()->{
                 UtilidadesLista.reemplazarPorIdentidad(

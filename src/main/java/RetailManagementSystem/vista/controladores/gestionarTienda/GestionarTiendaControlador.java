@@ -1,6 +1,8 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
@@ -9,11 +11,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Window;
 
+import java.util.List;
+
 public class GestionarTiendaControlador {
 
     //ATRIBUTOS:
 
     @FXML private Button btnSalir;
+    @FXML private Button btnConfiguraciones;
 
     private UsuarioDTOCompleto usuarioActual;
 
@@ -24,45 +29,75 @@ public class GestionarTiendaControlador {
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
         this.usuarioActual = usuarioActual;
+        configurarVisibilidadModulos();
+    }
+
+    private boolean tieneAccesoAlModulo(List<String> permisosDelModulo) {
+        return permisosDelModulo.stream()
+                .anyMatch(permiso -> this.usuarioActual.tienePermiso(permiso));
+    }
+
+    private void configurarVisibilidadModulos() {
+        boolean accesoConfiguraciones = tieneAccesoAlModulo(List.of(
+                PermisosApp.EDITAR_PERFIL_DE_TIENDA,
+                PermisosApp.GESTIONAR_ROLES,
+                PermisosApp.GESTIONAR_PERMISOS
+        ));
+        btnConfiguraciones.setVisible(accesoConfiguraciones);
+        btnConfiguraciones.setManaged(accesoConfiguraciones);
     }
 
     private Window getVentana(){
         return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
     }
 
+
     private void cambiarVentana(String ruta){
         CargadorVistas.cambiarPantalla(getVentana(), ruta);
     }
 
+
     @FXML
     void abrirConfiguraciones(ActionEvent event) {
-        cambiarVentana(RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
+                (GestionConfiguracionesControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
+
 
     @FXML
     void abrirDescuentos(ActionEvent event) {
         cambiarVentana(RutasVista.GESTIONAR_DESCUENTOS_VIEW);
     }
 
+
     @FXML
     void abrirImpuestos(ActionEvent event) {
         cambiarVentana(RutasVista.GESTIONAR_IMPUESTOS_VIEW);
     }
+
 
     @FXML
     void abrirInventarios(ActionEvent event) {
         cambiarVentana(RutasVista.GESTIONAR_INVENTARIOS_VIEW);
     }
 
+
     @FXML
     void abrirServicios(ActionEvent event) {
         cambiarVentana(RutasVista.GESTIONAR_SERVICIOS_VIEW);
     }
 
+
     @FXML
     public void abrirPoliticasVencimiento(ActionEvent event) {
         cambiarVentana(RutasVista.GESTIONAR_POLITICAS_V_VIEW);
     }
+
 
     @FXML
     void volverAlMenu(ActionEvent event) {

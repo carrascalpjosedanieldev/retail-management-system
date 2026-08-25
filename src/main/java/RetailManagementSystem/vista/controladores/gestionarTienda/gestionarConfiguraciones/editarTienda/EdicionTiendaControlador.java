@@ -1,6 +1,8 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -8,6 +10,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Window;
+
+import java.util.concurrent.CompletableFuture;
 
 public class EdicionTiendaControlador {
 
@@ -19,6 +23,8 @@ public class EdicionTiendaControlador {
 
     private final ServicioConfiguraciones servicioConfiguraciones;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EdicionTiendaControlador(ServicioConfiguraciones servicioConfiguraciones) {
@@ -26,6 +32,21 @@ public class EdicionTiendaControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_PERFIL_DE_TIENDA)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Editar Información de la tienda."
+            );
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return btnCancelar.getScene() != null ? btnCancelar.getScene().getWindow() : null;
@@ -51,19 +72,36 @@ public class EdicionTiendaControlador {
             txtNombre.requestFocus();
             return;
         }
-        try {
-            this.servicioConfiguraciones.cambiarNombreYDescripcionTienda(nuevoNombre, nuevaDescripcion);
-            GestorAlertas.mostrarAlertaInformacion(
-                    getVentana(), "Cambios Guardados", null,
-                    "La Información de la Tienda se Actualizó con Éxito."
-            );
-            cerrarPantalla();
-        } catch (IllegalArgumentException e) {
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(), "Error en los Datos", null,
-                    "Error:  " + e.getMessage()
-            );
-        }
+        CompletableFuture.runAsync(()->
+                this.servicioConfiguraciones.cambiarNombreYDescripcionTienda(
+                        this.usuarioActual, nuevoNombre, nuevaDescripcion
+                )
+        ).thenRun(()->
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaInformacion(
+                        getVentana(), "Cambios Guardados", null,
+                        "La Información de la Tienda se Actualizó con Éxito."
+                );
+                cerrarPantalla();
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                if (causa instanceof  IllegalArgumentException){
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error en los Datos", null,
+                            "Error:  " + causa.getMessage()
+                    );
+                } else {
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error Crítico",
+                            "NO se pudo Completar la Acción.",
+                            "Notifícale al Administrador este Error:\n" + causa.getMessage()
+                    );
+                }
+            });
+            return null;
+        });
     }
 
     private void cerrarPantalla(){

@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -45,6 +47,8 @@ public class AnadirPermisoAlRolControlador {
 
     private List<PermisoDTO> permisosDelRol;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public AnadirPermisoAlRolControlador(OrquestadorPermisos orquestadorPermisos) {
@@ -58,7 +62,22 @@ public class AnadirPermisoAlRolControlador {
     }
 
 
-    public void cargarDatos(List<PermisoDTO> permisosDelRol, Runnable notificadorCambios){
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, List<PermisoDTO> permisosDelRol, Runnable notificadorCambios
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Administrar Permisos de Roles."
+            );
+            cerrarModal();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.permisosDelRol = permisosDelRol;
         this.notificadorCambios = notificadorCambios;
         llenarTablaPermisosYComboBox();

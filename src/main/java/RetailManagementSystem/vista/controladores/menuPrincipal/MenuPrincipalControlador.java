@@ -107,7 +107,6 @@ public class MenuPrincipalControlador {
         btnGestionarTienda.setManaged(accesoTienda);
     }
 
-
     private Window getVentana(){
         return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
     }

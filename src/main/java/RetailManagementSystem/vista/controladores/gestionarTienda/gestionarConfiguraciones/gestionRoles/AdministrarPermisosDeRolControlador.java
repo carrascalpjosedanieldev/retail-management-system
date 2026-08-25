@@ -2,7 +2,9 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConf
 
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -43,6 +45,8 @@ public class AdministrarPermisosDeRolControlador {
 
     private RolDTO datosRol;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public AdministrarPermisosDeRolControlador(OrquestadorRoles orquestadorRoles) {
@@ -56,7 +60,20 @@ public class AdministrarPermisosDeRolControlador {
     }
 
 
-    public void cargarDatos(RolDTO datosRol){
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual, RolDTO datosRol){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Administrar los Permisos de un Rol."
+            );
+            volverAlPanel();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (datosRol == null){
             GestorAlertas.mostrarAlertaError(
                     getVentana(), "Error", null,
@@ -113,7 +130,9 @@ public class AdministrarPermisosDeRolControlador {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.ANADIR_PERMISO_AL_ROL_VIEW,
                 "Administrar Permisos", getVentana(),
-                (AnadirPermisoAlRolControlador c) -> c.cargarDatos(listaObservablePermisos, ()-> this.hayCambios = true)
+                (AnadirPermisoAlRolControlador c) -> {
+                    c.cargarDatos(this.usuarioActual, listaObservablePermisos, ()-> this.hayCambios = true);
+                }
         );
     }
 
@@ -146,7 +165,7 @@ public class AdministrarPermisosDeRolControlador {
         }
         CompletableFuture.runAsync(()->{
             List<PermisoDTO> listaPermisos = new ArrayList<>(listaObservablePermisos);
-            this.orquestadorRoles.actualizarPermisosRol(this.datosRol.idRol(), listaPermisos);
+            this.orquestadorRoles.actualizarPermisosRol(this.usuarioActual, this.datosRol.idRol(), listaPermisos);
         }).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
@@ -170,7 +189,13 @@ public class AdministrarPermisosDeRolControlador {
     }
 
     private void volverAlPanel(){
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTION_ROLES_VIEW,
+                (GestionRolesControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

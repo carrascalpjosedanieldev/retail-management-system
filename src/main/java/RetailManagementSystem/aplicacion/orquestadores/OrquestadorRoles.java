@@ -2,9 +2,12 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTORol;
 import RetailManagementSystem.aplicacion.servicios.ServicioRol;
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +35,10 @@ public class OrquestadorRoles {
         );
     }
 
-    public void registrarRolNuevo(String nombreRol, boolean activo, List<PermisoDTO> permisos) {
+    public void registrarRolNuevo(
+            UsuarioDTOCompleto usuario, String nombreRol, boolean activo, List<PermisoDTO> permisos
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_ROLES);
         List<Permiso> permisosParaELRol = new ArrayList<>();
         for (PermisoDTO permisoDTO:permisos){
             Permiso permiso = Permiso.reconstruirDesdeBD(
@@ -47,13 +53,19 @@ public class OrquestadorRoles {
         this.servicioRol.registrarRol(nombreRol.toUpperCase(), activo, permisosParaELRol);
     }
 
-    public RolDTO actualizarDatosRol(int idRol, String nombreNuevo, boolean activo){
+    public RolDTO actualizarDatosRol(
+            UsuarioDTOCompleto usuario, int idRol, String nombreNuevo, boolean activo
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_ROLES);
         return this.ensambladorDTORol.ensamblarDatosRol(
                 this.servicioRol.actualzarDatosRol(idRol, nombreNuevo, activo)
         );
     }
 
-    public void actualizarPermisosRol(int idRol, List<PermisoDTO> listaPermisosActualizada){
+    public void actualizarPermisosRol(
+            UsuarioDTOCompleto usuario, int idRol, List<PermisoDTO> listaPermisosActualizada
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_ROLES);
         List<Permiso> permisosParaELRol = new ArrayList<>();
         for (PermisoDTO permisoDTO:listaPermisosActualizada){
             Permiso permiso = Permiso.reconstruirDesdeBD(

@@ -1,8 +1,11 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.puertos.RepositorioConfiguracion;
 import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguracionImpl;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 public class ServicioConfiguraciones {
 
@@ -49,7 +52,10 @@ public class ServicioConfiguraciones {
         return this.repositorioConfiguracion.obtenerDescripcionConfiguracion(CONF_DATOS_TIENDA);
     }
 
-    public void cambiarNombreYDescripcionTienda(String nombreNuevo, String descripcion){
+    public void cambiarNombreYDescripcionTienda(
+            UsuarioDTOCompleto usuario, String nombreNuevo, String descripcion
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PERFIL_DE_TIENDA);
         if (nombreNuevo == null || nombreNuevo.isBlank()){
             throw new IllegalArgumentException("El Nombre de la Tienda NO puede estar Vacío.");
         }

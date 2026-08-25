@@ -1,7 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -38,6 +41,8 @@ public class GestionRolesControlador {
 
     private FilteredList<RolDTO> listaFiltrada;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public GestionRolesControlador(OrquestadorRoles orquestadorRoles) {
@@ -45,6 +50,22 @@ public class GestionRolesControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar Roles."
+            );
+            volverAConfiguraciones();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return tablaRoles.getScene() != null ? tablaRoles.getScene().getWindow() : null;
@@ -129,7 +150,13 @@ public class GestionRolesControlador {
 
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.CREAR_ROL_NUEVO_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.CREAR_ROL_NUEVO_VIEW,
+                (CrearRolNuevoControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 
@@ -147,7 +174,7 @@ public class GestionRolesControlador {
                 RutasVista.MODIFICAR_DATOS_ROL_VIEW,
                 "Editando Rol -" + rolSeleccionado.nombre() + "-", getVentana(),
                 (ModificarDatosRolControlador c)->{
-                    c.cargarDatos(rolSeleccionado, listaMaestraRoles);
+                    c.cargarDatos(this.usuarioActual, rolSeleccionado, listaMaestraRoles);
                 }
         );
     }
@@ -167,7 +194,7 @@ public class GestionRolesControlador {
                 getVentana(),
                 RutasVista.ADMINISTRAR_PERMISOS_DE_ROL_VIEW,
                 (AdministrarPermisosDeRolControlador c)->{
-                    c.cargarDatos(rolSeleccionado);
+                    c.cargarDatos(this.usuarioActual, rolSeleccionado);
                 }
         );
     }
@@ -175,7 +202,17 @@ public class GestionRolesControlador {
 
     @FXML
     private void volverAlPanel(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+        volverAConfiguraciones();
+    }
+
+    private void volverAConfiguraciones(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
+                (GestionConfiguracionesControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

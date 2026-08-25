@@ -18,7 +18,7 @@
             <Label styleClass="subtitulo" text="Selecciona el módulo que deseas administrar" />
 
             <TilePane alignment="CENTER" hgap="30.0" maxWidth="700.0" prefColumns="2" vgap="30.0">
-                <Button onAction="#abrirConfiguraciones" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR CONFIGURACIONES" />
+                <Button fx:id="btnConfiguraciones" onAction="#abrirConfiguraciones" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR CONFIGURACIONES" />
                 <Button onAction="#abrirInventarios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR INVENTARIOS" />
                 <Button onAction="#abrirServicios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR SERVICIOS" />
                 <Button onAction="#abrirImpuestos" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR IMPUESTOS" />

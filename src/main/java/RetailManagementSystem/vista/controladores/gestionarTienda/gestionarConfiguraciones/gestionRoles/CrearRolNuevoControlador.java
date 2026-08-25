@@ -1,9 +1,11 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -50,6 +52,8 @@ public class CrearRolNuevoControlador {
 
     private FilteredList<PermisoDTO> listaFiltrada;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public CrearRolNuevoControlador(OrquestadorPermisos orquestadorPermisos, OrquestadorRoles orquestadorRoles) {
@@ -58,6 +62,22 @@ public class CrearRolNuevoControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Crear Roles."
+            );
+            volverAGestionRoles();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return tablaPermisosAgregados.getScene() != null ? tablaPermisosAgregados.getScene().getWindow() : null;
@@ -241,7 +261,9 @@ public class CrearRolNuevoControlador {
         boolean estaActivo = chkActivo.isSelected();
         List<PermisoDTO> permisosSeleccionados = new ArrayList<>(listaPermisosAgregados);
         CompletableFuture.runAsync(()->
-                this.orquestadorRoles.registrarRolNuevo(nombreProcesado, estaActivo, permisosSeleccionados)
+                this.orquestadorRoles.registrarRolNuevo(
+                        this.usuarioActual, nombreProcesado, estaActivo, permisosSeleccionados
+                )
         ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
@@ -249,7 +271,7 @@ public class CrearRolNuevoControlador {
                         "Rol Guardado",
                         "Rol creado correctamente."
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
+                volverAGestionRoles();
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
@@ -275,7 +297,17 @@ public class CrearRolNuevoControlador {
 
     @FXML
     private void cancelar(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTION_ROLES_VIEW);
+        volverAGestionRoles();
+    }
+
+    private void volverAGestionRoles(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTION_ROLES_VIEW,
+                (GestionRolesControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 }//===================================================================================================================//
