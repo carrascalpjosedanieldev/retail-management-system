@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -34,6 +36,8 @@ public class EditarPoliticaVencimientoControlador {
 
     private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EditarPoliticaVencimientoControlador(OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento) {
@@ -42,7 +46,23 @@ public class EditarPoliticaVencimientoControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(PoliticaVencimientoDTO datosPoliticaV, ObservableList<PoliticaVencimientoDTO> listaObservable) {
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual,
+            PoliticaVencimientoDTO datosPoliticaV, ObservableList<PoliticaVencimientoDTO> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.POLITICAS_DE_VENCIMIENTO)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar las Politicas de Vencimiento."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (datosPoliticaV == null) {
             throw new IllegalArgumentException("No puedes editar una Política de Vencimiento Vacía.");
         }
@@ -101,7 +121,8 @@ public class EditarPoliticaVencimientoControlador {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorPoliticaVencimiento.actualizarPoliticaVencimiento(
-                    this.datosPoliticaV.idPoliticaVencimiento(), nuevoNombre, diasUmbral, porcentaje
+                    this.usuarioActual, this.datosPoliticaV.idPoliticaVencimiento(), nuevoNombre, diasUmbral,
+                    porcentaje
             )
         ).thenAccept( politicaVActualizada ->
             Platform.runLater(()->{

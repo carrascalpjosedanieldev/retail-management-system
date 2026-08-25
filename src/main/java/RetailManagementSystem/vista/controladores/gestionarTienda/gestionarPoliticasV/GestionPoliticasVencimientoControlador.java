@@ -1,7 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -34,6 +37,8 @@ public class GestionPoliticasVencimientoControlador {
     @FXML private TableColumn<PoliticaVencimientoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
 
     private final ObservableList<PoliticaVencimientoDTO> listaObservablePoliticasVencimiento = FXCollections.observableArrayList();
@@ -45,6 +50,22 @@ public class GestionPoliticasVencimientoControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.POLITICAS_DE_VENCIMIENTO)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar las Politicas de Vencimiento."
+            );
+            volverAGestionTienda();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return tablaPoliticasVencimiento.getScene() != null ? tablaPoliticasVencimiento.getScene().getWindow() : null;
@@ -146,7 +167,7 @@ public class GestionPoliticasVencimientoControlador {
                 RutasVista.EDITAR_POLITICA_V_VIEW,
                 "Editando Política de Vencimiento", getVentana(),
                 (EditarPoliticaVencimientoControlador c)->{
-                    c.cargarDatos(seleccionado, listaObservablePoliticasVencimiento);
+                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservablePoliticasVencimiento);
                 }
         );
     }
@@ -158,7 +179,7 @@ public class GestionPoliticasVencimientoControlador {
                 RutasVista.CREAR_POLITiCA_V_VIEW,
                 "Creando Política de Vencimiento", getVentana(),
                 (CrearPoliticaVencimiento c)->{
-                    c.cargarDatos(listaObservablePoliticasVencimiento);
+                    c.cargarDatos(this.usuarioActual, listaObservablePoliticasVencimiento);
                 }
         );
     }
@@ -183,7 +204,9 @@ public class GestionPoliticasVencimientoControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-            this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(politicaSeleccionado.idPoliticaVencimiento())
+            this.orquestadorPoliticaVencimiento.cambiarEstadoPoliticaV(
+                    this.usuarioActual, politicaSeleccionado.idPoliticaVencimiento()
+            )
         ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
@@ -219,7 +242,17 @@ public class GestionPoliticasVencimientoControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+        volverAGestionTienda();
+    }
+
+    private void volverAGestionTienda(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_TIENDA_VIEW,
+                (GestionarTiendaControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

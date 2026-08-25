@@ -5,6 +5,7 @@ import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.GestionPoliticasVencimientoControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -61,7 +62,7 @@ public class GestionarTiendaControlador {
 
 
     @FXML
-    void abrirConfiguraciones(ActionEvent event) {
+    private void abrirConfiguraciones(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
@@ -73,7 +74,7 @@ public class GestionarTiendaControlador {
 
 
     @FXML
-    void abrirDescuentos(ActionEvent event) {
+    private void abrirDescuentos(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.GESTIONAR_DESCUENTOS_VIEW,
@@ -85,7 +86,7 @@ public class GestionarTiendaControlador {
 
 
     @FXML
-    void abrirImpuestos(ActionEvent event) {
+    private void abrirImpuestos(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.GESTIONAR_IMPUESTOS_VIEW,
@@ -97,25 +98,31 @@ public class GestionarTiendaControlador {
 
 
     @FXML
-    void abrirInventarios(ActionEvent event) {
+    private void abrirInventarios(ActionEvent event) {
         cambiarVentana(RutasVista.GESTIONAR_INVENTARIOS_VIEW);
     }
 
 
     @FXML
-    void abrirServicios(ActionEvent event) {
+    private void abrirServicios(ActionEvent event) {
         cambiarVentana(RutasVista.GESTIONAR_SERVICIOS_VIEW);
     }
 
 
     @FXML
-    public void abrirPoliticasVencimiento(ActionEvent event) {
-        cambiarVentana(RutasVista.GESTIONAR_POLITICAS_V_VIEW);
+    private void abrirPoliticasVencimiento(ActionEvent event) {
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_POLITICAS_V_VIEW,
+                (GestionPoliticasVencimientoControlador c) -> {
+                    c.cargarDatos(this.usuarioActual);
+                }
+        );
     }
 
 
     @FXML
-    void volverAlMenu(ActionEvent event) {
+    private void volverAlMenu(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.MENU_PRINCIPAL_VIEW,

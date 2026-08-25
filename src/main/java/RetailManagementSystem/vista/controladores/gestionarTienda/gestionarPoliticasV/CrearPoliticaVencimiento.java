@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import javafx.application.Platform;
@@ -30,6 +32,8 @@ public class CrearPoliticaVencimiento {
 
     private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public CrearPoliticaVencimiento(OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento) {
@@ -38,7 +42,22 @@ public class CrearPoliticaVencimiento {
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<PoliticaVencimientoDTO> listaObservable){
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, ObservableList<PoliticaVencimientoDTO> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_IMPUESTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.listaObservable = listaObservable;
     }
 
@@ -89,7 +108,7 @@ public class CrearPoliticaVencimiento {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorPoliticaVencimiento.registrarPoliticaVencimiento(
-                    nombre, diasUmbral, porcentaje, activo
+                    this.usuarioActual, nombre, diasUmbral, porcentaje, activo
             )
         ).thenAccept(politicaVRegistrada ->
             Platform.runLater(()->{

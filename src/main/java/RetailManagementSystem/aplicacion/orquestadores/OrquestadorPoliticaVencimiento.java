@@ -1,8 +1,11 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
 import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,8 +42,9 @@ public class OrquestadorPoliticaVencimiento {
     }
 
     public PoliticaVencimientoDTO registrarPoliticaVencimiento(
-            String nombre, int diasUmbral, BigDecimal porcentaje, boolean activo
+            UsuarioDTOCompleto usuario, String nombre, int diasUmbral, BigDecimal porcentaje, boolean activo
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.POLITICAS_DE_VENCIMIENTO);
         return this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
                 this.servicioPoliticaVencimiento.registrarPoliticaVencimiento(
                         nombre, diasUmbral, porcentaje, activo
@@ -49,8 +53,10 @@ public class OrquestadorPoliticaVencimiento {
     }
 
     public PoliticaVencimientoDTO actualizarPoliticaVencimiento(
-            int idPoliticaV, String nuevoNombre, int nuevoDiasUmbral, BigDecimal nuevoPorcentaje
+            UsuarioDTOCompleto usuario, int idPoliticaV, String nuevoNombre, int nuevoDiasUmbral,
+            BigDecimal nuevoPorcentaje
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.POLITICAS_DE_VENCIMIENTO);
         return this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
                 this.servicioPoliticaVencimiento.actualizarPoliticaVencimiento(
                         idPoliticaV, nuevoNombre, nuevoDiasUmbral, nuevoPorcentaje
@@ -58,7 +64,8 @@ public class OrquestadorPoliticaVencimiento {
         );
     }
 
-    public void cambiarEstadoPoliticaV(int idPoliticaV) {
+    public void cambiarEstadoPoliticaV(UsuarioDTOCompleto usuario, int idPoliticaV) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.POLITICAS_DE_VENCIMIENTO);
         this.servicioPoliticaVencimiento.cambiarEstadoPoliticaDeVencimiento(idPoliticaV);
     }
 
