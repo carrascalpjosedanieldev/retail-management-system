@@ -5,7 +5,9 @@ import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.GestionInventariosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.GestionPoliticasVencimientoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.GestionServiciosControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -23,6 +25,11 @@ public class GestionarTiendaControlador {
 
     @FXML private Button btnSalir;
     @FXML private Button btnConfiguraciones;
+    @FXML private Button btnGestionDescuentos;
+    @FXML private Button btnGestionImpuestos;
+    @FXML private Button btnGestionInventarios;
+    @FXML private Button btnGestionPoliticasV;
+    @FXML private Button btnGestionServicios;
 
     private UsuarioDTOCompleto usuarioActual;
 
@@ -49,15 +56,40 @@ public class GestionarTiendaControlador {
         ));
         btnConfiguraciones.setVisible(accesoConfiguraciones);
         btnConfiguraciones.setManaged(accesoConfiguraciones);
+        boolean accesoDescuentos = tieneAccesoAlModulo(List.of(
+                PermisosApp.ADMINISTRAR_DESCUENTOS
+        ));
+        btnGestionDescuentos.setVisible(accesoDescuentos);
+        btnGestionDescuentos.setManaged(accesoDescuentos);
+        boolean accesoImpuestos = tieneAccesoAlModulo(List.of(
+                PermisosApp.ADMINISTRAR_IMPUESTOS
+        ));
+        btnGestionImpuestos.setVisible(accesoImpuestos);
+        btnGestionImpuestos.setManaged(accesoImpuestos);
+        boolean accesoInventarios = tieneAccesoAlModulo(List.of(
+                PermisosApp.VER_INVENTARIOS,
+                PermisosApp.ADMINISTRAR_INVENTARIOS,
+                PermisosApp.VER_PRODUCTOS,
+                PermisosApp.ADMINISTRAR_PRODUCTOS,
+                PermisosApp.TRASLADAR_PRODUCTOS
+        ));
+        btnGestionInventarios.setVisible(accesoInventarios);
+        btnGestionInventarios.setManaged(accesoInventarios);
+        boolean accesoPoliticasV = tieneAccesoAlModulo(List.of(
+                PermisosApp.POLITICAS_DE_VENCIMIENTO
+        ));
+        btnGestionPoliticasV.setVisible(accesoPoliticasV);
+        btnGestionPoliticasV.setManaged(accesoPoliticasV);
+        boolean accesoServicios = tieneAccesoAlModulo(List.of(
+                PermisosApp.VER_SERVICIOS,
+                PermisosApp.ADMINISTRAR_SERVICIOS
+        ));
+        btnGestionServicios.setVisible(accesoServicios);
+        btnGestionServicios.setManaged(accesoServicios);
     }
 
     private Window getVentana(){
         return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
-    }
-
-
-    private void cambiarVentana(String ruta){
-        CargadorVistas.cambiarPantalla(getVentana(), ruta);
     }
 
 
@@ -99,13 +131,25 @@ public class GestionarTiendaControlador {
 
     @FXML
     private void abrirInventarios(ActionEvent event) {
-        cambiarVentana(RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_INVENTARIOS_VIEW,
+                (GestionInventariosControlador c) -> {
+
+                }
+        );
     }
 
 
     @FXML
     private void abrirServicios(ActionEvent event) {
-        cambiarVentana(RutasVista.GESTIONAR_SERVICIOS_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_SERVICIOS_VIEW,
+                (GestionServiciosControlador c) -> {
+                    c.cargarDatos(this.usuarioActual);
+                }
+        );
     }
 
 

@@ -37,8 +37,8 @@
     </TableView>
 
     <HBox alignment="CENTER_LEFT" spacing="15.0">
-        <Button maxHeight="45.0" mnemonicParsing="false" onAction="#abrirFormularioNuevo" prefHeight="40.0" prefWidth="153.0" styleClass="btn-accion, btn-nuevo" text="Nuevo Inventario" />
-        <Button maxHeight="45.0" mnemonicParsing="false" onAction="#abrirFormularioEdicion" prefHeight="40.0" prefWidth="190.0" text="Modificar Seleccionado">
+        <Button fx:id="btnNuevoInv" maxHeight="45.0" mnemonicParsing="false" onAction="#abrirFormularioNuevo" prefHeight="40.0" prefWidth="153.0" styleClass="btn-accion, btn-nuevo" text="Nuevo Inventario" />
+        <Button fx:id="btnModificarInv" maxHeight="45.0" mnemonicParsing="false" onAction="#abrirFormularioEdicion" prefHeight="40.0" prefWidth="190.0" text="Modificar Seleccionado">
          <styleClass>
             <String fx:value="btn-accion" />
             <String fx:value="button" />
@@ -46,7 +46,7 @@
 
         <Region prefHeight="50.0" prefWidth="466.0" HBox.hgrow="ALWAYS" />
 
-        <Button maxHeight="45.0" mnemonicParsing="false" onAction="#editarProductosInventario" prefHeight="40.0" prefWidth="246.0" text="Editar Productos del Inventario">
+        <Button fx:id="btnVerOEditarProductos" maxHeight="45.0" mnemonicParsing="false" onAction="#editarProductosInventario" prefHeight="40.0" prefWidth="246.0" text="Editar Productos del Inventario">
          <styleClass>
             <String fx:value="btn-accion" />
             <String fx:value="btn-editar" />

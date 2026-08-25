@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -26,6 +28,8 @@ public class CrearInventarioControlador {
 
     private final OrquestadorInventarioProducto orquestadorInventarioProducto;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public CrearInventarioControlador(OrquestadorInventarioProducto orquestadorInventarioProducto) {
@@ -34,7 +38,20 @@ public class CrearInventarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<InventarioDTO> listaObservable){
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual, ObservableList<InventarioDTO> listaObservable){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_INVENTARIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Registrar Inventarios."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.listaObservable = listaObservable;
         Platform.runLater(()->btnCancelar.requestFocus());
     }
@@ -73,7 +90,7 @@ public class CrearInventarioControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorInventarioProducto.registrarInventario(nombre, capacidad)
+                this.orquestadorInventarioProducto.registrarInventario(this.usuarioActual, nombre, capacidad)
         ).thenAccept(inventarioRegistrado->
             Platform.runLater(()->{
                 this.listaObservable.add(inventarioRegistrado);

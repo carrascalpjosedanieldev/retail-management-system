@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
@@ -32,6 +34,8 @@ public class EditarInventarioControlador {
 
     private final OrquestadorInventarioProducto orquestadorInventarioProducto;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EditarInventarioControlador(OrquestadorInventarioProducto orquestadorInventarioProducto) {
@@ -40,7 +44,24 @@ public class EditarInventarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(InventarioDTO datosInventario, ObservableList<InventarioDTO> listaObservable){
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, InventarioDTO datosInventario,
+            ObservableList<InventarioDTO> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_INVENTARIOS) ||
+            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_INVENTARIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Inventarios."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (datosInventario == null) {
             throw new IllegalArgumentException("NO puedes editar un Inventario Vacío.");
         }
@@ -71,7 +92,9 @@ public class EditarInventarioControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorInventarioProducto.actualizarInventario(this.datosInventario.idInventario(), nuevoNombre)
+                this.orquestadorInventarioProducto.actualizarInventario(
+                        this.usuarioActual, this.datosInventario.idInventario(), nuevoNombre
+                )
         ).thenAccept(inventarioActualizado->
             Platform.runLater(()->{
                 UtilidadesLista.reemplazarPorIdentidad(

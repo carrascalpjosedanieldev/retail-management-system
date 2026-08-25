@@ -1,8 +1,11 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.GestionProductosControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -20,6 +23,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Window;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionInventariosControlador {
@@ -31,12 +35,18 @@ public class GestionInventariosControlador {
     @FXML private TableColumn<InventarioDTO, String> colNombre;
     @FXML private TableView<InventarioDTO> tablaInventarios;
     @FXML private TextField txtBuscar;
+    @FXML private Button btnModificarInv;
+    @FXML private Button btnNuevoInv;
+    @FXML private Button btnVerOEditarProductos;
+
 
     private final ServicioInventario servicioInventario;
 
     private final EnsambladorDTOInventario ensambladorDTOInventario;
 
     private final ObservableList<InventarioDTO> listaObservable = FXCollections.observableArrayList();
+
+    private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
@@ -48,6 +58,49 @@ public class GestionInventariosControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_SERVICIOS) ||
+            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Servicios."
+            );
+            volverAGestionTienda();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+        configurarVisibilidadModulos();
+    }
+
+    private boolean tieneAccesoAlModulo(List<String> permisosDelModulo) {
+        return permisosDelModulo.stream()
+                .anyMatch(permiso -> this.usuarioActual.tienePermiso(permiso));
+    }
+
+    private void configurarVisibilidadModulos() {
+        boolean administrar = tieneAccesoAlModulo(List.of(
+                PermisosApp.ADMINISTRAR_INVENTARIOS
+        ));
+        btnNuevoInv.setVisible(administrar);
+        btnNuevoInv.setManaged(administrar);
+        btnModificarInv.setVisible(administrar);
+        btnModificarInv.setManaged(administrar);
+        if (!administrar){
+            btnVerOEditarProductos.setText("Ver Productos del Inventario");
+        }
+        boolean visualizar = tieneAccesoAlModulo(List.of(
+                PermisosApp.VER_PRODUCTOS,
+                PermisosApp.ADMINISTRAR_PRODUCTOS,
+                PermisosApp.TRASLADAR_PRODUCTOS
+        ));
+        btnVerOEditarProductos.setVisible(visualizar);
+        btnVerOEditarProductos.setManaged(visualizar);
+    }
 
     private Window getVentana(){
         return tablaInventarios.getScene() != null ? tablaInventarios.getScene().getWindow() : null;
@@ -155,7 +208,7 @@ public class GestionInventariosControlador {
                 RutasVista.EDITAR_INVENTARIO_VIEW,
                 "Editando Inventario", getVentana(),
                 (EditarInventarioControlador c)->{
-                    c.cargarDatos(seleccionado, listaObservable);
+                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservable);
                 }
         );
     }
@@ -167,7 +220,7 @@ public class GestionInventariosControlador {
                 RutasVista.CREAR_INVENTARIO_VIEW,
                 "Creando Inventario", getVentana(),
                 (CrearInventarioControlador c)->{
-                    c.cargarDatos(listaObservable);
+                    c.cargarDatos(this.usuarioActual, listaObservable);
                 }
         );
     }
@@ -195,7 +248,17 @@ public class GestionInventariosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+        volverAGestionTienda();
+    }
+
+    private void volverAGestionTienda(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_TIENDA_VIEW,
+                (GestionarTiendaControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

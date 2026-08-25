@@ -1,12 +1,15 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -68,13 +71,19 @@ public class OrquestadorInventarioProducto {
         this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);
     }
 
-    public InventarioDTO actualizarInventario(int idInventario, String nombreNuevo){
+    public InventarioDTO actualizarInventario(
+            UsuarioDTOCompleto usuario, int idInventario, String nombreNuevo
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_INVENTARIOS);
         return this.ensambladorDTOInventario.ensamblarDatosInventario(
                 this.servicioInventario.actualizarInventario(idInventario, nombreNuevo)
         );
     }
 
-    public InventarioDTO registrarInventario(String nombre, int capacidadMaxima){
+    public InventarioDTO registrarInventario(
+            UsuarioDTOCompleto usuario, String nombre, int capacidadMaxima
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_INVENTARIOS);
         return this.ensambladorDTOInventario.ensamblarDatosInventario(
                 this.servicioInventario.agregarInventario(nombre, capacidadMaxima)
         );

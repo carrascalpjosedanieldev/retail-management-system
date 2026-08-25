@@ -19,11 +19,11 @@
 
             <TilePane alignment="CENTER" hgap="30.0" maxWidth="700.0" prefColumns="2" vgap="30.0">
                 <Button fx:id="btnConfiguraciones" onAction="#abrirConfiguraciones" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR CONFIGURACIONES" />
-                <Button onAction="#abrirInventarios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR INVENTARIOS" />
-                <Button onAction="#abrirServicios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR SERVICIOS" />
-                <Button onAction="#abrirImpuestos" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR IMPUESTOS" />
-                <Button onAction="#abrirDescuentos" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR DESCUENTOS" />
-            <Button onAction="#abrirPoliticasVencimiento" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR POLITICAS V." />
+                <Button fx:id="btnGestionInventarios" onAction="#abrirInventarios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR INVENTARIOS" />
+                <Button fx:id="btnGestionServicios" onAction="#abrirServicios" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR SERVICIOS" />
+                <Button fx:id="btnGestionImpuestos" onAction="#abrirImpuestos" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR IMPUESTOS" />
+                <Button fx:id="btnGestionDescuentos" onAction="#abrirDescuentos" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR DESCUENTOS" />
+            <Button fx:id="btnGestionPoliticasV" onAction="#abrirPoliticasVencimiento" prefHeight="80.0" prefWidth="300.0" text="GESTIONAR POLITICAS V." />
             </TilePane>
 
              <Button id="btnSalir" fx:id="btnSalir" onAction="#volverAlMenu" prefHeight="80.0" prefWidth="300.0" text="SALIR AL MENÚ" />
