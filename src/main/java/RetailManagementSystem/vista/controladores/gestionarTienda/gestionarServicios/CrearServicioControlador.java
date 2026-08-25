@@ -3,7 +3,9 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServ
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -38,6 +40,8 @@ public class CrearServicioControlador {
 
     private final OrquestadorServicios orquestadorServicios;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public CrearServicioControlador(OrquestadorServicios orquestadorServicios) {
@@ -52,9 +56,22 @@ public class CrearServicioControlador {
 
 
     public void cargarDatos(
-            ObservableList<ServicioDTO> listaObservable, List<ImpuestoDTO> listaImpuestos,
-            List<DescuentoDTO> listaDescuentos
-    ){
+            UsuarioDTOCompleto usuarioActual, ObservableList<ServicioDTO> listaObservable,
+            List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Registrar Servicios."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.listaObservable = listaObservable;
         configurarComboBox(cbImpuesto, listaImpuestos, "Seleccione un Impuesto...",
                 imp -> imp.nombre() + " (" + imp.porcentaje() + "%)");
@@ -127,8 +144,8 @@ public class CrearServicioControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorServicios.registrarServicio(
-                        nombre, precioBase, impuestoSeleccionado.idImpuesto(), descuentoSeleccionado.idDescuento(),
-                        LocalDate.now()
+                        this.usuarioActual, nombre, precioBase, impuestoSeleccionado.idImpuesto(),
+                        descuentoSeleccionado.idDescuento(), LocalDate.now()
                 )
         ).thenAccept(servicioRegistrado->
                 Platform.runLater(()->{

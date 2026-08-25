@@ -2,10 +2,13 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServ
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -48,6 +51,8 @@ public class GestionServiciosControlador {
 
     private final ObservableList<ServicioDTO> listaObservableServicios = FXCollections.observableArrayList();
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public GestionServiciosControlador(
@@ -60,6 +65,23 @@ public class GestionServiciosControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_SERVICIOS) ||
+            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Servicios."
+            );
+            volverAGestionTienda();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return tablaServicios.getScene() != null ? tablaServicios.getScene().getWindow() : null;
@@ -186,12 +208,16 @@ public class GestionServiciosControlador {
         });
     }
 
-    private void abrirModalEdicion(ServicioDTO seleccionado, List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
+    private void abrirModalEdicion(
+            ServicioDTO seleccionado, List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos
+    ) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.EDITAR_SERVICIO_VIEW,
                 "Editando Servicio", getVentana(),
                 (EditarServicioControlador c)->{
-                    c.cargarDatos(seleccionado, listaObservableServicios, listaImpuestos, listaDescuentos);
+                    c.cargarDatos(
+                            this.usuarioActual, seleccionado, listaObservableServicios, listaImpuestos, listaDescuentos
+                    );
                 }
         );
     }
@@ -233,7 +259,7 @@ public class GestionServiciosControlador {
                 RutasVista.CREAR_SERVICIO_VIEW,
                 "Creando Servicio", getVentana(),
                 (CrearServicioControlador c)->{
-                    c.cargarDatos(listaObservableServicios, listaImpuestos, listaDescuentos);
+                    c.cargarDatos(this.usuarioActual, listaObservableServicios, listaImpuestos, listaDescuentos);
                 }
         );
     }
@@ -262,7 +288,7 @@ public class GestionServiciosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.orquestadorServicios.cambiarEstadoServicio(seleccionado.codigo())
+                this.orquestadorServicios.cambiarEstadoServicio(this.usuarioActual, seleccionado.codigo())
         ).thenRun(()->
             Platform.runLater(()->{
                 ServicioDTO actualizado = new ServicioDTO(
@@ -297,7 +323,17 @@ public class GestionServiciosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+        volverAGestionTienda();
+    }
+
+    private void volverAGestionTienda(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_TIENDA_VIEW,
+                (GestionarTiendaControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

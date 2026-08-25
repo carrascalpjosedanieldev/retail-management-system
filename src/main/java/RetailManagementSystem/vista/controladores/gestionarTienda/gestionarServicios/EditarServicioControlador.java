@@ -3,7 +3,9 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServ
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
@@ -44,6 +46,8 @@ public class EditarServicioControlador {
 
     private final OrquestadorServicios orquestadorServicios;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EditarServicioControlador(OrquestadorServicios orquestadorServicios) {
@@ -58,9 +62,22 @@ public class EditarServicioControlador {
 
 
     public void cargarDatos(
-            ServicioDTO seleccionado, ObservableList<ServicioDTO> listaObservable, List<ImpuestoDTO> listaImpuestos,
-            List<DescuentoDTO> listaDescuentos
+            UsuarioDTOCompleto usuarioActual, ServicioDTO seleccionado, ObservableList<ServicioDTO> listaObservable,
+            List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos
     ){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Editar los Servicios."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (seleccionado==null){
             throw new IllegalArgumentException("NO puedes editar un Servicio Nulo");
         }
@@ -148,8 +165,8 @@ public class EditarServicioControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorServicios.actualizarServicio(
-                        this.servicioSeleccionado.codigo(), nuevoNombre, nuevoPrecioBase, impuestoSeleccionado.idImpuesto(),
-                        descuentoSeleccionado.idDescuento(), LocalDate.now()
+                        this.usuarioActual, this.servicioSeleccionado.codigo(), nuevoNombre, nuevoPrecioBase,
+                        impuestoSeleccionado.idImpuesto(), descuentoSeleccionado.idDescuento(), LocalDate.now()
                 )
         ).thenAccept(servicioActualizado->
             Platform.runLater(()->{

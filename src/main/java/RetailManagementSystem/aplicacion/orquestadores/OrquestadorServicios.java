@@ -1,8 +1,11 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOServicio;
 import RetailManagementSystem.aplicacion.servicios.ServicioServicios;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,8 +37,10 @@ public class OrquestadorServicios {
     }
 
     public ServicioDTO registrarServicio(
-            String nombre, BigDecimal precioBase, int idImpuesto, int idDescuento, LocalDate fecha
+            UsuarioDTOCompleto usuario, String nombre, BigDecimal precioBase, int idImpuesto, int idDescuento,
+            LocalDate fecha
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_SERVICIOS);
         return this.ensambladorDTOServicio.ensamblarServicio(
                 this.servicioServicios.registrarServicioNuevo(
                         nombre, precioBase, idImpuesto, idDescuento
@@ -44,9 +49,10 @@ public class OrquestadorServicios {
     }
 
     public ServicioDTO actualizarServicio(
-            String codigoServicio, String nuevoNombre, BigDecimal nuevoPrecioBase,
+            UsuarioDTOCompleto usuario, String codigoServicio, String nuevoNombre, BigDecimal nuevoPrecioBase,
             int idImpuesto, int idDescuento, LocalDate fecha
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_SERVICIOS);
         return this.ensambladorDTOServicio.ensamblarServicio(
                 this.servicioServicios.actualizarServicio(
                         codigoServicio, nuevoNombre, nuevoPrecioBase, idImpuesto, idDescuento
@@ -54,7 +60,8 @@ public class OrquestadorServicios {
         );
     }
 
-    public void cambiarEstadoServicio(String codigoServicio){
+    public void cambiarEstadoServicio(UsuarioDTOCompleto usuario, String codigoServicio){
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_SERVICIOS);
         this.servicioServicios.cambiarEstadoServicio(codigoServicio);
     }
 
