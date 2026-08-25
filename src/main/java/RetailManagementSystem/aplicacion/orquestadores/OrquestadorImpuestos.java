@@ -1,9 +1,12 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOImpuesto;
 import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,17 +40,24 @@ public class OrquestadorImpuestos {
         );
     }
 
-    public ImpuestoDTO registrarImpuesto(String nombre, BigDecimal porcentaje, boolean activo) {
+    public ImpuestoDTO registrarImpuesto(
+            UsuarioDTOCompleto usuario, String nombre, BigDecimal porcentaje, boolean activo
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_IMPUESTOS);
         Impuesto impuesto = this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
         return this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(impuesto);
     }
 
-    public ImpuestoDTO actualizarImpuesto(int idImpuesto, String nombre, BigDecimal porcentaje) {
+    public ImpuestoDTO actualizarImpuesto(
+            UsuarioDTOCompleto usuario, int idImpuesto, String nombre, BigDecimal porcentaje
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_IMPUESTOS);
         Impuesto impuesto = this.servicioImpuestos.actualizarImpuesto(idImpuesto, nombre, porcentaje);
         return this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(impuesto);
     }
 
-    public void cambiarEstadoImpuesto(int idImpuesto) {
+    public void cambiarEstadoImpuesto(UsuarioDTOCompleto usuario, int idImpuesto) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_IMPUESTOS);
         this.servicioImpuestos.cambiarEstadoImpuesto(idImpuesto);
     }
 

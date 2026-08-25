@@ -1,11 +1,13 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos;
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
+
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,7 +15,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -34,6 +35,8 @@ public class EditarImpuestoControlador {
 
     private final OrquestadorImpuestos orquestadorImpuestos;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EditarImpuestoControlador(OrquestadorImpuestos orquestadorImpuestos) {
@@ -42,7 +45,22 @@ public class EditarImpuestoControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(ImpuestoDTO datosImpuesto, ObservableList<ImpuestoDTO> listaObservable) {
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, ImpuestoDTO datosImpuesto, ObservableList<ImpuestoDTO> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_IMPUESTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (datosImpuesto == null) {
             throw new IllegalArgumentException("No puedes editar un Impuesto Vacío.");
         }
@@ -83,7 +101,7 @@ public class EditarImpuestoControlador {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorImpuestos.actualizarImpuesto(
-                    this.datosImpuesto.idImpuesto(), nombre, porcentaje
+                    this.usuarioActual, this.datosImpuesto.idImpuesto(), nombre, porcentaje
             )
         ).thenAccept(impuestoActualizado ->
             Platform.runLater(()->{

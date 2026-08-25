@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -85,7 +86,13 @@ public class GestionarTiendaControlador {
 
     @FXML
     void abrirImpuestos(ActionEvent event) {
-        cambiarVentana(RutasVista.GESTIONAR_IMPUESTOS_VIEW);
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_IMPUESTOS_VIEW,
+                (GestionImpuestosControlador c) -> {
+
+                }
+        );
     }
 
 

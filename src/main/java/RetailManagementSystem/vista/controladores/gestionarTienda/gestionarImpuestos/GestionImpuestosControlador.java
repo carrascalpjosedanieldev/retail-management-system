@@ -1,12 +1,15 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos;
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
-
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,7 +20,6 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -38,6 +40,8 @@ public class GestionImpuestosControlador {
 
     private final ObservableList<ImpuestoDTO> listaObservableImpuestos = FXCollections.observableArrayList();
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public GestionImpuestosControlador(OrquestadorImpuestos orquestadorImpuestos) {
@@ -45,6 +49,22 @@ public class GestionImpuestosControlador {
     }
 
     //MÉTODOS:
+
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_IMPUESTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+            );
+            volverAGestionTienda();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
+    }
 
     private Window getVentana(){
         return tablaImpuestos.getScene() != null ? tablaImpuestos.getScene().getWindow() : null;
@@ -144,7 +164,7 @@ public class GestionImpuestosControlador {
                 RutasVista.EDITAR_IMPUESTO_VIEW,
                 "Editando Impuesto", getVentana(),
                 (EditarImpuestoControlador c)->{
-                    c.cargarDatos(seleccionado, listaObservableImpuestos);
+                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservableImpuestos);
                 }
         );
     }
@@ -156,7 +176,7 @@ public class GestionImpuestosControlador {
                 RutasVista.CREAR_IMPUESTO_VIEW,
                 "Creando Impuesto", getVentana(),
                 (CrearImpuestoControlador c)->{
-                    c.cargarDatos(listaObservableImpuestos);
+                    c.cargarDatos(this.usuarioActual, listaObservableImpuestos);
                 }
         );
     }
@@ -181,7 +201,7 @@ public class GestionImpuestosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-            this.orquestadorImpuestos.cambiarEstadoImpuesto(impuestoSeleccionado.idImpuesto())
+            this.orquestadorImpuestos.cambiarEstadoImpuesto(this.usuarioActual, impuestoSeleccionado.idImpuesto())
         ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
@@ -216,7 +236,17 @@ public class GestionImpuestosControlador {
 
     @FXML
     void volverAlPanel(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+        volverAGestionTienda();
+    }
+
+    private void volverAGestionTienda(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.GESTIONAR_TIENDA_VIEW,
+                (GestionarTiendaControlador c) -> {
+                    c.cargarUsuario(this.usuarioActual);
+                }
+        );
     }
 
 

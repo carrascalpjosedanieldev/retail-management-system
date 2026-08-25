@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos;
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -12,7 +14,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
@@ -31,6 +32,8 @@ public class CrearImpuestoControlador {
 
     private ObservableList<ImpuestoDTO> listaObservable;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public CrearImpuestoControlador(OrquestadorImpuestos orquestadorImpuestos) {
@@ -39,7 +42,20 @@ public class CrearImpuestoControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<ImpuestoDTO> listaObservable){
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual, ObservableList<ImpuestoDTO> listaObservable){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_IMPUESTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.listaObservable = listaObservable;
     }
 
@@ -72,7 +88,7 @@ public class CrearImpuestoControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-             this.orquestadorImpuestos.registrarImpuesto(nombre, porcentaje, activo)
+             this.orquestadorImpuestos.registrarImpuesto(this.usuarioActual, nombre, porcentaje, activo)
         ).thenAccept(impuestoRegistrado ->
             Platform.runLater(()-> {
                 listaObservable.add(impuestoRegistrado);
