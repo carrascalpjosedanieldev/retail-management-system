@@ -35,6 +35,7 @@ public class GestionPermisosControlador {
     @FXML private ToggleButton btnFiltroActivos;
     @FXML private ToggleButton btnFiltroInactivos;
     @FXML private Button btnSalir;
+    @FXML private Button btnCambiarEstado;
     @FXML private TableView<PermisoDTO> tablaPermisos;
     @FXML private TableColumn<PermisoDTO, Integer> colId;
     @FXML private TableColumn<PermisoDTO, String> colNombre;
@@ -62,20 +63,25 @@ public class GestionPermisosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_PERMISOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_PERMISOS) &&
+            !usuarioActual.tienePermiso(PermisosApp.GESTIONAR_PERMISOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar Permisos."
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar Permisos."
             );
             volverAConfiguraciones();
             return;
         }
         this.usuarioActual = usuarioActual;
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_PERMISOS)){
+            btnCambiarEstado.setVisible(false);
+            btnCambiarEstado.setManaged(false);
+        }
     }
 
     private Window getVentana(){
-        return tablaPermisos.getScene() != null ? tablaPermisos.getScene().getWindow() : null;
+        return btnSalir.getScene() != null ? btnSalir.getScene().getWindow() : null;
     }
 
 

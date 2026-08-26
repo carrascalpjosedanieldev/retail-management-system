@@ -67,11 +67,11 @@ public class CrearRolNuevoControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_ROLES)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Crear Roles."
+                    "NO tienes los Permisos Necesarios para Registrar Roles."
             );
             volverAGestionRoles();
             return;

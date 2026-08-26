@@ -32,9 +32,10 @@ public class PermisosApp {
                 PermisosApp.ADMINISTRAR_DESCUENTOS,
                 PermisosApp.POLITICAS_DE_VENCIMIENTO,
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
-                PermisosApp.GESTIONAR_ROLES,
+                PermisosApp.EDITAR_ROLES,
                 PermisosApp.GESTIONAR_PERMISOS,
-                PermisosApp.GESTIONAR_USUARIOS
+                PermisosApp.GESTIONAR_USUARIOS,
+                PermisosApp.VER_PERMISOS
         );
 
         for (String permiso : permisosCodigo) {
@@ -77,11 +78,19 @@ public class PermisosApp {
 
     public static final String EDITAR_PERFIL_DE_TIENDA = "EDITAR PERFIL DE TIENDA";
 
-    public static final String GESTIONAR_ROLES = "GESTIONAR ROLES";
+    public static final String EDITAR_ROLES = "EDITAR ROLES";
 
     public static final String GESTIONAR_PERMISOS = "GESTIONAR PERMISOS";
 
     public static final String GESTIONAR_USUARIOS = "GESTIONAR USUARIOS";
+
+    public static final String VER_PERMISOS = "VER PERMISOS";
+
+    public static final String VER_ROLES = "VER ROLES";
+
+    public static final String REGISTRAR_ROLES = "REGISTRAR ROLES";
+
+    public static final String ADMINISTRAR_PERMISOS_DE_ROLES = "ADMINISTRAR_PERMISOS_DE_ROLES";
 
 }//===================================================================================================================//
 

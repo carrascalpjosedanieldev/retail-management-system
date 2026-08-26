@@ -34,7 +34,9 @@ public class GestionConfiguracionesControlador {
         }
         if (
             !usuarioActual.tienePermiso(PermisosApp.EDITAR_PERFIL_DE_TIENDA) &&
-            !usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES) &&
+            !usuarioActual.tienePermiso(PermisosApp.REGISTRAR_ROLES) &&
+            !usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES) &&
+            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES) &&
             !usuarioActual.tienePermiso(PermisosApp.GESTIONAR_PERMISOS)
         ) {
             GestorAlertas.mostrarAlertaError(
@@ -47,7 +49,7 @@ public class GestionConfiguracionesControlador {
         }
         this.usuarioActual = usuarioActual;
         protegerBoton(btnEditarNombre, PermisosApp.EDITAR_PERFIL_DE_TIENDA);
-        protegerBoton(btnGestionRoles, PermisosApp.GESTIONAR_ROLES);
+        protegerBoton(btnGestionRoles, PermisosApp.EDITAR_ROLES);
         protegerBoton(btnGestionPermisos, PermisosApp.GESTIONAR_PERMISOS);
     }
 

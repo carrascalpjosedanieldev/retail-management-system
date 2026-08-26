@@ -51,7 +51,7 @@ public class GestionarTiendaControlador {
     private void configurarVisibilidadModulos() {
         boolean accesoConfiguraciones = tieneAccesoAlModulo(List.of(
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
-                PermisosApp.GESTIONAR_ROLES,
+                PermisosApp.EDITAR_ROLES,
                 PermisosApp.GESTIONAR_PERMISOS
         ));
         btnConfiguraciones.setVisible(accesoConfiguraciones);

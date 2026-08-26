@@ -49,7 +49,7 @@
         </VBox>
 
         <Region HBox.hgrow="ALWAYS" />
-      <Button mnemonicParsing="false" onAction="#accionCambiarEstado" prefHeight="44.0" prefWidth="206.0" text="🔄 Activar / Desactivar">
+      <Button fx:id="btnCambiarEstado" mnemonicParsing="false" onAction="#accionCambiarEstado" prefHeight="44.0" prefWidth="206.0" text="🔄 Activar / Desactivar">
          <HBox.margin>
             <Insets top="25.0" />
          </HBox.margin>

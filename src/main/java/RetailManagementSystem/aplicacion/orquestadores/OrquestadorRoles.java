@@ -38,7 +38,7 @@ public class OrquestadorRoles {
     public void registrarRolNuevo(
             UsuarioDTOCompleto usuario, String nombreRol, boolean activo, List<PermisoDTO> permisos
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_ROLES);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_ROLES);
         List<Permiso> permisosParaELRol = new ArrayList<>();
         for (PermisoDTO permisoDTO:permisos){
             Permiso permiso = Permiso.reconstruirDesdeBD(
@@ -56,7 +56,7 @@ public class OrquestadorRoles {
     public RolDTO actualizarDatosRol(
             UsuarioDTOCompleto usuario, int idRol, String nombreNuevo, boolean activo
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_ROLES);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_ROLES);
         return this.ensambladorDTORol.ensamblarDatosRol(
                 this.servicioRol.actualzarDatosRol(idRol, nombreNuevo, activo)
         );
@@ -65,7 +65,7 @@ public class OrquestadorRoles {
     public void actualizarPermisosRol(
             UsuarioDTOCompleto usuario, int idRol, List<PermisoDTO> listaPermisosActualizada
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_ROLES);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES);
         List<Permiso> permisosParaELRol = new ArrayList<>();
         for (PermisoDTO permisoDTO:listaPermisosActualizada){
             Permiso permiso = Permiso.reconstruirDesdeBD(

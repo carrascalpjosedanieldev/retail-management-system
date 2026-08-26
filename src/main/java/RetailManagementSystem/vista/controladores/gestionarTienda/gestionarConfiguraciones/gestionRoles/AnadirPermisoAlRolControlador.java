@@ -68,7 +68,7 @@ public class AnadirPermisoAlRolControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",

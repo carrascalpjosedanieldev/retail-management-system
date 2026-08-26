@@ -34,9 +34,9 @@
     <VBox alignment="TOP_CENTER" prefWidth="320.0" styleClass="panel-acciones">
         <Label style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-padding: 0 0 20 0;" text="Acciones" />
 
-        <Button onAction="#abrirFormularioNuevo" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-nuevo" text="➕ Nuevo Rol" />
-        <Button onAction="#abrirFormularioEdicion" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="✏ Modificar Seleccionado" />
-        <Button onAction="#administrarPermisosRol" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="🔑 Administrar sus Permisos" />
+        <Button fx:id="btnNuevoRol" onAction="#abrirFormularioNuevo" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion, btn-nuevo" text="➕ Nuevo Rol" />
+        <Button fx:id="btnModificarRol" onAction="#abrirFormularioEdicion" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="✏ Modificar Seleccionado" />
+        <Button fx:id="btnAdministrarPermisos" onAction="#administrarPermisosRol" prefHeight="50.0" prefWidth="250.0" styleClass="btn-accion" text="🔑 Administrar sus Permisos" />
 
         <VBox VBox.vgrow="ALWAYS" />
 

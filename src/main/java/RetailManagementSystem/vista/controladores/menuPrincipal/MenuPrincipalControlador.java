@@ -100,7 +100,7 @@ public class MenuPrincipalControlador {
                 PermisosApp.ADMINISTRAR_DESCUENTOS,
                 PermisosApp.POLITICAS_DE_VENCIMIENTO,
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
-                PermisosApp.GESTIONAR_ROLES,
+                PermisosApp.EDITAR_ROLES,
                 PermisosApp.GESTIONAR_PERMISOS
         ));
         btnGestionarTienda.setVisible(accesoTienda);

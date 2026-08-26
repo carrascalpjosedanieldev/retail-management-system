@@ -17,10 +17,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Window;
 
 import java.util.concurrent.CompletableFuture;
@@ -34,6 +31,9 @@ public class GestionRolesControlador {
     @FXML private TableColumn<RolDTO, Integer> colId;
     @FXML private TableColumn<RolDTO, String> colNombre;
     @FXML private TableColumn<RolDTO, String> colEstado;
+    @FXML private Button btnAdministrarPermisos;
+    @FXML private Button btnModificarRol;
+    @FXML private Button btnNuevoRol;
 
     private final OrquestadorRoles orquestadorRoles;
 
@@ -55,16 +55,30 @@ public class GestionRolesControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES)){
+        if (
+            !usuarioActual.tienePermiso(PermisosApp.VER_ROLES) ||
+                (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_ROLES) &&
+                 !usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES) &&
+                 !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES))
+        ){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar Roles."
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar Roles."
             );
             volverAConfiguraciones();
             return;
         }
         this.usuarioActual = usuarioActual;
+        protegerBoton(btnNuevoRol, PermisosApp.REGISTRAR_ROLES);
+        protegerBoton(btnModificarRol, PermisosApp.EDITAR_ROLES);
+        protegerBoton(btnAdministrarPermisos, PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES);
+    }
+
+    private void protegerBoton(Button boton, String permisoRequerido) {
+        boolean tieneAcceso = this.usuarioActual.tienePermiso(permisoRequerido);
+        boton.setVisible(tieneAcceso);
+        boton.setManaged(tieneAcceso);
     }
 
     private Window getVentana(){
@@ -125,7 +139,7 @@ public class GestionRolesControlador {
                         "Detalle: " + causa.getMessage() + "\n" +
                                 "Notificale el error al Administrador y Verifica tu conexión,"
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+                volverAConfiguraciones();
             });
             return null;
         });
