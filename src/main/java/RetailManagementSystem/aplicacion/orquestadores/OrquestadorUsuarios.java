@@ -4,6 +4,8 @@ import RetailManagementSystem.aplicacion.dto.seguridad.*;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -33,8 +35,9 @@ public class OrquestadorUsuarios {
     }
 
     public ResultadoRegistroDTO registrarUsuarioYObtenerContrasenaTemporal(
-            String nombre, String apellido, String email, boolean activo
+            UsuarioDTOCompleto usuario, String nombre, String apellido, String email, boolean activo
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
         String caracteresPermitidos = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         SecureRandom random = new SecureRandom();
         StringBuilder claveTemporal = new StringBuilder(6);
@@ -54,8 +57,9 @@ public class OrquestadorUsuarios {
     }
 
     public UsuarioDTOBasico actualizarDatosUsuario(
-            Long idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail
+            UsuarioDTOCompleto usuario, Long idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
         return this.ensambladorDTOUsuario.ensamblarDTOUsuarioBasico(
                 this.servicioUsuario.actualizarDatosUsuario(
                         idUsuario, nuevoNombre, nuevoApellido, nuevoEmail
@@ -63,7 +67,8 @@ public class OrquestadorUsuarios {
         );
     }
 
-    public void cambiarEstadoUsuario(Long idUsuario){
+    public void cambiarEstadoUsuario(UsuarioDTOCompleto usuario, Long idUsuario){
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
         this.servicioUsuario.cambiarEstadoUsuario(idUsuario);
     }
 
@@ -73,11 +78,15 @@ public class OrquestadorUsuarios {
         );
     }
 
-    public char[] restablecerContrasenaPorAdmin(Long idUsuario){
+    public char[] restablecerContrasenaPorAdmin(UsuarioDTOCompleto usuario, Long idUsuario){
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
         return this.servicioUsuario.restablecerContrasenaPorAdmin(idUsuario);
     }
 
-    public void actualizarRolesUsuario(Long idUsuario, List<RolDTO> listaRolesActualizada){
+    public void actualizarRolesUsuario(
+            UsuarioDTOCompleto usuario, Long idUsuario, List<RolDTO> listaRolesActualizada
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
         List<Rol> rolesParaElUsuario = new ArrayList<>();
         for (RolDTO rolDTO:listaRolesActualizada){
             Rol rol = Rol.reconstruirDesdeBD(

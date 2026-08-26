@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -48,6 +49,8 @@ public class GestionarRolesDeUsuarioControlador {
 
     private final ObservableList<RolDTO> listaRolesDisponibles = FXCollections.observableArrayList();
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public GestionarRolesDeUsuarioControlador(OrquestadorUsuarios orquestadorUsuarios, OrquestadorRoles orquestadorRoles) {
@@ -57,7 +60,20 @@ public class GestionarRolesDeUsuarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(Long idUsuario){
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual, Long idUsuario){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_USUARIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Descuentos."
+            );
+            cerrarModal();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         CompletableFuture.supplyAsync(()->
                 this.orquestadorUsuarios.obtenerDatosTotalesUsuario(idUsuario)
         ).thenAccept(datosUsuario->
@@ -223,7 +239,7 @@ public class GestionarRolesDeUsuarioControlador {
         }
         CompletableFuture.runAsync(()->{
             List<RolDTO> listaRoles = new ArrayList<>(listaRolesActuales);
-            this.orquestadorUsuarios.actualizarRolesUsuario(this.datosUsuario.idUsuario(), listaRoles);
+            this.orquestadorUsuarios.actualizarRolesUsuario(this.usuarioActual, this.datosUsuario.idUsuario(), listaRoles);
         }).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(

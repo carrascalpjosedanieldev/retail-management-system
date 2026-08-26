@@ -1,8 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -32,6 +34,8 @@ public class RegistrarUsuarioControlador {
 
     private ObservableList<UsuarioDTOBasico> listaObservable;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public RegistrarUsuarioControlador(OrquestadorUsuarios orquestadorUsuarios) {
@@ -40,7 +44,20 @@ public class RegistrarUsuarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(ObservableList<UsuarioDTOBasico> listaObservable){
+    public void cargarDatos(UsuarioDTOCompleto usuarioActual, ObservableList<UsuarioDTOBasico> listaObservable){
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_USUARIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Registrar Usuarios."
+            );
+            cerrarPantalla();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.listaObservable = listaObservable;
         Platform.runLater(()-> btnCancelar.requestFocus());
     }
@@ -97,9 +114,9 @@ public class RegistrarUsuarioControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorUsuarios.registrarUsuarioYObtenerContrasenaTemporal(
-                        nombre, apellido, email, activo
+                        this.usuarioActual, nombre, apellido, email, activo
                 )
-        ).thenAccept(registro->{
+        ).thenAccept(registro->
             Platform.runLater(()->{
                 listaObservable.add(registro.usuario());
                 String claveVisible = new String(registro.claveTemporal());
@@ -110,8 +127,8 @@ public class RegistrarUsuarioControlador {
                 );
                 Arrays.fill(registro.claveTemporal(), '\0');
                 cerrarPantalla();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof EmailDuplicadoException){

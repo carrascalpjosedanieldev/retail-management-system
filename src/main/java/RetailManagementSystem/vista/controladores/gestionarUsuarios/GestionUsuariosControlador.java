@@ -3,6 +3,8 @@ package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -56,6 +58,15 @@ public class GestionUsuariosControlador {
     public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_USUARIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Gestionar los Usuarios."
+            );
+            volverAGestionarTienda();
+            return;
         }
         this.usuarioActual = usuarioActual;
     }
@@ -164,7 +175,7 @@ public class GestionUsuariosControlador {
                 RutasVista.REGISTRAR_USUARIO_VIEW,
                 "Registrando Usuario", getVentana(),
                 (RegistrarUsuarioControlador c)-> {
-                    c.cargarDatos(listaObservableUsuarios);
+                    c.cargarDatos(this.usuarioActual, listaObservableUsuarios);
                 }
         );
     }
@@ -184,7 +195,7 @@ public class GestionUsuariosControlador {
                 RutasVista.EDITAR_USUARIO_VIEW,
                 "Editando Usuario", getVentana(),
                 (EditarUsuarioControlador c)-> {
-                    c.cargarDatos(seleccionado, listaObservableUsuarios);
+                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservableUsuarios);
                 }
         );
     }
@@ -205,7 +216,7 @@ public class GestionUsuariosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.orquestadorUsuarios.cambiarEstadoUsuario(seleccionado.idUsuario())
+                this.orquestadorUsuarios.cambiarEstadoUsuario(this.usuarioActual, seleccionado.idUsuario())
         ).thenRun(()->
                 Platform.runLater(()->{
                     UsuarioDTOBasico actualizado = new UsuarioDTOBasico(
@@ -255,7 +266,7 @@ public class GestionUsuariosControlador {
                 RutasVista.GESTIONAR_ROLES_USUARIO_VIEW,
                 "Gestionando Roles", getVentana(),
                 (GestionarRolesDeUsuarioControlador c)->{
-                    c.cargarDatos(seleccionado.idUsuario());
+                    c.cargarDatos(this.usuarioActual, seleccionado.idUsuario());
                 }
         );
     }
@@ -279,15 +290,25 @@ public class GestionUsuariosControlador {
                 RutasVista.RESTABLECER_CONTRASENA_VIEW,
                 "Restableciendo Contraseña", getVentana(),
                 (RestablecerContrasenaControlador c)-> {
-                    c.cargarDatos(seleccionado.idUsuario(), seleccionado.getNombreCompleto());
+                    c.cargarDatos(this.usuarioActual, seleccionado.idUsuario(), seleccionado.getNombreCompleto());
                 }
         );
     }
 
 
     @FXML
-    void volverAlPanel(ActionEvent event) {
-        CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_PRINCIPAL_VIEW);
+    private void volverAlPanel(ActionEvent event) {
+        volverAGestionarTienda();
+    }
+
+    private void volverAGestionarTienda(){
+        CargadorVistas.cambiarPantallaInyectada(
+                getVentana(),
+                RutasVista.MENU_PRINCIPAL_VIEW,
+                (MenuPrincipalControlador c) -> {
+                    c.recibirUsuarioActual(this.usuarioActual);
+                }
+        );
     }
 
 }//===================================================================================================================//

@@ -1,8 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -33,6 +35,8 @@ public class EditarUsuarioControlador {
 
     private final OrquestadorUsuarios orquestadorUsuarios;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EditarUsuarioControlador(OrquestadorUsuarios orquestadorUsuarios) {
@@ -41,7 +45,23 @@ public class EditarUsuarioControlador {
 
     //MÉTODOS:
 
-    public void cargarDatos(UsuarioDTOBasico datosUsuario, ObservableList<UsuarioDTOBasico> listaObservable){
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, UsuarioDTOBasico datosUsuario,
+            ObservableList<UsuarioDTOBasico> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_USUARIOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Editar los Usuarios."
+            );
+            cerrarModal();
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.datosUsuario = datosUsuario;
         this.listaObservable = listaObservable;
         lblIdUsuario.setText(String.valueOf(datosUsuario.idUsuario()));
@@ -79,9 +99,9 @@ public class EditarUsuarioControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorUsuarios.actualizarDatosUsuario(
-                        datosUsuario.idUsuario(), nombre, apellido, email
+                        this.usuarioActual, datosUsuario.idUsuario(), nombre, apellido, email
                 )
-        ).thenAccept(actualizado->{
+        ).thenAccept(actualizado->
             Platform.runLater(()->{
                 UtilidadesLista.reemplazarPorIdentidad(
                         listaObservable,
@@ -93,8 +113,8 @@ public class EditarUsuarioControlador {
                         "El Usuario ha sido Actualizado con Exito"
                 );
                 cerrarModal();
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 if (causa instanceof EmailDuplicadoException){
