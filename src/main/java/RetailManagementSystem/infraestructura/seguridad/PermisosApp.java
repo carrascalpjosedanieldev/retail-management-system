@@ -28,12 +28,19 @@ public class PermisosApp {
                 PermisosApp.TRASLADAR_PRODUCTOS,
                 PermisosApp.VER_SERVICIOS,
                 PermisosApp.ADMINISTRAR_SERVICIOS,
-                PermisosApp.ADMINISTRAR_IMPUESTOS,
+
+                PermisosApp.VER_IMPUESTOS,
+                PermisosApp.REGISTRAR_IMPUESTOS,
+                PermisosApp.MODIFICAR_IMPUESTOS,
+                PermisosApp.CAMBIAR_ESTADO_IMPUESTOS,
+
                 PermisosApp.VER_DESCUENTOS,
                 PermisosApp.REGISTRAR_DESCUENTOS,
                 PermisosApp.MODIFICAR_DESCUENTOS,
                 PermisosApp.CAMBIAR_ESTADO_DESCUENTOS,
+
                 PermisosApp.POLITICAS_DE_VENCIMIENTO,
+
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
                 PermisosApp.VER_ROLES,
                 PermisosApp.REGISTRAR_ROLES,
@@ -76,7 +83,7 @@ public class PermisosApp {
 
     public static final String ADMINISTRAR_SERVICIOS = "ADMINISTRAR SERVICIOS";
 
-    public static final String ADMINISTRAR_IMPUESTOS = "ADMINISTRAR IMPUESTOS";
+    public static final String VER_IMPUESTOS = "VER IMPUESTOS";
 
     public static final String VER_DESCUENTOS = "VER DESCUENTOS";
 
@@ -103,6 +110,12 @@ public class PermisosApp {
     public static final String MODIFICAR_DESCUENTOS = "MODIFICAR DESCUENTOS";
 
     public static final String CAMBIAR_ESTADO_DESCUENTOS = "CAMBIAR ESTADO DESCUENTOS";
+
+    public static final String REGISTRAR_IMPUESTOS = "REGISTRAR IMPUESTOS";
+
+    public static final String MODIFICAR_IMPUESTOS = "MODIFICAR IMPUESTOS";
+
+    public static final String CAMBIAR_ESTADO_IMPUESTOS = "CAMBIAR ESTADO IMPUESTOS";
 
 }//===================================================================================================================//
 

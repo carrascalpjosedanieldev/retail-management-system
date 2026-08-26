@@ -69,7 +69,7 @@ public class GestionarTiendaControlador {
         btnGestionDescuentos.setVisible(accesoDescuentos);
         btnGestionDescuentos.setManaged(accesoDescuentos);
         boolean accesoImpuestos = tieneAccesoAlModulo(List.of(
-                PermisosApp.ADMINISTRAR_IMPUESTOS
+                PermisosApp.VER_IMPUESTOS
         ));
         btnGestionImpuestos.setVisible(accesoImpuestos);
         btnGestionImpuestos.setManaged(accesoImpuestos);

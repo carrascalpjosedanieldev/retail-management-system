@@ -51,11 +51,11 @@ public class EditarImpuestoControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_IMPUESTOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.MODIFICAR_IMPUESTOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+                    "NO tienes los Permisos Necesarios para Modificar los Impuestos."
             );
             cerrarPantalla();
             return;

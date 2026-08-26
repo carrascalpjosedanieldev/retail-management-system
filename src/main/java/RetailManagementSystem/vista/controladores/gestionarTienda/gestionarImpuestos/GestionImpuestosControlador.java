@@ -35,6 +35,9 @@ public class GestionImpuestosControlador {
     @FXML private TableColumn<ImpuestoDTO, BigDecimal> colPorcentaje;
     @FXML private TableColumn<ImpuestoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
+    @FXML private Button btnCambiarEstado;
+    @FXML private Button btnModificar;
+    @FXML private Button btnNuevo;
 
     private final OrquestadorImpuestos orquestadorImpuestos;
 
@@ -54,16 +57,29 @@ public class GestionImpuestosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_IMPUESTOS)){
+        if (
+            !usuarioActual.tienePermiso(PermisosApp.VER_IMPUESTOS) ||
+            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_IMPUESTOS) &&
+             !usuarioActual.tienePermiso(PermisosApp.MODIFICAR_IMPUESTOS) &&
+             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_IMPUESTOS))
+        ){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Impuestos."
             );
-            volverAGestionTienda();
             return;
         }
         this.usuarioActual = usuarioActual;
+        protegerBoton(btnNuevo, PermisosApp.REGISTRAR_IMPUESTOS);
+        protegerBoton(btnModificar, PermisosApp.MODIFICAR_IMPUESTOS);
+        protegerBoton(btnCambiarEstado, PermisosApp.CAMBIAR_ESTADO_IMPUESTOS);
+    }
+
+    private void protegerBoton(Button boton, String permisoRequerido) {
+        boolean tieneAcceso = this.usuarioActual.tienePermiso(permisoRequerido);
+        boton.setVisible(tieneAcceso);
+        boton.setManaged(tieneAcceso);
     }
 
     private Window getVentana(){

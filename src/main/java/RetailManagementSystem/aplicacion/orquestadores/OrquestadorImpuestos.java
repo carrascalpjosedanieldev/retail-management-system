@@ -43,7 +43,7 @@ public class OrquestadorImpuestos {
     public ImpuestoDTO registrarImpuesto(
             UsuarioDTOCompleto usuario, String nombre, BigDecimal porcentaje, boolean activo
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_IMPUESTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_IMPUESTOS);
         Impuesto impuesto = this.servicioImpuestos.registrarImpuesto(nombre, porcentaje, activo);
         return this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(impuesto);
     }
@@ -51,13 +51,13 @@ public class OrquestadorImpuestos {
     public ImpuestoDTO actualizarImpuesto(
             UsuarioDTOCompleto usuario, int idImpuesto, String nombre, BigDecimal porcentaje
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_IMPUESTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MODIFICAR_IMPUESTOS);
         Impuesto impuesto = this.servicioImpuestos.actualizarImpuesto(idImpuesto, nombre, porcentaje);
         return this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(impuesto);
     }
 
     public void cambiarEstadoImpuesto(UsuarioDTOCompleto usuario, int idImpuesto) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_IMPUESTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.CAMBIAR_ESTADO_IMPUESTOS);
         this.servicioImpuestos.cambiarEstadoImpuesto(idImpuesto);
     }
 
