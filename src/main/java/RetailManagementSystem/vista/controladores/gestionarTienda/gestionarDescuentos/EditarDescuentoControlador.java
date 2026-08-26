@@ -51,11 +51,11 @@ public class EditarDescuentoControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_DESCUENTOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.MODIFICAR_DESCUENTOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Descuentos."
+                    "NO tienes los Permisos Necesarios para Modificar los Descuentos."
             );
             cerrarPantalla();
             return;

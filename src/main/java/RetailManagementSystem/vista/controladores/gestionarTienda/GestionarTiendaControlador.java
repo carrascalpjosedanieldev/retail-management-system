@@ -51,13 +51,20 @@ public class GestionarTiendaControlador {
     private void configurarVisibilidadModulos() {
         boolean accesoConfiguraciones = tieneAccesoAlModulo(List.of(
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
+                PermisosApp.VER_ROLES,
+                PermisosApp.REGISTRAR_ROLES,
                 PermisosApp.EDITAR_ROLES,
+                PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES,
+                PermisosApp.VER_PERMISOS,
                 PermisosApp.GESTIONAR_PERMISOS
         ));
         btnConfiguraciones.setVisible(accesoConfiguraciones);
         btnConfiguraciones.setManaged(accesoConfiguraciones);
         boolean accesoDescuentos = tieneAccesoAlModulo(List.of(
-                PermisosApp.ADMINISTRAR_DESCUENTOS
+                PermisosApp.VER_DESCUENTOS,
+                PermisosApp.REGISTRAR_DESCUENTOS,
+                PermisosApp.MODIFICAR_DESCUENTOS,
+                PermisosApp.CAMBIAR_ESTADO_DESCUENTOS
         ));
         btnGestionDescuentos.setVisible(accesoDescuentos);
         btnGestionDescuentos.setManaged(accesoDescuentos);

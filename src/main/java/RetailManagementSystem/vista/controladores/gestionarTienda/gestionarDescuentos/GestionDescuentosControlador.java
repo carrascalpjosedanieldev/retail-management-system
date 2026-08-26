@@ -36,6 +36,9 @@ public class GestionDescuentosControlador {
     @FXML private TableColumn<DescuentoDTO, BigDecimal> colPorcentaje;
     @FXML private TableColumn<DescuentoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
+    @FXML private Button btnCambiarEstado;
+    @FXML private Button btnModificar;
+    @FXML private Button btnNuevo;
 
     private final OrquestadorDescuentos orquestadorDescuentos;
 
@@ -49,7 +52,12 @@ public class GestionDescuentosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_DESCUENTOS)){
+        if (
+            !usuarioActual.tienePermiso(PermisosApp.VER_DESCUENTOS) &&
+            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_DESCUENTOS) ||
+             !usuarioActual.tienePermiso(PermisosApp.MODIFICAR_DESCUENTOS) ||
+             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_DESCUENTOS))
+        ){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
@@ -59,6 +67,15 @@ public class GestionDescuentosControlador {
             return;
         }
         this.usuarioActual = usuarioActual;
+        protegerBoton(btnNuevo, PermisosApp.REGISTRAR_DESCUENTOS);
+        protegerBoton(btnModificar, PermisosApp.MODIFICAR_DESCUENTOS);
+        protegerBoton(btnCambiarEstado, PermisosApp.CAMBIAR_ESTADO_DESCUENTOS);
+    }
+
+    private void protegerBoton(Button boton, String permisoRequerido) {
+        boolean tieneAcceso = this.usuarioActual.tienePermiso(permisoRequerido);
+        boton.setVisible(tieneAcceso);
+        boton.setManaged(tieneAcceso);
     }
 
     public GestionDescuentosControlador(OrquestadorDescuentos orquestadorDescuentos) {

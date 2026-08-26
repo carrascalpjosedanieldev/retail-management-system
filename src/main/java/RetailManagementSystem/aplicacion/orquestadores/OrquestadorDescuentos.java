@@ -43,7 +43,7 @@ public class OrquestadorDescuentos {
     public DescuentoDTO registrarDescuento(
             UsuarioDTOCompleto usuario, String nombre, BigDecimal porcentaje, boolean activo
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_DESCUENTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_DESCUENTOS);
         Descuento descuento = this.servicioDescuentos.registrarDescuento(nombre, porcentaje, activo);
         return this.ensambladorDTODescuento.ensamblarDatosDescuento(descuento);
     }
@@ -51,13 +51,13 @@ public class OrquestadorDescuentos {
     public DescuentoDTO actualizarDescuento(
             UsuarioDTOCompleto usuario, int idDescuento, String nombre, BigDecimal porcentaje
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_DESCUENTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MODIFICAR_DESCUENTOS);
         Descuento descuento = this.servicioDescuentos.actualizarDescuento(idDescuento, nombre, porcentaje);
         return this.ensambladorDTODescuento.ensamblarDatosDescuento(descuento);
     }
 
     public void cambiarEstadoDescuento(UsuarioDTOCompleto usuario, int idDescuento) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_DESCUENTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.CAMBIAR_ESTADO_DESCUENTOS);
         this.servicioDescuentos.cambiarEstadoDescuento(idDescuento);
     }
 

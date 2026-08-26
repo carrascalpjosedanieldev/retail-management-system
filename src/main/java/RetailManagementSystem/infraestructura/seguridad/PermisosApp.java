@@ -29,10 +29,16 @@ public class PermisosApp {
                 PermisosApp.VER_SERVICIOS,
                 PermisosApp.ADMINISTRAR_SERVICIOS,
                 PermisosApp.ADMINISTRAR_IMPUESTOS,
-                PermisosApp.ADMINISTRAR_DESCUENTOS,
+                PermisosApp.VER_DESCUENTOS,
+                PermisosApp.REGISTRAR_DESCUENTOS,
+                PermisosApp.MODIFICAR_DESCUENTOS,
+                PermisosApp.CAMBIAR_ESTADO_DESCUENTOS,
                 PermisosApp.POLITICAS_DE_VENCIMIENTO,
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
+                PermisosApp.VER_ROLES,
+                PermisosApp.REGISTRAR_ROLES,
                 PermisosApp.EDITAR_ROLES,
+                PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES,
                 PermisosApp.GESTIONAR_PERMISOS,
                 PermisosApp.GESTIONAR_USUARIOS,
                 PermisosApp.VER_PERMISOS
@@ -72,7 +78,7 @@ public class PermisosApp {
 
     public static final String ADMINISTRAR_IMPUESTOS = "ADMINISTRAR IMPUESTOS";
 
-    public static final String ADMINISTRAR_DESCUENTOS = "ADMINISTRAR DESCUENTOS";
+    public static final String VER_DESCUENTOS = "VER DESCUENTOS";
 
     public static final String POLITICAS_DE_VENCIMIENTO = "POLÍTICAS DE VENCIMIENTO";
 
@@ -90,7 +96,13 @@ public class PermisosApp {
 
     public static final String REGISTRAR_ROLES = "REGISTRAR ROLES";
 
-    public static final String ADMINISTRAR_PERMISOS_DE_ROLES = "ADMINISTRAR_PERMISOS_DE_ROLES";
+    public static final String ADMINISTRAR_PERMISOS_DE_ROLES = "ADMINISTRAR PERMISOS DE ROLES";
+
+    public static final String REGISTRAR_DESCUENTOS = "REGISTRAR DESCUENTOS";
+
+    public static final String MODIFICAR_DESCUENTOS = "MODIFICAR DESCUENTOS";
+
+    public static final String CAMBIAR_ESTADO_DESCUENTOS = "CAMBIAR ESTADO DESCUENTOS";
 
 }//===================================================================================================================//
 

@@ -57,16 +57,15 @@ public class GestionRolesControlador {
         }
         if (
             !usuarioActual.tienePermiso(PermisosApp.VER_ROLES) ||
-                (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_ROLES) &&
-                 !usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES) &&
-                 !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES))
+            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_ROLES) &&
+             !usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES) &&
+             !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES))
         ){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Ver o Gestionar Roles."
             );
-            volverAConfiguraciones();
             return;
         }
         this.usuarioActual = usuarioActual;
