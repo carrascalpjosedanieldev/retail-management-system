@@ -89,7 +89,7 @@ public class GestionarTiendaControlador {
         btnGestionPoliticasV.setManaged(accesoPoliticasV);
         boolean accesoServicios = tieneAccesoAlModulo(List.of(
                 PermisosApp.VER_SERVICIOS,
-                PermisosApp.ADMINISTRAR_SERVICIOS
+                PermisosApp.REGISTRAR_SERVICIOS
         ));
         btnGestionServicios.setVisible(accesoServicios);
         btnGestionServicios.setManaged(accesoServicios);

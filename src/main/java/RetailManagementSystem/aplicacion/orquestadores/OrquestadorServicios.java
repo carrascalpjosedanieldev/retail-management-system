@@ -40,7 +40,7 @@ public class OrquestadorServicios {
             UsuarioDTOCompleto usuario, String nombre, BigDecimal precioBase, int idImpuesto, int idDescuento,
             LocalDate fecha
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_SERVICIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_SERVICIOS);
         return this.ensambladorDTOServicio.ensamblarServicio(
                 this.servicioServicios.registrarServicioNuevo(
                         nombre, precioBase, idImpuesto, idDescuento
@@ -52,7 +52,7 @@ public class OrquestadorServicios {
             UsuarioDTOCompleto usuario, String codigoServicio, String nuevoNombre, BigDecimal nuevoPrecioBase,
             int idImpuesto, int idDescuento, LocalDate fecha
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_SERVICIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MODIFICAR_SERVICIOS);
         return this.ensambladorDTOServicio.ensamblarServicio(
                 this.servicioServicios.actualizarServicio(
                         codigoServicio, nuevoNombre, nuevoPrecioBase, idImpuesto, idDescuento
@@ -61,7 +61,7 @@ public class OrquestadorServicios {
     }
 
     public void cambiarEstadoServicio(UsuarioDTOCompleto usuario, String codigoServicio){
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_SERVICIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.CAMBIAR_ESTADO_SERVICIOS);
         this.servicioServicios.cambiarEstadoServicio(codigoServicio);
     }
 

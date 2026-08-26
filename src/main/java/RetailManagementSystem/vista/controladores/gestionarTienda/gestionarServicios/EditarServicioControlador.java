@@ -68,13 +68,12 @@ public class EditarServicioControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.MODIFICAR_SERVICIOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Editar los Servicios."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;

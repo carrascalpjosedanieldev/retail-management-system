@@ -21,13 +21,17 @@ public class PermisosApp {
         List<String> permisosCodigo = List.of(
                 PermisosApp.PROCESAR_VENTA,
                 PermisosApp.VER_HISTORIAL_VENTAS,
+
                 PermisosApp.VER_INVENTARIOS,
                 PermisosApp.ADMINISTRAR_INVENTARIOS,
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.ADMINISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS,
+
                 PermisosApp.VER_SERVICIOS,
-                PermisosApp.ADMINISTRAR_SERVICIOS,
+                PermisosApp.REGISTRAR_SERVICIOS,
+                PermisosApp.MODIFICAR_SERVICIOS,
+                PermisosApp.CAMBIAR_ESTADO_SERVICIOS,
 
                 PermisosApp.VER_IMPUESTOS,
                 PermisosApp.REGISTRAR_IMPUESTOS,
@@ -87,8 +91,9 @@ public class PermisosApp {
     public static final String TRASLADAR_PRODUCTOS = "TRASLADAR PRODUCTOS";
 
     public static final String VER_SERVICIOS = "VER SERVICIOS";
-
-    public static final String ADMINISTRAR_SERVICIOS = "ADMINISTRAR SERVICIOS";
+    public static final String REGISTRAR_SERVICIOS = "REGISTRAR SERVICIOS";
+    public static final String MODIFICAR_SERVICIOS = "MODIFICAR SERVICIOS";
+    public static final String CAMBIAR_ESTADO_SERVICIOS = "CAMBIAR ESTADO SERVICIOS";
 
     public static final String VER_IMPUESTOS = "VER IMPUESTOS";
     public static final String REGISTRAR_IMPUESTOS = "REGISTRAR IMPUESTOS";

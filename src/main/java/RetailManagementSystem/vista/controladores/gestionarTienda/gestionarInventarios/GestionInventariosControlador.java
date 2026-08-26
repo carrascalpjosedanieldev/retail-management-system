@@ -64,7 +64,7 @@ public class GestionInventariosControlador {
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
         if (!usuarioActual.tienePermiso(PermisosApp.VER_SERVICIOS) ||
-            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+            !usuarioActual.tienePermiso(PermisosApp.REGISTRAR_SERVICIOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",

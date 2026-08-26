@@ -62,7 +62,7 @@ public class CrearServicioControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_SERVICIOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",

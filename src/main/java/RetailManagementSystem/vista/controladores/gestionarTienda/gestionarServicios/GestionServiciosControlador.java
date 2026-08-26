@@ -42,6 +42,9 @@ public class GestionServiciosControlador {
     @FXML private TableColumn<ServicioDTO, BigDecimal> colPrecioFinal;
     @FXML private TableView<ServicioDTO> tablaServicios;
     @FXML private TextField txtBuscar;
+    @FXML private Button btnCambiarEstado;
+    @FXML private Button btnModificar;
+    @FXML private Button btnNuevo;
 
     private final OrquestadorServicios orquestadorServicios;
 
@@ -70,17 +73,29 @@ public class GestionServiciosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.VER_SERVICIOS) ||
-            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_SERVICIOS)){
+        if (
+            !usuarioActual.tienePermiso(PermisosApp.VER_SERVICIOS) ||
+            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_SERVICIOS) &&
+             !usuarioActual.tienePermiso(PermisosApp.MODIFICAR_SERVICIOS) &&
+             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_SERVICIOS))
+        ){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Ver o Gestionar los Servicios."
             );
-            volverAGestionTienda();
             return;
         }
         this.usuarioActual = usuarioActual;
+        protegerBoton(btnNuevo, PermisosApp.REGISTRAR_SERVICIOS);
+        protegerBoton(btnModificar, PermisosApp.MODIFICAR_SERVICIOS);
+        protegerBoton(btnCambiarEstado, PermisosApp.CAMBIAR_ESTADO_SERVICIOS);
+    }
+
+    private void protegerBoton(Button boton, String permisoRequerido) {
+        boolean tieneAcceso = this.usuarioActual.tienePermiso(permisoRequerido);
+        boton.setVisible(tieneAcceso);
+        boton.setManaged(tieneAcceso);
     }
 
     private Window getVentana(){

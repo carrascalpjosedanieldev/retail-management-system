@@ -95,7 +95,7 @@ public class MenuPrincipalControlador {
                 PermisosApp.ADMINISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS,
                 PermisosApp.VER_SERVICIOS,
-                PermisosApp.ADMINISTRAR_SERVICIOS,
+                PermisosApp.REGISTRAR_SERVICIOS,
                 PermisosApp.VER_IMPUESTOS,
                 PermisosApp.VER_DESCUENTOS,
                 PermisosApp.VER_POLITICAS_V,
