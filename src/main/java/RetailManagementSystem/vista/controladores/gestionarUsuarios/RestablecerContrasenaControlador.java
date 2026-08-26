@@ -42,7 +42,7 @@ public class RestablecerContrasenaControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_USUARIOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.RESTABLECER_CONTRASENA_USUARIO)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",

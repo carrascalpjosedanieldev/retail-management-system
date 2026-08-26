@@ -58,8 +58,12 @@ public class PermisosApp {
                 PermisosApp.VER_PERMISOS,
                 PermisosApp.GESTIONAR_PERMISOS,
 
-                PermisosApp.GESTIONAR_USUARIOS
-
+                PermisosApp.VER_USUARIOS,
+                PermisosApp.REGISTRAR_USUARIOS,
+                PermisosApp.EDITAR_USUARIOS,
+                PermisosApp.CAMBIAR_ESTADO_USUARIOS,
+                PermisosApp.GESTIONAR_ROLES_USUARIO,
+                PermisosApp.RESTABLECER_CONTRASENA_USUARIO
         );
 
         for (String permiso : permisosCodigo) {
@@ -77,17 +81,12 @@ public class PermisosApp {
     //PERMISOS:
 
     public static final String PROCESAR_VENTA = "PROCESAR VENTA";
-
     public static final String VER_HISTORIAL_VENTAS = "VER HISTORIAL DE VENTAS";
 
     public static final String VER_INVENTARIOS = "VER INVENTARIOS";
-
     public static final String ADMINISTRAR_INVENTARIOS = "ADMINISTRAR INVENTARIOS";
-
     public static final String VER_PRODUCTOS = "VER PRODUCTOS";
-
     public static final String ADMINISTRAR_PRODUCTOS = "ADMINISTRAR PRODUCTOS";
-
     public static final String TRASLADAR_PRODUCTOS = "TRASLADAR PRODUCTOS";
 
     public static final String VER_SERVICIOS = "VER SERVICIOS";
@@ -117,7 +116,12 @@ public class PermisosApp {
     public static final String REGISTRAR_ROLES = "REGISTRAR ROLES";
     public static final String ADMINISTRAR_PERMISOS_DE_ROLES = "ADMINISTRAR PERMISOS DE ROLES";
 
-    public static final String GESTIONAR_USUARIOS = "GESTIONAR USUARIOS";
+    public static final String VER_USUARIOS = "VER USUARIOS";
+    public static final String REGISTRAR_USUARIOS = "REGISTRAR USUARIOS";
+    public static final String EDITAR_USUARIOS = "EDITAR USUARIOS";
+    public static final String CAMBIAR_ESTADO_USUARIOS = "CAMBIAR ESTADO USUARIOS";
+    public static final String GESTIONAR_ROLES_USUARIO = "GESTIONAR ROLES DEL USUARIO";
+    public static final String RESTABLECER_CONTRASENA_USUARIO = "RESTABLECER CONTRASEÑA USUARIO";
 
     public static final String VER_PERMISOS = "VER PERMISOS";
     public static final String GESTIONAR_PERMISOS = "GESTIONAR PERMISOS";

@@ -37,7 +37,7 @@ public class OrquestadorUsuarios {
     public ResultadoRegistroDTO registrarUsuarioYObtenerContrasenaTemporal(
             UsuarioDTOCompleto usuario, String nombre, String apellido, String email, boolean activo
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_USUARIOS);
         String caracteresPermitidos = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         SecureRandom random = new SecureRandom();
         StringBuilder claveTemporal = new StringBuilder(6);
@@ -59,7 +59,7 @@ public class OrquestadorUsuarios {
     public UsuarioDTOBasico actualizarDatosUsuario(
             UsuarioDTOCompleto usuario, Long idUsuario, String nuevoNombre, String nuevoApellido, String nuevoEmail
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_USUARIOS);
         return this.ensambladorDTOUsuario.ensamblarDTOUsuarioBasico(
                 this.servicioUsuario.actualizarDatosUsuario(
                         idUsuario, nuevoNombre, nuevoApellido, nuevoEmail
@@ -68,7 +68,7 @@ public class OrquestadorUsuarios {
     }
 
     public void cambiarEstadoUsuario(UsuarioDTOCompleto usuario, Long idUsuario){
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.CAMBIAR_ESTADO_USUARIOS);
         this.servicioUsuario.cambiarEstadoUsuario(idUsuario);
     }
 
@@ -79,14 +79,14 @@ public class OrquestadorUsuarios {
     }
 
     public char[] restablecerContrasenaPorAdmin(UsuarioDTOCompleto usuario, Long idUsuario){
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.RESTABLECER_CONTRASENA_USUARIO);
         return this.servicioUsuario.restablecerContrasenaPorAdmin(idUsuario);
     }
 
     public void actualizarRolesUsuario(
             UsuarioDTOCompleto usuario, Long idUsuario, List<RolDTO> listaRolesActualizada
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_USUARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_ROLES_USUARIO);
         List<Rol> rolesParaElUsuario = new ArrayList<>();
         for (RolDTO rolDTO:listaRolesActualizada){
             Rol rol = Rol.reconstruirDesdeBD(

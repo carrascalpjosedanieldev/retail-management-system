@@ -36,6 +36,7 @@ public class GestionUsuariosControlador {
     @FXML private TableColumn<UsuarioDTOBasico, String> colEstado;
     @FXML private TableView<UsuarioDTOBasico> tablaUsuarios;
     @FXML private TextField txtBuscar;
+    @FXML private Button btnNuevo;
     @FXML private Button btnEditar;
     @FXML private Button btnCambiarEstado;
     @FXML private Button btnGestionarRoles;
@@ -59,16 +60,33 @@ public class GestionUsuariosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_USUARIOS)){
+        if (
+            !usuarioActual.tienePermiso(PermisosApp.VER_USUARIOS) ||
+            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_USUARIOS) &&
+             !usuarioActual.tienePermiso(PermisosApp.EDITAR_USUARIOS) &&
+             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_USUARIOS) &&
+             !usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES_USUARIO) &&
+             !usuarioActual.tienePermiso(PermisosApp.RESTABLECER_CONTRASENA_USUARIO))
+        ){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Usuarios."
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Usuarios."
             );
-            volverAGestionarTienda();
             return;
         }
         this.usuarioActual = usuarioActual;
+        protegerBoton(btnNuevo, PermisosApp.REGISTRAR_USUARIOS);
+        protegerBoton(btnEditar, PermisosApp.EDITAR_USUARIOS);
+        protegerBoton(btnCambiarEstado, PermisosApp.CAMBIAR_ESTADO_SERVICIOS);
+        protegerBoton(btnGestionarRoles, PermisosApp.GESTIONAR_ROLES_USUARIO);
+        protegerBoton(btnRestablecerClave, PermisosApp.RESTABLECER_CONTRASENA_USUARIO);
+    }
+
+    private void protegerBoton(Button boton, String permisoRequerido) {
+        boolean tieneAcceso = this.usuarioActual.tienePermiso(permisoRequerido);
+        boton.setVisible(tieneAcceso);
+        boton.setManaged(tieneAcceso);
     }
 
     private Window getVentana(){

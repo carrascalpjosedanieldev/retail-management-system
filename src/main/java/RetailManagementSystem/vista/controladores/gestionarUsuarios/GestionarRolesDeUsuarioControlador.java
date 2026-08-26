@@ -64,13 +64,12 @@ public class GestionarRolesDeUsuarioControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_USUARIOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES_USUARIO)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Descuentos."
+                    "NO tienes los Permisos Necesarios para Gestionar los Roles del Usuario."
             );
-            cerrarModal();
             return;
         }
         this.usuarioActual = usuarioActual;

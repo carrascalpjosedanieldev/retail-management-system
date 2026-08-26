@@ -84,7 +84,7 @@ public class MenuPrincipalControlador {
         btnPuntoVenta.setVisible(accesoPuntoVenta);
         btnPuntoVenta.setManaged(accesoPuntoVenta);
         boolean accesoUsuarios = tieneAccesoAlModulo(List.of(
-                PermisosApp.GESTIONAR_USUARIOS
+                PermisosApp.VER_USUARIOS
         ));
         btnGestionarUsuarios.setVisible(accesoUsuarios);
         btnGestionarUsuarios.setManaged(accesoUsuarios);
