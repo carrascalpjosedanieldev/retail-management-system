@@ -1,10 +1,13 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabRopa;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -53,6 +56,8 @@ public class TabRopaControlador {
 
     private FilteredList<DatosTotalesProductoRopaDTO> listaFiltrada;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public TabRopaControlador(OrquestadorProductos orquestadorProductos) {
@@ -61,7 +66,16 @@ public class TabRopaControlador {
 
     //MÉTODOS:
 
-    public void recibirIdInventario(int idInventario) {
+    public void recibirIdInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventario) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_PRODUCTOS) &&
+            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS) &&
+            !usuarioActual.tienePermiso(PermisosApp.TRASLADAR_PRODUCTOS)){
+            throw new AccesoDenegadoException("NO tienes los Permisos Necesarios para Entrar a esta Pantalla");
+        }
+        this.usuarioActual = usuarioActual;
         this.idInventario = idInventario;
         cargarDatosTabla();
     }
@@ -285,7 +299,7 @@ public class TabRopaControlador {
                 RutasVista.EDITAR_ROPA_VIEW,
                 "Editar Prenda de Ropa", getVentana(),
                 (EditarRopaControlador c)->{
-                    c.cargarDatosProducto(productoSeleccionado, this.idInventario, listaObservable);
+                    c.cargarDatosProducto(this.usuarioActual, productoSeleccionado, this.idInventario, listaObservable);
                 }
         );
     }
@@ -313,7 +327,9 @@ public class TabRopaControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.orquestadorProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
+                this.orquestadorProductos.cambiarEstadoProducto(
+                        this.usuarioActual, this.idInventario, seleccionado.codigo()
+                )
         ).thenRun(()->
             Platform.runLater(()->{
                 DatosTotalesProductoRopaDTO actualizado = new DatosTotalesProductoRopaDTO(

@@ -39,17 +39,19 @@ public class OrquestadorInventarioProducto {
     //MÉTODOS:
 
     public ProductoResumenDTO validarEspacioInventarioYGuardarProducto(
-            int idInventario, Producto producto, LocalDate fecha
-    )
-    {
+            UsuarioDTOCompleto usuario, int idInventario, Producto producto, LocalDate fecha
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
         this.servicioInventario.verificarEspacioDisponible(idInventario, producto.getStock());
         this.servicioProductos.registrarProducto(idInventario, producto);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(producto, fecha);
     }
 
     public ProductoResumenDTO validarEspacioInventarioYAumentarStockProducto(
-            int idInventario, int cantidadAAumentarProducto, String codigoProducto, LocalDate fecha
+            UsuarioDTOCompleto usuario, int idInventario, int cantidadAAumentarProducto, String codigoProducto,
+            LocalDate fecha
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
         this.servicioInventario.verificarEspacioDisponible(idInventario, cantidadAAumentarProducto);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(
                 this.servicioProductos.aumentarStockDeProductoDeInventario(
@@ -65,8 +67,10 @@ public class OrquestadorInventarioProducto {
     }
 
     public void validarEspacioInventarioYMoverProducto(
-            int idInventarioSalida, int idInventarioDestino, String codigoProducto, int stockProducto
+            UsuarioDTOCompleto usuario, int idInventarioSalida, int idInventarioDestino, String codigoProducto,
+            int stockProducto
     ){
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.TRASLADAR_PRODUCTOS);
         this.servicioInventario.verificarEspacioDisponible(idInventarioDestino, stockProducto);
         this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);
     }

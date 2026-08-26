@@ -123,7 +123,7 @@ public class GestionarTiendaControlador {
                 getVentana(),
                 RutasVista.GESTIONAR_IMPUESTOS_VIEW,
                 (GestionImpuestosControlador c) -> {
-
+                    c.cargarDatos(this.usuarioActual);
                 }
         );
     }
@@ -135,7 +135,7 @@ public class GestionarTiendaControlador {
                 getVentana(),
                 RutasVista.GESTIONAR_INVENTARIOS_VIEW,
                 (GestionInventariosControlador c) -> {
-
+                    c.cargarDatos(this.usuarioActual);
                 }
         );
     }

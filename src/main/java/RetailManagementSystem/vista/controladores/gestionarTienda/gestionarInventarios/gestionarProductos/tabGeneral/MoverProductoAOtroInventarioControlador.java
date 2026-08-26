@@ -1,9 +1,11 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -13,7 +15,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 
@@ -38,6 +39,8 @@ public class MoverProductoAOtroInventarioControlador {
 
     private final OrquestadorInventarioProducto orquestadorInventarioProducto;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public MoverProductoAOtroInventarioControlador(OrquestadorInventarioProducto orquestadorInventarioProducto) {
@@ -47,8 +50,21 @@ public class MoverProductoAOtroInventarioControlador {
     //MÉTODOS:
 
     public void cargarDatos(
-            int idInventario, ProductoResumenDTO seleccionado, ObservableList<ProductoResumenDTO> listaObservable
+            UsuarioDTOCompleto usuarioActual, int idInventario, ProductoResumenDTO seleccionado,
+            ObservableList<ProductoResumenDTO> listaObservable
     ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.TRASLADAR_PRODUCTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Trasladar Productos a otros Inventarios."
+            );
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.idInventario = idInventario;
         this.seleccionado = seleccionado;
         this.listaObservable = listaObservable;
@@ -109,7 +125,7 @@ public class MoverProductoAOtroInventarioControlador {
         InventarioDTO inventarioDestino = comboInventarios.getValue();
         CompletableFuture.runAsync(()->
                 this.orquestadorInventarioProducto.validarEspacioInventarioYMoverProducto(
-                        this.idInventario, inventarioDestino.idInventario(),
+                        this.usuarioActual, this.idInventario, inventarioDestino.idInventario(),
                         seleccionado.codigoProducto(), seleccionado.stock()
                 )
         ).thenRun(()->

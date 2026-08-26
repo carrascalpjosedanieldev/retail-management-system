@@ -1,7 +1,10 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -16,12 +19,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TabGeneralProductosControlador {
@@ -39,6 +42,10 @@ public class TabGeneralProductosControlador {
     @FXML private ToggleButton btnFiltroTodos;
     @FXML private ToggleButton btnFiltroDisponibles;
     @FXML private ToggleButton btnFiltroNoDisponibles;
+    @FXML private Button btnCambiarEstado;
+    @FXML private Button btnManejarStock;
+    @FXML private Button btnMoverAOtroInv;
+    @FXML private Button btnNuevoProd;
 
     private int idInventario;
 
@@ -47,6 +54,8 @@ public class TabGeneralProductosControlador {
     private final ObservableList<ProductoResumenDTO> listaObservable = FXCollections.observableArrayList();
 
     private FilteredList<ProductoResumenDTO> listaFiltrada;
+
+    private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
@@ -60,7 +69,16 @@ public class TabGeneralProductosControlador {
         return tablaProductos.getScene() != null ? tablaProductos.getScene().getWindow() : null;
     }
 
-    public void recibirIdInventario(int idInventario) {
+    public void recibirIdInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventario) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_PRODUCTOS) &&
+            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS) &&
+            !usuarioActual.tienePermiso(PermisosApp.TRASLADAR_PRODUCTOS)){
+            throw new AccesoDenegadoException("NO tienes los Permisos Necesarios para Entrar a esta Pantalla");
+        }
+        this.usuarioActual = usuarioActual;
         if (idInventario <= 0){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "ID del Inventario Invalido", null,
@@ -69,7 +87,30 @@ public class TabGeneralProductosControlador {
             return;
         }
         this.idInventario = idInventario;
+        configurarVisibilidadModulos();
         cargarDatosTabla();
+    }
+
+    private boolean tieneAccesoAlModulo(List<String> permisosDelModulo) {
+        return permisosDelModulo.stream()
+                .anyMatch(permiso -> this.usuarioActual.tienePermiso(permiso));
+    }
+
+    private void configurarVisibilidadModulos() {
+        boolean administrar = tieneAccesoAlModulo(List.of(
+                PermisosApp.ADMINISTRAR_PRODUCTOS
+        ));
+        btnCambiarEstado.setVisible(administrar);
+        btnCambiarEstado.setManaged(administrar);
+        btnManejarStock.setVisible(administrar);
+        btnManejarStock.setManaged(administrar);
+        btnNuevoProd.setVisible(administrar);
+        btnNuevoProd.setManaged(administrar);
+        boolean trasladar = tieneAccesoAlModulo(List.of(
+                PermisosApp.TRASLADAR_PRODUCTOS
+        ));
+        btnMoverAOtroInv.setVisible(trasladar);
+        btnMoverAOtroInv.setManaged(trasladar);
     }
 
 
@@ -96,6 +137,7 @@ public class TabGeneralProductosControlador {
                                 "Verifica tu conexión y Notificale este Error al Administrador\n" +
                                 causa.getMessage()
                 );
+
                 CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
             });
             return null;
@@ -240,7 +282,7 @@ public class TabGeneralProductosControlador {
                 RutasVista.CREAR_PRODUCTO_VIEW,
                 "Crear Nuevo Producto", getVentana(),
                 (CrearProductoControlador c)-> {
-                    c.cargarDatos(this.idInventario, listaObservable);
+                    c.cargarDatos(this.usuarioActual, this.idInventario, listaObservable);
                 }
         );
     }
@@ -269,7 +311,9 @@ public class TabGeneralProductosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.orquestadorProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigoProducto())
+                this.orquestadorProductos.cambiarEstadoProducto(
+                        this.usuarioActual, this.idInventario, seleccionado.codigoProducto()
+                )
         ).thenRun(()->
             Platform.runLater(()->{
                 ProductoResumenDTO actualizado = new ProductoResumenDTO(
@@ -316,7 +360,7 @@ public class TabGeneralProductosControlador {
                 RutasVista.MANEJAR_STOCK_PRODUCTO_VIEW,
                 "Manejar Stock Producto", getVentana(),
                 (ManejarStockControlador c)->{
-                    c.cargarDatos(productoSeleccionado, this.idInventario, listaObservable);
+                    c.cargarDatos(this.usuarioActual, productoSeleccionado, this.idInventario, listaObservable);
                 }
         );
     }
@@ -336,7 +380,7 @@ public class TabGeneralProductosControlador {
                 RutasVista.MOVER_PRODUCTO_INVENTARIO_VIEW,
                 "Mover Producto", getVentana(),
                 (MoverProductoAOtroInventarioControlador c)->{
-                    c.cargarDatos(this.idInventario, seleccionado, listaObservable);
+                    c.cargarDatos(this.usuarioActual, this.idInventario, seleccionado, listaObservable);
                 }
         );
     }

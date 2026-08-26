@@ -2,9 +2,12 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerecederoDTO;
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,14 +38,18 @@ public class OrquestadorProductos {
     }
 
     public ProductoResumenDTO reducirStockDeProductoDeInventario(
-            int idInventario, String codigoProducto, int cantidad, LocalDate fecha
+            UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, int cantidad, LocalDate fecha
     ){
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(
                 this.servicioProductos.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidad), fecha
         );
     }
 
-    public void cambiarEstadoProducto(int idInventario, String codigoProducto){
+    public void cambiarEstadoProducto(
+            UsuarioDTOCompleto usuario, int idInventario, String codigoProducto
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
         this.servicioProductos.cambiarEstadoProducto(idInventario, codigoProducto);
     }
 
@@ -53,9 +60,10 @@ public class OrquestadorProductos {
     }
 
     public DatosTotalesProductoRopaDTO actualizarProductoRopaDeInventario(
-            int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
-            BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento
+            UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, String nombreNuevo,
+            BigDecimal valorCompra, BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
         return this.ensambladorDTOProducto.ensamblarDatosProductoRopa(
                 this.servicioProductos.actualizarProductoRopaDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
@@ -71,10 +79,11 @@ public class OrquestadorProductos {
     }
 
     public DatosTotalesProductoPerecederoDTO actualizarProductoPerecederoDeInventario(
-            int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
-            BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento,
-            LocalDate fecha
+            UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, String nombreNuevo,
+            BigDecimal valorCompra, BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento,
+            int idPoliticaVencimiento, LocalDate fecha
     ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
         return this.ensambladorDTOProducto.ensamblarDatosProductoPerecedero(
                 this.servicioProductos.actualizarProductoPerecederoDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,

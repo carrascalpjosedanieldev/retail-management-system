@@ -240,7 +240,7 @@ public class GestionInventariosControlador {
                 getVentana(),
                 RutasVista.GESTIONAR_PRODUCTOS_VIEW,
                 (GestionProductosControlador c)->{
-                    c.inicializarConInventario(seleccionado.idInventario());
+                    c.inicializarConInventarioYUsuario(this.usuarioActual, seleccionado.idInventario());
                 }
         );
     }

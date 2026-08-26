@@ -3,9 +3,11 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -14,7 +16,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 
@@ -48,6 +49,8 @@ public class EditarRopaControlador {
 
     private final OrquestadorProductos orquestadorProductos;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public EditarRopaControlador(
@@ -63,8 +66,21 @@ public class EditarRopaControlador {
     //MÉTODOS:
 
     public void cargarDatosProducto(
-            DatosTotalesProductoRopaDTO producto, int idInventario, ObservableList<DatosTotalesProductoRopaDTO> listaRopa
+            UsuarioDTOCompleto usuarioActual, DatosTotalesProductoRopaDTO producto, int idInventario,
+            ObservableList<DatosTotalesProductoRopaDTO> listaRopa
     ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Editar Productos."
+            );
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.productoOriginal = producto;
         this.idInventario = idInventario;
         this.listaRopa = listaRopa;
@@ -203,6 +219,7 @@ public class EditarRopaControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorProductos.actualizarProductoRopaDeInventario(
+                this.usuarioActual,
                 this.idInventario,
                 this.productoOriginal.codigo(),
                 nombreNuevo,

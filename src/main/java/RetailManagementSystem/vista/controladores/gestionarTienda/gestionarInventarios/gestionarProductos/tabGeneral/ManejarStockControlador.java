@@ -1,10 +1,12 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -13,7 +15,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.time.LocalDate;
@@ -42,6 +43,8 @@ public class ManejarStockControlador {
 
     private final OrquestadorProductos orquestadorProductos;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public ManejarStockControlador(
@@ -54,8 +57,21 @@ public class ManejarStockControlador {
     //MÉTODOS:
 
     public void cargarDatos(
-            ProductoResumenDTO producto, int idInventario, ObservableList<ProductoResumenDTO> listaObservable
+            UsuarioDTOCompleto usuarioActual, ProductoResumenDTO producto, int idInventario,
+            ObservableList<ProductoResumenDTO> listaObservable
     ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Productos."
+            );
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         this.seleccionado = producto;
         this.idInventario = idInventario;
         this.listaObservable = listaObservable;
@@ -158,11 +174,13 @@ public class ManejarStockControlador {
             CompletableFuture.supplyAsync(()->{
                 if (esReposicion){
                     return this.orquestadorInventarioProducto.validarEspacioInventarioYAumentarStockProducto(
-                            this.idInventario, cantidad, seleccionado.codigoProducto(), LocalDate.now()
+                            this.usuarioActual, this.idInventario, cantidad, seleccionado.codigoProducto(),
+                            LocalDate.now()
                     );
                 } else {
                     return this.orquestadorProductos.reducirStockDeProductoDeInventario(
-                            this.idInventario, seleccionado.codigoProducto(), cantidad, LocalDate.now()
+                            this.usuarioActual, this.idInventario, seleccionado.codigoProducto(), cantidad,
+                            LocalDate.now()
                     );
                 }
             }).thenAccept(actualizado->

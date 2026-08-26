@@ -4,7 +4,10 @@ import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerec
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -54,6 +57,8 @@ public class TabPerecederosControlador {
 
     private FilteredList<DatosTotalesProductoPerecederoDTO> listaFiltrada;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public TabPerecederosControlador(OrquestadorProductos orquestadorProductos) {
@@ -67,7 +72,16 @@ public class TabPerecederosControlador {
     }
 
 
-    public void recibirIdInventario(int idInventario) {
+    public void recibirIdInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventario) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.VER_PRODUCTOS) &&
+            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS) &&
+            !usuarioActual.tienePermiso(PermisosApp.TRASLADAR_PRODUCTOS)){
+            throw new AccesoDenegadoException("NO tienes los Permisos Necesarios para Entrar a esta Pantalla");
+        }
+        this.usuarioActual = usuarioActual;
         this.idInventario = idInventario;
         cargarDatosTabla();
     }
@@ -306,7 +320,7 @@ public class TabPerecederosControlador {
                 RutasVista.EDITAR_PERECEDERO_VIEW,
                 "Editar Producto Perecedero", getVentana(),
                 (EditarPerecederoControlador c)->{
-                    c.cargarDatos(productoSeleccionado, this.idInventario, listaMaestraPerecederos);
+                    c.cargarDatos(this.usuarioActual, productoSeleccionado, this.idInventario, listaMaestraPerecederos);
                 }
         );
     }
@@ -334,7 +348,9 @@ public class TabPerecederosControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.orquestadorProductos.cambiarEstadoProducto(this.idInventario, seleccionado.codigo())
+                this.orquestadorProductos.cambiarEstadoProducto(
+                        this.usuarioActual, this.idInventario, seleccionado.codigo()
+                )
         ).thenRun(()->
             Platform.runLater(()->{
                 DatosTotalesProductoPerecederoDTO actualizado = new DatosTotalesProductoPerecederoDTO(

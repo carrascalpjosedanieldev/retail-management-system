@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
 
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
@@ -13,6 +14,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -22,7 +24,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 
@@ -64,6 +65,8 @@ public class CrearProductoControlador {
 
     private final OrquestadorInventarioProducto orquestadorInventarioProducto;
 
+    private UsuarioDTOCompleto usuarioActual;
+
     //CONSTRUCTOR:
 
     public CrearProductoControlador(
@@ -85,7 +88,21 @@ public class CrearProductoControlador {
     }
 
 
-    public void cargarDatos(int idInventario, ObservableList<ProductoResumenDTO> listaObservable) {
+    public void cargarDatos(
+            UsuarioDTOCompleto usuarioActual, int idInventario, ObservableList<ProductoResumenDTO> listaObservable
+    ) {
+        if (usuarioActual == null){
+            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        }
+        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS)){
+            GestorAlertas.mostrarAlertaError(
+                    getVentana(),
+                    "Acceso Denegado", "Privilegios Insuficientes",
+                    "NO tienes los Permisos Necesarios para Registrar Productos."
+            );
+            return;
+        }
+        this.usuarioActual = usuarioActual;
         if (idInventario <=0 ){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "ID del Inventario Invalido", null,
@@ -253,7 +270,7 @@ public class CrearProductoControlador {
         }
         CompletableFuture.supplyAsync(()->
                 this.orquestadorInventarioProducto.validarEspacioInventarioYGuardarProducto(
-                        this.idInventario, producto, LocalDate.now()
+                        this.usuarioActual, this.idInventario, producto, LocalDate.now()
                 )
         ).thenAccept(productoRegistrado->
             Platform.runLater(()->{
