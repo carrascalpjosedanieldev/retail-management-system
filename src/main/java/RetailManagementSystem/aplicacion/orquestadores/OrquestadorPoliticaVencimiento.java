@@ -44,7 +44,7 @@ public class OrquestadorPoliticaVencimiento {
     public PoliticaVencimientoDTO registrarPoliticaVencimiento(
             UsuarioDTOCompleto usuario, String nombre, int diasUmbral, BigDecimal porcentaje, boolean activo
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.POLITICAS_DE_VENCIMIENTO);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_POLITICAS_V);
         return this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
                 this.servicioPoliticaVencimiento.registrarPoliticaVencimiento(
                         nombre, diasUmbral, porcentaje, activo
@@ -56,7 +56,7 @@ public class OrquestadorPoliticaVencimiento {
             UsuarioDTOCompleto usuario, int idPoliticaV, String nuevoNombre, int nuevoDiasUmbral,
             BigDecimal nuevoPorcentaje
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.POLITICAS_DE_VENCIMIENTO);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MODIFICAR_POLITICAS_V);
         return this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
                 this.servicioPoliticaVencimiento.actualizarPoliticaVencimiento(
                         idPoliticaV, nuevoNombre, nuevoDiasUmbral, nuevoPorcentaje
@@ -65,7 +65,7 @@ public class OrquestadorPoliticaVencimiento {
     }
 
     public void cambiarEstadoPoliticaV(UsuarioDTOCompleto usuario, int idPoliticaV) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.POLITICAS_DE_VENCIMIENTO);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.CAMBIAR_ESTADO_POLITICAS_V);
         this.servicioPoliticaVencimiento.cambiarEstadoPoliticaDeVencimiento(idPoliticaV);
     }
 

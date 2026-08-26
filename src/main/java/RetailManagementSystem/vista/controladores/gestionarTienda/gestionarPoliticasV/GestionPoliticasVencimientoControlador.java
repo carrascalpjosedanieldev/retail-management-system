@@ -36,6 +36,9 @@ public class GestionPoliticasVencimientoControlador {
     @FXML private TableColumn<PoliticaVencimientoDTO, BigDecimal> colPorcentaje;
     @FXML private TableColumn<PoliticaVencimientoDTO, String> colEstado;
     @FXML private TextField txtBuscar;
+    @FXML private Button btnCambiarEstado;
+    @FXML private Button btnModificar;
+    @FXML private Button btnNuevo;
 
     private UsuarioDTOCompleto usuarioActual;
 
@@ -55,16 +58,29 @@ public class GestionPoliticasVencimientoControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.POLITICAS_DE_VENCIMIENTO)){
+        if (
+            !usuarioActual.tienePermiso(PermisosApp.VER_POLITICAS_V) ||
+            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_POLITICAS_V) &&
+             !usuarioActual.tienePermiso(PermisosApp.MODIFICAR_POLITICAS_V) &&
+             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_POLITICAS_V))
+        ){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Gestionar las Politicas de Vencimiento."
             );
-            volverAGestionTienda();
             return;
         }
         this.usuarioActual = usuarioActual;
+        protegerBoton(btnNuevo, PermisosApp.REGISTRAR_POLITICAS_V);
+        protegerBoton(btnModificar, PermisosApp.MODIFICAR_POLITICAS_V);
+        protegerBoton(btnCambiarEstado, PermisosApp.CAMBIAR_ESTADO_POLITICAS_V);
+    }
+
+    private void protegerBoton(Button boton, String permisoRequerido) {
+        boolean tieneAcceso = this.usuarioActual.tienePermiso(permisoRequerido);
+        boton.setVisible(tieneAcceso);
+        boton.setManaged(tieneAcceso);
     }
 
     private Window getVentana(){

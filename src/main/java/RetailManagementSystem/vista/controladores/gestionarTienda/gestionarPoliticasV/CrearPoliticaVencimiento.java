@@ -48,13 +48,12 @@ public class CrearPoliticaVencimiento {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.VER_IMPUESTOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_POLITICAS_V)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+                    "NO tienes los Permisos Necesarios para Registrar Políticas de Vencimiento."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;

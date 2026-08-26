@@ -39,16 +39,23 @@ public class PermisosApp {
                 PermisosApp.MODIFICAR_DESCUENTOS,
                 PermisosApp.CAMBIAR_ESTADO_DESCUENTOS,
 
-                PermisosApp.POLITICAS_DE_VENCIMIENTO,
+                PermisosApp.VER_POLITICAS_V,
+                PermisosApp.REGISTRAR_POLITICAS_V,
+                PermisosApp.MODIFICAR_POLITICAS_V,
+                PermisosApp.CAMBIAR_ESTADO_POLITICAS_V,
 
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
+
                 PermisosApp.VER_ROLES,
                 PermisosApp.REGISTRAR_ROLES,
                 PermisosApp.EDITAR_ROLES,
                 PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES,
+
+                PermisosApp.VER_PERMISOS,
                 PermisosApp.GESTIONAR_PERMISOS,
-                PermisosApp.GESTIONAR_USUARIOS,
-                PermisosApp.VER_PERMISOS
+
+                PermisosApp.GESTIONAR_USUARIOS
+
         );
 
         for (String permiso : permisosCodigo) {
@@ -84,38 +91,33 @@ public class PermisosApp {
     public static final String ADMINISTRAR_SERVICIOS = "ADMINISTRAR SERVICIOS";
 
     public static final String VER_IMPUESTOS = "VER IMPUESTOS";
+    public static final String REGISTRAR_IMPUESTOS = "REGISTRAR IMPUESTOS";
+    public static final String MODIFICAR_IMPUESTOS = "MODIFICAR IMPUESTOS";
+    public static final String CAMBIAR_ESTADO_IMPUESTOS = "CAMBIAR ESTADO IMPUESTOS";
 
     public static final String VER_DESCUENTOS = "VER DESCUENTOS";
+    public static final String REGISTRAR_DESCUENTOS = "REGISTRAR DESCUENTOS";
+    public static final String MODIFICAR_DESCUENTOS = "MODIFICAR DESCUENTOS";
+    public static final String CAMBIAR_ESTADO_DESCUENTOS = "CAMBIAR ESTADO DESCUENTOS";
 
-    public static final String POLITICAS_DE_VENCIMIENTO = "POLÍTICAS DE VENCIMIENTO";
+    public static final String VER_POLITICAS_V = "VER POLÍTICAS V";
+    public static final String REGISTRAR_POLITICAS_V = "REGISTRAR POLÍTICAS V";
+    public static final String MODIFICAR_POLITICAS_V = "MODIFICAR POLÍTICAS V";
+    public static final String CAMBIAR_ESTADO_POLITICAS_V = "CAMBIAR ESTADO POLÍTICAS V";
 
     public static final String EDITAR_PERFIL_DE_TIENDA = "EDITAR PERFIL DE TIENDA";
 
+    public static final String VER_ROLES = "VER ROLES";
     public static final String EDITAR_ROLES = "EDITAR ROLES";
-
-    public static final String GESTIONAR_PERMISOS = "GESTIONAR PERMISOS";
+    public static final String REGISTRAR_ROLES = "REGISTRAR ROLES";
+    public static final String ADMINISTRAR_PERMISOS_DE_ROLES = "ADMINISTRAR PERMISOS DE ROLES";
 
     public static final String GESTIONAR_USUARIOS = "GESTIONAR USUARIOS";
 
     public static final String VER_PERMISOS = "VER PERMISOS";
+    public static final String GESTIONAR_PERMISOS = "GESTIONAR PERMISOS";
 
-    public static final String VER_ROLES = "VER ROLES";
 
-    public static final String REGISTRAR_ROLES = "REGISTRAR ROLES";
-
-    public static final String ADMINISTRAR_PERMISOS_DE_ROLES = "ADMINISTRAR PERMISOS DE ROLES";
-
-    public static final String REGISTRAR_DESCUENTOS = "REGISTRAR DESCUENTOS";
-
-    public static final String MODIFICAR_DESCUENTOS = "MODIFICAR DESCUENTOS";
-
-    public static final String CAMBIAR_ESTADO_DESCUENTOS = "CAMBIAR ESTADO DESCUENTOS";
-
-    public static final String REGISTRAR_IMPUESTOS = "REGISTRAR IMPUESTOS";
-
-    public static final String MODIFICAR_IMPUESTOS = "MODIFICAR IMPUESTOS";
-
-    public static final String CAMBIAR_ESTADO_IMPUESTOS = "CAMBIAR ESTADO IMPUESTOS";
 
 }//===================================================================================================================//
 

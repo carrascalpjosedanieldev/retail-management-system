@@ -83,7 +83,7 @@ public class GestionarTiendaControlador {
         btnGestionInventarios.setVisible(accesoInventarios);
         btnGestionInventarios.setManaged(accesoInventarios);
         boolean accesoPoliticasV = tieneAccesoAlModulo(List.of(
-                PermisosApp.POLITICAS_DE_VENCIMIENTO
+                PermisosApp.VER_POLITICAS_V
         ));
         btnGestionPoliticasV.setVisible(accesoPoliticasV);
         btnGestionPoliticasV.setManaged(accesoPoliticasV);

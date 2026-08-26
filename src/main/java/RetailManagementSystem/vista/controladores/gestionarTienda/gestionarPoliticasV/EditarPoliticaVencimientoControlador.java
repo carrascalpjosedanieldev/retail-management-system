@@ -53,13 +53,12 @@ public class EditarPoliticaVencimientoControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.POLITICAS_DE_VENCIMIENTO)){
+        if (!usuarioActual.tienePermiso(PermisosApp.MODIFICAR_POLITICAS_V)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar las Politicas de Vencimiento."
+                    "NO tienes los Permisos Necesarios para Modificar las Políticas de Vencimiento."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;

@@ -98,7 +98,7 @@ public class MenuPrincipalControlador {
                 PermisosApp.ADMINISTRAR_SERVICIOS,
                 PermisosApp.VER_IMPUESTOS,
                 PermisosApp.VER_DESCUENTOS,
-                PermisosApp.POLITICAS_DE_VENCIMIENTO,
+                PermisosApp.VER_POLITICAS_V,
                 PermisosApp.EDITAR_PERFIL_DE_TIENDA,
                 PermisosApp.EDITAR_ROLES,
                 PermisosApp.GESTIONAR_PERMISOS
