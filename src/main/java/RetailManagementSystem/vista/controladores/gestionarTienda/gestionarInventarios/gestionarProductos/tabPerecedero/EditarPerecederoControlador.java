@@ -206,7 +206,7 @@ public class EditarPerecederoControlador {
 
 
     @FXML
-    void guardarCambios(ActionEvent event) {
+    private void guardarCambios(ActionEvent event) {
         guardarCambios();
     }
 
@@ -292,7 +292,7 @@ public class EditarPerecederoControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarVentana();
     }
 

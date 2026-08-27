@@ -58,7 +58,6 @@ public class EditarInventarioControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Ver o Gestionar los Inventarios."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -79,7 +78,7 @@ public class EditarInventarioControlador {
 
 
     @FXML
-    void accionActualizar(ActionEvent event) {
+    private void accionActualizar(ActionEvent event) {
         String nuevoNombre = txtNombre.getText().trim();
         if (nuevoNombre.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
@@ -138,7 +137,7 @@ public class EditarInventarioControlador {
     }
 
     @FXML
-    void accionCancelar(ActionEvent event) {
+    private void accionCancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

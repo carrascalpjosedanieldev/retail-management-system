@@ -77,7 +77,7 @@ public class GestionProductosControlador {
 
 
     @FXML
-    void volverAlPanel(ActionEvent event) {
+    private void volverAlPanel(ActionEvent event) {
         volverAGestionInventarios();
     }
 

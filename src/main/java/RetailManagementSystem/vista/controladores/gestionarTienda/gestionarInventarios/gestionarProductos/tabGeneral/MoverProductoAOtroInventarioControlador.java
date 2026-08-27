@@ -114,7 +114,7 @@ public class MoverProductoAOtroInventarioControlador {
 
 
     @FXML
-    void moverProducto(ActionEvent event) {
+    private void moverProducto(ActionEvent event) {
         if (comboInventarios.getValue() == null) {
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Error de Validación", null,
@@ -172,7 +172,7 @@ public class MoverProductoAOtroInventarioControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

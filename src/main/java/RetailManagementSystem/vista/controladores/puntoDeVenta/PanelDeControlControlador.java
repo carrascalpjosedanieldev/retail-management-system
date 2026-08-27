@@ -148,7 +148,7 @@ public class PanelDeControlControlador {
 
 
     @FXML
-    public void abrirNuevaVenta(ActionEvent event) {
+    private void abrirNuevaVenta(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.MENU_DE_VENTAS_VIEW,
@@ -160,7 +160,7 @@ public class PanelDeControlControlador {
 
 
     @FXML
-    public void abrirHistorialVentas(ActionEvent event) {
+    private void abrirHistorialVentas(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.HISTORIAL_VENTAS_VIEW,
                 "Generar Reporte de Recaudo", getVentana(),
@@ -172,7 +172,7 @@ public class PanelDeControlControlador {
 
 
     @FXML
-    public void volverAlMenu(ActionEvent event) {
+    private void volverAlMenu(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.MENU_PRINCIPAL_VIEW,

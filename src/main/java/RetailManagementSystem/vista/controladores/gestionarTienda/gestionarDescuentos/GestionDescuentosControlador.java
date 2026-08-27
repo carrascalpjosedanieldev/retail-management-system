@@ -63,7 +63,6 @@ public class GestionDescuentosControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Gestionar los Descuentos."
             );
-            volverAGestionarTienda();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -170,7 +169,7 @@ public class GestionDescuentosControlador {
 
 
     @FXML
-    void abrirFormularioEdicion(ActionEvent event) {
+    private void abrirFormularioEdicion(ActionEvent event) {
         DescuentoDTO seleccionado = tablaDescuentos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -190,7 +189,7 @@ public class GestionDescuentosControlador {
 
 
     @FXML
-    void abrirFormularioNuevo(ActionEvent event) {
+    private void abrirFormularioNuevo(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_DESCUENTO_VIEW,
                 "Creando Descuento", getVentana(),
@@ -202,7 +201,7 @@ public class GestionDescuentosControlador {
 
 
     @FXML
-    void cambiarEstadoDescuento(ActionEvent event) {
+    private void cambiarEstadoDescuento(ActionEvent event) {
         cambiarEstadoDescuento();
     }
 

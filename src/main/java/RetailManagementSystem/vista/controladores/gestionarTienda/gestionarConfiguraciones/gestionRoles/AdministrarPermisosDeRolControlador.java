@@ -70,7 +70,6 @@ public class AdministrarPermisosDeRolControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Administrar los Permisos de un Rol."
             );
-            volverAlPanel();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -126,7 +125,7 @@ public class AdministrarPermisosDeRolControlador {
 
 
     @FXML
-    void anadirPermiso(ActionEvent event) {
+    private void anadirPermiso(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.ANADIR_PERMISO_AL_ROL_VIEW,
                 "Administrar Permisos", getVentana(),
@@ -138,7 +137,7 @@ public class AdministrarPermisosDeRolControlador {
 
 
     @FXML
-    void eliminarPermiso(ActionEvent event) {
+    private void eliminarPermiso(ActionEvent event) {
         PermisoDTO seleccionado = tablaPermisosRol.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
@@ -158,7 +157,7 @@ public class AdministrarPermisosDeRolControlador {
 
 
     @FXML
-    void guardarCambios(ActionEvent event) {
+    private void guardarCambios(ActionEvent event) {
         if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Quieres guardar los cambios en el Rol?")){
             return;
@@ -200,7 +199,7 @@ public class AdministrarPermisosDeRolControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         if (hayCambios){
             if (GestorAlertas.mostrarConfirmacion(getVentana(), "Salir?", "Estas seguro de salir",
                     "Si sales ahora se descartaran los cambios realizados.")){

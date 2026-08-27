@@ -67,7 +67,7 @@ public class GestionPoliticasVencimientoControlador {
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar las Politicas de Vencimiento."
+                    "NO tienes los Permisos Necesarios para Gestionar las Políticas de Vencimiento."
             );
             return;
         }
@@ -170,7 +170,7 @@ public class GestionPoliticasVencimientoControlador {
 
 
     @FXML
-    void abrirFormularioEdicion(ActionEvent event) {
+    private void abrirFormularioEdicion(ActionEvent event) {
         PoliticaVencimientoDTO seleccionado = tablaPoliticasVencimiento.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -190,7 +190,7 @@ public class GestionPoliticasVencimientoControlador {
 
 
     @FXML
-    void abrirFormularioNuevo(ActionEvent event) {
+    private void abrirFormularioNuevo(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_POLITiCA_V_VIEW,
                 "Creando Política de Vencimiento", getVentana(),
@@ -202,7 +202,7 @@ public class GestionPoliticasVencimientoControlador {
 
 
     @FXML
-    void cambiarEstadoPoliticaV(ActionEvent event) {
+    private void cambiarEstadoPoliticaV(ActionEvent event) {
         cambiarEstadoPoliticaV();
     }
 
@@ -257,7 +257,7 @@ public class GestionPoliticasVencimientoControlador {
 
 
     @FXML
-    void volverAlPanel(ActionEvent event) {
+    private void volverAlPanel(ActionEvent event) {
         volverAGestionTienda();
     }
 

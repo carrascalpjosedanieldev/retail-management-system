@@ -133,7 +133,7 @@ public class FacturaGeneradaControlador {
 
 
     @FXML
-    public void cerrarFactura(ActionEvent event) {
+    private void cerrarFactura(ActionEvent event) {
         Window ventana = getVentana();
         if (ventana != null){
             ventana.hide();

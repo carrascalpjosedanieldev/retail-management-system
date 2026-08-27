@@ -177,7 +177,7 @@ public class MenuDeVentasControlador {
 
 
     @FXML
-    public void volverAlMenu(ActionEvent event) {
+    private void volverAlMenu(ActionEvent event) {
         if (listaCarrito != null && !listaCarrito.isEmpty()) {
             boolean respuesta = GestorAlertas.mostrarConfirmacion(
                     getVentana(), "Venta en Curso",
@@ -219,7 +219,7 @@ public class MenuDeVentasControlador {
 
 
     @FXML
-    public void agregarItem(ActionEvent event) {
+    private void agregarItem(ActionEvent event) {
         agregarItem();
     }
 
@@ -311,7 +311,7 @@ public class MenuDeVentasControlador {
 
 
     @FXML
-    public void eliminarItemSeleccionado(ActionEvent event) {
+    private void eliminarItemSeleccionado(ActionEvent event) {
         eliminarItemSeleccionado();
     }
 
@@ -357,7 +357,7 @@ public class MenuDeVentasControlador {
 
 
     @FXML
-    public void cancelarVenta(ActionEvent event) {
+    private void cancelarVenta(ActionEvent event) {
         cancelarVenta();
     }
 
@@ -400,12 +400,12 @@ public class MenuDeVentasControlador {
 
 
     @FXML
-    public void aumentarCantidadSeleccionada(ActionEvent event) {
+    private void aumentarCantidadSeleccionada(ActionEvent event) {
         gestionarCambioCantidad(true);
     }
 
     @FXML
-    public void reducirCantidadSeleccionada(ActionEvent event) {
+    private void reducirCantidadSeleccionada(ActionEvent event) {
         gestionarCambioCantidad(false);
     }
 
@@ -464,7 +464,7 @@ public class MenuDeVentasControlador {
 
 
     @FXML
-    public void procesarVenta(ActionEvent event) {
+    private void procesarVenta(ActionEvent event) {
         procesarVenta();
     }
 

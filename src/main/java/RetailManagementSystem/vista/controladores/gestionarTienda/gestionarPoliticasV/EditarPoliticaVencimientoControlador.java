@@ -80,7 +80,7 @@ public class EditarPoliticaVencimientoControlador {
 
 
     @FXML
-    void actualizarPoliticaV(ActionEvent event) {
+    private void actualizarPoliticaV(ActionEvent event) {
         String nuevoNombre = txtNombre.getText().trim();
         String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
         String nuevoDiasUmbralTexto = txtDiasUmbral.getText().trim();
@@ -159,7 +159,7 @@ public class EditarPoliticaVencimientoControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

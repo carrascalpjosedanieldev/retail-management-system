@@ -50,9 +50,8 @@ public class CrearImpuestoControlador {
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Impuestos."
+                    "NO tienes los Permisos Necesarios para Registrar Impuestos."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -65,7 +64,7 @@ public class CrearImpuestoControlador {
 
 
     @FXML
-    void guardarImpuesto(ActionEvent event) {
+    private void guardarImpuesto(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String porcentajeTexto = txtPorcentaje.getText().trim();
         boolean activo = chkActivo.isSelected();
@@ -116,7 +115,7 @@ public class CrearImpuestoControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

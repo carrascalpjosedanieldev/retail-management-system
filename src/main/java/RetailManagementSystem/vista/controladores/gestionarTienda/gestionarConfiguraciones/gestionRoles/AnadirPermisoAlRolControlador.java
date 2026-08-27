@@ -74,7 +74,6 @@ public class AnadirPermisoAlRolControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Administrar Permisos de Roles."
             );
-            cerrarModal();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -206,7 +205,7 @@ public class AnadirPermisoAlRolControlador {
 
 
     @FXML
-    void accionAnadirPermiso(ActionEvent event) {
+    private void accionAnadirPermiso(ActionEvent event) {
         PermisoDTO permisoSeleccionado = tablaPermisos.getSelectionModel().getSelectedItem();
         if (permisoSeleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
@@ -228,7 +227,7 @@ public class AnadirPermisoAlRolControlador {
 
 
     @FXML
-    void accionCancelar(ActionEvent event) {
+    private void accionCancelar(ActionEvent event) {
         cerrarModal();
     }
 

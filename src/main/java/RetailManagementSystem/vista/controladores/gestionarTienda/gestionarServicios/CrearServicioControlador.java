@@ -68,7 +68,6 @@ public class CrearServicioControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Registrar Servicios."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -100,7 +99,7 @@ public class CrearServicioControlador {
 
 
     @FXML
-    void accionGuardar(ActionEvent event) {
+    private void accionGuardar(ActionEvent event) {
         guardarServicio();
     }
 
@@ -185,7 +184,7 @@ public class CrearServicioControlador {
 
 
     @FXML
-    void accionCancelar(ActionEvent event) {
+    private void accionCancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

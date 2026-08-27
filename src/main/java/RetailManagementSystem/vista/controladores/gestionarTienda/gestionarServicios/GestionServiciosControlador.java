@@ -209,7 +209,7 @@ public class GestionServiciosControlador {
 
 
     @FXML
-    void abrirFormularioEdicion(ActionEvent event) {
+    private void abrirFormularioEdicion(ActionEvent event) {
         ServicioDTO seleccionado = tablaServicios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -265,7 +265,7 @@ public class GestionServiciosControlador {
 
 
     @FXML
-    void abrirFormularioNuevo(ActionEvent event) {
+    private void abrirFormularioNuevo(ActionEvent event) {
         ejecutarConCatalogosListos(this::abrirModalCrear);
     }
 
@@ -281,7 +281,7 @@ public class GestionServiciosControlador {
 
 
     @FXML
-    void cambiarEstadoServicio(ActionEvent event) {
+    private void cambiarEstadoServicio(ActionEvent event) {
         cambiarEstadoServicio();
     }
 
@@ -337,7 +337,7 @@ public class GestionServiciosControlador {
 
 
     @FXML
-    void volverAlPanel(ActionEvent event) {
+    private void volverAlPanel(ActionEvent event) {
         volverAGestionTienda();
     }
 

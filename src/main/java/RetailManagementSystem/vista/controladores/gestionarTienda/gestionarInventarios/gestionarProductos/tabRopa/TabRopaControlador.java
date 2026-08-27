@@ -286,7 +286,7 @@ public class TabRopaControlador {
 
 
     @FXML
-    void abrirEditorRopa(ActionEvent event) {
+    private void abrirEditorRopa(ActionEvent event) {
         DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -306,7 +306,7 @@ public class TabRopaControlador {
 
 
     @FXML
-    void cambiarEstadoProducto(ActionEvent event) {
+    private void cambiarEstadoProducto(ActionEvent event) {
         cambiarEstadoProducto();
     }
 

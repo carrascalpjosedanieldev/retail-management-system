@@ -65,7 +65,7 @@ public class GestionConfiguracionesControlador {
 
 
     @FXML
-    void abrirConfiguracionNombre(ActionEvent event) {
+    private void abrirConfiguracionNombre(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.EDITAR_NOMBRE_TIENDA_VIEW,
                 "Configuración de Tienda",
@@ -90,7 +90,7 @@ public class GestionConfiguracionesControlador {
 
 
     @FXML
-    void abrirGestionPermisos(ActionEvent event){
+    private void abrirGestionPermisos(ActionEvent event){
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.PERMISOS_VISTA_VIEW,
@@ -102,7 +102,7 @@ public class GestionConfiguracionesControlador {
 
 
     @FXML
-    public void volverPanelGestion(ActionEvent event) {
+    private void volverPanelGestion(ActionEvent event) {
         volverAGestionarTienda();
     }
 

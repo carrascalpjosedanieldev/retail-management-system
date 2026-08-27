@@ -167,7 +167,7 @@ public class GestionImpuestosControlador {
 
 
     @FXML
-    void abrirFormularioEdicion(ActionEvent event) {
+    private void abrirFormularioEdicion(ActionEvent event) {
         ImpuestoDTO seleccionado = tablaImpuestos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -187,7 +187,7 @@ public class GestionImpuestosControlador {
 
 
     @FXML
-    void abrirFormularioNuevo(ActionEvent event) {
+    private void abrirFormularioNuevo(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_IMPUESTO_VIEW,
                 "Creando Impuesto", getVentana(),
@@ -199,7 +199,7 @@ public class GestionImpuestosControlador {
 
 
     @FXML
-    void cambiarEstadoImpuesto(ActionEvent event) {
+    private void cambiarEstadoImpuesto(ActionEvent event) {
         cambiarEstadoImpuesto();
     }
 
@@ -251,7 +251,7 @@ public class GestionImpuestosControlador {
 
 
     @FXML
-    void volverAlPanel(ActionEvent event) {
+    private void volverAlPanel(ActionEvent event) {
         volverAGestionTienda();
     }
 

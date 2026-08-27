@@ -48,7 +48,6 @@ public class RestablecerContrasenaControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Restablecer Contraseñas."
             );
-            cerrarModal();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -80,7 +79,7 @@ public class RestablecerContrasenaControlador {
     }
 
     @FXML
-    void copiarContrasena(ActionEvent event) {
+    private void copiarContrasena(ActionEvent event) {
         String contrasena = lblContrasenaTemporal.getText();
         if (contrasena == null || contrasena.isBlank()) {
             return;

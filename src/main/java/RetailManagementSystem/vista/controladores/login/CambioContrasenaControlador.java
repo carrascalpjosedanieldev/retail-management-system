@@ -57,14 +57,14 @@ public class CambioContrasenaControlador {
 
 
     @FXML
-    void initialize() {
+    public void initialize() {
         txtNuevaOculta.textProperty().bindBidirectional(txtNuevaVis.textProperty());
         txtConfirmarOculta.textProperty().bindBidirectional(txtConfirmarVis.textProperty());
     }
 
 
     @FXML
-    void alternarVisibilidadNueva(ActionEvent event) {
+    private void alternarVisibilidadNueva(ActionEvent event) {
         boolean estaOculto = txtNuevaVis.isVisible();
         txtNuevaVis.setVisible(!estaOculto);
         txtNuevaOculta.setVisible(estaOculto);
@@ -80,7 +80,7 @@ public class CambioContrasenaControlador {
 
 
     @FXML
-    void alternarVisibilidadConfirmar(ActionEvent event) {
+    private void alternarVisibilidadConfirmar(ActionEvent event) {
         boolean estaOculto = txtConfirmarVis.isVisible();
         txtConfirmarVis.setVisible(!estaOculto);
         txtConfirmarOculta.setVisible(estaOculto);
@@ -96,7 +96,7 @@ public class CambioContrasenaControlador {
 
 
     @FXML
-    void restablecerContrasena(ActionEvent event) {
+    private void restablecerContrasena(ActionEvent event) {
         restablecerContrasena();
     }
 

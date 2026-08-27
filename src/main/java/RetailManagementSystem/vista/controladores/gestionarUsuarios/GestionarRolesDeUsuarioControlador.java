@@ -136,7 +136,7 @@ public class GestionarRolesDeUsuarioControlador {
 
 
     @FXML
-    void initialize(){
+    public void initialize(){
         configurarColumnas();
         tablaRolesActuales.setItems(listaRolesActuales);
         tablaRolesDisponibles.setItems(listaRolesDisponibles);
@@ -197,7 +197,7 @@ public class GestionarRolesDeUsuarioControlador {
 
 
     @FXML
-    void anadirRol(ActionEvent event) {
+    private void anadirRol(ActionEvent event) {
         RolDTO seleccionado = tablaRolesDisponibles.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -214,7 +214,7 @@ public class GestionarRolesDeUsuarioControlador {
 
 
     @FXML
-    void quitarRol(ActionEvent event) {
+    private void quitarRol(ActionEvent event) {
         RolDTO seleccionado = tablaRolesActuales.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -231,7 +231,7 @@ public class GestionarRolesDeUsuarioControlador {
 
 
     @FXML
-    void guardarCambios(ActionEvent event) {
+    private void guardarCambios(ActionEvent event) {
         if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Confirmar", null,
                 "¿Quieres guardar los cambios en el Usuario?")){
             return;
@@ -263,7 +263,7 @@ public class GestionarRolesDeUsuarioControlador {
 
 
     @FXML
-    void cerrarVentana(ActionEvent event) {
+    private void cerrarVentana(ActionEvent event) {
         if (hayCambios){
             if (GestorAlertas.mostrarConfirmacion(
                     getVentana(), "¿Estas Seguro de Salir?", null,

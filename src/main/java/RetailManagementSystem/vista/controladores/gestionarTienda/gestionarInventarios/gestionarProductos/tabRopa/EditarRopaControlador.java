@@ -181,7 +181,7 @@ public class EditarRopaControlador {
 
 
     @FXML
-    void guardarCambios(ActionEvent event) {
+    private void guardarCambios(ActionEvent event) {
         guardarCambios();
     }
 
@@ -271,7 +271,7 @@ public class EditarRopaControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarVentana();
     }
 

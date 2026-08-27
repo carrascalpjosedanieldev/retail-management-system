@@ -57,7 +57,6 @@ public class EditarDescuentoControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Modificar los Descuentos."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -78,7 +77,7 @@ public class EditarDescuentoControlador {
 
 
     @FXML
-    void actualizarDescuento(ActionEvent event) {
+    private void actualizarDescuento(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String nuevoPorcentajeTexto = txtPorcentaje.getText().trim();
         if (nombre.isEmpty() || nuevoPorcentajeTexto.isEmpty()){
@@ -139,7 +138,7 @@ public class EditarDescuentoControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

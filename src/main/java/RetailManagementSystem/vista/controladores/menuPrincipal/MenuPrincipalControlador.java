@@ -182,7 +182,7 @@ public class MenuPrincipalControlador {
 
 
     @FXML
-    public void abrirPuntoDeVenta(ActionEvent event) {
+    private void abrirPuntoDeVenta(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.PANEL_DE_CONTROL_POS_VIEW,
@@ -194,7 +194,7 @@ public class MenuPrincipalControlador {
 
 
     @FXML
-    void abrirGestionarTienda(ActionEvent event) {
+    private void abrirGestionarTienda(ActionEvent event) {
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.GESTIONAR_TIENDA_VIEW,
@@ -205,7 +205,7 @@ public class MenuPrincipalControlador {
     }
 
     @FXML
-    void abrirGestionarUsuarios(ActionEvent event){
+    private void abrirGestionarUsuarios(ActionEvent event){
         CargadorVistas.cambiarPantallaInyectada(
                 getVentana(),
                 RutasVista.GESTIONAR_USUARIOS_VIEW,
@@ -216,7 +216,7 @@ public class MenuPrincipalControlador {
     }
 
     @FXML
-    public void cerrarSesion(ActionEvent event) {
+    private void cerrarSesion(ActionEvent event) {
         if (!GestorAlertas.mostrarConfirmacion(getVentana(), "Cerrar Sesión?", null,
                 "Estas Seguro de que quieres cerrar Sesión?")){
             return;

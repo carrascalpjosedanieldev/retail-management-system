@@ -52,7 +52,6 @@ public class CrearDescuentoControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Registrar Descuentos."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -64,7 +63,7 @@ public class CrearDescuentoControlador {
     }
 
     @FXML
-    void guardarDescuento(ActionEvent event) {
+    private void guardarDescuento(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String porcentajeTexto = txtPorcentaje.getText().trim();
         boolean activo = chkActivo.isSelected();
@@ -114,7 +113,7 @@ public class CrearDescuentoControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

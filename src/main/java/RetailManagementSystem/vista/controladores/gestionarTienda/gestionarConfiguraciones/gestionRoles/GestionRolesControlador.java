@@ -194,7 +194,7 @@ public class GestionRolesControlador {
 
 
     @FXML
-    public void administrarPermisosRol(ActionEvent event) {
+    private void administrarPermisosRol(ActionEvent event) {
         RolDTO rolSeleccionado = tablaRoles.getSelectionModel().getSelectedItem();
         if (rolSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(

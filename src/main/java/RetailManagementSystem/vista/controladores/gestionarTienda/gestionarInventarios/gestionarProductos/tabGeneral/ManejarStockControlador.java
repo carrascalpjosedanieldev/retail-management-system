@@ -152,7 +152,7 @@ public class ManejarStockControlador {
 
 
     @FXML
-    void accionGuardar(ActionEvent event) {
+    private void accionGuardar(ActionEvent event) {
         String textoCantidad = txtCantidad.getText().trim();
         if (textoCantidad.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
@@ -238,7 +238,7 @@ public class ManejarStockControlador {
 
 
     @FXML
-    void accionCancelar(ActionEvent event) {
+    private void accionCancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

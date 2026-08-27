@@ -66,7 +66,7 @@ public class DialogoCantidadControlador {
 
 
     @FXML
-    void aceptar(ActionEvent event) {
+    private void aceptar(ActionEvent event) {
         String texto = txtCantidad.getText().trim();
         if (texto.isEmpty()) {
             GestorAlertas.mostrarAlertaWarning(
@@ -97,7 +97,7 @@ public class DialogoCantidadControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarVentana();
     }
 

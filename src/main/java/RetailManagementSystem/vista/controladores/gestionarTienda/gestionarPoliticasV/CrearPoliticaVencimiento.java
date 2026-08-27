@@ -66,7 +66,7 @@ public class CrearPoliticaVencimiento {
 
 
     @FXML
-    void guardarPoliticaV(ActionEvent event) {
+    private void guardarPoliticaV(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String porcentajeTexto = txtPorcentaje.getText().trim();
         String diasUmbralTexto = txtDiasUmbral.getText().trim();
@@ -136,7 +136,7 @@ public class CrearPoliticaVencimiento {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

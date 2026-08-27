@@ -99,7 +99,7 @@ public class ModificarDatosRolControlador {
 
 
     @FXML
-    public void guardarCambios(ActionEvent event) {
+    private void guardarCambios(ActionEvent event) {
         String nombreActualizado = txtNombreRol.getText().trim();
         boolean activo = chkActivo.isSelected();
         if (nombreActualizado.isEmpty()){
@@ -147,7 +147,7 @@ public class ModificarDatosRolControlador {
 
 
     @FXML
-    public void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarVentanaSeguro();
     }
 

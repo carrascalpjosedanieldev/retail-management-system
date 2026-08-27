@@ -70,7 +70,6 @@ public class GestionInventariosControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Ver o Gestionar los Servicios."
             );
-            volverAGestionTienda();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -191,7 +190,7 @@ public class GestionInventariosControlador {
 
 
     @FXML
-    void abrirFormularioEdicion(ActionEvent event) {
+    private void abrirFormularioEdicion(ActionEvent event) {
         abrirFormularioEdicion();
     }
 
@@ -215,7 +214,7 @@ public class GestionInventariosControlador {
 
 
     @FXML
-    void abrirFormularioNuevo(ActionEvent event) {
+    private void abrirFormularioNuevo(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_INVENTARIO_VIEW,
                 "Creando Inventario", getVentana(),
@@ -227,7 +226,7 @@ public class GestionInventariosControlador {
 
 
     @FXML
-    void editarProductosInventario(ActionEvent event) {
+    private void editarProductosInventario(ActionEvent event) {
         InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -247,7 +246,7 @@ public class GestionInventariosControlador {
 
 
     @FXML
-    void volverAlPanel(ActionEvent event) {
+    private void volverAlPanel(ActionEvent event) {
         volverAGestionTienda();
     }
 

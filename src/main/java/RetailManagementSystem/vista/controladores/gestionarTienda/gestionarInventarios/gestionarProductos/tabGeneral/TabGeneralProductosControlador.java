@@ -277,7 +277,7 @@ public class TabGeneralProductosControlador {
 
 
     @FXML
-    void abrirSelectorNuevoProducto(ActionEvent event) {
+    private void abrirSelectorNuevoProducto(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.CREAR_PRODUCTO_VIEW,
                 "Crear Nuevo Producto", getVentana(),
@@ -289,7 +289,7 @@ public class TabGeneralProductosControlador {
 
 
     @FXML
-    void cambiarEstadoProducto(ActionEvent event) {
+    private void cambiarEstadoProducto(ActionEvent event) {
         cambiarEstadoProducto();
     }
 
@@ -347,7 +347,7 @@ public class TabGeneralProductosControlador {
 
 
     @FXML
-    public void abrirManejarStock(ActionEvent event) {
+    private void abrirManejarStock(ActionEvent event) {
         ProductoResumenDTO productoSeleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -367,7 +367,7 @@ public class TabGeneralProductosControlador {
 
 
     @FXML
-    public void abrirMoverAOtroInventario(ActionEvent event) {
+    private void abrirMoverAOtroInventario(ActionEvent event) {
         ProductoResumenDTO seleccionado = tablaProductos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(

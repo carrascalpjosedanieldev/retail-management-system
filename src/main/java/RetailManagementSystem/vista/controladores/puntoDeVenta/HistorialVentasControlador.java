@@ -70,7 +70,7 @@ public class HistorialVentasControlador {
 
 
     @FXML
-    public void generarReporte(ActionEvent event) {
+    private void generarReporte(ActionEvent event) {
         generarReporte();
     }
 
@@ -130,7 +130,7 @@ public class HistorialVentasControlador {
 
 
     @FXML
-    public void cerrarModal(ActionEvent event) {
+    private void cerrarModal(ActionEvent event) {
         cerrarPantalla();
     }
 

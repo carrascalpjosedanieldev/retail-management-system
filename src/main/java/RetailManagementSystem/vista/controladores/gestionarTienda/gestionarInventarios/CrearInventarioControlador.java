@@ -48,7 +48,6 @@ public class CrearInventarioControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Registrar Inventarios."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -62,7 +61,7 @@ public class CrearInventarioControlador {
 
 
     @FXML
-    void accionGuardar(ActionEvent event) {
+    private void accionGuardar(ActionEvent event) {
         String nombre = txtNombre.getText().trim();
         String capacidadTexto = txtCapacidad.getText().trim();
         if (nombre.isEmpty() || capacidadTexto.isEmpty()) {
@@ -132,7 +131,7 @@ public class CrearInventarioControlador {
 
 
     @FXML
-    void accionCancelar(ActionEvent event) {
+    private void accionCancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

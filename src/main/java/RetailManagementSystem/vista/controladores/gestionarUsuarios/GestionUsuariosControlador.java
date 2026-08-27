@@ -188,7 +188,7 @@ public class GestionUsuariosControlador {
 
 
     @FXML
-    void abrirFormularioNuevo(ActionEvent event) {
+    private void abrirFormularioNuevo(ActionEvent event) {
         CargadorVistas.abrirModalConInyeccion(
                 RutasVista.REGISTRAR_USUARIO_VIEW,
                 "Registrando Usuario", getVentana(),
@@ -200,7 +200,7 @@ public class GestionUsuariosControlador {
 
 
     @FXML
-    void abrirFormularioEdicion(ActionEvent event) {
+    private void abrirFormularioEdicion(ActionEvent event) {
         UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
@@ -220,7 +220,7 @@ public class GestionUsuariosControlador {
 
 
     @FXML
-    void cambiarEstadoUsuario(ActionEvent event) {
+    private void cambiarEstadoUsuario(ActionEvent event) {
         UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
@@ -271,7 +271,7 @@ public class GestionUsuariosControlador {
 
 
     @FXML
-    void gestionarRolesUsuario(ActionEvent event) {
+    private void gestionarRolesUsuario(ActionEvent event) {
         UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
@@ -291,7 +291,7 @@ public class GestionUsuariosControlador {
 
 
     @FXML
-    void restablecerContrasena(ActionEvent event) {
+    private void restablecerContrasena(ActionEvent event) {
         UsuarioDTOBasico seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
         if (seleccionado == null){
             GestorAlertas.mostrarAlertaWarning(

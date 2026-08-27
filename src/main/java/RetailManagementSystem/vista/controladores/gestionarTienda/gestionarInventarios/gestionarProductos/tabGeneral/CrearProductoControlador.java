@@ -215,7 +215,7 @@ public class CrearProductoControlador {
 
 
     @FXML
-    void guardarProducto(ActionEvent event) {
+    private void guardarProducto(ActionEvent event) {
         guardarProducto();
     }
 
@@ -350,7 +350,7 @@ public class CrearProductoControlador {
 
 
     @FXML
-    void cancelar(ActionEvent event) {
+    private void cancelar(ActionEvent event) {
         cerrarVentana();
     }
 

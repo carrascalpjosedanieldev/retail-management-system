@@ -125,7 +125,7 @@ public class EditarServicioControlador {
 
 
     @FXML
-    void accionActualizar(ActionEvent event) {
+    private void accionActualizar(ActionEvent event) {
         String nuevoNombre = txtNombre.getText().trim();
         String nuevoPrecioBaseTexto = txtPrecioBase.getText().trim();
         ImpuestoDTO impuestoSeleccionado = cbImpuesto.getValue();
@@ -209,7 +209,7 @@ public class EditarServicioControlador {
 
 
     @FXML
-    void accionCancelar(ActionEvent event) {
+    private void accionCancelar(ActionEvent event) {
         cerrarPantalla();
     }
 

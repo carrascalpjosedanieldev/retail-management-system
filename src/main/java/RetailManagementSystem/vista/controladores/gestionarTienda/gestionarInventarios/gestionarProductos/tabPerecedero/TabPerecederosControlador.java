@@ -307,7 +307,7 @@ public class TabPerecederosControlador {
 
 
     @FXML
-    void abrirEditorPerecedero(ActionEvent event) {
+    private void abrirEditorPerecedero(ActionEvent event) {
         DatosTotalesProductoPerecederoDTO productoSeleccionado = tablaPerecederos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
@@ -327,7 +327,7 @@ public class TabPerecederosControlador {
 
 
     @FXML
-    void cambiarEstadoProducto(ActionEvent event) {
+    private void cambiarEstadoProducto(ActionEvent event) {
         cambiarEstadoProducto();
     }
 

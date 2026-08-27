@@ -54,7 +54,6 @@ public class RegistrarUsuarioControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Registrar Usuarios."
             );
-            cerrarPantalla();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -87,7 +86,7 @@ public class RegistrarUsuarioControlador {
 
 
     @FXML
-    void guardarUsuario(ActionEvent event) {
+    private void guardarUsuario(ActionEvent event) {
         guardarUsuario();
     }
 
@@ -164,7 +163,7 @@ public class RegistrarUsuarioControlador {
 
 
     @FXML
-    void cerrarVentana(ActionEvent event) {
+    private void cerrarVentana(ActionEvent event) {
         cerrarPantalla();
     }
 

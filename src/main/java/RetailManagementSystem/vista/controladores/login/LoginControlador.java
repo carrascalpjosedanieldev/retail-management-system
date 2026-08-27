@@ -42,13 +42,13 @@ public class LoginControlador {
     //MÉTODOS:
 
     @FXML
-    void initialize() {
+    public void initialize() {
         txtPasswordVisible.textProperty().bindBidirectional(txtPassword.textProperty());
     }
 
 
     @FXML
-    void alternarVisibilidadContrasena(ActionEvent event) {
+    private void alternarVisibilidadContrasena(ActionEvent event) {
         boolean estaOculto = txtPassword.isVisible();
         txtPassword.setVisible(!estaOculto);
         txtPasswordVisible.setVisible(estaOculto);
@@ -64,7 +64,11 @@ public class LoginControlador {
 
 
     @FXML
-    void ingresarAlSistema(ActionEvent event) {
+    private void ingresarAlSistema(ActionEvent event) {
+        ingresarAlSistema();
+    }
+
+    private void ingresarAlSistema(){
         String email = txtEmail.getText().trim();
         String contrasena = txtPassword.getText().trim();
         if (email.isBlank() || contrasena.isBlank()){
@@ -94,21 +98,21 @@ public class LoginControlador {
                 });
             }
         }).thenAccept(usuarioAutenticado->
-                    Platform.runLater(()->{
-                        if (usuarioAutenticado.debeCambiarContrasena()){
-                            CargadorVistas.cambiarPantallaInyectada(
-                                    getVentana(),
-                                    RutasVista.CAMBIO_CONTRASENA_VIEW,
-                                    (CambioContrasenaControlador c) -> c.cargarDatos(usuarioAutenticado)
-                            );
-                        } else {
-                            CargadorVistas.cambiarPantallaConInyeccionYTamanoNormal(
-                                    getVentana(),
-                                    RutasVista.MENU_PRINCIPAL_VIEW,
-                                    (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
-                            );
-                        }
-                    })
+                Platform.runLater(()->{
+                    if (usuarioAutenticado.debeCambiarContrasena()){
+                        CargadorVistas.cambiarPantallaInyectada(
+                                getVentana(),
+                                RutasVista.CAMBIO_CONTRASENA_VIEW,
+                                (CambioContrasenaControlador c) -> c.cargarDatos(usuarioAutenticado)
+                        );
+                    } else {
+                        CargadorVistas.cambiarPantallaConInyeccionYTamanoNormal(
+                                getVentana(),
+                                RutasVista.MENU_PRINCIPAL_VIEW,
+                                (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
+                        );
+                    }
+                })
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
@@ -155,7 +159,7 @@ public class LoginControlador {
 
 
     @FXML
-    void salirDeLaApp(ActionEvent event) {
+    private void salirDeLaApp(ActionEvent event) {
         Window ventana = getVentana();
         GestorAlertas.mostrarAlertaSalirDelSistema(ventana, false);
     }

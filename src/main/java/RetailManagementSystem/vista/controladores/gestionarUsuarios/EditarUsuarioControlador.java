@@ -58,7 +58,6 @@ public class EditarUsuarioControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Editar los Usuarios."
             );
-            cerrarModal();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -77,7 +76,11 @@ public class EditarUsuarioControlador {
 
 
     @FXML
-    void guardarCambios(ActionEvent event) {
+    private void guardarCambios(ActionEvent event) {
+        guardarCambios();
+    }
+
+    private void guardarCambios(){
         String nombre = txtNombre.getText().trim();
         String apellido = txtApellido.getText().trim();
         String email = txtEmail.getText().trim();
@@ -102,18 +105,18 @@ public class EditarUsuarioControlador {
                         this.usuarioActual, datosUsuario.idUsuario(), nombre, apellido, email
                 )
         ).thenAccept(actualizado->
-            Platform.runLater(()->{
-                UtilidadesLista.reemplazarPorIdentidad(
-                        listaObservable,
-                        actualizado,
-                        item -> item.idUsuario().equals(actualizado.idUsuario())
-                );
-                GestorAlertas.mostrarAlertaInformacion(
-                        getVentana(), "Éxito", null,
-                        "El Usuario ha sido Actualizado con Exito"
-                );
-                cerrarModal();
-            })
+                Platform.runLater(()->{
+                    UtilidadesLista.reemplazarPorIdentidad(
+                            listaObservable,
+                            actualizado,
+                            item -> item.idUsuario().equals(actualizado.idUsuario())
+                    );
+                    GestorAlertas.mostrarAlertaInformacion(
+                            getVentana(), "Éxito", null,
+                            "El Usuario ha sido Actualizado con Exito"
+                    );
+                    cerrarModal();
+                })
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
@@ -140,7 +143,6 @@ public class EditarUsuarioControlador {
             return null;
         });
     }
-
     private boolean esEmailValido(String email) {
         String regexEmail = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[a-zA-Z]{2,}$";
         return email.matches(regexEmail);
@@ -155,7 +157,7 @@ public class EditarUsuarioControlador {
 
 
     @FXML
-    void cerrarVentana(ActionEvent event) {
+    private void cerrarVentana(ActionEvent event) {
         cerrarModal();
     }
 

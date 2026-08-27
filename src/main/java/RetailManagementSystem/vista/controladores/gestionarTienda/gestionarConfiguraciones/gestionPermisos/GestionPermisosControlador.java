@@ -70,7 +70,6 @@ public class GestionPermisosControlador {
                     "Acceso Denegado", "Privilegios Insuficientes",
                     "NO tienes los Permisos Necesarios para Ver o Gestionar Permisos."
             );
-            volverAConfiguraciones();
             return;
         }
         this.usuarioActual = usuarioActual;
@@ -205,7 +204,7 @@ public class GestionPermisosControlador {
 
 
     @FXML
-    public void accionCambiarEstado(ActionEvent event) {
+    private void accionCambiarEstado(ActionEvent event) {
         PermisoDTO permisoSeleccionado = tablaPermisos.getSelectionModel().getSelectedItem();
         if (permisoSeleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
@@ -256,7 +255,7 @@ public class GestionPermisosControlador {
 
 
     @FXML
-    public void accionSalir(ActionEvent event) {
+    private void accionSalir(ActionEvent event) {
         volverAConfiguraciones();
     }
 
