@@ -42,7 +42,7 @@ public class CrearInventarioControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_INVENTARIOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_INVENTARIOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",

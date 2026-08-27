@@ -69,13 +69,17 @@ public class GestionarTiendaControlador {
         btnGestionDescuentos.setVisible(accesoDescuentos);
         btnGestionDescuentos.setManaged(accesoDescuentos);
         boolean accesoImpuestos = tieneAccesoAlModulo(List.of(
-                PermisosApp.VER_IMPUESTOS
+                PermisosApp.VER_IMPUESTOS,
+                PermisosApp.REGISTRAR_IMPUESTOS,
+                PermisosApp.MODIFICAR_IMPUESTOS,
+                PermisosApp.CAMBIAR_ESTADO_IMPUESTOS
         ));
         btnGestionImpuestos.setVisible(accesoImpuestos);
         btnGestionImpuestos.setManaged(accesoImpuestos);
         boolean accesoInventarios = tieneAccesoAlModulo(List.of(
                 PermisosApp.VER_INVENTARIOS,
-                PermisosApp.ADMINISTRAR_INVENTARIOS,
+                PermisosApp.REGISTRAR_INVENTARIOS,
+                PermisosApp.EDITAR_INVENTARIOS,
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.ADMINISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS
@@ -83,13 +87,18 @@ public class GestionarTiendaControlador {
         btnGestionInventarios.setVisible(accesoInventarios);
         btnGestionInventarios.setManaged(accesoInventarios);
         boolean accesoPoliticasV = tieneAccesoAlModulo(List.of(
-                PermisosApp.VER_POLITICAS_V
+                PermisosApp.VER_POLITICAS_V,
+                PermisosApp.REGISTRAR_POLITICAS_V,
+                PermisosApp.MODIFICAR_POLITICAS_V,
+                PermisosApp.CAMBIAR_ESTADO_POLITICAS_V
         ));
         btnGestionPoliticasV.setVisible(accesoPoliticasV);
         btnGestionPoliticasV.setManaged(accesoPoliticasV);
         boolean accesoServicios = tieneAccesoAlModulo(List.of(
                 PermisosApp.VER_SERVICIOS,
-                PermisosApp.REGISTRAR_SERVICIOS
+                PermisosApp.REGISTRAR_SERVICIOS,
+                PermisosApp.MODIFICAR_SERVICIOS,
+                PermisosApp.CAMBIAR_ESTADO_SERVICIOS
         ));
         btnGestionServicios.setVisible(accesoServicios);
         btnGestionServicios.setManaged(accesoServicios);

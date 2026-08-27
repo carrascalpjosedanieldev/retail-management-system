@@ -78,7 +78,7 @@ public class OrquestadorInventarioProducto {
     public InventarioDTO actualizarInventario(
             UsuarioDTOCompleto usuario, int idInventario, String nombreNuevo
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_INVENTARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_INVENTARIOS);
         return this.ensambladorDTOInventario.ensamblarDatosInventario(
                 this.servicioInventario.actualizarInventario(idInventario, nombreNuevo)
         );
@@ -87,7 +87,7 @@ public class OrquestadorInventarioProducto {
     public InventarioDTO registrarInventario(
             UsuarioDTOCompleto usuario, String nombre, int capacidadMaxima
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_INVENTARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_INVENTARIOS);
         return this.ensambladorDTOInventario.ensamblarDatosInventario(
                 this.servicioInventario.agregarInventario(nombre, capacidadMaxima)
         );

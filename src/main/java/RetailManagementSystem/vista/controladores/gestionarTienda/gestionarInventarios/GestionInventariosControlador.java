@@ -82,14 +82,17 @@ public class GestionInventariosControlador {
     }
 
     private void configurarVisibilidadModulos() {
-        boolean administrar = tieneAccesoAlModulo(List.of(
-                PermisosApp.ADMINISTRAR_INVENTARIOS
+        boolean nuevo = tieneAccesoAlModulo(List.of(
+                PermisosApp.REGISTRAR_INVENTARIOS
         ));
-        btnNuevoInv.setVisible(administrar);
-        btnNuevoInv.setManaged(administrar);
-        btnModificarInv.setVisible(administrar);
-        btnModificarInv.setManaged(administrar);
-        if (!administrar){
+        btnNuevoInv.setVisible(nuevo);
+        btnNuevoInv.setManaged(nuevo);
+        boolean editar = tieneAccesoAlModulo(List.of(
+                PermisosApp.EDITAR_INVENTARIOS
+        ));
+        btnModificarInv.setVisible(editar);
+        btnModificarInv.setManaged(editar);
+        if (!nuevo){
             btnVerOEditarProductos.setText("Ver Productos del Inventario");
         }
         boolean visualizar = tieneAccesoAlModulo(List.of(

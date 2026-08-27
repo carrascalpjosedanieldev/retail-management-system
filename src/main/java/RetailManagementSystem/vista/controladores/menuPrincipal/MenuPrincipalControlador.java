@@ -90,7 +90,7 @@ public class MenuPrincipalControlador {
         btnGestionarUsuarios.setManaged(accesoUsuarios);
         boolean accesoTienda = tieneAccesoAlModulo(List.of(
                 PermisosApp.VER_INVENTARIOS,
-                PermisosApp.ADMINISTRAR_INVENTARIOS,
+                PermisosApp.REGISTRAR_INVENTARIOS,
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.ADMINISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS,

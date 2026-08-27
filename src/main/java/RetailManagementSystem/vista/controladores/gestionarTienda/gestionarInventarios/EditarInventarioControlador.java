@@ -51,12 +51,11 @@ public class EditarInventarioControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.VER_INVENTARIOS) ||
-            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_INVENTARIOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_INVENTARIOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Inventarios."
+                    "NO tienes los Permisos Necesarios para Modificar los Inventarios."
             );
             return;
         }

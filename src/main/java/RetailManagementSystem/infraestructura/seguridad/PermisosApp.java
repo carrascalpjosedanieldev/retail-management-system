@@ -23,7 +23,9 @@ public class PermisosApp {
                 PermisosApp.VER_HISTORIAL_VENTAS,
 
                 PermisosApp.VER_INVENTARIOS,
-                PermisosApp.ADMINISTRAR_INVENTARIOS,
+                PermisosApp.REGISTRAR_INVENTARIOS,
+                PermisosApp.EDITAR_INVENTARIOS,
+
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.ADMINISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS,
@@ -84,7 +86,9 @@ public class PermisosApp {
     public static final String VER_HISTORIAL_VENTAS = "VER HISTORIAL DE VENTAS";
 
     public static final String VER_INVENTARIOS = "VER INVENTARIOS";
-    public static final String ADMINISTRAR_INVENTARIOS = "ADMINISTRAR INVENTARIOS";
+    public static final String REGISTRAR_INVENTARIOS = "REGISTRAR INVENTARIOS";
+    public static final String EDITAR_INVENTARIOS = "EDITAR INVENTARIOS";
+
     public static final String VER_PRODUCTOS = "VER PRODUCTOS";
     public static final String ADMINISTRAR_PRODUCTOS = "ADMINISTRAR PRODUCTOS";
     public static final String TRASLADAR_PRODUCTOS = "TRASLADAR PRODUCTOS";
