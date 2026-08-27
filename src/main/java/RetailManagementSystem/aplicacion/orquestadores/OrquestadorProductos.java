@@ -40,7 +40,7 @@ public class OrquestadorProductos {
     public ProductoResumenDTO reducirStockDeProductoDeInventario(
             UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, int cantidad, LocalDate fecha
     ){
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MANEJAR_STOCK_PRODUCTO);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(
                 this.servicioProductos.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidad), fecha
         );
@@ -49,7 +49,7 @@ public class OrquestadorProductos {
     public void cambiarEstadoProducto(
             UsuarioDTOCompleto usuario, int idInventario, String codigoProducto
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.CAMBIAR_ESTADO_PRODUCTO);
         this.servicioProductos.cambiarEstadoProducto(idInventario, codigoProducto);
     }
 
@@ -63,7 +63,7 @@ public class OrquestadorProductos {
             UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, String nombreNuevo,
             BigDecimal valorCompra, BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
         return this.ensambladorDTOProducto.ensamblarDatosProductoRopa(
                 this.servicioProductos.actualizarProductoRopaDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
@@ -83,7 +83,7 @@ public class OrquestadorProductos {
             BigDecimal valorCompra, BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento,
             int idPoliticaVencimiento, LocalDate fecha
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
         return this.ensambladorDTOProducto.ensamblarDatosProductoPerecedero(
                 this.servicioProductos.actualizarProductoPerecederoDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,

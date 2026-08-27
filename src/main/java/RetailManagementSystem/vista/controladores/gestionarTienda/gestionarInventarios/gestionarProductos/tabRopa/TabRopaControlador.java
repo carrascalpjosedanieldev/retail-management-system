@@ -6,8 +6,8 @@ import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
-import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -29,6 +29,7 @@ import javafx.util.Duration;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TabRopaControlador {
@@ -70,11 +71,10 @@ public class TabRopaControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.VER_PRODUCTOS) &&
-            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS) &&
-            !usuarioActual.tienePermiso(PermisosApp.TRASLADAR_PRODUCTOS)){
-            throw new AccesoDenegadoException("NO tienes los Permisos Necesarios para Entrar a esta Pantalla");
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_PRODUCTOS,
+                PermisosApp.EDITAR_PRODUCTO
+        ));
         this.usuarioActual = usuarioActual;
         this.idInventario = idInventario;
         cargarDatosTabla();

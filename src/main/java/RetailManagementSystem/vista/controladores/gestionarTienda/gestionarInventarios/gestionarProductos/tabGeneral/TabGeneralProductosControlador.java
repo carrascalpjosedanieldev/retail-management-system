@@ -3,8 +3,8 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
-import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -73,12 +73,6 @@ public class TabGeneralProductosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.VER_PRODUCTOS) &&
-            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS) &&
-            !usuarioActual.tienePermiso(PermisosApp.TRASLADAR_PRODUCTOS)){
-            throw new AccesoDenegadoException("NO tienes los Permisos Necesarios para Entrar a esta Pantalla");
-        }
-        this.usuarioActual = usuarioActual;
         if (idInventario <= 0){
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "ID del Inventario Invalido", null,
@@ -86,6 +80,15 @@ public class TabGeneralProductosControlador {
             );
             return;
         }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_PRODUCTOS,
+                PermisosApp.REGISTRAR_PRODUCTOS,
+                PermisosApp.MANEJAR_STOCK_PRODUCTO,
+                PermisosApp.TRASLADAR_PRODUCTOS,
+                PermisosApp.CAMBIAR_ESTADO_PRODUCTO
+        ));
+        this.usuarioActual = usuarioActual;
+
         this.idInventario = idInventario;
         configurarVisibilidadModulos();
         cargarDatosTabla();
@@ -97,15 +100,22 @@ public class TabGeneralProductosControlador {
     }
 
     private void configurarVisibilidadModulos() {
-        boolean administrar = tieneAccesoAlModulo(List.of(
-                PermisosApp.ADMINISTRAR_PRODUCTOS
+        boolean registrar = tieneAccesoAlModulo(List.of(
+                PermisosApp.REGISTRAR_PRODUCTOS
         ));
-        btnCambiarEstado.setVisible(administrar);
-        btnCambiarEstado.setManaged(administrar);
-        btnManejarStock.setVisible(administrar);
-        btnManejarStock.setManaged(administrar);
-        btnNuevoProd.setVisible(administrar);
-        btnNuevoProd.setManaged(administrar);
+        btnNuevoProd.setVisible(registrar);
+        btnNuevoProd.setManaged(registrar);
+        boolean cambiarEstado = tieneAccesoAlModulo(List.of(
+                PermisosApp.CAMBIAR_ESTADO_PRODUCTO
+        ));
+        btnCambiarEstado.setVisible(cambiarEstado);
+        btnCambiarEstado.setManaged(cambiarEstado);
+        boolean manejarStock = tieneAccesoAlModulo(List.of(
+                PermisosApp.MANEJAR_STOCK_PRODUCTO
+        ));
+        btnManejarStock.setVisible(manejarStock);
+        btnManejarStock.setManaged(manejarStock);
+
         boolean trasladar = tieneAccesoAlModulo(List.of(
                 PermisosApp.TRASLADAR_PRODUCTOS
         ));

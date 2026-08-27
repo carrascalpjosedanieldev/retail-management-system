@@ -63,11 +63,11 @@ public class ManejarStockControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.MANEJAR_STOCK_PRODUCTO)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Productos."
+                    "NO tienes los Permisos Necesarios para Manejar el Stock de los Productos."
             );
             return;
         }

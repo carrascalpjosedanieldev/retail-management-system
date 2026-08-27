@@ -94,7 +94,7 @@ public class CrearProductoControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_PRODUCTOS)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",

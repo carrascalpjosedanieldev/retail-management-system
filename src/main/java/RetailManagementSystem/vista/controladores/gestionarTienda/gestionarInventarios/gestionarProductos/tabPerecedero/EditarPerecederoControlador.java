@@ -79,7 +79,7 @@ public class EditarPerecederoControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS)){
+        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_PRODUCTO)){
             GestorAlertas.mostrarAlertaError(
                     getVentana(),
                     "Acceso Denegado", "Privilegios Insuficientes",

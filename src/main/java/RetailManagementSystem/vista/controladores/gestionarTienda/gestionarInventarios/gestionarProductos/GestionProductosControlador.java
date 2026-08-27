@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.GestionInventariosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.TabGeneralProductosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabPerecedero.TabPerecederosControlador;
@@ -16,6 +17,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
+
+import java.util.List;
 
 public class GestionProductosControlador {
 
@@ -40,20 +43,16 @@ public class GestionProductosControlador {
         if (usuarioActual == null){
             throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
         }
-        if (
-                !usuarioActual.tienePermiso(PermisosApp.VER_PRODUCTOS) ||
-                (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PRODUCTOS))
-        ){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Productos."
-            );
-            volverAGestionInventarios();
-            return;
-        }
-        this.usuarioActual = usuarioActual;
         try {
+            ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                    PermisosApp.VER_PRODUCTOS,
+                    PermisosApp.REGISTRAR_PRODUCTOS,
+                    PermisosApp.EDITAR_PRODUCTO,
+                    PermisosApp.MANEJAR_STOCK_PRODUCTO,
+                    PermisosApp.TRASLADAR_PRODUCTOS,
+                    PermisosApp.CAMBIAR_ESTADO_PRODUCTO
+            ));
+            this.usuarioActual = usuarioActual;
             if (tabGeneralController != null) {
                 tabGeneralController.recibirIdInventarioYUsuario(this.usuarioActual, idInventarioRecibido);
             }

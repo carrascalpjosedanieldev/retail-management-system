@@ -92,7 +92,7 @@ public class MenuPrincipalControlador {
                 PermisosApp.VER_INVENTARIOS,
                 PermisosApp.REGISTRAR_INVENTARIOS,
                 PermisosApp.VER_PRODUCTOS,
-                PermisosApp.ADMINISTRAR_PRODUCTOS,
+                PermisosApp.REGISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS,
                 PermisosApp.VER_SERVICIOS,
                 PermisosApp.REGISTRAR_SERVICIOS,

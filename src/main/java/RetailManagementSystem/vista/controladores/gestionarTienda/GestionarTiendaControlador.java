@@ -81,7 +81,7 @@ public class GestionarTiendaControlador {
                 PermisosApp.REGISTRAR_INVENTARIOS,
                 PermisosApp.EDITAR_INVENTARIOS,
                 PermisosApp.VER_PRODUCTOS,
-                PermisosApp.ADMINISTRAR_PRODUCTOS,
+                PermisosApp.REGISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS
         ));
         btnGestionInventarios.setVisible(accesoInventarios);

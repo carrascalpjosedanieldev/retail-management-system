@@ -41,7 +41,7 @@ public class OrquestadorInventarioProducto {
     public ProductoResumenDTO validarEspacioInventarioYGuardarProducto(
             UsuarioDTOCompleto usuario, int idInventario, Producto producto, LocalDate fecha
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_PRODUCTOS);
         this.servicioInventario.verificarEspacioDisponible(idInventario, producto.getStock());
         this.servicioProductos.registrarProducto(idInventario, producto);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(producto, fecha);
@@ -51,7 +51,7 @@ public class OrquestadorInventarioProducto {
             UsuarioDTOCompleto usuario, int idInventario, int cantidadAAumentarProducto, String codigoProducto,
             LocalDate fecha
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.ADMINISTRAR_PRODUCTOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_PRODUCTOS);
         this.servicioInventario.verificarEspacioDisponible(idInventario, cantidadAAumentarProducto);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(
                 this.servicioProductos.aumentarStockDeProductoDeInventario(

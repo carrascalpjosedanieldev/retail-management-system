@@ -27,7 +27,7 @@ public class PermisosApp {
                 PermisosApp.EDITAR_INVENTARIOS,
 
                 PermisosApp.VER_PRODUCTOS,
-                PermisosApp.ADMINISTRAR_PRODUCTOS,
+                PermisosApp.REGISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS,
 
                 PermisosApp.VER_SERVICIOS,
@@ -90,7 +90,10 @@ public class PermisosApp {
     public static final String EDITAR_INVENTARIOS = "EDITAR INVENTARIOS";
 
     public static final String VER_PRODUCTOS = "VER PRODUCTOS";
-    public static final String ADMINISTRAR_PRODUCTOS = "ADMINISTRAR PRODUCTOS";
+    public static final String REGISTRAR_PRODUCTOS = "REGISTRAR PRODUCTOS";
+    public static final String EDITAR_PRODUCTO = "EDITAR PRODUCTO";
+    public static final String MANEJAR_STOCK_PRODUCTO = "MANEJAR STOCK PRODUCTO";
+    public static final String CAMBIAR_ESTADO_PRODUCTO = "CAMBIAR ESTADO PRODUCTO";
     public static final String TRASLADAR_PRODUCTOS = "TRASLADAR PRODUCTOS";
 
     public static final String VER_SERVICIOS = "VER SERVICIOS";

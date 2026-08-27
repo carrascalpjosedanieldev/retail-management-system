@@ -97,7 +97,7 @@ public class GestionInventariosControlador {
         }
         boolean visualizar = tieneAccesoAlModulo(List.of(
                 PermisosApp.VER_PRODUCTOS,
-                PermisosApp.ADMINISTRAR_PRODUCTOS,
+                PermisosApp.REGISTRAR_PRODUCTOS,
                 PermisosApp.TRASLADAR_PRODUCTOS
         ));
         btnVerOEditarProductos.setVisible(visualizar);
