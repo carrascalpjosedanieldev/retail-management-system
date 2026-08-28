@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
@@ -48,17 +49,7 @@ public class EditarInventarioControlador {
             UsuarioDTOCompleto usuarioActual, InventarioDTO datosInventario,
             ObservableList<InventarioDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_INVENTARIOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Modificar los Inventarios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.EDITAR_INVENTARIOS);
         this.usuarioActual = usuarioActual;
         if (datosInventario == null) {
             throw new IllegalArgumentException("NO puedes editar un Inventario Vacío.");

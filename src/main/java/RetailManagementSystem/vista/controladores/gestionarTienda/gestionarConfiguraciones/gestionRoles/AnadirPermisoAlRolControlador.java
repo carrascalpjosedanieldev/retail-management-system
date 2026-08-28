@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -65,17 +66,7 @@ public class AnadirPermisoAlRolControlador {
     public void cargarDatos(
             UsuarioDTOCompleto usuarioActual, List<PermisoDTO> permisosDelRol, Runnable notificadorCambios
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Administrar Permisos de Roles."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.EDITAR_ROLES);
         this.usuarioActual = usuarioActual;
         this.permisosDelRol = permisosDelRol;
         this.notificadorCambios = notificadorCambios;

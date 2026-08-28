@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.GestionPermisosControlador;
@@ -14,6 +16,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Window;
+
+import java.util.List;
 
 public class GestionConfiguracionesControlador {
 
@@ -29,24 +33,13 @@ public class GestionConfiguracionesControlador {
     //MÉTODOS:
 
     public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (
-            !usuarioActual.tienePermiso(PermisosApp.EDITAR_PERFIL_DE_TIENDA) &&
-            !usuarioActual.tienePermiso(PermisosApp.REGISTRAR_ROLES) &&
-            !usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES) &&
-            !usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES) &&
-            !usuarioActual.tienePermiso(PermisosApp.GESTIONAR_PERMISOS)
-        ) {
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para entrar a Configuraciones."
-            );
-            volverAGestionarTienda();
-            return;
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.EDITAR_PERFIL_DE_TIENDA,
+                PermisosApp.REGISTRAR_ROLES,
+                PermisosApp.EDITAR_ROLES,
+                PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES,
+                PermisosApp.GESTIONAR_PERMISOS
+        ));
         this.usuarioActual = usuarioActual;
         protegerBoton(btnEditarNombre, PermisosApp.EDITAR_PERFIL_DE_TIENDA);
         protegerBoton(btnGestionRoles, PermisosApp.EDITAR_ROLES);
@@ -66,38 +59,50 @@ public class GestionConfiguracionesControlador {
 
     @FXML
     private void abrirConfiguracionNombre(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_NOMBRE_TIENDA_VIEW,
-                "Configuración de Tienda",
-                getVentana(),
-                (EdicionTiendaControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_NOMBRE_TIENDA_VIEW,
+                    "Configuración de Tienda",
+                    getVentana(),
+                    (EdicionTiendaControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     public void abrirGestionRoles(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTION_ROLES_VIEW,
-                (GestionRolesControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTION_ROLES_VIEW,
+                    (GestionRolesControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirGestionPermisos(ActionEvent event){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.PERMISOS_VISTA_VIEW,
-                (GestionPermisosControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.PERMISOS_VISTA_VIEW,
+                    (GestionPermisosControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -107,13 +112,17 @@ public class GestionConfiguracionesControlador {
     }
 
     private void volverAGestionarTienda(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_TIENDA_VIEW,
-                (GestionarTiendaControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_TIENDA_VIEW,
+                    (GestionarTiendaControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 }//===================================================================================================================//

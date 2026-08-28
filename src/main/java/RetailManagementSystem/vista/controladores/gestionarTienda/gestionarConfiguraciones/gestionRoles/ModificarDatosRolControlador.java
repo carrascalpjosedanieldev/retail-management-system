@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -61,26 +62,10 @@ public class ModificarDatosRolControlador {
     public void cargarDatos(
             UsuarioDTOCompleto usuarioActual, RolDTO rol, ObservableList<RolDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_ROLES)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Modificar Roles."
-            );
-            cerrarVentanaSeguro();
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.EDITAR_ROLES);
         this.usuarioActual = usuarioActual;
         if (rol == null) {
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(), "Error",
-                    "Datos Inválidos",
-                    "NO se recibió un Rol para Editar.");
-            cerrarVentanaSeguro();
-            return;
+            throw new IllegalArgumentException("NO se recibió un Rol para Editar.");
         }
         this.rol = rol;
         this.lblIdRol.setText("ID: #" + rol.idRol());

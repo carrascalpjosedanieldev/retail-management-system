@@ -6,8 +6,10 @@ import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.GestionInventariosControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -68,9 +70,6 @@ public class TabRopaControlador {
     //MÉTODOS:
 
     public void recibirIdInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventario) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
         ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.EDITAR_PRODUCTO
@@ -103,7 +102,17 @@ public class TabRopaControlador {
                                 "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
                                 causa.getMessage()
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+                try {
+                    CargadorVistas.cambiarPantallaInyectada(
+                            getVentana(),
+                            RutasVista.GESTIONAR_INVENTARIOS_VIEW,
+                            (GestionInventariosControlador c) -> {
+                                c.cargarDatos(this.usuarioActual);
+                            }
+                    );
+                } catch (AccesoDenegadoException exc){
+                    GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), exc);
+                }
             });
             return null;
         });
@@ -295,13 +304,17 @@ public class TabRopaControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_ROPA_VIEW,
-                "Editar Prenda de Ropa", getVentana(),
-                (EditarRopaControlador c)->{
-                    c.cargarDatosProducto(this.usuarioActual, productoSeleccionado, this.idInventario, listaObservable);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_ROPA_VIEW,
+                    "Editar Prenda de Ropa", getVentana(),
+                    (EditarRopaControlador c)->{
+                        c.cargarDatosProducto(this.usuarioActual, productoSeleccionado, this.idInventario, listaObservable);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

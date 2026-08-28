@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import javafx.application.Platform;
@@ -45,17 +46,7 @@ public class CrearPoliticaVencimiento {
     public void cargarDatos(
             UsuarioDTOCompleto usuarioActual, ObservableList<PoliticaVencimientoDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_POLITICAS_V)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Registrar Políticas de Vencimiento."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.REGISTRAR_POLITICAS_V);
         this.usuarioActual = usuarioActual;
         this.listaObservable = listaObservable;
     }

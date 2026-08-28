@@ -4,7 +4,9 @@ import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.GestionProductosControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
@@ -60,18 +62,10 @@ public class GestionInventariosControlador {
     //MÉTODOS:
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.VER_SERVICIOS) ||
-            !usuarioActual.tienePermiso(PermisosApp.REGISTRAR_SERVICIOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Servicios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_SERVICIOS,
+                PermisosApp.REGISTRAR_SERVICIOS
+        ));
         this.usuarioActual = usuarioActual;
         configurarVisibilidadModulos();
     }
@@ -98,6 +92,8 @@ public class GestionInventariosControlador {
         boolean visualizar = tieneAccesoAlModulo(List.of(
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.REGISTRAR_PRODUCTOS,
+                PermisosApp.EDITAR_PRODUCTO,
+                PermisosApp.CAMBIAR_ESTADO_PRODUCTO,
                 PermisosApp.TRASLADAR_PRODUCTOS
         ));
         btnVerOEditarProductos.setVisible(visualizar);
@@ -184,8 +180,10 @@ public class GestionInventariosControlador {
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error", null,
-                        "No se pudieron cargar los inventarios: " + causa.getMessage()
+                        "Se Cerrara la Ventana por Seguridad.\n" +
+                                "No se pudieron cargar los inventarios: " + causa.getMessage()
                 );
+                volverAGestionTienda();
             });
             return null;
         });
@@ -206,25 +204,33 @@ public class GestionInventariosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_INVENTARIO_VIEW,
-                "Editando Inventario", getVentana(),
-                (EditarInventarioControlador c)->{
-                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservable);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_INVENTARIO_VIEW,
+                    "Editando Inventario", getVentana(),
+                    (EditarInventarioControlador c)->{
+                        c.cargarDatos(this.usuarioActual, seleccionado, listaObservable);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.CREAR_INVENTARIO_VIEW,
-                "Creando Inventario", getVentana(),
-                (CrearInventarioControlador c)->{
-                    c.cargarDatos(this.usuarioActual, listaObservable);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.CREAR_INVENTARIO_VIEW,
+                    "Creando Inventario", getVentana(),
+                    (CrearInventarioControlador c)->{
+                        c.cargarDatos(this.usuarioActual, listaObservable);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -238,13 +244,17 @@ public class GestionInventariosControlador {
             );
             return;
         }
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_PRODUCTOS_VIEW,
-                (GestionProductosControlador c)->{
-                    c.inicializarConInventarioYUsuario(this.usuarioActual, seleccionado.idInventario());
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_PRODUCTOS_VIEW,
+                    (GestionProductosControlador c)->{
+                        c.inicializarConInventarioYUsuario(this.usuarioActual, seleccionado.idInventario());
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -254,13 +264,17 @@ public class GestionInventariosControlador {
     }
 
     private void volverAGestionTienda(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_TIENDA_VIEW,
-                (GestionarTiendaControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_TIENDA_VIEW,
+                    (GestionarTiendaControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -61,17 +62,7 @@ public class GestionarRolesDeUsuarioControlador {
     //MÉTODOS:
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual, Long idUsuario){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES_USUARIO)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar los Roles del Usuario."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.GESTIONAR_ROLES_USUARIO);
         this.usuarioActual = usuarioActual;
         CompletableFuture.supplyAsync(()->
                 this.orquestadorUsuarios.obtenerDatosTotalesUsuario(idUsuario)

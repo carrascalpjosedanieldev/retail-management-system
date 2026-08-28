@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -49,17 +50,7 @@ public class EditarUsuarioControlador {
             UsuarioDTOCompleto usuarioActual, UsuarioDTOBasico datosUsuario,
             ObservableList<UsuarioDTOBasico> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_USUARIOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Editar los Usuarios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.EDITAR_USUARIOS);
         this.usuarioActual = usuarioActual;
         this.datosUsuario = datosUsuario;
         this.listaObservable = listaObservable;

@@ -2,6 +2,7 @@ package RetailManagementSystem.vista.controladores.login;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorLogin;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioInactivoException;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
@@ -47,6 +48,9 @@ public class CambioContrasenaControlador {
     //MÉTODOS:
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual){
+        if (usuarioActual == null){
+            throw new AccesoDenegadoException("NO hay una Sesión Activa.");
+        }
         this.usuarioActual = usuarioActual;
         lblNombreUsuario.setText(usuarioActual.getNombreCompleto());
     }
@@ -131,13 +135,17 @@ public class CambioContrasenaControlador {
                 });
             }
         }).thenRun(()->
-                Platform.runLater(()->
+                Platform.runLater(()-> {
+                    try {
                         CargadorVistas.cambiarPantallaConInyeccionYTamanoNormal(
                                 getVentana(),
                                 RutasVista.MENU_PRINCIPAL_VIEW,
                                 (MenuPrincipalControlador c) -> c.recibirUsuarioActual(this.usuarioActual)
-                        )
-                )
+                        );
+                    } catch (AccesoDenegadoException ex){
+                        GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+                    }
+                })
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;

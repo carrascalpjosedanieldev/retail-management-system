@@ -3,7 +3,9 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConf
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -60,18 +62,10 @@ public class GestionPermisosControlador {
     //MÉTODOS:
 
     public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.VER_PERMISOS) &&
-            !usuarioActual.tienePermiso(PermisosApp.GESTIONAR_PERMISOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar Permisos."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_PERMISOS,
+                PermisosApp.GESTIONAR_PERMISOS
+        ));
         this.usuarioActual = usuarioActual;
         if (!usuarioActual.tienePermiso(PermisosApp.VER_PERMISOS)){
             btnCambiarEstado.setVisible(false);
@@ -151,7 +145,7 @@ public class GestionPermisosControlador {
                         "Hubo un fallo al conectar con la Base de Datos: " + causa.getMessage() + "\n" +
                                 "Comunicate con el Administrador y Revisa tu conexión."
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_CONFIGURACIONES_VIEW);
+                volverAConfiguraciones();
             });
             return null;
         });
@@ -260,13 +254,17 @@ public class GestionPermisosControlador {
     }
 
     private void volverAConfiguraciones(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
-                (GestionConfiguracionesControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
+                    (GestionConfiguracionesControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

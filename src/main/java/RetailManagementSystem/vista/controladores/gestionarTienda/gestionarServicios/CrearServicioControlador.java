@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -59,17 +60,7 @@ public class CrearServicioControlador {
             UsuarioDTOCompleto usuarioActual, ObservableList<ServicioDTO> listaObservable,
             List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_SERVICIOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Registrar Servicios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.REGISTRAR_SERVICIOS);
         this.usuarioActual = usuarioActual;
         this.listaObservable = listaObservable;
         configurarComboBox(cbImpuesto, listaImpuestos, "Seleccione un Impuesto...",

@@ -6,8 +6,10 @@ import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.GestionInventariosControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -74,9 +76,6 @@ public class TabPerecederosControlador {
 
 
     public void recibirIdInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventario) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
         ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.EDITAR_PRODUCTO
@@ -106,7 +105,18 @@ public class TabPerecederosControlador {
                                 "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
                                 causa.getMessage() + ex.getMessage()
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+                try {
+                    CargadorVistas.cambiarPantallaInyectada(
+                            getVentana(),
+                            RutasVista.GESTIONAR_INVENTARIOS_VIEW,
+                            (GestionInventariosControlador c) -> {
+                                c.cargarDatos(this.usuarioActual);
+                            }
+                    );
+                } catch (AccesoDenegadoException exc){
+                    GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), exc);
+                }
+
             });
             return null;
         });
@@ -316,13 +326,17 @@ public class TabPerecederosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_PERECEDERO_VIEW,
-                "Editar Producto Perecedero", getVentana(),
-                (EditarPerecederoControlador c)->{
-                    c.cargarDatos(this.usuarioActual, productoSeleccionado, this.idInventario, listaMaestraPerecederos);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_PERECEDERO_VIEW,
+                    "Editar Producto Perecedero", getVentana(),
+                    (EditarPerecederoControlador c)->{
+                        c.cargarDatos(this.usuarioActual, productoSeleccionado, this.idInventario, listaMaestraPerecederos);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

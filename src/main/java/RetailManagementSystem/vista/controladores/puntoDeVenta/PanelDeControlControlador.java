@@ -2,8 +2,10 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -22,6 +24,7 @@ import javafx.util.Duration;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
@@ -52,9 +55,10 @@ public class PanelDeControlControlador {
     //MÉTODOS:
 
     public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.PROCESAR_VENTA,
+                PermisosApp.VER_HISTORIAL_VENTAS
+        ));
         this.usuarioActual = usuarioActual;
         lblNombreCajero.setText(usuarioActual.getNombreCompleto());
         protegerBoton(btnNuevaVenta, PermisosApp.PROCESAR_VENTA);
@@ -149,37 +153,49 @@ public class PanelDeControlControlador {
 
     @FXML
     private void abrirNuevaVenta(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.MENU_DE_VENTAS_VIEW,
-                (MenuDeVentasControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.MENU_DE_VENTAS_VIEW,
+                    (MenuDeVentasControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirHistorialVentas(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.HISTORIAL_VENTAS_VIEW,
-                "Generar Reporte de Recaudo", getVentana(),
-                (HistorialVentasControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.HISTORIAL_VENTAS_VIEW,
+                    "Generar Reporte de Recaudo", getVentana(),
+                    (HistorialVentasControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void volverAlMenu(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.MENU_PRINCIPAL_VIEW,
-                (MenuPrincipalControlador c) -> {
-                    c.recibirUsuarioActual(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.MENU_PRINCIPAL_VIEW,
+                    (MenuPrincipalControlador c) -> {
+                        c.recibirUsuarioActual(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

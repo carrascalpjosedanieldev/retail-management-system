@@ -10,6 +10,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -76,17 +77,7 @@ public class EditarPerecederoControlador {
             UsuarioDTOCompleto usuarioActual, DatosTotalesProductoPerecederoDTO producto, int idInventario,
             ObservableList<DatosTotalesProductoPerecederoDTO> listaPerecederos
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.EDITAR_PRODUCTO)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Editar Productos."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.EDITAR_PRODUCTO);
         this.usuarioActual = usuarioActual;
         this.productoOriginal = producto;
         this.idInventario = idInventario;

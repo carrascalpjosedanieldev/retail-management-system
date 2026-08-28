@@ -463,44 +463,46 @@ Este proyecto comenzó como una aplicación de consola con el objetivo de aprend
 
 ## 🚧 Estado del proyecto
 
-**Versión actual:** 1.0.2
+**Versión actual:** 1.1.0
 
 | Módulo               | Estado           |
 |----------------------|------------------|
 | Gestión de la tienda | ✅ Finalizado     |
 | Punto de venta       | ✅ Finalizado     |
+| Gestion de usuarios  | ✅ Finalizado     |
+| Login                | ✅ Finalizado     |
 | Documentación        | 🚧 En desarrollo |
-| Versión 1.0.2        | ✅ Finalizado     |
+| Versión 1.1.0        | ✅ Finalizado     |
 
 ### Proximo Objetivo
 
-Terminar el **ReadMe** y la Documentación del proyecto.
+Implementar **Testing Automatizado**.
 
 ---
 
 ## Características
 
-### 🏪 Gestión de la tienda
+### 🏪 Gestión de la Tienda
 - Configuración global de la tienda.
 - Administración de información general del negocio.
 
-### 📦 Gestión de productos
+### 📦 Gestión de Productos
 - Registro, consulta, actualización y eliminación de productos.
 - Soporte para múltiples tipos de productos con comportamientos específicos.
 - Asociación de características propias según el tipo de producto.
 - Control del estado de disponibilidad de los productos.
 
-### 🛠️ Gestión de servicios
+### 🛠️ Gestión de Servicios
 - Administración independiente de servicios.
 - Tratamiento de productos y servicios como ítems facturables dentro del proceso de venta.
 - Control del estado de disponibilidad de los servicios.
 
-### 📚 Gestión de inventarios
+### 📚 Gestión de Inventarios
 - Administración de múltiples inventarios.
 - Asociación de cualquier tipo de producto a un inventario.
 - Control del stock por inventario.
 
-### 💰 Gestión comercial
+### 💰 Gestión Comercial
 - Administración de impuestos y descuentos.
 - Gestión de precios utilizando BigDecimal para garantizar precisión en cálculos monetarios.
 - Configuración de políticas de vencimiento.
@@ -512,13 +514,13 @@ Terminar el **ReadMe** y la Documentación del proyecto.
 - Aplicación automática de impuestos y descuentos.
 - Cálculo preciso de subtotales y totales.
 
-### 🖥️ Punto de venta
+### 🖥️ Punto de Venta
 - Proceso de venta desde una interfaz gráfica.
 - Selección de productos y servicios.
 - Generación automática de la factura.
 - **Estado:** 🚧 En desarrollo.
 
-### 🎨 Interfaz de usuario
+### 🎨 Interfaz de Usuario
 - Aplicación de escritorio desarrollada con JavaFX.
 - Interfaz basada en FXML y CSS.
 

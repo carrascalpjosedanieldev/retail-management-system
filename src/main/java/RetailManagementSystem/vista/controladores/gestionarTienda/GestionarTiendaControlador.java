@@ -1,6 +1,7 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.GestionDescuentosControlador;
@@ -10,6 +11,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPolit
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarServicios.GestionServiciosControlador;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
+import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
 
 import javafx.event.ActionEvent;
@@ -37,7 +39,7 @@ public class GestionarTiendaControlador {
 
     public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
         if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+            throw new AccesoDenegadoException("Usuario Nulo, Error al Recibir el Usuario");
         }
         this.usuarioActual = usuarioActual;
         configurarVisibilidadModulos();
@@ -111,85 +113,114 @@ public class GestionarTiendaControlador {
 
     @FXML
     private void abrirConfiguraciones(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
-                (GestionConfiguracionesControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_CONFIGURACIONES_VIEW,
+                    (GestionConfiguracionesControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirDescuentos(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_DESCUENTOS_VIEW,
-                (GestionDescuentosControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_DESCUENTOS_VIEW,
+                    (GestionDescuentosControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirImpuestos(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_IMPUESTOS_VIEW,
-                (GestionImpuestosControlador c) -> {
-                    c.cargarDatos(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_IMPUESTOS_VIEW,
+                    (GestionImpuestosControlador c) -> {
+                        c.cargarDatos(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirInventarios(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_INVENTARIOS_VIEW,
-                (GestionInventariosControlador c) -> {
-                    c.cargarDatos(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_INVENTARIOS_VIEW,
+                    (GestionInventariosControlador c) -> {
+                        c.cargarDatos(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirServicios(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_SERVICIOS_VIEW,
-                (GestionServiciosControlador c) -> {
-                    c.cargarDatos(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_SERVICIOS_VIEW,
+                    (GestionServiciosControlador c) -> {
+                        c.cargarDatos(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirPoliticasVencimiento(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_POLITICAS_V_VIEW,
-                (GestionPoliticasVencimientoControlador c) -> {
-                    c.cargarDatos(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_POLITICAS_V_VIEW,
+                    (GestionPoliticasVencimientoControlador c) -> {
+                        c.cargarDatos(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
+
     }
 
 
     @FXML
     private void volverAlMenu(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.MENU_PRINCIPAL_VIEW,
-                (MenuPrincipalControlador c) -> {
-                    c.recibirUsuarioActual(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.MENU_PRINCIPAL_VIEW,
+                    (MenuPrincipalControlador c) -> {
+                        c.recibirUsuarioActual(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 }//===================================================================================================================//

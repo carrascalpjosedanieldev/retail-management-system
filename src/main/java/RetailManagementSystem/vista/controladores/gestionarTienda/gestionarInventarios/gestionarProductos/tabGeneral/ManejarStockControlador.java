@@ -7,6 +7,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -60,17 +61,7 @@ public class ManejarStockControlador {
             UsuarioDTOCompleto usuarioActual, ProductoResumenDTO producto, int idInventario,
             ObservableList<ProductoResumenDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.MANEJAR_STOCK_PRODUCTO)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Manejar el Stock de los Productos."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.MANEJAR_STOCK_PRODUCTO);
         this.usuarioActual = usuarioActual;
         this.seleccionado = producto;
         this.idInventario = idInventario;

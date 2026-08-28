@@ -3,8 +3,10 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.GestionInventariosControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
@@ -70,15 +72,8 @@ public class TabGeneralProductosControlador {
     }
 
     public void recibirIdInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventario) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
         if (idInventario <= 0){
-            GestorAlertas.mostrarAlertaWarning(
-                    getVentana(), "ID del Inventario Invalido", null,
-                    "El ID recibido NO es Valido."
-            );
-            return;
+            throw new IllegalArgumentException("ID del Inventario Invalido");
         }
         ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
                 PermisosApp.VER_PRODUCTOS,
@@ -88,7 +83,6 @@ public class TabGeneralProductosControlador {
                 PermisosApp.CAMBIAR_ESTADO_PRODUCTO
         ));
         this.usuarioActual = usuarioActual;
-
         this.idInventario = idInventario;
         configurarVisibilidadModulos();
         cargarDatosTabla();
@@ -147,8 +141,17 @@ public class TabGeneralProductosControlador {
                                 "Verifica tu conexión y Notificale este Error al Administrador\n" +
                                 causa.getMessage()
                 );
-
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_INVENTARIOS_VIEW);
+                try {
+                    CargadorVistas.cambiarPantallaInyectada(
+                            getVentana(),
+                            RutasVista.GESTIONAR_INVENTARIOS_VIEW,
+                            (GestionInventariosControlador c) -> {
+                                c.cargarDatos(this.usuarioActual);
+                            }
+                    );
+                } catch (AccesoDenegadoException exc){
+                    GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), exc);
+                }
             });
             return null;
         });
@@ -288,13 +291,17 @@ public class TabGeneralProductosControlador {
 
     @FXML
     private void abrirSelectorNuevoProducto(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.CREAR_PRODUCTO_VIEW,
-                "Crear Nuevo Producto", getVentana(),
-                (CrearProductoControlador c)-> {
-                    c.cargarDatos(this.usuarioActual, this.idInventario, listaObservable);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.CREAR_PRODUCTO_VIEW,
+                    "Crear Nuevo Producto", getVentana(),
+                    (CrearProductoControlador c)-> {
+                        c.cargarDatos(this.usuarioActual, this.idInventario, listaObservable);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -366,13 +373,17 @@ public class TabGeneralProductosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.MANEJAR_STOCK_PRODUCTO_VIEW,
-                "Manejar Stock Producto", getVentana(),
-                (ManejarStockControlador c)->{
-                    c.cargarDatos(this.usuarioActual, productoSeleccionado, this.idInventario, listaObservable);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.MANEJAR_STOCK_PRODUCTO_VIEW,
+                    "Manejar Stock Producto", getVentana(),
+                    (ManejarStockControlador c)->{
+                        c.cargarDatos(this.usuarioActual, productoSeleccionado, this.idInventario, listaObservable);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -386,13 +397,17 @@ public class TabGeneralProductosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.MOVER_PRODUCTO_INVENTARIO_VIEW,
-                "Mover Producto", getVentana(),
-                (MoverProductoAOtroInventarioControlador c)->{
-                    c.cargarDatos(this.usuarioActual, this.idInventario, seleccionado, listaObservable);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.MOVER_PRODUCTO_INVENTARIO_VIEW,
+                    "Mover Producto", getVentana(),
+                    (MoverProductoAOtroInventarioControlador c)->{
+                        c.cargarDatos(this.usuarioActual, this.idInventario, seleccionado, listaObservable);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

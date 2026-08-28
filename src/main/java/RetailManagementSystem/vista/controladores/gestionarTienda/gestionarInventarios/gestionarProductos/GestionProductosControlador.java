@@ -40,36 +40,24 @@ public class GestionProductosControlador {
     public void initialize() { }
 
     public void inicializarConInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventarioRecibido) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_PRODUCTOS,
+                PermisosApp.REGISTRAR_PRODUCTOS,
+                PermisosApp.EDITAR_PRODUCTO,
+                PermisosApp.MANEJAR_STOCK_PRODUCTO,
+                PermisosApp.TRASLADAR_PRODUCTOS,
+                PermisosApp.CAMBIAR_ESTADO_PRODUCTO
+        ));
+        this.usuarioActual = usuarioActual;
+        if (tabGeneralController != null) {
+            tabGeneralController.recibirIdInventarioYUsuario(this.usuarioActual, idInventarioRecibido);
         }
-        try {
-            ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
-                    PermisosApp.VER_PRODUCTOS,
-                    PermisosApp.REGISTRAR_PRODUCTOS,
-                    PermisosApp.EDITAR_PRODUCTO,
-                    PermisosApp.MANEJAR_STOCK_PRODUCTO,
-                    PermisosApp.TRASLADAR_PRODUCTOS,
-                    PermisosApp.CAMBIAR_ESTADO_PRODUCTO
-            ));
-            this.usuarioActual = usuarioActual;
-            if (tabGeneralController != null) {
-                tabGeneralController.recibirIdInventarioYUsuario(this.usuarioActual, idInventarioRecibido);
-            }
-            if (tabRopaController != null) {
-                tabRopaController.recibirIdInventarioYUsuario(this.usuarioActual, idInventarioRecibido);
-            }
-            if (tabPerecederoController != null) {
-                tabPerecederoController.recibirIdInventarioYUsuario(this.usuarioActual, idInventarioRecibido);
-            }
-        } catch (AccesoDenegadoException e) {
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    e.getMessage()
-            );
+        if (tabRopaController != null) {
+            tabRopaController.recibirIdInventarioYUsuario(this.usuarioActual, idInventarioRecibido);
         }
-
+        if (tabPerecederoController != null) {
+            tabPerecederoController.recibirIdInventarioYUsuario(this.usuarioActual, idInventarioRecibido);
+        }
     }
 
     private Window getVentana(){
@@ -83,13 +71,17 @@ public class GestionProductosControlador {
     }
 
     private void volverAGestionInventarios(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_INVENTARIOS_VIEW,
-                (GestionInventariosControlador c) -> {
-                    c.cargarDatos(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_INVENTARIOS_VIEW,
+                    (GestionInventariosControlador c) -> {
+                        c.cargarDatos(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

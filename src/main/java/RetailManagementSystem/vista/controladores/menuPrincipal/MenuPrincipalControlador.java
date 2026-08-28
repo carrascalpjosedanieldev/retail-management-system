@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.menuPrincipal;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
@@ -54,7 +55,7 @@ public class MenuPrincipalControlador {
 
     public void recibirUsuarioActual(UsuarioDTOCompleto usuarioActual){
         if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
+            throw new AccesoDenegadoException("Usuario Nulo, Error al Recibir el Usuario");
         }
         this.usuarioActual = usuarioActual;
         lblNombreUsuario.setText(usuarioActual.getNombreCompleto());
@@ -183,36 +184,48 @@ public class MenuPrincipalControlador {
 
     @FXML
     private void abrirPuntoDeVenta(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.PANEL_DE_CONTROL_POS_VIEW,
-                (PanelDeControlControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.PANEL_DE_CONTROL_POS_VIEW,
+                    (PanelDeControlControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirGestionarTienda(ActionEvent event) {
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_TIENDA_VIEW,
-                (GestionarTiendaControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_TIENDA_VIEW,
+                    (GestionarTiendaControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
     @FXML
     private void abrirGestionarUsuarios(ActionEvent event){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_USUARIOS_VIEW,
-                (GestionUsuariosControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_USUARIOS_VIEW,
+                    (GestionUsuariosControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
     @FXML

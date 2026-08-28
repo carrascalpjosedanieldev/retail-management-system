@@ -3,7 +3,9 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoli
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -23,6 +25,7 @@ import javafx.scene.control.*;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionPoliticasVencimientoControlador {
@@ -55,22 +58,12 @@ public class GestionPoliticasVencimientoControlador {
     //MÉTODOS:
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (
-            !usuarioActual.tienePermiso(PermisosApp.VER_POLITICAS_V) ||
-            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_POLITICAS_V) &&
-             !usuarioActual.tienePermiso(PermisosApp.MODIFICAR_POLITICAS_V) &&
-             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_POLITICAS_V))
-        ){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Gestionar las Políticas de Vencimiento."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_POLITICAS_V,
+                PermisosApp.REGISTRAR_POLITICAS_V,
+                PermisosApp.MODIFICAR_POLITICAS_V,
+                PermisosApp.CAMBIAR_ESTADO_POLITICAS_V
+        ));
         this.usuarioActual = usuarioActual;
         protegerBoton(btnNuevo, PermisosApp.REGISTRAR_POLITICAS_V);
         protegerBoton(btnModificar, PermisosApp.MODIFICAR_POLITICAS_V);
@@ -162,7 +155,7 @@ public class GestionPoliticasVencimientoControlador {
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+                volverAGestionTienda();
             });
             return null;
         });
@@ -179,25 +172,33 @@ public class GestionPoliticasVencimientoControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_POLITICA_V_VIEW,
-                "Editando Política de Vencimiento", getVentana(),
-                (EditarPoliticaVencimientoControlador c)->{
-                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservablePoliticasVencimiento);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_POLITICA_V_VIEW,
+                    "Editando Política de Vencimiento", getVentana(),
+                    (EditarPoliticaVencimientoControlador c)->{
+                        c.cargarDatos(this.usuarioActual, seleccionado, listaObservablePoliticasVencimiento);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.CREAR_POLITiCA_V_VIEW,
-                "Creando Política de Vencimiento", getVentana(),
-                (CrearPoliticaVencimiento c)->{
-                    c.cargarDatos(this.usuarioActual, listaObservablePoliticasVencimiento);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.CREAR_POLITiCA_V_VIEW,
+                    "Creando Política de Vencimiento", getVentana(),
+                    (CrearPoliticaVencimiento c)->{
+                        c.cargarDatos(this.usuarioActual, listaObservablePoliticasVencimiento);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -262,13 +263,17 @@ public class GestionPoliticasVencimientoControlador {
     }
 
     private void volverAGestionTienda(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_TIENDA_VIEW,
-                (GestionarTiendaControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_TIENDA_VIEW,
+                    (GestionarTiendaControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

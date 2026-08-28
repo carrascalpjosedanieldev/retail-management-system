@@ -15,6 +15,7 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInven
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -91,24 +92,10 @@ public class CrearProductoControlador {
     public void cargarDatos(
             UsuarioDTOCompleto usuarioActual, int idInventario, ObservableList<ProductoResumenDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_PRODUCTOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Registrar Productos."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.REGISTRAR_PRODUCTOS);
         this.usuarioActual = usuarioActual;
         if (idInventario <=0 ){
-            GestorAlertas.mostrarAlertaWarning(
-                    getVentana(), "ID del Inventario Invalido", null,
-                    "El ID recibido NO es Valido."
-            );
-            return;
+            throw new IllegalArgumentException("El ID recibido NO es Valido.");
         }
         this.idInventario = idInventario;
         this.listaObservable = listaObservable;

@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
@@ -48,21 +49,11 @@ public class EditarDescuentoControlador {
     public void cargarDatos(
             UsuarioDTOCompleto usuarioActual, DescuentoDTO datosDescuento, ObservableList<DescuentoDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.MODIFICAR_DESCUENTOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Modificar los Descuentos."
-            );
-            return;
-        }
-        this.usuarioActual = usuarioActual;
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.MODIFICAR_DESCUENTOS);
         if (datosDescuento == null) {
             throw new IllegalArgumentException("No puedes editar un Descuento Vacío.");
         }
+        this.usuarioActual = usuarioActual;
         this.datosDescuento = datosDescuento;
         this.listaObservable = listaObservable;
         lblNombreDescuento.setText(this.datosDescuento.nombre());

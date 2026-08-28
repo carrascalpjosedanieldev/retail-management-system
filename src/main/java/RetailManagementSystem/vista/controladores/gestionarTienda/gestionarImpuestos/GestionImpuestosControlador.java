@@ -3,7 +3,9 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpu
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -23,6 +25,7 @@ import javafx.scene.control.*;
 import javafx.stage.Window;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionImpuestosControlador {
@@ -54,22 +57,12 @@ public class GestionImpuestosControlador {
     //MÉTODOS:
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (
-            !usuarioActual.tienePermiso(PermisosApp.VER_IMPUESTOS) ||
-            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_IMPUESTOS) &&
-             !usuarioActual.tienePermiso(PermisosApp.MODIFICAR_IMPUESTOS) &&
-             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_IMPUESTOS))
-        ){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Impuestos."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_IMPUESTOS,
+                PermisosApp.REGISTRAR_IMPUESTOS,
+                PermisosApp.MODIFICAR_IMPUESTOS,
+                PermisosApp.CAMBIAR_ESTADO_IMPUESTOS
+        ));
         this.usuarioActual = usuarioActual;
         protegerBoton(btnNuevo, PermisosApp.REGISTRAR_IMPUESTOS);
         protegerBoton(btnModificar, PermisosApp.MODIFICAR_IMPUESTOS);
@@ -159,7 +152,7 @@ public class GestionImpuestosControlador {
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+                volverAGestionTienda();
             });
             return null;
         });
@@ -176,25 +169,33 @@ public class GestionImpuestosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_IMPUESTO_VIEW,
-                "Editando Impuesto", getVentana(),
-                (EditarImpuestoControlador c)->{
-                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservableImpuestos);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_IMPUESTO_VIEW,
+                    "Editando Impuesto", getVentana(),
+                    (EditarImpuestoControlador c)->{
+                        c.cargarDatos(this.usuarioActual, seleccionado, listaObservableImpuestos);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.CREAR_IMPUESTO_VIEW,
-                "Creando Impuesto", getVentana(),
-                (CrearImpuestoControlador c)->{
-                    c.cargarDatos(this.usuarioActual, listaObservableImpuestos);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.CREAR_IMPUESTO_VIEW,
+                    "Creando Impuesto", getVentana(),
+                    (CrearImpuestoControlador c)->{
+                        c.cargarDatos(this.usuarioActual, listaObservableImpuestos);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -256,13 +257,17 @@ public class GestionImpuestosControlador {
     }
 
     private void volverAGestionTienda(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_TIENDA_VIEW,
-                (GestionarTiendaControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_TIENDA_VIEW,
+                    (GestionarTiendaControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

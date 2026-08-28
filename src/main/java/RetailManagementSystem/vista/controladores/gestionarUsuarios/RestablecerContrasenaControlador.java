@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -39,17 +40,7 @@ public class RestablecerContrasenaControlador {
     //MÉTODOS:
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual, Long idUsuario, String nombreUsuario){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.RESTABLECER_CONTRASENA_USUARIO)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Restablecer Contraseñas."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.RESTABLECER_CONTRASENA_USUARIO);
         this.usuarioActual = usuarioActual;
         lblNombreUsuario.setText(nombreUsuario);
         CompletableFuture.supplyAsync(()->

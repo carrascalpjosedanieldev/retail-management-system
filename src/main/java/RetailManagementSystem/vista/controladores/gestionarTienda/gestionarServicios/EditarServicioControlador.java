@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
@@ -65,17 +66,7 @@ public class EditarServicioControlador {
             UsuarioDTOCompleto usuarioActual, ServicioDTO seleccionado, ObservableList<ServicioDTO> listaObservable,
             List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos
     ){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.MODIFICAR_SERVICIOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Editar los Servicios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.MODIFICAR_SERVICIOS);
         this.usuarioActual = usuarioActual;
         if (seleccionado==null){
             throw new IllegalArgumentException("NO puedes editar un Servicio Nulo");

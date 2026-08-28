@@ -3,7 +3,9 @@ package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOBasico;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -23,6 +25,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Window;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class GestionUsuariosControlador {
@@ -57,24 +60,14 @@ public class GestionUsuariosControlador {
     //MÉTODOS:
 
     public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (
-            !usuarioActual.tienePermiso(PermisosApp.VER_USUARIOS) ||
-            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_USUARIOS) &&
-             !usuarioActual.tienePermiso(PermisosApp.EDITAR_USUARIOS) &&
-             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_USUARIOS) &&
-             !usuarioActual.tienePermiso(PermisosApp.GESTIONAR_ROLES_USUARIO) &&
-             !usuarioActual.tienePermiso(PermisosApp.RESTABLECER_CONTRASENA_USUARIO))
-        ){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Usuarios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_USUARIOS,
+                PermisosApp.REGISTRAR_USUARIOS,
+                PermisosApp.EDITAR_USUARIOS,
+                PermisosApp.CAMBIAR_ESTADO_USUARIOS,
+                PermisosApp.GESTIONAR_ROLES_USUARIO,
+                PermisosApp.RESTABLECER_CONTRASENA_USUARIO
+        ));
         this.usuarioActual = usuarioActual;
         protegerBoton(btnNuevo, PermisosApp.REGISTRAR_USUARIOS);
         protegerBoton(btnEditar, PermisosApp.EDITAR_USUARIOS);
@@ -180,7 +173,7 @@ public class GestionUsuariosControlador {
                         "Se Cerrara la Ventana por Seguridad.\n" +
                                 "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.MENU_PRINCIPAL_VIEW);
+                volverAGestionarTienda();
             });
             return null;
         });
@@ -189,13 +182,18 @@ public class GestionUsuariosControlador {
 
     @FXML
     private void abrirFormularioNuevo(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.REGISTRAR_USUARIO_VIEW,
-                "Registrando Usuario", getVentana(),
-                (RegistrarUsuarioControlador c)-> {
-                    c.cargarDatos(this.usuarioActual, listaObservableUsuarios);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.REGISTRAR_USUARIO_VIEW,
+                    "Registrando Usuario", getVentana(),
+                    (RegistrarUsuarioControlador c)-> {
+                        c.cargarDatos(this.usuarioActual, listaObservableUsuarios);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
+
     }
 
 
@@ -209,13 +207,17 @@ public class GestionUsuariosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_USUARIO_VIEW,
-                "Editando Usuario", getVentana(),
-                (EditarUsuarioControlador c)-> {
-                    c.cargarDatos(this.usuarioActual, seleccionado, listaObservableUsuarios);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_USUARIO_VIEW,
+                    "Editando Usuario", getVentana(),
+                    (EditarUsuarioControlador c)-> {
+                        c.cargarDatos(this.usuarioActual, seleccionado, listaObservableUsuarios);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -280,13 +282,17 @@ public class GestionUsuariosControlador {
             );
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.GESTIONAR_ROLES_USUARIO_VIEW,
-                "Gestionando Roles", getVentana(),
-                (GestionarRolesDeUsuarioControlador c)->{
-                    c.cargarDatos(this.usuarioActual, seleccionado.idUsuario());
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.GESTIONAR_ROLES_USUARIO_VIEW,
+                    "Gestionando Roles", getVentana(),
+                    (GestionarRolesDeUsuarioControlador c)->{
+                        c.cargarDatos(this.usuarioActual, seleccionado.idUsuario());
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -304,13 +310,17 @@ public class GestionUsuariosControlador {
                 "¿Estás Seguro de Restablecer la Contraseña del Usuario -" + seleccionado.getNombreCompleto() + "-?")) {
             return;
         }
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.RESTABLECER_CONTRASENA_VIEW,
-                "Restableciendo Contraseña", getVentana(),
-                (RestablecerContrasenaControlador c)-> {
-                    c.cargarDatos(this.usuarioActual, seleccionado.idUsuario(), seleccionado.getNombreCompleto());
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.RESTABLECER_CONTRASENA_VIEW,
+                    "Restableciendo Contraseña", getVentana(),
+                    (RestablecerContrasenaControlador c)-> {
+                        c.cargarDatos(this.usuarioActual, seleccionado.idUsuario(), seleccionado.getNombreCompleto());
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -320,13 +330,17 @@ public class GestionUsuariosControlador {
     }
 
     private void volverAGestionarTienda(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.MENU_PRINCIPAL_VIEW,
-                (MenuPrincipalControlador c) -> {
-                    c.recibirUsuarioActual(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.MENU_PRINCIPAL_VIEW,
+                    (MenuPrincipalControlador c) -> {
+                        c.recibirUsuarioActual(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 }//===================================================================================================================//

@@ -7,7 +7,9 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorServicios;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
@@ -70,22 +72,12 @@ public class GestionServiciosControlador {
     //MÉTODOS:
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (
-            !usuarioActual.tienePermiso(PermisosApp.VER_SERVICIOS) ||
-            (!usuarioActual.tienePermiso(PermisosApp.REGISTRAR_SERVICIOS) &&
-             !usuarioActual.tienePermiso(PermisosApp.MODIFICAR_SERVICIOS) &&
-             !usuarioActual.tienePermiso(PermisosApp.CAMBIAR_ESTADO_SERVICIOS))
-        ){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Ver o Gestionar los Servicios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
+                PermisosApp.VER_SERVICIOS,
+                PermisosApp.REGISTRAR_SERVICIOS,
+                PermisosApp.MODIFICAR_SERVICIOS,
+                PermisosApp.CAMBIAR_ESTADO_SERVICIOS
+        ));
         this.usuarioActual = usuarioActual;
         protegerBoton(btnNuevo, PermisosApp.REGISTRAR_SERVICIOS);
         protegerBoton(btnModificar, PermisosApp.MODIFICAR_SERVICIOS);
@@ -201,7 +193,7 @@ public class GestionServiciosControlador {
                         "NO se pudo Completar la Acción.",
                         "Notificale al Administrador este Error:\n" + causa.getMessage()
                 );
-                CargadorVistas.cambiarPantalla(getVentana(), RutasVista.GESTIONAR_TIENDA_VIEW);
+                volverAGestionTienda();
             });
             return null;
         });
@@ -226,15 +218,20 @@ public class GestionServiciosControlador {
     private void abrirModalEdicion(
             ServicioDTO seleccionado, List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos
     ) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.EDITAR_SERVICIO_VIEW,
-                "Editando Servicio", getVentana(),
-                (EditarServicioControlador c)->{
-                    c.cargarDatos(
-                            this.usuarioActual, seleccionado, listaObservableServicios, listaImpuestos, listaDescuentos
-                    );
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_SERVICIO_VIEW,
+                    "Editando Servicio", getVentana(),
+                    (EditarServicioControlador c)->{
+                        c.cargarDatos(
+                                this.usuarioActual, seleccionado, listaObservableServicios, listaImpuestos,
+                                listaDescuentos
+                        );
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
     private void ejecutarConCatalogosListos(BiConsumer<List<ImpuestoDTO>, List<DescuentoDTO>> accionVisual) {
@@ -270,13 +267,17 @@ public class GestionServiciosControlador {
     }
 
     private void abrirModalCrear(List<ImpuestoDTO> listaImpuestos, List<DescuentoDTO> listaDescuentos){
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.CREAR_SERVICIO_VIEW,
-                "Creando Servicio", getVentana(),
-                (CrearServicioControlador c)->{
-                    c.cargarDatos(this.usuarioActual, listaObservableServicios, listaImpuestos, listaDescuentos);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.CREAR_SERVICIO_VIEW,
+                    "Creando Servicio", getVentana(),
+                    (CrearServicioControlador c)->{
+                        c.cargarDatos(this.usuarioActual, listaObservableServicios, listaImpuestos, listaDescuentos);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -342,13 +343,17 @@ public class GestionServiciosControlador {
     }
 
     private void volverAGestionTienda(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTIONAR_TIENDA_VIEW,
-                (GestionarTiendaControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTIONAR_TIENDA_VIEW,
+                    (GestionarTiendaControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

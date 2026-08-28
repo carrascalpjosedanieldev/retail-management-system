@@ -1,6 +1,7 @@
 package RetailManagementSystem.vista.controladores.login;
 
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorLogin;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.CredencialesInvalidasException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioInactivoException;
@@ -99,18 +100,23 @@ public class LoginControlador {
             }
         }).thenAccept(usuarioAutenticado->
                 Platform.runLater(()->{
-                    if (usuarioAutenticado.debeCambiarContrasena()){
-                        CargadorVistas.cambiarPantallaInyectada(
-                                getVentana(),
-                                RutasVista.CAMBIO_CONTRASENA_VIEW,
-                                (CambioContrasenaControlador c) -> c.cargarDatos(usuarioAutenticado)
-                        );
-                    } else {
-                        CargadorVistas.cambiarPantallaConInyeccionYTamanoNormal(
-                                getVentana(),
-                                RutasVista.MENU_PRINCIPAL_VIEW,
-                                (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
-                        );
+                    try {
+                        if (usuarioAutenticado.debeCambiarContrasena()){
+
+                            CargadorVistas.cambiarPantallaInyectada(
+                                    getVentana(),
+                                    RutasVista.CAMBIO_CONTRASENA_VIEW,
+                                    (CambioContrasenaControlador c) -> c.cargarDatos(usuarioAutenticado)
+                            );
+                        } else {
+                            CargadorVistas.cambiarPantallaConInyeccionYTamanoNormal(
+                                    getVentana(),
+                                    RutasVista.MENU_PRINCIPAL_VIEW,
+                                    (MenuPrincipalControlador c) -> c.recibirUsuarioActual(usuarioAutenticado)
+                            );
+                        }
+                    } catch (AccesoDenegadoException ex){
+                        GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
                     }
                 })
         ).exceptionally(ex->{

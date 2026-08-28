@@ -4,7 +4,9 @@ import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -61,17 +63,7 @@ public class AdministrarPermisosDeRolControlador {
 
 
     public void cargarDatos(UsuarioDTOCompleto usuarioActual, RolDTO datosRol){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Administrar los Permisos de un Rol."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.ADMINISTRAR_PERMISOS_DE_ROLES);
         this.usuarioActual = usuarioActual;
         if (datosRol == null){
             GestorAlertas.mostrarAlertaError(
@@ -126,13 +118,17 @@ public class AdministrarPermisosDeRolControlador {
 
     @FXML
     private void anadirPermiso(ActionEvent event) {
-        CargadorVistas.abrirModalConInyeccion(
-                RutasVista.ANADIR_PERMISO_AL_ROL_VIEW,
-                "Administrar Permisos", getVentana(),
-                (AnadirPermisoAlRolControlador c) -> {
-                    c.cargarDatos(this.usuarioActual, listaObservablePermisos, ()-> this.hayCambios = true);
-                }
-        );
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.ANADIR_PERMISO_AL_ROL_VIEW,
+                    "Administrar Permisos", getVentana(),
+                    (AnadirPermisoAlRolControlador c) -> {
+                        c.cargarDatos(this.usuarioActual, listaObservablePermisos, ()-> this.hayCambios = true);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 
@@ -188,13 +184,17 @@ public class AdministrarPermisosDeRolControlador {
     }
 
     private void volverAlPanel(){
-        CargadorVistas.cambiarPantallaInyectada(
-                getVentana(),
-                RutasVista.GESTION_ROLES_VIEW,
-                (GestionRolesControlador c) -> {
-                    c.cargarUsuario(this.usuarioActual);
-                }
-        );
+        try {
+            CargadorVistas.cambiarPantallaInyectada(
+                    getVentana(),
+                    RutasVista.GESTION_ROLES_VIEW,
+                    (GestionRolesControlador c) -> {
+                        c.cargarUsuario(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

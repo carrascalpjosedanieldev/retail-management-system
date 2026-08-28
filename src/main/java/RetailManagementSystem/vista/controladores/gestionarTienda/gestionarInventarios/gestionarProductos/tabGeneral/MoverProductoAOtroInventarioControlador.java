@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -53,17 +54,7 @@ public class MoverProductoAOtroInventarioControlador {
             UsuarioDTOCompleto usuarioActual, int idInventario, ProductoResumenDTO seleccionado,
             ObservableList<ProductoResumenDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.TRASLADAR_PRODUCTOS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Trasladar Productos a otros Inventarios."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.TRASLADAR_PRODUCTOS);
         this.usuarioActual = usuarioActual;
         this.idInventario = idInventario;
         this.seleccionado = seleccionado;

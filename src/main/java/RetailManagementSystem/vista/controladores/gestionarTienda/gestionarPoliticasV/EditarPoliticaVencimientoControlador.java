@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -50,17 +51,7 @@ public class EditarPoliticaVencimientoControlador {
             UsuarioDTOCompleto usuarioActual,
             PoliticaVencimientoDTO datosPoliticaV, ObservableList<PoliticaVencimientoDTO> listaObservable
     ) {
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
-        if (!usuarioActual.tienePermiso(PermisosApp.MODIFICAR_POLITICAS_V)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para Modificar las Políticas de Vencimiento."
-            );
-            return;
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.MODIFICAR_POLITICAS_V);
         this.usuarioActual = usuarioActual;
         if (datosPoliticaV == null) {
             throw new IllegalArgumentException("No puedes editar una Política de Vencimiento Vacía.");

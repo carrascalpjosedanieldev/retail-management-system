@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.ventas.ReporteRecaudoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -43,18 +44,8 @@ public class HistorialVentasControlador {
     //MÉTODOS:
 
     public void cargarUsuario(UsuarioDTOCompleto usuarioActual){
-        if (usuarioActual == null){
-            throw new IllegalArgumentException("Usuario Nulo, Error al Recibir el Usuario");
-        }
+        ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.VER_HISTORIAL_VENTAS);
         this.usuarioActual = usuarioActual;
-        if (!this.usuarioActual.tienePermiso(PermisosApp.VER_HISTORIAL_VENTAS)){
-            GestorAlertas.mostrarAlertaError(
-                    getVentana(),
-                    "Acceso Denegado", "Privilegios Insuficientes",
-                    "NO tienes los Permisos Necesarios para ver el Historial de Ventas."
-            );
-            cerrarPantalla();
-        }
     }
 
     private Window getVentana(){

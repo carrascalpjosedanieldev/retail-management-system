@@ -1,5 +1,6 @@
 package RetailManagementSystem.vista.utilidades;
 
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
@@ -87,6 +88,14 @@ public class GestorAlertas {
             Platform.exit();
             System.exit(0);
         }
+    }
+
+    public static void mostrarAlertaAccesoDenegado(Window ventana, AccesoDenegadoException exception){
+        mostrarAlertaError(
+                ventana,
+                "Acceso Denegado", "Privilegios Insuficientes",
+                exception.getMessage()
+        );
     }
 
 }//===================================================================================================================//
