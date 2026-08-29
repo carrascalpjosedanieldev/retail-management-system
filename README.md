@@ -584,7 +584,7 @@ Este proyecto comenzó como una aplicación de consola con el objetivo de aprend
 
 ### Proximo Objetivo
 
-Implement **Automated Testing**.
+Implementar **Testing Automatizado**.
 
 ---
 
