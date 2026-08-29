@@ -12,7 +12,7 @@ public class InformacionAplicacion {
 
     private static String cargarVersion() {
         Properties propiedades = new Properties();
-        try (InputStream input = InformacionAplicacion.class.getClassLoader().getResourceAsStream("version.properties")) {
+        try (InputStream input = InformacionAplicacion.class.getClassLoader().getResourceAsStream("application.properties")) {
             if (input == null) {
                 throw new IllegalStateException("NO se encontró el archivo version.properties en el classpath.");
             }

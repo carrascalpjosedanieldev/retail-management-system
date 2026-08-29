@@ -81,10 +81,9 @@ public class CargadorVistas {
                     GestorAlertas.mostrarAlertaSalirDelSistema(stage, true);
                 });
                 stage.setResizable(true);
-                stage.setWidth(1280);
-                stage.setHeight(720);
-                stage.setMinWidth(1024);
-                stage.setMinHeight(600);
+                stage.sizeToScene();
+                stage.setMinWidth(1280);
+                stage.setMinHeight(720);
                 stage.centerOnScreen();
             }
         } catch (IOException e) {
@@ -139,11 +138,6 @@ public class CargadorVistas {
             );
             return null;
         }
-    }
-
-
-    public static <T> T abrirModalSinInyeccion(String rutaFxml, String tituloModal, Window ventanaPadre) {
-        return abrirModalConInyeccion(rutaFxml, tituloModal, ventanaPadre, null);
     }
 
 

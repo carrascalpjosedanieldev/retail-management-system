@@ -17,24 +17,26 @@
 
 ## Description
 
-It is a desktop application designed to manage the operation of a retail store and the sales process for products and services. It allows for the management of global configurations, products, services, multiple inventories, taxes, discounts, and other elements fundamental to business operations. It is geared towards managing a single store and was designed considering the main business and regulatory requirements present in sales processes.
+It is a desktop application designed to manage the operation of a retail store and the sales process for products and services. It allows for the management of global configurations, products, services, multiple inventories, taxes, discounts, users, roles, and permissions, as well as managing the authentication process and access control for the system's various functionalities. It is geared towards managing a single store and was designed considering the main business requirements and regulations present in sales processes.
 
-The project aims to offer a centralized point-of-sale and management system with a strong emphasis on domain modeling and business rules. The store domain was chosen for the diversity of scenarios it allows to be represented, such as inventory management, tax and discount calculation, handling different types of products, and invoice generation, prioritizing a design that reflects the real-world behavior of the business.
+The project aims to offer a centralized point-of-sale and management system with a strong emphasis on domain modeling, business rules, and access control. The store domain was chosen for the diversity of scenarios it allows to represent, such as inventory management, tax and discount calculation, handling different types of products, invoice generation, and the administration of different access levels through roles and permissions. A design that reflects the actual behavior of the business and keeps the responsibilities of its different components separate is prioritized.
 
-This project began as a console application with the goal of learning object-oriented programming and gradually evolved into a complete desktop application. Throughout its development, persistence using JDBC and MySQL, a layered architecture, and a graphical interface with JavaFX were incorporated. The entire project was developed without using frameworks in order to understand in depth the fundamentals of Java, software design and persistence before working with technologies such as Spring Boot.
+This project began as a console application with the goal of learning object-oriented programming and gradually evolved into a complete desktop application. Throughout its development, persistence will be incorporated using JDBC and MySQL, along with a layered architecture, services and orchestrators, and a graphical interface with JavaFX. An authentication and authorization system was also implemented, allowing for the management of users, roles, and permissions, including mechanisms for password management and restricting access to operations based on user permissions. The entire project was developed without using frameworks in order to gain a deep understanding of Java fundamentals, software design, persistence, and architecture before working with technologies like Spring Boot.
 
 ---
 
 ## 🚧 Project status
 
-**Current Version:** 1.0.2
+**Current Version:** 1.1.0
 
 | Module           | Status            |
 |------------------|-------------------|
 | Store Management | ✅ Completed       |
 | Point of Sale    | ✅ Completed       |
+| User management  | ✅ Completed       |
+| Login            | ✅ Completed       |
 | Documentation    | 🚧 In Development |
-| Version 1.0.2    | ✅ Completed       |
+| Version 1.1.0    | ✅ Completed       |
 
 ### Next Goal
 
@@ -78,13 +80,162 @@ Finish the **ReadMe** and the project documentation
 
 ### 🖥️ Point of Sale
 - Sales process via a graphical interface.
-- Selection of products and services.
+- Product and service selection.
 - Automatic invoice generation.
-- **Status:** 🚧 Under development.
+- Application of configured sales rules.
+- Inventory updates as part of the sales process.
 
-### 🎨 User Interface
-- Desktop application developed with JavaFX.
-- Interface based on FXML and CSS.
+### 👤 User Management
+- Registration of new users by administrators.
+- Management and editing of existing users.
+- Activation and deactivation of users.
+- Assignment and deletion of roles.
+- Assignment of multiple roles to the same user.
+- Password reset using temporary passwords.
+
+### 🔐 Authentication
+- Login via email and password.
+- Detection of the first login attempt using a temporary password.
+- Password change prompt when using a temporary password.
+- Temporary account lockout after multiple failed login attempts.
+- Configuration of account lockout durations.
+
+### 👥 Role Management
+- Creating new roles.
+- Editing existing roles.
+- Activating and deactivating roles.
+- Assigning and removing role permissions.
+
+### 🛡️ Permission Management
+- Managing existing permissions.
+- Activating and deactivating permissions.
+- Controlling access to features based on assigned permissions.
+- Available permissions correspond to actions defined by the system.
+
+---
+
+## Screenshots
+
+### 1. Main Menu
+
+<p>
+    <img src="docs/images/spanish/screenshots/Menu_Principal.png" alt="Main Menu" width="1605">
+</p>
+
+Entry point of the application. Provides centralized navigation to the main modules of the system, including store management and the point-of-sale module.
+
+### 2. Store Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Tienda.png" alt="Store Management" width="1611">
+</p>
+
+Central administration panel that provides access to the different management modules of the system. It allows independent management of configurations, inventories, services, taxes, discounts, and expiration policies from a single interface.
+
+### 3. Inventory Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Inventarios.png" alt="Inventory Management" width="1603">
+</p>
+
+Allows the management of the store's inventories by displaying their maximum capacity, occupied stock, and available space. From this module, users can create new inventories, modify existing ones, and manage the products stored in each inventory.
+
+### 4. Product Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Productos.png" alt="Product Management" width="1603">
+</p>
+
+Allows the management of the products stored in an inventory through both a general view and specialized views for each product type. Includes search, availability filters, stock management, inventory transfers, and logical activation/deactivation without compromising historical data.
+
+### 5. Service Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Servicios.png" alt="Service Management" width="1607">
+</p>
+
+Allows the management of the store's service catalog, including base prices, taxes, discounts, and availability status. Unlike products, services are not stored in inventories or managed through stock, while still participating in the same billing process.
+
+### 6. Commercial configurations
+
+<p>
+    <img src="docs/images/spanish/screenshots/Configuraciones_Comerciales.png" alt="Commercial configurations" width="1605">
+</p>
+
+Module responsible for managing the business rules used throughout the system. It allows administrators to configure taxes, discounts, and expiration policies that are automatically applied during product and service management as well as the sales process, ensuring consistent calculations and business rules.
+
+### 7. Configuration Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Configuraciones.png" alt="Configuration Management" width="1606">
+</p>
+
+Central panel for managing general store and system settings. It allows you to manage the store name and access role and permission management, centralizing the configuration options available for application operation and access control.
+
+
+### 8. POS Control Panel (Point of Sale)
+
+<p>
+    <img src="docs/images/spanish/screenshots/Panel_De_Control_POS.png" alt="POS Control Panel" width="1607">
+</p>
+
+Main screen of the point of sale module. It displays a summary of the day's activity, including sales made, the number of invoices issued, and the value of the last sale. It also allows quick access to create a new sale and viewing the history of recorded sales.
+
+### 9. Customer Service (New Sale)
+
+<p>
+    <img src="docs/images/spanish/screenshots/Atencion_Al_Cliente_Nueva_Venta.png" alt="Customer Service" width="1602">
+</p>
+
+Main screen of the sales process. It allows you to add products using their code, manage the quantities of each item, remove products from the cart, and view the subtotal, taxes, and total amount due in real time. From this interface, you can also cancel the sale or finalize the purchase to generate the transaction.
+
+### 10. Collection Report
+
+<p>
+    <img src="docs/images/spanish/screenshots/Reporte_Recaudo.png" alt="Reporte Recaudo" width="1606">
+</p>
+
+This collection report generation window is accessible from the Point of Sale module. It allows you to select a date range to calculate issued invoices, the subtotal collected, the taxes generated, and the total sales for the selected period.
+
+### 11. Invoice
+
+<p>
+    <img src="docs/images/spanish/screenshots/Factura_Generada.png" alt="Factura Generada" width="1606">
+</p>
+
+Upon completion of a sale, the system automatically generates a receipt detailing the products and services sold, quantities, prices, taxes, subtotal, and total of the transaction. This invoice summarizes the transaction and confirms the successful completion of the sale.
+
+### 12. Login
+
+<p>
+    <img src="docs/images/spanish/screenshots/Login.png" alt="Login" width="740">
+</p>
+
+Application authentication screen. Allows users to log in using their email address and password, validating their credentials before granting access to the system. Includes options to display the password during login and logout.
+
+### 13. Permission Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Permisos.png" alt="Permission Management" width="1607">
+</p>
+
+Allows you to view and manage the permissions available in the system. It includes search by name, filters by status and module, as well as the activation and deactivation of permissions. Each permission displays its associated module and a description of the action it authorizes, facilitating the administration and control of access to the application's functionalities.
+
+### 14. Role Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Roles.png" alt="Role Management" width="1606">
+</p>
+
+This allows you to manage system roles from a centralized view. It includes searching and viewing existing roles, creating new roles, modifying their information, and managing the permissions associated with each role. It also displays the availability status of roles, allowing you to control their participation in the system by activating or deactivating them.
+
+### 15. User Management
+
+<p>
+    <img src="docs/images/spanish/screenshots/Gestion_Usuarios.png" alt="User Management" width="1606">
+</p>
+
+This allows you to manage users registered in the system from a centralized view. It includes searching by identifier, name, or email address, registering new users, editing information, activating and deactivating accounts, and managing assigned roles. It also allows users to reset their passwords using a temporary password.
 
 ---
 
@@ -160,20 +311,51 @@ Taxes, discounts, and expiration policies are modeled as product-independent ent
 
 This decision centralizes the management of configurable business rules, improves data consistency, and facilitates system evolution in response to future changes.
 
+### 12. Role- and Permission-Based Authorization
+
+Users do not receive permissions directly. Instead, permissions are grouped within roles, and users can have multiple roles assigned. A user's effective permissions are determined by the roles they hold.
+
+This approach allows for the reuse of permission sets among different users and avoids having to individually configure each permission for each account. It also allows for combining different roles to represent different levels of access without creating a specific role for each possible combination.
+
+### 13. System-Defined Permissions
+
+Available permissions cannot be created through the normal application workflow. Each permission represents a specific action that must already exist in the code, so adding new permissions requires modifying the system implementation. From within the application, the administrator can only manage existing permissions by assigning them to roles and enabling or disabling them.
+
+This approach maintains a controlled correspondence between stored permissions and the actions that actually exist in the application, preventing the creation of arbitrary permissions without an associated operation.
+
+### 14. Double Authorization Validation
+
+Access to protected functionalities is controlled at two levels. The user interface visually limits the actions available to the user based on their permissions and restricts access to the corresponding screens. However, these restrictions are not considered a sufficient security measure. Before executing a protected operation, the corresponding orchestrator re-verifies that the current user has the required permission. If the authorization is invalid, a specific exception is thrown, and the operation is not executed.
+
+This decision prevents security from relying on interface elements that can be compromised or bypassed and places validation at the layer that actually controls the execution of operations.
+
+### 15. Password Management Using Temporary Credentials
+
+Accounts are created exclusively by administrators, and a temporary password is generated during registration or reset. When a user logs in using a temporary password, the system detects this and prompts them to set a new password before allowing normal use of the application. Passwords are not stored directly in the database. Argon2 is used to generate their hash, and only this value is persisted.
+
+This decision allows for centralized account creation and recovery without requiring the administrator to permanently set the user's personal password, while also avoiding storing the original credentials in the database.
+
+### 16. Authentication Process Protection
+
+The authentication process incorporates various mechanisms to reduce account attacks. After three incorrect password attempts, the user is temporarily locked out for a configurable period. Additionally, when the provided email address does not correspond to an existing user, the system also performs a hashing operation using a fake hash.
+
+This decision aims to hinder both brute-force attacks and user enumeration by creating observable differences in the processing time of authentication requests.
+
 ---
 
 ## Technologies Used
 
-| Technology   | Use                                     |
-|--------------|-----------------------------------------|
-| Java         | Business Logic                          |
-| JavaFX       | Desktop Graphical Interface             |
-| FXML         | Definition of Interface Views           |
-| CSS          | Graphical Interface Styles              |
-| JDBC         | Data Persistence                        |
-| HikariCP     | JDBC Connection Pool                    |
-| MySQL        | Relational Database                     |
-| Maven        | Dependency Management and Project Build |
+| Technology | Use                                     |
+|------------|-----------------------------------------|
+| Java       | Business Logic                          |
+| JavaFX     | Desktop Graphical Interface             |
+| FXML       | Definition of Interface Views           |
+| CSS        | Graphical Interface Styles              |
+| JDBC       | Data Persistence                        |
+| HikariCP   | JDBC Connection Pool                    |
+| Argon2     | Password Encoder                        |
+| MySQL      | Relational Database                     |
+| Maven      | Dependency Management and Project Build |
 
 ---
 
@@ -231,23 +413,23 @@ Open the project with your preferred Maven-compatible IDE (IntelliJ IDEA), wait 
 
 ### General Description
 
-The system is organized using a layered architecture, where each component has a clearly defined responsibility. The graphical interface is exclusively responsible for user interaction, the business logic is concentrated in the services layer, and data access is decoupled through ports and implementations specific to MySQL.
+The system is organized using a layered architecture, where each component has a clearly defined responsibility. The graphical interface handles user interaction and communicates with the application through orchestrators. These act as the entry point to application operations, performing the necessary permissions, coordinating service usage, and transforming domain entities into DTOs to deliver only the required information to the presentation layer. Business logic is encapsulated within services, while data access is decoupled through ports and implementations specific to MySQL.
 
-This organization promotes separation of responsibilities, facilitates code maintenance, and allows for modifying or replacing components without affecting the rest of the application.
+This organization allows for the separation of presentation, operational coordination, business logic, and persistence, facilitating code maintenance and enabling the modification or replacement of components in one layer without directly affecting others.
 
 ### Layered Architecture
 
-Based on the separation of responsibilities and decoupling between business logic, persistence, and the graphical interface.
+Based on the separation of responsibilities and decoupling between presentation, use case coordination, business logic, and persistence. The graphical interface interacts with the application through orchestrators, services encapsulate business rules, and persistence is abstracted through ports and implementations specific to MySQL.
 
 <p>
   <img src="docs/images/english/diagrams/Layered_Architecture_Diagram.png" alt="Layered Architecture Diagram" width="404">
 </p>
 
-**Figure 1.** General system architecture organized by layers. Each layer depends only on the one immediately below it, promoting decoupling between the user interface, business logic, and persistence infrastructure.
+**Figure 1.** General system architecture organized by layers. Each layer depends only on the one immediately below it, promoting decoupling between the user interface, permission validations, business logic, and persistence infrastructure.
 
 |                                                                                                              Request Flow                                                                                                              |                                                                                                                Response Flow                                                                                                                 |
 |:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|                                                                                  <img src="docs/images/english/Request_Flow_Diagram.png" width="340">                                                                                  |                                                                                    <img src="docs/images/english/Response_Flow_Diagram.png" width="340">                                                                                     |
+|                                                                                   <img src="docs/images/english/diagrams/Request_Flow_Diagram.png">                                                                                    |                                                                                      <img src="docs/images/english/diagrams/Response_Flow_Diagram.png">                                                                                      |
 | **Figure 2.** Request flow from user interaction to the execution of a database operation. Each layer performs only its corresponding responsibilities, maintaining decoupling between the interface, business logic, and persistence. | **Figure 3.** Response flow from persistence to the user interface. Before reaching the presentation layer, domain entities are transformed into DTOs using assemblers to prevent the interface from directly manipulating the domain model. |
 
 ### Package Structure
@@ -265,6 +447,7 @@ RetailManagementSystem
 │ ├── assemblers
 │ ├── factories
 │ ├── orchestrators
+│ ├── ports
 │ └── services
 │
 ├── domain
@@ -276,13 +459,20 @@ RetailManagementSystem
 ├── infrastructure
 │ ├── configuration
 │ ├── injection
-│ └── persistence.mysql
+│ ├── Persistence
+│ │ ├── Exceptions
+│ │ └── MySQL
+│ └── Security
 │
-├── view
-│ ├── controllers
-│ │ ├── manageStore
-│ │ ├── mainMenu
-│ │ └── pointOfSale
+├── View
+│ ├── Configuration
+│ ├── Controllers
+│ │ ├── ManageStore
+│ │ ├── ManageUsers
+│ │ ├── Login
+│ │ ├── MainMenu
+│ │ └── PointOfSale
+│ ├── exceptions
 │ └── utilities
 │
 ├── App
@@ -295,114 +485,34 @@ src/
 main/
 resources
 │
+├── css
+│ ├── alerts
+│ ├── manageStore
+│ ├── manageUsers
+│ ├── login
+│ ├── mainMenu
+│ └── pointOfSale
+│
 ├── view
 │ ├── manageStore
+│ ├── manageUsers
+│ ├── login
 │ ├── mainMenu
 │ └── pointOfSale
 │
-├── css
-│ ├── manageStore
-│ ├── mainMenu
-│ └── pointOfSale
-│
-├── application.properties
 ├── application.example.properties
-└── version.properties
+└── application.properties
 ```
 
 The project structure is organized following a layered architecture. Each package groups components with a specific responsibility, promoting separation of responsibilities and decoupling between the user interface, business logic, domain, and infrastructure.
 
-| Package           | Responsibility                                                                                                     |
-|-------------------|--------------------------------------------------------------------------------------------------------------------|
-| `application`     | Contains the services, orchestrators, DTOs, assemblers, and factories that coordinate the application's use cases. |
-| `domain`          | Defines the domain's entities, ports, enumerations, and exceptions.                                                |
-| `infrastructure`  | Implements persistence using JDBC/MySQL and the application's technical configuration.                             |
-| `view`            | Contains the JavaFX drivers and utilities related to the graphical interface.                                      |
+| Package           | Responsibility                                                                                                                                      |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `application`     | Contains the services, orchestrators, DTOs, assemblers, ports, and factories that coordinate the application's use cases.                           |
+| `domain`          | Defines the domain's entities, ports, enumerations, and exceptions.                                                                                 |
+| `infrastructure`  | Implements persistence using JDBC/MySQL, dependency injection, the classes responsible for security, and the application's technical configuration. |
+| `view`            | Contains the JavaFX drivers and utilities related to the graphical interface.                                                                       |
 
-
----
-
-## Screenshots
-
-### 1. Main Menu
-
-<p>
-    <img src="docs/images/spanish/screenshots/Menu_Principal.png" alt="Main Menu" width="1605">
-</p>
-
-Entry point of the application. Provides centralized navigation to the main modules of the system, including store management and the point-of-sale module.
-
-### 2. Store Management
-
-<p>
-    <img src="docs/images/spanish/screenshots/Gestion_Tienda.png" alt="Store Management" width="1611">
-</p>
-
-Central administration panel that provides access to the different management modules of the system. It allows independent management of configurations, inventories, services, taxes, discounts, and expiration policies from a single interface.
-
-### 3. Inventory Management
-
-<p>
-    <img src="docs/images/spanish/screenshots/Gestion_Inventarios.png" alt="Inventory Management" width="1603">
-</p>
-
-Allows the management of the store's inventories by displaying their maximum capacity, occupied stock, and available space. From this module, users can create new inventories, modify existing ones, and manage the products stored in each inventory.
-
-### 4. Product Management
-
-<p>
-    <img src="docs/images/spanish/screenshots/Gestion_Productos.png" alt="Product Management" width="1603">
-</p>
-
-Allows the management of the products stored in an inventory through both a general view and specialized views for each product type. Includes search, availability filters, stock management, inventory transfers, and logical activation/deactivation without compromising historical data.
-
-### 5. Service Management
-
-<p>
-    <img src="docs/images/spanish/screenshots/Gestion_Servicios.png" alt="Service Management" width="1607">
-</p>
-
-Allows the management of the store's service catalog, including base prices, taxes, discounts, and availability status. Unlike products, services are not stored in inventories or managed through stock, while still participating in the same billing process.
-
-### 6. Commercial configurations
-
-<p>
-    <img src="docs/images/spanish/screenshots/Configuraciones_Comerciales.png" alt="Commercial configurations" width="1605">
-</p>
-
-Module responsible for managing the business rules used throughout the system. It allows administrators to configure taxes, discounts, and expiration policies that are automatically applied during product and service management as well as the sales process, ensuring consistent calculations and business rules.
-
-### 7. POS (Point of Sale) Control Panel
-
-<p>
-    <img src="docs/images/spanish/screenshots/Panel_De_Control_POS.png" alt="POS Control Panel" width="1606">
-</p>
-
-Main screen of the point-of-sale module. It displays a summary of the day's activity, including sales made, the number of invoices issued, and the value of the last sale. It also allows quick access to create a new sale and viewing the sales history.
-
-### 8. Customer Service (New Sale)
-
-<p>
-    <img src="docs/images/spanish/screenshots/Atencion_Al_Cliente_Nueva_Venta.png" alt="Customer Service" width="1606">
-</p>
-
-Main point-of-sale screen used to process a new sale. It allows products to be added by their code, item quantities to be adjusted, products to be removed from the cart, and the subtotal, taxes, and total amount due to be updated in real time. From this interface, the cashier can also cancel the sale or complete the purchase to finalize the transaction.
-
-### 9. Collection Report
-
-<p>
-    <img src="docs/images/spanish/screenshots/Reporte_Recaudo.png" alt="Reporte Recaudo" width="1607">
-</p>
-
-Revenue reporting window accessible from the Point of Sale module. It allows selecting a date range to calculate the number of issued invoices, collected subtotal, generated taxes, and total sales for the selected period.
-
-### 10. Generated Invoice
-
-<p> 
-<img src="docs/images/spanish/screenshots/Factura_Generada.png" alt="Invoice Generated" width="1606">
-</p>
-
-Once a sale is completed, the system automatically generates an invoice containing the details of the purchased products and services, quantities, prices, taxes, subtotal, and total amount. The invoice summarizes the transaction and confirms the successful completion of the sale.
 
 ---
 
@@ -410,9 +520,7 @@ Once a sale is completed, the system automatically generates an invoice containi
 
 The following features are planned for future versions of the system:
 
-- 🔐 Implement user authentication via login.
-
-- 👥 Incorporate a system of roles and permissions to control access to the different modules.
+- 🔐 Implement automated testing.
 
 - 🌐 Add support for multiple languages (Spanish and English).
 
@@ -453,11 +561,11 @@ This project is distributed under the MIT license.
 
 ## Descripción
 
-Es una aplicación de escritorio diseñada para gestionar la operación de una tienda minorista y el proceso de venta de productos y servicios. Permite administrar configuraciones globales, productos, servicios, múltiples inventarios, impuestos, descuentos y otros elementos fundamentales para la operación del negocio. Orientado a la gestión de una única tienda y fue diseñado considerando los principales requisitos de negocio y normativos presentes en los procesos de venta.
+Es una aplicación de escritorio diseñada para gestionar la operación de una tienda minorista y el proceso de venta de productos y servicios. Permite administrar configuraciones globales, productos, servicios, múltiples inventarios, impuestos, descuentos, usuarios, roles y permisos, además de gestionar el proceso de autenticación y control de acceso a las diferentes funcionalidades del sistema. Está orientada a la gestión de una única tienda y fue diseñada considerando los principales requisitos de negocio y normativos presentes en los procesos de venta.
 
-El proyecto busca ofrecer un sistema de gestión y punto de venta centralizado con un fuerte énfasis en el modelado del dominio y las reglas de negocio. El dominio de una tienda fue elegido por la diversidad de escenarios que permite representar, como la gestión de inventarios, el cálculo de impuestos y descuentos, el manejo de distintos tipos de productos y la generación de facturas, priorizando un diseño que refleje el comportamiento real del negocio.
+El proyecto busca ofrecer un sistema de gestión y punto de venta centralizado con un fuerte énfasis en el modelado del dominio, las reglas de negocio y el control de acceso. El dominio de una tienda fue elegido por la diversidad de escenarios que permite representar, como la gestión de inventarios, el cálculo de impuestos y descuentos, el manejo de distintos tipos de productos, la generación de facturas y la administración de diferentes niveles de acceso mediante roles y permisos. Se prioriza un diseño que refleje el comportamiento real del negocio y mantenga separadas las responsabilidades de sus diferentes componentes.
 
-Este proyecto comenzó como una aplicación de consola con el objetivo de aprender programación orientada a objetos y evolucionó gradualmente hasta convertirse en una aplicación de escritorio completa. A lo largo de su desarrollo se incorporaron persistencia mediante JDBC y MySQL, una arquitectura por capas y una interfaz gráfica con JavaFX. Todo el proyecto fue desarrollado sin utilizar frameworks con el propósito de comprender en profundidad los fundamentos de Java, el diseño de software y la persistencia antes de trabajar con tecnologías como Spring Boot.
+Este proyecto comenzó como una aplicación de consola con el objetivo de aprender programación orientada a objetos y evolucionó gradualmente hasta convertirse en una aplicación de escritorio completa. A lo largo de su desarrollo se incorporaron persistencia mediante JDBC y MySQL, una arquitectura por capas, servicios y orquestadores, así como una interfaz gráfica con JavaFX. También se implementó un sistema de autenticación y autorización que permite administrar usuarios, roles y permisos, incluyendo mecanismos para gestionar contraseñas y restringir el acceso a las operaciones según los permisos del usuario. Todo el proyecto fue desarrollado sin utilizar frameworks con el propósito de comprender en profundidad los fundamentos de Java, el diseño de software, la persistencia y la arquitectura antes de trabajar con tecnologías como Spring Boot.
 
 ---
 
@@ -476,7 +584,7 @@ Este proyecto comenzó como una aplicación de consola con el objetivo de aprend
 
 ### Proximo Objetivo
 
-Implementar **Testing Automatizado**.
+Implement **Automated Testing**.
 
 ---
 
@@ -518,11 +626,159 @@ Implementar **Testing Automatizado**.
 - Proceso de venta desde una interfaz gráfica.
 - Selección de productos y servicios.
 - Generación automática de la factura.
-- **Estado:** 🚧 En desarrollo.
+- Aplicación de las reglas comerciales configuradas.
+- Actualización del inventario como parte del proceso de venta.
 
-### 🎨 Interfaz de Usuario
-- Aplicación de escritorio desarrollada con JavaFX.
-- Interfaz basada en FXML y CSS.
+### 👤 Gestión de Usuarios
+- Registro de nuevos usuarios por parte de administradores.
+- Administración y edición de usuarios existentes.
+- Activación e inactivación de usuarios.
+- Asignación y eliminación de roles.
+- Asignación de múltiples roles a un mismo usuario.
+- Restablecimiento de contraseñas mediante contraseñas temporales.
+
+### 🔐 Autenticación
+- Inicio de sesión mediante correo electrónico y contraseña.
+- Detección del primer acceso mediante contraseña temporal.
+- Solicitud de cambio de contraseña al utilizar una contraseña temporal.
+- Bloqueo temporal de cuentas después de múltiples intentos fallidos.
+- Configuración del tiempo de bloqueo de las cuentas.
+
+### 👥 Gestión de Roles
+- Creación de nuevos roles.
+- Edición de roles existentes.
+- Activación e inactivación de roles.
+- Asignación y eliminación de permisos de un rol.
+
+### 🛡️ Gestión de Permisos
+- Administración de permisos existentes.
+- Activación e inactivación de permisos.
+- Control de acceso a las funcionalidades según los permisos asignados.
+- Los permisos disponibles corresponden a acciones definidas por el sistema.
+
+---
+
+## Screenshots
+
+### 1. Menu Principal
+
+<p>
+  <img src="docs/images/spanish/screenshots/Menu_Principal.png" alt="Menu Principal" width="1605">
+</p>
+
+Punto de entrada de la aplicación. Centraliza la navegación hacia los diferentes módulos del sistema y proporciona acceso a las funcionalidades principales de gestión y ventas.
+
+### 2. Gestion de la Tienda
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Tienda.png" alt="Gestion de la Tienda" width="1611">
+</p>
+
+Panel central de administración desde el que se accede a los diferentes módulos de gestión del sistema. Permite administrar configuraciones, inventarios, servicios, impuestos, descuentos y políticas de vencimiento desde una única interfaz.
+
+### 3. Gestion de Inventarios
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Inventarios.png" alt="Gestion de Inventarios" width="1603">
+</p>
+
+Permite administrar los inventarios de la tienda, consultar su capacidad máxima, el stock ocupado y el espacio disponible. Desde este módulo es posible crear nuevos inventarios, modificar su información y acceder a la gestión de los productos almacenados en cada uno.
+
+### 4. Gestion de Productos
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Productos.png" alt="Gestion de Productos" width="1603">
+</p>
+
+Permite administrar los productos de un inventario mediante una vista general y vistas especializadas por tipo de producto. Incluye búsqueda, filtros por disponibilidad, control de stock, transferencia entre inventarios y cambio de estado sin eliminar el historial de la información.
+
+### 5. Gestion de Servicios
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Servicios.png" alt="Gestion de Servicios" width="1607">
+</p>
+
+Permite administrar el catálogo de servicios ofrecidos por la tienda. Incluye la configuración de precios, impuestos, descuentos y estado de disponibilidad, manteniendo un proceso de facturación consistente con el de los productos.
+
+### 6. Configuraciones comerciales
+
+<p>
+  <img src="docs/images/spanish/screenshots/Configuraciones_Comerciales.png" alt="Configuraciones comerciales" width="1605">
+</p>
+
+Módulo encargado de administrar las reglas comerciales utilizadas por el sistema. Permite gestionar impuestos, descuentos y políticas de vencimiento que se aplican automáticamente durante la administración de productos, servicios y el proceso de venta, garantizando la consistencia de los cálculos y las reglas de negocio.
+
+### 7. Gestion Configuraciones
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Configuraciones.png" alt="Gestion de Configuraciones" width="1606">
+</p>
+
+Panel central para administrar las configuraciones generales de la tienda y del sistema. Permite gestionar el nombre de la tienda y acceder a la administración de roles y permisos, centralizando las opciones de configuración disponibles para la operación y el control de acceso de la aplicación.
+
+### 8. Panel de control POS (Punto de Venta)
+
+<p>
+  <img src="docs/images/spanish/screenshots/Panel_De_Control_POS.png" alt="Panel de Control POS" width="1607">
+</p>
+
+Pantalla principal del módulo de punto de venta. Presenta un resumen de la actividad del día, incluyendo las ventas realizadas, el número de facturas emitidas y el valor de la última venta. Además, permite acceder rápidamente a la creación de una nueva venta y consultar el historial de ventas registradas.
+
+### 9. Atención al Cliente (Nueva Venta)
+
+<p>
+  <img src="docs/images/spanish/screenshots/Atencion_Al_Cliente_Nueva_Venta.png" alt="Atención al cliente" width="1602">
+</p>
+
+Pantalla principal del proceso de venta. Permite agregar productos mediante su código, administrar las cantidades de cada artículo, eliminar productos del carrito y visualizar en tiempo real el subtotal, los impuestos y el total a pagar. Desde esta interfaz también es posible cancelar la venta o finalizar la compra para generar la transacción.
+
+### 10. Reporte de Recaudo
+
+<p>
+  <img src="docs/images/spanish/screenshots/Reporte_Recaudo.png" alt="Reporte Recaudo" width="1606">
+</p>
+
+Ventana de generación de reportes de recaudo accesible desde el módulo Punto de Venta. Permite seleccionar un rango de fechas para calcular las facturas emitidas, el subtotal recaudado, los impuestos generados y el total de ventas correspondiente al período seleccionado.
+
+### 11. Factura
+
+<p>
+  <img src="docs/images/spanish/screenshots/Factura_Generada.png" alt="Factura Generada" width="1606">
+</p>
+
+Al finalizar una venta, el sistema genera automáticamente un comprobante con el detalle de los productos y servicios vendidos, cantidades, precios, impuestos, subtotal y total de la transacción. Esta factura resume la operación realizada y permite confirmar el cierre exitoso de la venta.
+
+### 12. Login
+
+<p>
+  <img src="docs/images/spanish/screenshots/Login.png" alt="Login" width="740">
+</p>
+
+Pantalla de autenticación de la aplicación. Permite a los usuarios ingresar mediante su correo electrónico y contraseña, validando sus credenciales antes de proporcionar acceso al sistema. Incluye opciones para visualizar la contraseña durante su ingreso y salir de la aplicación.
+
+### 13.Gestion de Permisos
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Permisos.png" alt="Gestion de Permisos" width="1607">
+</p>
+
+Permite consultar y administrar los permisos disponibles en el sistema. Incluye búsqueda por nombre, filtros por estado y módulo, así como la activación e inactivación de permisos. Cada permiso muestra su módulo asociado y una descripción de la acción que autoriza, facilitando la administración y el control de acceso a las funcionalidades de la aplicación.
+
+### 14. Gestion de Roles
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Roles.png" alt="Gestion de Roles" width="1606">
+</p>
+
+Permite administrar los roles del sistema desde una vista centralizada. Incluye la búsqueda y consulta de los roles existentes, la creación de nuevos roles, la modificación de su información y la administración de los permisos asociados a cada uno. También muestra el estado de disponibilidad de los roles, permitiendo controlar su participación en el sistema mediante su activación o inactivación.
+
+### 15. Gestion de Usuarios
+
+<p>
+  <img src="docs/images/spanish/screenshots/Gestion_Usuarios.png" alt="Gestion de Usuarios" width="1606">
+</p>
+
+Permite administrar los usuarios registrados en el sistema desde una vista centralizada. Incluye búsqueda por identificador, nombre o correo electrónico, registro de nuevos usuarios, edición de información, activación e inactivación de cuentas y gestión de los roles asignados. También permite restablecer la contraseña de un usuario mediante una contraseña temporal.
 
 ---
 
@@ -600,20 +856,51 @@ Los impuestos, descuentos y políticas de vencimiento se modelan como entidades 
 
 Esta decisión centraliza la administración de las reglas configurables del negocio, mejora la consistencia de la información y facilita la evolución del sistema ante cambios futuros.
 
+### 12. Autorización basada en roles y permisos
+
+Los usuarios no reciben permisos directamente. En su lugar, los permisos se agrupan dentro de roles y los usuarios pueden tener múltiples roles asignados. Los permisos efectivos de un usuario se determinan a partir de los roles que tiene asociados.
+
+Esta decisión permite reutilizar conjuntos de permisos entre diferentes usuarios y evita tener que configurar individualmente cada permiso para cada cuenta. Además, permite combinar diferentes roles para representar distintos niveles de acceso sin crear un rol específico para cada combinación posible.
+
+### 13. Permisos definidos por el sistema
+
+Los permisos disponibles no pueden crearse mediante el flujo normal de la aplicación. Cada permiso representa una acción concreta que debe existir previamente en el código, por lo que la incorporación de nuevos permisos requiere una modificación de la implementación del sistema. Desde la aplicación, el administrador únicamente puede administrar los permisos existentes mediante su asignación a roles y su activación o inactivación.
+
+Esta decisión mantiene una correspondencia controlada entre los permisos almacenados y las acciones que realmente existen en la aplicación, evitando que se puedan crear permisos arbitrarios que no tengan una operación asociada.
+
+### 14. Doble validación de autorización
+
+El acceso a las funcionalidades protegidas se controla en dos niveles. La interfaz de usuario limita visualmente las acciones disponibles para el usuario según sus permisos y restringe el acceso a las pantallas correspondientes. Sin embargo, estas restricciones no se consideran una medida de seguridad suficiente. Antes de ejecutar una operación protegida, el orquestador correspondiente vuelve a verificar que el usuario actual posea el permiso requerido. Si la autorización no es válida, se lanza una excepción específica y la operación no se ejecuta.
+
+Esta decisión evita que la seguridad dependa de elementos de la interfaz que pueden ser vulnerados o evadidos y establece la validación en la capa que realmente controla la ejecución de las operaciones.
+
+### 15. Gestión de contraseñas mediante credenciales temporales
+
+Las cuentas son creadas exclusivamente por administradores y, durante su registro o restablecimiento, se genera una contraseña temporal. Cuando el usuario inicia sesión utilizando una contraseña temporal, el sistema detecta esta condición y solicita establecer una nueva contraseña antes de permitir el uso normal de la aplicación. Las contraseñas no se almacenan directamente en la base de datos. Se utiliza Argon2 para generar su hash y únicamente este valor es persistido.
+
+Esta decisión permite centralizar la creación y recuperación de cuentas sin que el administrador tenga que establecer permanentemente la contraseña personal del usuario, al mismo tiempo que evita almacenar las credenciales originales en la base de datos.
+
+### 16. Protección del proceso de autenticación
+
+El proceso de autenticación incorpora diferentes mecanismos para reducir ataques sobre las cuentas. Después de tres intentos incorrectos de contraseña, el usuario queda bloqueado temporalmente durante un período configurable. Además, cuando el correo electrónico proporcionado no corresponde a un usuario existente, el sistema realiza igualmente una operación de hashing utilizando un hash falso.
+
+Esta decisión busca dificultar tanto los ataques de fuerza bruta como la enumeración de usuarios mediante diferencias observables en el tiempo de procesamiento de las solicitudes de autenticación.
+
 ---
 
 ## Tecnologías utilizadas
 
-| Tecnología   | Uso                                                 |
-|--------------|-----------------------------------------------------|
-| Java         | Lógica de negocio                                   |
-| JavaFX       | Interfaz gráfica de escritorio                      |
-| FXML         | Definición de las vistas de la interfaz             |
-| CSS          | Estilos de la interfaz gráfica                      |
-| JDBC         | Persistencia de datos                               |
-| HikariCP     | Pool de conexiones JDBC                             |
-| MySQL        | Base de datos relacional                            |
-| Maven        | Gestión de dependencias y construcción del proyecto |
+| Tecnología | Uso                                                 |
+|------------|-----------------------------------------------------|
+| Java       | Lógica de negocio                                   |
+| JavaFX     | Interfaz gráfica de escritorio                      |
+| FXML       | Definición de las vistas de la interfaz             |
+| CSS        | Estilos de la interfaz gráfica                      |
+| JDBC       | Persistencia de datos                               |
+| HikariCP   | Pool de conexiones JDBC                             |
+| Argon2     | Codificador de contraseñas                          |
+| MySQL      | Base de datos relacional                            |
+| Maven      | Gestión de dependencias y construcción del proyecto |
 
 ---
 
@@ -671,23 +958,23 @@ Abre el proyecto con tu IDE preferido compatible con Maven (IntelliJ IDEA), espe
 
 ### Descripción General
 
-El sistema está organizado siguiendo una arquitectura por capas, donde cada componente posee una responsabilidad claramente definida. La interfaz gráfica se encarga exclusivamente de la interacción con el usuario, la lógica de negocio se concentra en la capa de servicios y el acceso a los datos se encuentra desacoplado mediante puertos e implementaciones específicas para MySQL.
+El sistema está organizado siguiendo una arquitectura por capas, donde cada componente posee una responsabilidad claramente definida. La interfaz gráfica se encarga de la interacción con el usuario y se comunica con la aplicación mediante orquestadores. Estos actúan como punto de entrada a las operaciones de la aplicación, realizando las validaciones de permisos correspondientes, coordinando el uso de los servicios y transformando las entidades del dominio en DTO's para entregar a la capa de presentación únicamente la información necesaria. La lógica de las operaciones de negocio se encuentra encapsulada en servicios, mientras que el acceso a los datos se encuentra desacoplado mediante puertos e implementaciones específicas para MySQL.
 
-Esta organización favorece la separación de responsabilidades, facilita el mantenimiento del código y permite modificar o reemplazar componentes sin afectar el resto de la aplicación.
+Esta organización permite separar la presentación, la coordinación de las operaciones, la lógica de negocio y la persistencia, favoreciendo el mantenimiento del código y permitiendo modificar o reemplazar componentes de una capa sin afectar directamente a las demás.
 
 ### Arquitectura por capas
 
-Basada en la separación de responsabilidades y el desacoplamiento entre la lógica de negocio, la persistencia y la interfaz gráfica.
+Basada en la separación de responsabilidades y el desacoplamiento entre la presentación, la coordinación de los casos de uso, la lógica de negocio y la persistencia. La interfaz gráfica interactúa con la aplicación mediante orquestadores, los servicios encapsulan las reglas de negocio y la persistencia se abstrae mediante puertos e implementaciones específicas para MySQL.
 
 <p>
   <img src="docs/images/spanish/diagramas/Diagrama_Arquitectura_de_Capas.png" alt="Arquitectura por capas" width="404">
 </p>
 
-**Figura 1.** Arquitectura general del sistema organizada por capas. Cada capa depende únicamente de la inmediatamente inferior, favoreciendo el desacoplamiento entre la interfaz de usuario, la lógica de negocio y la infraestructura de persistencia.
+**Figura 1.** Arquitectura general del sistema organizada por capas. Cada capa depende únicamente de la inmediatamente inferior, favoreciendo el desacoplamiento entre la interfaz de usuario, las validaciones de permisos, la lógica de negocio y la infraestructura de persistencia.
 
 |                                                                                                                                      Flujo de una petición                                                                                                                                      |                                                                                                                                Flujo de una respuesta                                                                                                                                 |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-|                                                                                                             <img src="docs/images/spanish/Diagrama_Flujo_Peticion.png" width="340">                                                                                                             |                                                                                                       <img src="docs/images/spanish/Diagrama_Flujo_Respuesta.png" width="340">                                                                                                        |
+|                                                                                                              <img src="docs/images/spanish/diagramas/Diagrama_Flujo_Peticion.png">                                                                                                              |                                                                                                        <img src="docs/images/spanish/diagramas/Diagrama_Flujo_Respuesta.png">                                                                                                         |
 | **Figura 2.** Flujo de una petición desde la interacción del usuario hasta la ejecución de una operación en la base de datos. Cada capa realiza únicamente las responsabilidades que le corresponden, manteniendo el desacoplamiento entre la interfaz, la lógica de negocio y la persistencia. | **Figura 3.** Flujo de una respuesta desde la persistencia hasta la interfaz de usuario. Antes de llegar a la capa de presentación, las entidades del dominio son transformadas en DTO mediante ensambladores para evitar que la interfaz manipule directamente el modelo de dominio. |
 
 ### Estructura de paquetes
@@ -704,6 +991,7 @@ RetailManagementSystem
 │   ├── ensambladores
 │   ├── fabricas
 │   ├── orquestadores
+│   ├── puertos
 │   └── servicios
 │
 ├── dominio
@@ -715,13 +1003,20 @@ RetailManagementSystem
 ├── infraestructura
 │   ├── configuracion
 │   ├── inyeccion
-│   └── persistencia.mysql
+│   ├── persistencia
+│   │   ├── excepciones
+│   │   └── mysql
+│   └── seguridad
 │
 ├── vista
+│   ├── configuracion
 │   ├── controladores
 │   │   ├── gestionarTienda
+│   │   ├── gestionarUsuarios
+│   │   ├── login
 │   │   ├── menuPrincipal
 │   │   └── puntoDeVenta
+│   ├── excepciones
 │   └── utilidades
 │
 ├── App
@@ -734,113 +1029,34 @@ src/
 main/
 resources
 │
+├── css
+│   ├── alertas
+│   ├── gestionarTienda
+│   ├── gestionarUsuarios
+│   ├── login
+│   ├── menuPrincipal
+│   └── puntoDeVenta
+│
 ├── vista
 │   ├── gestionarTienda
+│   ├── gestionarUsuarios
+│   ├── login
 │   ├── menuPrincipal
 │   └── puntoDeVenta
 │
-├── css
-│   ├── gestionarTienda
-│   ├── menuPrincipal
-│   └── puntoDeVenta
-│
-├── application.properties
 ├── application.example.properties
-└── version.properties
+└── application.properties
+
 ```
 
 La estructura del proyecto está organizada siguiendo una arquitectura por capas. Cada paquete agrupa componentes con una responsabilidad específica, favoreciendo la separación de responsabilidades y el desacoplamiento entre la interfaz de usuario, la lógica de negocio, el dominio y la infraestructura.
 
-| Paquete              | Responsabilidad                                                                                                       |
-|----------------------|-----------------------------------------------------------------------------------------------------------------------|
-| `aplicacion`         | Contiene los servicios, orquestadores, DTO, ensambladores y fábricas que coordinan los casos de uso de la aplicación. |
-| `dominio`            | Define las entidades, puertos, enumeraciones y excepciones del dominio.                                               |
-| `infraestructura`    | Implementa la persistencia mediante JDBC/MySQL y la configuración técnica de la aplicación.                           |
-| `vista`              | Contiene los controladores JavaFX y las utilidades relacionadas con la interfaz gráfica.                              |
-
----
-
-##  
-
-### 1. Menu Principal
-
-<p>
-  <img src="docs/images/spanish/screenshots/Menu_Principal.png" alt="Menu Principal" width="1605">
-</p>
-
-Punto de entrada de la aplicación. Centraliza la navegación hacia los diferentes módulos del sistema y proporciona acceso a las funcionalidades principales de gestión y ventas.
-
-### 2. Gestion de la Tienda
-
-<p>
-  <img src="docs/images/spanish/screenshots/Gestion_Tienda.png" alt="Gestion de la Tienda" width="1611">
-</p>
-
-Panel central de administración desde el que se accede a los diferentes módulos de gestión del sistema. Permite administrar configuraciones, inventarios, servicios, impuestos, descuentos y políticas de vencimiento desde una única interfaz.
-
-### 3. Gestion de Inventarios
-
-<p>
-  <img src="docs/images/spanish/screenshots/Gestion_Inventarios.png" alt="Gestion de Inventarios" width="1603">
-</p>
-
-Permite administrar los inventarios de la tienda, consultar su capacidad máxima, el stock ocupado y el espacio disponible. Desde este módulo es posible crear nuevos inventarios, modificar su información y acceder a la gestión de los productos almacenados en cada uno.
-
-### 4. Gestion de Productos
-
-<p>
-  <img src="docs/images/spanish/screenshots/Gestion_Productos.png" alt="Gestion de Productos" width="1603">
-</p>
-
-Permite administrar los productos de un inventario mediante una vista general y vistas especializadas por tipo de producto. Incluye búsqueda, filtros por disponibilidad, control de stock, transferencia entre inventarios y cambio de estado sin eliminar el historial de la información.
-
-### 5. Gestion de Servicios
-
-<p>
-  <img src="docs/images/spanish/screenshots/Gestion_Servicios.png" alt="Gestion de Servicios" width="1607">
-</p>
-
-Permite administrar el catálogo de servicios ofrecidos por la tienda. Incluye la configuración de precios, impuestos, descuentos y estado de disponibilidad, manteniendo un proceso de facturación consistente con el de los productos.
-
-### 6. Configuraciones comerciales
-
-<p>
-  <img src="docs/images/spanish/screenshots/Configuraciones_Comerciales.png" alt="Configuraciones comerciales" width="1605">
-</p>
-
-Módulo encargado de administrar las reglas comerciales utilizadas por el sistema. Permite gestionar impuestos, descuentos y políticas de vencimiento que se aplican automáticamente durante la administración de productos, servicios y el proceso de venta, garantizando la consistencia de los cálculos y las reglas de negocio.
-
-### 7. Panel de control POS (Punto de Venta)
-
-<p>
-  <img src="docs/images/spanish/screenshots/Panel_De_Control_POS.png" alt="Panel de Control POS" width="1606">
-</p>
-
-Pantalla principal del módulo de punto de venta. Presenta un resumen de la actividad del día, incluyendo las ventas realizadas, el número de facturas emitidas y el valor de la última venta. Además, permite acceder rápidamente a la creación de una nueva venta y consultar el historial de ventas registradas.
-
-### 8. Atención al Cliente (Nueva Venta)
-
-<p>
-  <img src="docs/images/spanish/screenshots/Atencion_Al_Cliente_Nueva_Venta.png" alt="Atención al cliente" width="1606">
-</p>
-
-Pantalla principal del proceso de venta. Permite agregar productos mediante su código, administrar las cantidades de cada artículo, eliminar productos del carrito y visualizar en tiempo real el subtotal, los impuestos y el total a pagar. Desde esta interfaz también es posible cancelar la venta o finalizar la compra para generar la transacción.
-
-### 9. Reporte de Recaudo
-
-<p>
-  <img src="docs/images/spanish/screenshots/Reporte_Recaudo.png" alt="Reporte Recaudo" width="1607">
-</p>
-
-Ventana de generación de reportes de recaudo accesible desde el módulo Punto de Venta. Permite seleccionar un rango de fechas para calcular las facturas emitidas, el subtotal recaudado, los impuestos generados y el total de ventas correspondiente al período seleccionado.
-
-### 10. Factura
-
-<p>
-  <img src="docs/images/spanish/screenshots/Factura_Generada.png" alt="Factura Generada" width="1606">
-</p>
-
-Al finalizar una venta, el sistema genera automáticamente un comprobante con el detalle de los productos y servicios vendidos, cantidades, precios, impuestos, subtotal y total de la transacción. Esta factura resume la operación realizada y permite confirmar el cierre exitoso de la venta.
+| Paquete              | Responsabilidad                                                                                                                                                  |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `aplicacion`         | Contiene los servicios, orquestadores, DTO, ensambladores, puertos y fábricas que coordinan los casos de uso de la aplicación.                                   |
+| `dominio`            | Define las entidades, puertos, enumeraciones y excepciones del dominio.                                                                                          |
+| `infraestructura`    | Implementa la persistencia mediante JDBC/MySQL, la inyeccion de dependencias, las clases encargadas de la seguridad y la configuración técnica de la aplicación. |
+| `vista`              | Contiene los controladores JavaFX y las utilidades relacionadas con la interfaz gráfica.                                                                         |
 
 ---
 
@@ -848,8 +1064,7 @@ Al finalizar una venta, el sistema genera automáticamente un comprobante con el
 
 Las siguientes funcionalidades están planificadas para futuras versiones del sistema:
 
-- 🔐 Implementar autenticación de usuarios mediante inicio de sesión (Login).
-- 👥 Incorporar un sistema de roles y permisos para controlar el acceso a los diferentes módulos.
+- 🔐 Implementar testing automatizado.
 - 🌐 Agregar soporte para múltiples idiomas (Español e Inglés).
 - 📄 Permitir la exportación e impresión de facturas y reportes en formatos PDF y Excel.
 - 💻 Ampliar el catálogo del sistema con una nueva categoría de productos tecnológicos.
