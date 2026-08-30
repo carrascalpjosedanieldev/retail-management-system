@@ -65,7 +65,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     @Override
     public Descuento obtenerDescuento(int idDescuento) {
         if (idDescuento<=0) {
-            throw new IllegalStateException("El ID a buscar debe ser un número positivo.");
+            throw new IllegalArgumentException("El ID a Buscar debe ser un Número Positivo.");
         }
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCUENTO)){
@@ -141,7 +141,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                 descuentos.add(descuento);
             }
         } catch (SQLException e) {
-            throw new PersistenciaException("Error al listar los Descuentos Inactivos", e);
+            throw new PersistenciaException("Error al listar Todos los Descuentos", e);
         }
         return descuentos;
     }
@@ -165,7 +165,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new DescuentoNoEncontradoException("No se pudo actualizar: El Descuento con ID -" + descuento.getId() + "- no existe.");
+                throw new DescuentoNoEncontradoException("NO se pudo Actualizar: El Descuento con ID -" + descuento.getId() + "- NO Existe.");
             }
 
         } catch (SQLException e) {

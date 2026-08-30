@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.excepciones;
 
-public class IncersionFallidaException extends RuntimeException {
+public class IncersionFallidaException extends PersistenciaException {
     public IncersionFallidaException(String message) {
         super(message);
     }

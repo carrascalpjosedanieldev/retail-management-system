@@ -3,8 +3,11 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDesc
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
+import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
+import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -85,11 +88,34 @@ public class CrearDescuentoControlador {
             })
         ).exceptionally(ex -> {
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
-                GestorAlertas.mostrarAlertaError(
-                        getVentana(), "Error Critico",
-                        "NO se pudo Completar la Acción.",
-                        "Notificale al Administrador este Error:\n" + causa.getMessage());
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
+                switch (causa) {
+                    case AccesoDenegadoException accesoDenegadoException -> GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Acceso Denegado",
+                            "NO tienes el Permisos para Completar la Acción.",
+                            accesoDenegadoException.getMessage()
+                    );
+                    case IllegalArgumentException exception -> GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error en los Datos Ingresados",
+                            "Verifica los Datos Ingresados.",
+                            "Error:  " + exception.getMessage()
+                    );
+                    case PersistenciaException persistenciaException -> GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error en la Base de Datos",
+                            "NO se pudo Completar la Acción.",
+                            "Notificale al Administrador este Error:\n" + persistenciaException.getMessage()
+                    );
+                    default -> {
+                        GestorAlertas.mostrarAlertaError(
+                                getVentana(), "Error Interno",
+                                "Fallo Crítico del Sistema",
+                                "Ocurrió un Error Inesperado.\nNotifique al Administrador.\n" +
+                                        "Detalle: " + causa.getMessage()
+                        );
+                        System.err.println("Error no controlado en Guardar Descuento:");
+                        causa.printStackTrace();
+                    }
+                }
             });
             return null;
         });

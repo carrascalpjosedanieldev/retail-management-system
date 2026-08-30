@@ -26,15 +26,15 @@ public class ConfiguradorExcepciones {
                     GestorAlertas.mostrarAlertaError(
                             stagePrincipal, "Error Interno",
                             "Fallo Crítico del Sistema",
-                            "Ocurrió un error inesperado al procesar la solicitud.\n" +
-                                    "El problema ha sido registrado. Contacte a soporte técnico."
+                            "Ocurrió un Error Inesperado al Procesar la Solicitud.\n" +
+                                    "El Problema ha sido Registrado. Verifique su Conexión y Notifíquele al Administrador el Error."
                     );
                 }
             });
         });
     }
 
-    private static Throwable obtenerCausaRaiz(Throwable e) {
+    public static Throwable obtenerCausaRaiz(Throwable e) {
         Throwable causa = e;
         while (causa.getCause() != null && causa != causa.getCause()) {
             causa = causa.getCause();

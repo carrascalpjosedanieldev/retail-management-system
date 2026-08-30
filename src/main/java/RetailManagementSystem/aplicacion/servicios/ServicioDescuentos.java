@@ -30,10 +30,10 @@ public class ServicioDescuentos {
     }
 
     public Descuento actualizarDescuento(int idDescuento, String nombre, BigDecimal porcentaje){
-        Descuento descuento = this.obtenerDescuento(idDescuento);
+        Descuento descuento = obtenerDescuento(idDescuento);
         descuento.cambiarNombre(nombre);
         descuento.cambiarPorcentaje(porcentaje);
-        this.repositorioDescuentos.actualizarDescuento(descuento);
+        actualizarDescuento(descuento);
         return descuento;
     }
 
@@ -42,9 +42,9 @@ public class ServicioDescuentos {
     }
 
     public void cambiarEstadoDescuento(int idDescuento){
-        Descuento descuento = this.obtenerDescuento(idDescuento);
+        Descuento descuento = obtenerDescuento(idDescuento);
         descuento.cambiarEstado();
-        this.actualizarDescuento(descuento);
+        actualizarDescuento(descuento);
     }
 
     public List<Descuento> obtenerDescuentosActivos(){

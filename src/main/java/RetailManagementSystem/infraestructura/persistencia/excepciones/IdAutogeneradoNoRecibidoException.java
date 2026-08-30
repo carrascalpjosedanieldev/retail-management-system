@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.excepciones;
 
-public class IdAutogeneradoNoRecibidoException extends RuntimeException {
+public class IdAutogeneradoNoRecibidoException extends PersistenciaException {
     public IdAutogeneradoNoRecibidoException(String message) {
         super(message);
     }
