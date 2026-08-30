@@ -43,11 +43,7 @@ public class ServicioDescuentos {
 
     public void cambiarEstadoDescuento(int idDescuento){
         Descuento descuento = this.obtenerDescuento(idDescuento);
-        if (descuento.isActivo()){
-            descuento.desactivar();
-        } else {
-            descuento.activar();
-        }
+        descuento.cambiarEstado();
         this.actualizarDescuento(descuento);
     }
 
