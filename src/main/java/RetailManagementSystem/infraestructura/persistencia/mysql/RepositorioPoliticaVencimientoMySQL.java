@@ -37,20 +37,23 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             try (ResultSet gk = pstmt.getGeneratedKeys()) {
                 if (gk.next()) {
                     int idReal = gk.getInt(1);
-                    return PoliticaVencimiento.reconstruirDesdeBD(idReal, politicaVencimiento.getNombre(),
+                    return PoliticaVencimiento.reconstruirDesdeBD(
+                            idReal, politicaVencimiento.getNombre(),
                             politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
-                            politicaVencimiento.isActiva());
+                            politicaVencimiento.isActiva()
+                    );
                 } else {
-                    throw new IdAutogeneradoNoRecibidoException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new IdAutogeneradoNoRecibidoException(
+                            "La Inserción fue Exitosa, pero NO se pudo obtener el ID Autogenerado.");
                 }
             }
 
         } catch (SQLException e) {
             if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Ya existe una Política de Vencimiento registrado con el nombre: " +
+                throw new IllegalArgumentException("Ya existe una Política de Vencimiento registrado con el Nombre: " +
                         politicaVencimiento.getNombre());
             }
-            throw new PersistenciaException("Error crítico de persistencia al guardar la Política de Vencimiento: " +
+            throw new PersistenciaException("Error Crítico de Persistencia al Guardar la Política de Vencimiento: " +
                     e.getMessage(), e);
         }
     }
@@ -66,7 +69,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
     @Override
     public PoliticaVencimiento obtenerPoliticaVencimiento(int idPoliticaVencimiento) {
         if (idPoliticaVencimiento <= 0){
-            throw new IllegalArgumentException("El ID a buscar debe ser positivo");
+            throw new IllegalArgumentException("El ID a Buscar debe ser Positivo");
         }
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_POLITICA_V)){
@@ -85,13 +88,13 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                     return PoliticaVencimiento.reconstruirDesdeBD(idReal, nombre, diasUmbral, porcentaje, activo);
                 }
 
-                throw new PoliticaVencimientoNoEncontradaException("No existe una Política de Vencimiento con el " +
+                throw new PoliticaVencimientoNoEncontradaException("NO Existe una Política de Vencimiento con el " +
                         "ID: " + idPoliticaVencimiento);
 
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error de base de datos al obtener la Política de Vencimiento", e);
+            throw new PersistenciaException("Error de Base de Datos al Obtener la Política de Vencimiento", e);
         }
     }
 
@@ -149,7 +152,7 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             }
 
         } catch (SQLException e){
-            throw new PersistenciaException("Error al listar las Políticas de Vencimiento Inactivas", e);
+            throw new PersistenciaException("Error al listar todas las Políticas de Vencimiento", e);
         }
         return politicasVencimiento;
     }
@@ -176,12 +179,12 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new PoliticaVencimientoNoEncontradaException("No se pudo actualizar: La Política de " +
-                        " Vencimiento con ID -" + politicaVencimiento.getIdPolitica() + "- no existe.");
+                throw new PoliticaVencimientoNoEncontradaException("NO se pudo Actualizar: La Política de " +
+                        " Vencimiento con ID -" + politicaVencimiento.getIdPolitica() + "- NO existe.");
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error de base de datos al actualizar la Política de Vencimiento", e);
+            throw new PersistenciaException("Error de Base de Datos al Actualizar la Política de Vencimiento", e);
         }
 
     }

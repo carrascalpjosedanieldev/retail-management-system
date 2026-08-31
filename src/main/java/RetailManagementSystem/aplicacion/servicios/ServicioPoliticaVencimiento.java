@@ -8,13 +8,21 @@ import java.util.List;
 
 public class ServicioPoliticaVencimiento {
 
+    //ATRIBUTOS:
+
     private final RepositorioPoliticaVencimiento repositorioPoliticaVencimiento;
+
+    //CONSTRUCTOR:
 
     public ServicioPoliticaVencimiento(RepositorioPoliticaVencimiento repositorioPoliticaVencimiento) {
         this.repositorioPoliticaVencimiento = repositorioPoliticaVencimiento;
     }
 
-    public PoliticaVencimiento registrarPoliticaVencimiento(String nombre, int diasUmbral, BigDecimal porcentaje, boolean activa){
+    //MÉTODOS:
+
+    public PoliticaVencimiento registrarPoliticaVencimiento(
+            String nombre, int diasUmbral, BigDecimal porcentaje, boolean activa
+    ) {
         PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.crearNuevo(nombre, diasUmbral, porcentaje, activa);
         return this.repositorioPoliticaVencimiento.insertarPoliticaVencimiento(politicaVencimiento);
     }
@@ -26,11 +34,11 @@ public class ServicioPoliticaVencimiento {
     public PoliticaVencimiento actualizarPoliticaVencimiento(
             int idPolitica, String nombre, int diasUmbral, BigDecimal porcentaje
     ) {
-        PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPolitica);
+        PoliticaVencimiento politicaVencimiento = obtenerPoliticaVencimiento(idPolitica);
         politicaVencimiento.cambiarNombrePolitica(nombre);
         politicaVencimiento.cambiarDiasUmbral(diasUmbral);
         politicaVencimiento.cambiarPorcentajeDescuento(porcentaje);
-        this.actualizarPoliticaVencimiento(politicaVencimiento);
+        actualizarPoliticaVencimiento(politicaVencimiento);
         return politicaVencimiento;
     }
 
@@ -40,12 +48,8 @@ public class ServicioPoliticaVencimiento {
 
     public void cambiarEstadoPoliticaDeVencimiento(int idPolitica){
         PoliticaVencimiento politicaVencimiento = this.obtenerPoliticaVencimiento(idPolitica);
-        if (politicaVencimiento.isActiva()){
-            politicaVencimiento.desactivar();
-        } else {
-            politicaVencimiento.activar();
-        }
-        this.actualizarPoliticaVencimiento(politicaVencimiento);
+        politicaVencimiento.cambiarEstado();
+        actualizarPoliticaVencimiento(politicaVencimiento);
     }
 
     public List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas(){

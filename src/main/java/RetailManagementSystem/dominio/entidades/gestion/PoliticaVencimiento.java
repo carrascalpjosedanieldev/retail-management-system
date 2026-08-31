@@ -1,8 +1,12 @@
 package RetailManagementSystem.dominio.entidades.gestion;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
 
 public class PoliticaVencimiento {
+
+    private static final BigDecimal CIEN = new BigDecimal("100");
 
     //ATRIBUTOS:
 
@@ -26,89 +30,111 @@ public class PoliticaVencimiento {
         return nombre;
     }
     private void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
 
     public int getDiasUmbral() { return diasUmbral; }
-    private void setDiasUmbral(int diasUmbral) {
-        this.diasUmbral = diasUmbral;
-    }
 
     public BigDecimal getPorcentajeDescuento() { return porcentajeDescuento; }
     private void setPorcentajeDescuento(BigDecimal porcentajeDescuento) {
-        this.porcentajeDescuento = porcentajeDescuento;
+        this.porcentajeDescuento = porcentajeDescuento.setScale(2, RoundingMode.HALF_UP);
     }
 
     public boolean isActiva() { return activa; }
-    private void setActiva(boolean activa) {
-        this.activa = activa;
+
+    //VALIDACIONES:
+
+    private void validarNombre(String nombre){
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("El Nombre de la Política de Vencimiento NO puede estar Vacío");
+        }
+    }
+
+    private void validarDiasUmbral(Integer diasUmbral){
+        if (diasUmbral == null || diasUmbral < 0) {
+            throw new IllegalArgumentException("Dias Umbral de la Política de Vencimiento Inválidos");
+        }
+    }
+
+    private void validarPorcentaje(BigDecimal porcentaje){
+        if (porcentaje == null){
+            throw new IllegalArgumentException("El Porcentaje de la Política de Vencimiento NO puede ser Nulo");
+        }
+        if (porcentaje.compareTo(BigDecimal.ZERO) < 0 || porcentaje.compareTo(CIEN) > 0) {
+            throw new IllegalArgumentException("Porcentaje de Descuento de Política de Vencimiento Invalido:  " + porcentaje + "%");
+        }
     }
 
     //CONSTRUCTORES:
 
-    private PoliticaVencimiento(Integer idPolitica, String nombrePolitica, int diasUmbral, BigDecimal porcentajeDescuento,
-                                boolean activa){
-        if (nombrePolitica==null || nombrePolitica.isBlank()){
-            throw new IllegalArgumentException("Nombre de la Política de Vencimiento Vacío");
-        }
-        if (diasUmbral < 0) {
-            throw new IllegalArgumentException("Dias Umbral de Política de Vencimiento Invalido");
-        }
-        if (porcentajeDescuento.compareTo(BigDecimal.ZERO) < 0 || porcentajeDescuento.compareTo(new BigDecimal("100")) > 0){
-            throw new IllegalArgumentException("Porcentaje de Descuento de Política de Vencimiento Invalido");
+    private PoliticaVencimiento(
+            Integer idPolitica, String nombrePolitica, Integer diasUmbral, BigDecimal porcentajeDescuento,
+            Boolean activa
+    ) {
+        validarNombre(nombrePolitica);
+        validarDiasUmbral(diasUmbral);
+        validarPorcentaje(porcentajeDescuento);
+        if (activa == null){
+            throw new IllegalArgumentException("El Estado de la Política de Vencimiento es Obligatorio");
         }
         this.idPolitica = idPolitica;
-        this.nombre = nombrePolitica;
+        setNombre(nombrePolitica);
         this.diasUmbral = diasUmbral;
-        this.porcentajeDescuento = porcentajeDescuento;
+        setPorcentajeDescuento(porcentajeDescuento);
         this.activa = activa;
     }
 
-    public static PoliticaVencimiento reconstruirDesdeBD(int idPolitica, String nombrePolitica, int diasUmbral,
-                                                  BigDecimal porcentajeDescuento, boolean activa){
+    public static PoliticaVencimiento reconstruirDesdeBD(
+            Integer idPolitica, String nombrePolitica, Integer diasUmbral, BigDecimal porcentajeDescuento, Boolean activa
+    ) {
         return new PoliticaVencimiento(idPolitica, nombrePolitica, diasUmbral, porcentajeDescuento, activa);
     }
 
     public static PoliticaVencimiento crearNuevo(
-            String  nombrePolitica, int diasUmbral, BigDecimal porcentajeDescuento, boolean activa){
+            String  nombrePolitica, Integer diasUmbral, BigDecimal porcentajeDescuento, Boolean activa
+    ) {
         return new PoliticaVencimiento(null, nombrePolitica, diasUmbral, porcentajeDescuento, activa);
     }
 
     //MÉTODOS:
 
-    public void cambiarNombrePolitica(String nombreNuevo){
-        if (nombreNuevo==null || nombreNuevo.isBlank()){
-            throw new IllegalArgumentException("Nombre Nuevo para la Política de Vencimiento Vacío");
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PoliticaVencimiento politicaV = (PoliticaVencimiento) o;
+        if (this.idPolitica == null || politicaV.getIdPolitica() == null) {
+            return false;
+        }
+        return Objects.equals(this.idPolitica, politicaV.getIdPolitica());
+    }
+
+    @Override
+    public int hashCode() {
+        return idPolitica != null ? idPolitica.hashCode() : getClass().hashCode();
+    }
+
+    public void cambiarNombrePolitica(String nombreNuevo){
+        validarNombre(nombreNuevo);
         setNombre(nombreNuevo);
     }
 
-    public void cambiarDiasUmbral(int diasUmbral){
-        if (diasUmbral< 0){
-            throw new IllegalArgumentException("Dias Umbral de Política de Vencimiento Invalido");
-        }
-        setDiasUmbral(diasUmbral);
+    public void cambiarDiasUmbral(Integer diasUmbral){
+        validarDiasUmbral(diasUmbral);
+        this.diasUmbral = diasUmbral;
     }
 
     public void cambiarPorcentajeDescuento(BigDecimal porcentajeDescuento){
-        if (porcentajeDescuento.compareTo(BigDecimal.ZERO) <= 0 || porcentajeDescuento.compareTo(new BigDecimal("100")) > 0){
-            throw new IllegalArgumentException("Porcentaje de Descuento de Política de Vencimiento Invalido");
-        }
+        validarPorcentaje(porcentajeDescuento);
         setPorcentajeDescuento(porcentajeDescuento);
     }
 
-    public void activar(){
-        if (isActiva()){
-            throw new IllegalStateException("La Política de Vencimiento ya esta Activo");
-        }
-        setActiva(true);
-    }
-
-    public void desactivar(){
-        if (!isActiva()){
-            throw new IllegalStateException("La Política de Vencimiento ya esta Inactivo");
-        }
-        setActiva(false);
+    public void cambiarEstado(){
+        this.activa = !this.isActiva();
     }
 
 }//===================================================================================================================//

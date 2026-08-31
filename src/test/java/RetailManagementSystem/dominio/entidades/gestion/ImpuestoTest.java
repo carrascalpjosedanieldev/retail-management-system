@@ -84,12 +84,11 @@ public class ImpuestoTest {
     void deberiaLanzarExcepcionSiElPorcentajeEsInvalido(String porcentajeSt){
         //ARRANGE
         BigDecimal porcentaje = new BigDecimal(porcentajeSt);
-        //ACT
+        //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 ()-> Impuesto.crearNuevo(NOMBRE_POR_DEFECTO, porcentaje, ACTIVO_POR_DEFECTO)
         );
-        //ASSERT
         assertEquals("Porcentaje de Impuesto Invalido:  " + porcentaje + "%", exception.getMessage());
     }
 
