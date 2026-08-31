@@ -140,7 +140,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error al listar los Impuestos Inactivos", e);
+            throw new PersistenciaException("Error al listar todos los Impuestos", e);
         }
         return impuestos;
     }

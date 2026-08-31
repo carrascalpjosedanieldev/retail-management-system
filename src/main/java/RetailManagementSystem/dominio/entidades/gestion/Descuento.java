@@ -23,8 +23,14 @@ public class Descuento {
     public Integer getId() { return id; }
 
     public String getNombre() { return nombre; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre.trim();
+    }
 
     public BigDecimal getPorcentaje() { return porcentaje; }
+    public void setPorcentaje(BigDecimal porcentaje) {
+        this.porcentaje = porcentaje.setScale(2, RoundingMode.HALF_UP);
+    }
 
     public boolean isActivo() {
         return activo;
@@ -56,8 +62,8 @@ public class Descuento {
             throw new IllegalArgumentException("El Estado del Descuento es Obligatorio");
         }
         this.id = id;
-        this.nombre = nombre.trim();
-        this.porcentaje = porcentaje.setScale(2, RoundingMode.HALF_UP);
+        setNombre(nombre);
+        setPorcentaje(porcentaje);
         this.activo = activo;
     }
 
@@ -93,12 +99,12 @@ public class Descuento {
 
     public void cambiarNombre(String nombreNuevo){
         validarNombre(nombreNuevo);
-        this.nombre = nombreNuevo.trim();
+        setNombre(nombreNuevo);
     }
 
     public void cambiarPorcentaje(BigDecimal porcentajeNuevo){
         validarPorcentaje(porcentajeNuevo);
-        this.porcentaje = porcentajeNuevo.setScale(2, RoundingMode.HALF_UP);
+        setPorcentaje(porcentajeNuevo);
     }
 
     public void cambiarEstado(){

@@ -10,18 +10,18 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DescuentoTest {
+public class ImpuestoTest {
 
     private static final Integer ID_POR_DEFECTO = 1;
-    private static final String NOMBRE_POR_DEFECTO = "Descuento Estándar";
-    private static final BigDecimal PORCENTAJE_POR_DEFECTO = new BigDecimal("15.00");
+    private static final String NOMBRE_POR_DEFECTO = "Impuesto Estándar";
+    private static final BigDecimal PORCENTAJE_POR_DEFECTO = new BigDecimal("19.00");
     private static final Boolean ACTIVO_POR_DEFECTO = true;
 
-    private Descuento descuentoMutador;
+    private Impuesto impuestoMutador;
 
     @BeforeEach
     void setUp() {
-        descuentoMutador = Descuento.reconstruirDesdeBD(
+        impuestoMutador = Impuesto.reconstruirDesdeBD(
                 ID_POR_DEFECTO,
                 NOMBRE_POR_DEFECTO,
                 PORCENTAJE_POR_DEFECTO,
@@ -30,14 +30,14 @@ public class DescuentoTest {
     }
 
     @Test
-    void deberiaCrearDescuentoCorrectamente(){
+    void deberiaCrearImpuestoCorrectamente(){
         //ACT
-        Descuento descuento = Descuento.crearNuevo(NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, ACTIVO_POR_DEFECTO);
+        Impuesto impuesto = Impuesto.crearNuevo(NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, ACTIVO_POR_DEFECTO);
         //ASSERT
-        assertNull(descuento.getId());
-        assertEquals(NOMBRE_POR_DEFECTO, descuento.getNombre());
-        assertEquals(0, descuento.getPorcentaje().compareTo(PORCENTAJE_POR_DEFECTO));
-        assertEquals(ACTIVO_POR_DEFECTO, descuento.isActivo());
+        assertNull(impuesto.getId());
+        assertEquals(NOMBRE_POR_DEFECTO, impuesto.getNombre());
+        assertEquals(0, impuesto.getPorcentaje().compareTo(PORCENTAJE_POR_DEFECTO));
+        assertEquals(ACTIVO_POR_DEFECTO, impuesto.isActivo());
     }
 
     @ParameterizedTest
@@ -47,10 +47,10 @@ public class DescuentoTest {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> Descuento.crearNuevo(nombre, PORCENTAJE_POR_DEFECTO, ACTIVO_POR_DEFECTO)
+                ()-> Impuesto.crearNuevo(nombre, PORCENTAJE_POR_DEFECTO, ACTIVO_POR_DEFECTO)
         );
         //ASSERT
-        assertEquals("El Nombre del Descuento NO puede estar Vacío", exception.getMessage());
+        assertEquals("El Nombre del Impuesto NO puede estar Vacío", exception.getMessage());
     }
 
     @Test
@@ -58,10 +58,10 @@ public class DescuentoTest {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> Descuento.crearNuevo(NOMBRE_POR_DEFECTO, null, ACTIVO_POR_DEFECTO)
+                ()-> Impuesto.crearNuevo(NOMBRE_POR_DEFECTO, null, ACTIVO_POR_DEFECTO)
         );
         //ASSERT
-        assertEquals("El Porcentaje del Descuento NO puede ser Nulo", exception.getMessage());
+        assertEquals("El Porcentaje del Impuesto NO puede ser Nulo", exception.getMessage());
     }
 
     @ParameterizedTest
@@ -71,12 +71,12 @@ public class DescuentoTest {
         BigDecimal entrada = new BigDecimal(porcentajeEntrada);
         BigDecimal esperado = new BigDecimal(porcentajeSalida);
         //ACT
-        Descuento descuento = Descuento.crearNuevo(NOMBRE_POR_DEFECTO, entrada, ACTIVO_POR_DEFECTO);
+        Impuesto impuesto = Impuesto.crearNuevo(NOMBRE_POR_DEFECTO, entrada, ACTIVO_POR_DEFECTO);
         //ASSERT
-        assertNull(descuento.getId());
-        assertEquals(NOMBRE_POR_DEFECTO, descuento.getNombre());
-        assertEquals(0, descuento.getPorcentaje().compareTo(esperado));
-        assertEquals(ACTIVO_POR_DEFECTO, descuento.isActivo());
+        assertNull(impuesto.getId());
+        assertEquals(NOMBRE_POR_DEFECTO, impuesto.getNombre());
+        assertEquals(0, impuesto.getPorcentaje().compareTo(esperado));
+        assertEquals(ACTIVO_POR_DEFECTO, impuesto.isActivo());
     }
 
     @ParameterizedTest
@@ -87,10 +87,10 @@ public class DescuentoTest {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> Descuento.crearNuevo(NOMBRE_POR_DEFECTO, porcentaje, ACTIVO_POR_DEFECTO)
+                ()-> Impuesto.crearNuevo(NOMBRE_POR_DEFECTO, porcentaje, ACTIVO_POR_DEFECTO)
         );
         //ASSERT
-        assertEquals("Porcentaje de Descuento Invalido:  " + porcentaje + "%", exception.getMessage());
+        assertEquals("Porcentaje de Impuesto Invalido:  " + porcentaje + "%", exception.getMessage());
     }
 
     @Test
@@ -98,10 +98,10 @@ public class DescuentoTest {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> Descuento.crearNuevo(NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, null)
+                ()-> Impuesto.crearNuevo(NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, null)
         );
         //ASSERT
-        assertEquals("El Estado del Descuento es Obligatorio", exception.getMessage());
+        assertEquals("El Estado del Impuesto es Obligatorio", exception.getMessage());
     }
 
     @ParameterizedTest
@@ -111,19 +111,19 @@ public class DescuentoTest {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> descuentoMutador.cambiarNombre(nombreNuevo)
+                ()-> impuestoMutador.cambiarNombre(nombreNuevo)
         );
         //ASSERT
-        assertEquals("El Nombre del Descuento NO puede estar Vacío", exception.getMessage());
+        assertEquals("El Nombre del Impuesto NO puede estar Vacío", exception.getMessage());
     }
 
     @ParameterizedTest
     @CsvSource({ "  Modificado  ", "Modificado"})
     void deberiaCambiarNombreCorrectamente(String nombreNuevo){
         //ACT
-        descuentoMutador.cambiarNombre(nombreNuevo);
+        impuestoMutador.cambiarNombre(nombreNuevo);
         //ASSERT
-        assertEquals("Modificado", descuentoMutador.getNombre());
+        assertEquals("Modificado", impuestoMutador.getNombre());
     }
 
     @ParameterizedTest
@@ -134,10 +134,10 @@ public class DescuentoTest {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> descuentoMutador.cambiarPorcentaje(porcentajeNuevo)
+                ()-> impuestoMutador.cambiarPorcentaje(porcentajeNuevo)
         );
         //ASSERT
-        assertEquals("Porcentaje de Descuento Invalido:  " + porcentajeNuevo + "%", exception.getMessage());
+        assertEquals("Porcentaje de Impuesto Invalido:  " + porcentajeNuevo + "%", exception.getMessage());
     }
 
     @Test
@@ -145,18 +145,18 @@ public class DescuentoTest {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> descuentoMutador.cambiarPorcentaje(null)
+                ()-> impuestoMutador.cambiarPorcentaje(null)
         );
         //ASSERT
-        assertEquals("El Porcentaje del Descuento NO puede ser Nulo", exception.getMessage());
+        assertEquals("El Porcentaje del Impuesto NO puede ser Nulo", exception.getMessage());
     }
 
     @Test
     void deberiaCambiarEstadoCorrectamente(){
         //ACT
-        descuentoMutador.cambiarEstado();
+        impuestoMutador.cambiarEstado();
         //ASSERT
-        assertFalse(descuentoMutador.isActivo());
+        assertFalse(impuestoMutador.isActivo());
     }
 
 }

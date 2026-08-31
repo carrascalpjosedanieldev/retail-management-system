@@ -1,8 +1,12 @@
 package RetailManagementSystem.dominio.entidades.gestion;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
 
 public class Impuesto {
+
+    private static final BigDecimal CIEN = new BigDecimal("100");
 
     //ATRIBUTOS:
 
@@ -12,80 +16,99 @@ public class Impuesto {
 
     private BigDecimal porcentaje;
 
-    private boolean activo;
+    private Boolean activo;
 
-    //GETTERS Y SETTERS:
+    //GETTERS:
 
-    public int getId() { return id; }
+    public Integer getId() { return id; }
 
     public String getNombre() { return nombre; }
-    private void setNombre(String nombre) {
-        this.nombre = nombre;
+    private void setNombre(String nombre){
+        this.nombre = nombre.trim();
     }
 
     public BigDecimal getPorcentaje() { return porcentaje; }
-    private void setPorcentaje(BigDecimal porcentaje) {
-        this.porcentaje = porcentaje;
+    public void setPorcentaje(BigDecimal porcentaje) {
+        this.porcentaje = porcentaje.setScale(2, RoundingMode.HALF_UP);
     }
 
     public boolean isActivo() {
         return activo;
     }
-    private void setActivo(boolean activo) {
-        this.activo = activo;
+
+    //VALIDACIONES:
+
+    private void validarNombre(String nombre){
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("El Nombre del Impuesto NO puede estar Vacío");
+        }
+    }
+
+    private void validarPorcentaje(BigDecimal porcentaje){
+        if (porcentaje == null){
+            throw new IllegalArgumentException("El Porcentaje del Impuesto NO puede ser Nulo");
+        }
+        if (porcentaje.compareTo(BigDecimal.ZERO) < 0 || porcentaje.compareTo(CIEN) > 0) {
+            throw new IllegalArgumentException("Porcentaje de Impuesto Invalido:  " + porcentaje + "%");
+        }
     }
 
     //CONSTRUCTORES:
 
-    private Impuesto(Integer id, String nombre, BigDecimal porcentaje, boolean activo) {
-        if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Impuesto Vacío");
-        }
-        if (porcentaje.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Porcentaje de Impuesto Invalido");
+    private Impuesto(Integer id, String nombre, BigDecimal porcentaje, Boolean activo) {
+        validarNombre(nombre);
+        validarPorcentaje(porcentaje);
+        if (activo == null){
+            throw new IllegalArgumentException("El Estado del Impuesto es Obligatorio");
         }
         this.id = id;
-        this.nombre = nombre;
-        this.porcentaje = porcentaje;
+        setNombre(nombre);
+        setPorcentaje(porcentaje);
         this.activo = activo;
     }
 
-    public static Impuesto reconstruirDesdeBD(int id, String nombre, BigDecimal porcentaje, boolean activo) {
+    public static Impuesto reconstruirDesdeBD(Integer id, String nombre, BigDecimal porcentaje, Boolean activo) {
         return new Impuesto(id, nombre, porcentaje, activo);
     }
 
-    public static Impuesto crearNuevo(String nombre, BigDecimal porcentaje, boolean activo) {
+    public static Impuesto crearNuevo(String nombre, BigDecimal porcentaje, Boolean activo) {
         return new Impuesto(null, nombre, porcentaje, activo);
     }
 
     //MÉTODOS:
 
-    public void cambiarNombre(String nombreNuevo){
-        if (nombreNuevo==null || nombreNuevo.isBlank()){
-            throw new IllegalArgumentException("Nombre del Impuesto Vacío");
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Impuesto impuesto = (Impuesto) o;
+        if (this.id == null || impuesto.getId() == null) {
+            return false;
+        }
+        return Objects.equals(this.id, impuesto.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : getClass().hashCode();
+    }
+
+    public void cambiarNombre(String nombreNuevo){
+        validarNombre(nombreNuevo);
         setNombre(nombreNuevo);
     }
 
     public void cambiarPorcentaje(BigDecimal porcentajeNuevo){
-        if (porcentaje.compareTo(BigDecimal.ZERO) < 0){
-            throw new IllegalArgumentException("Porcentaje para el Impuesto Invalido");
-        }
+        validarPorcentaje(porcentajeNuevo);
         setPorcentaje(porcentajeNuevo);
     }
 
-    public void activar(){
-        if (isActivo()){
-            throw new IllegalStateException("El Impuesto ya esta Activo");
-        }
-        setActivo(true);
-    }
-
-    public void desactivar(){
-        if (!isActivo()){
-            throw new IllegalStateException("El Impuesto ya esta Inactivo");
-        }
-        setActivo(false);
+    public void cambiarEstado(){
+        this.activo = !this.isActivo();
     }
 
 }//===================================================================================================================//

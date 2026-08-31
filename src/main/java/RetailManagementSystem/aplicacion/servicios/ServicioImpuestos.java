@@ -30,10 +30,10 @@ public class ServicioImpuestos {
     }
 
     public Impuesto actualizarImpuesto(int idImpuesto, String nombre, BigDecimal porcentaje){
-        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
+        Impuesto impuesto = obtenerImpuesto(idImpuesto);
         impuesto.cambiarNombre(nombre);
         impuesto.cambiarPorcentaje(porcentaje);
-        this.repositorioImpuestos.actualizarImpuesto(impuesto);
+        actualizarImpuesto(impuesto);
         return impuesto;
     }
 
@@ -42,13 +42,9 @@ public class ServicioImpuestos {
     }
 
     public void cambiarEstadoImpuesto(int idImpuesto){
-        Impuesto impuesto = this.obtenerImpuesto(idImpuesto);
-        if (impuesto.isActivo()){
-            impuesto.desactivar();
-        } else {
-            impuesto.activar();
-        }
-        this.actualizarImpuesto(impuesto);
+        Impuesto impuesto = obtenerImpuesto(idImpuesto);
+        impuesto.cambiarEstado();
+        actualizarImpuesto(impuesto);
     }
 
     public List<Impuesto> obtenerImpuestosActivos(){
