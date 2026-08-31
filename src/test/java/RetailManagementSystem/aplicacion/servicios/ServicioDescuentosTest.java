@@ -7,6 +7,7 @@ import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,19 +41,27 @@ public class ServicioDescuentosTest {
 
     @Test
     void deberiaRegistrarUnDescuentoCorrectamente(){
+        // ARRANGE
         when(repoDescuentosFalso.insertarDescuento(any(Descuento.class))).thenReturn(descuentoPrueba);
+        // ACT
         Descuento resultado = servicioDescuentos.registrarDescuento(NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, true);
+        // ASSERT
         assertNotNull(resultado.getId());
-        assertEquals(NOMBRE_POR_DEFECTO, resultado.getNombre());
-        assertEquals(0, resultado.getPorcentaje().compareTo(PORCENTAJE_POR_DEFECTO));
-        assertTrue(resultado.isActivo());
-        verify(repoDescuentosFalso).insertarDescuento(any(Descuento.class));
+        ArgumentCaptor<Descuento> captor = ArgumentCaptor.forClass(Descuento.class);
+        verify(repoDescuentosFalso).insertarDescuento(captor.capture());
+        Descuento descuentoCapturado = captor.getValue();
+        assertNull(descuentoCapturado.getId());
+        assertEquals(NOMBRE_POR_DEFECTO, descuentoCapturado.getNombre());
+        assertEquals(0, descuentoCapturado.getPorcentaje().compareTo(PORCENTAJE_POR_DEFECTO));
+        assertTrue(descuentoCapturado.isActivo());
     }
 
     @Test
     void deberiaLanzarExcepcionCuandoObtenerDescuentoNoExiste(){
+        // ARRANGE
         when(repoDescuentosFalso.obtenerDescuento(99))
                 .thenThrow(new DescuentoNoEncontradoException("NO existe un Descuento con el ID: 99"));
+        // ACT AND ASSERT
         assertThrows(DescuentoNoEncontradoException.class, () -> {
             servicioDescuentos.obtenerDescuento(99);
         });
@@ -60,28 +69,38 @@ public class ServicioDescuentosTest {
 
     @Test
     void deberiaActualizarUnDescuentoCorrectamente(){
+        // ARRANGE
         String nombreNuevo = "Nombre Nuevo";
         BigDecimal porcentajeNuevo = new BigDecimal("25");
         when(repoDescuentosFalso.obtenerDescuento(1)).thenReturn(descuentoPrueba);
-        Descuento resultado = servicioDescuentos.actualizarDescuento(1, nombreNuevo, porcentajeNuevo);
-        assertEquals(1, resultado.getId());
-        assertEquals(nombreNuevo, resultado.getNombre());
-        assertEquals(0, resultado.getPorcentaje().compareTo(porcentajeNuevo));
-        verify(repoDescuentosFalso).actualizarDescuento(resultado);
+        // ACT
+        servicioDescuentos.actualizarDescuento(1, nombreNuevo, porcentajeNuevo);
+        // ASSERT
+        ArgumentCaptor<Descuento> captor = ArgumentCaptor.forClass(Descuento.class);
+        verify(repoDescuentosFalso).actualizarDescuento(captor.capture());
+        Descuento descuentoCapturado = captor.getValue();
+        assertEquals(1, descuentoCapturado.getId());
+        assertEquals(nombreNuevo, descuentoCapturado.getNombre());
+        assertEquals(0, descuentoCapturado.getPorcentaje().compareTo(porcentajeNuevo));
     }
 
     @Test
     void deberiaCambiarEstadoCorrectamente(){
+        // ARRANGE
         when(repoDescuentosFalso.obtenerDescuento(1)).thenReturn(descuentoPrueba);
+        // ACT
         servicioDescuentos.cambiarEstadoDescuento(1);
+        // ASSERT
         assertFalse(descuentoPrueba.isActivo());
         verify(repoDescuentosFalso).actualizarDescuento(descuentoPrueba);
     }
 
     @Test
     void deberiaLanzarExcepcionSiAlCambiarEstadoElDescuentoNoExiste(){
+        // ARRANGE
         when(repoDescuentosFalso.obtenerDescuento(99))
                 .thenThrow(new DescuentoNoEncontradoException("NO existe un Descuento con el ID: 99"));
+        // ACT AND ASSERT
         assertThrows(DescuentoNoEncontradoException.class, () -> {
             servicioDescuentos.cambiarEstadoDescuento(99);
         });
@@ -91,9 +110,12 @@ public class ServicioDescuentosTest {
 
     @Test
     void deberiaDevolverLaListaDeDescuentosActivosCorrectamente(){
+        // ARRANGE
         List<Descuento> listaEsperada = List.of(descuentoPrueba);
         when(repoDescuentosFalso.obtenerDescuentosActivos()).thenReturn(listaEsperada);
+        // ACT
         List<Descuento> listaRecibida = servicioDescuentos.obtenerDescuentosActivos();
+        // ASSERT
         assertEquals(listaEsperada.size(), listaRecibida.size());
         assertEquals(listaEsperada, listaRecibida);
         verify(repoDescuentosFalso).obtenerDescuentosActivos();
@@ -101,9 +123,12 @@ public class ServicioDescuentosTest {
 
     @Test
     void deberiaDevolverLaListaDeTodosLosDescuentosCorrectamente(){
+        // ARRANGE
         List<Descuento> listaEsperada = List.of(descuentoPrueba);
         when(repoDescuentosFalso.obtenerTodosLosDescuentos()).thenReturn(listaEsperada);
+        // ACT
         List<Descuento> listaRecibida = servicioDescuentos.obtenerTodosLosDescuentos();
+        // ASSERT
         assertEquals(listaEsperada.size(), listaRecibida.size());
         assertEquals(listaEsperada, listaRecibida);
         verify(repoDescuentosFalso).obtenerTodosLosDescuentos();

@@ -1,6 +1,8 @@
 package RetailManagementSystem.dominio.entidades.gestion;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
 
 public class Descuento {
 
@@ -55,7 +57,7 @@ public class Descuento {
         }
         this.id = id;
         this.nombre = nombre.trim();
-        this.porcentaje = porcentaje;
+        this.porcentaje = porcentaje.setScale(2, RoundingMode.HALF_UP);
         this.activo = activo;
     }
 
@@ -69,14 +71,34 @@ public class Descuento {
 
     //MÉTODOS:
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Descuento descuento = (Descuento) o;
+        if (this.id == null || descuento.getId() == null) {
+            return false;
+        }
+        return Objects.equals(this.id, descuento.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : getClass().hashCode();
+    }
+
     public void cambiarNombre(String nombreNuevo){
         validarNombre(nombreNuevo);
-        this.nombre = nombreNuevo;
+        this.nombre = nombreNuevo.trim();
     }
 
     public void cambiarPorcentaje(BigDecimal porcentajeNuevo){
         validarPorcentaje(porcentajeNuevo);
-        this.porcentaje = porcentajeNuevo;
+        this.porcentaje = porcentajeNuevo.setScale(2, RoundingMode.HALF_UP);
     }
 
     public void cambiarEstado(){
