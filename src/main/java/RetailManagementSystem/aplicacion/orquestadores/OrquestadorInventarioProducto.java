@@ -89,7 +89,7 @@ public class OrquestadorInventarioProducto {
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_INVENTARIOS);
         return this.ensambladorDTOInventario.ensamblarDatosInventario(
-                this.servicioInventario.agregarInventario(nombre, capacidadMaxima)
+                this.servicioInventario.registrarInventario(nombre, capacidadMaxima)
         );
     }
 

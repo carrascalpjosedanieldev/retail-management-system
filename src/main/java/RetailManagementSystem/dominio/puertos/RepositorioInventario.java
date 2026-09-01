@@ -20,9 +20,5 @@ public interface RepositorioInventario {
 
     void actualizarInventario(Inventario inventario);
 
-    //DELETE:
-
-    void eliminarInventario(int idInventario);
-
 }//===================================================================================================================//
 

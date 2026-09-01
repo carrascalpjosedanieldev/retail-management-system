@@ -2,6 +2,8 @@ package RetailManagementSystem.dominio.entidades.gestion;
 
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 
+import java.util.Objects;
+
 public class Inventario {
 
     //ATRIBUTOS:
@@ -19,12 +21,11 @@ public class Inventario {
     public String getNombre() {
         return nombre;
     }
-
     private void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
 
-    public int getIdInventario() {
+    public Integer getIdInventario() {
         return idInventario;
     }
 
@@ -36,46 +37,77 @@ public class Inventario {
         return capacidadOcupada;
     }
 
-    public void setCapacidadOcupada(int capacidadOcupada) {
-        this.capacidadOcupada = capacidadOcupada;
+    //VALIDACIONES:
+
+    private void validarNombre(String nombre){
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("El Nombre del Inventario NO puede estar Vacío");
+        }
+    }
+
+    private void validarCapacidadMaxima(Integer capacidadMaxima){
+        if (capacidadMaxima == null || capacidadMaxima<=0){
+            throw new IllegalArgumentException("La Capacidad Maxima del Inventario es Invalida");
+        }
+    }
+
+    private void validarCapacidadOcupada(Integer capacidadOcupada, int capacidadMaxima){
+        if (capacidadOcupada == null || capacidadOcupada < 0){
+            throw new IllegalArgumentException("La Capacidad Ocupada del Inventario es Invalida");
+        }
+        if (capacidadOcupada > capacidadMaxima){
+            throw new CapacidadInventarioExcedidaException("La Capacidad Ocupada es Mayor a la Capacidad Maxima");
+        }
     }
 
     //CONSTRUCTORES:
 
-    private Inventario(Integer idInventario, String nombre, int capacidadMaxima, int capacidadOcupada){
-        if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Inventario Invalido");
-        }
-        if (capacidadMaxima<=0){
-            throw new IllegalArgumentException("Capacidad Maxima del Inventario Invalida");
-        }
-        this.nombre = nombre;
+    private Inventario(Integer idInventario, String nombre, Integer capacidadMaxima, Integer capacidadOcupada){
+        validarNombre(nombre);
+        validarCapacidadMaxima(capacidadMaxima);
+        validarCapacidadOcupada(capacidadOcupada, capacidadMaxima);
         this.idInventario = idInventario;
+        setNombre(nombre);
         this.capacidadMaxima = capacidadMaxima;
         this.capacidadOcupada = capacidadOcupada;
     }
 
-    public static Inventario reconstruirDesdeBD(int idInventario, String nombre, int capacidadMaxima, int capacidadOcupada) {
+    public static Inventario reconstruirDesdeBD(
+            Integer idInventario, String nombre, Integer capacidadMaxima, Integer capacidadOcupada
+    ) {
         return new Inventario(idInventario, nombre, capacidadMaxima, capacidadOcupada);
     }
 
-    public static Inventario crearNuevo(String nombre, int capacidadMaxima) {
+    public static Inventario crearNuevo(String nombre, Integer capacidadMaxima) {
         return new Inventario(null, nombre, capacidadMaxima, 0);
     }
 
-    //METODOS PARA MODIFICAR INVENTARIO:
+    //MÉTODOS:
 
-    public void cambiarNombreInventario(String nuevoNombre){
-        if (nuevoNombre==null || nuevoNombre.isBlank()){
-            throw new IllegalArgumentException("Nombre de Inventario Vacío");
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-        if (nuevoNombre.length() > 100) {
-            throw new IllegalArgumentException("El Nombre NO puede superar los 50 Caracteres.");
+        if (o == null || getClass() != o.getClass()) {
+            return false;
         }
-        setNombre(nuevoNombre);
+        Inventario inventario = (Inventario) o;
+        if (this.idInventario == null || inventario.getIdInventario() == null) {
+            return false;
+        }
+        return Objects.equals(this.idInventario, inventario.getIdInventario());
     }
 
-    //METODOS DE VALIDACION:
+    @Override
+    public int hashCode() {
+        return idInventario != null ? idInventario.hashCode() : getClass().hashCode();
+    }
+
+    public void cambiarNombreInventario(String nuevoNombre){
+        validarNombre(nuevoNombre);
+        setNombre(nuevoNombre);
+    }
 
     public int calcularCapacidadLibre() {
         return this.capacidadMaxima - this.capacidadOcupada;

@@ -3,7 +3,6 @@ package RetailManagementSystem.infraestructura.persistencia.mysql;
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 import RetailManagementSystem.dominio.puertos.RepositorioInventario;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
-import RetailManagementSystem.dominio.excepciones.conflictos.InventarioNoVacioException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
@@ -143,33 +142,6 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
         } catch (SQLException e) {
             throw new PersistenciaException("Error de base de datos al actualizar el inventario", e);
-        }
-    }
-
-
-    //DELETE:
-
-    private static final String SQL_ELIMINAR_INVENTARIO =
-            "DELETE FROM inventarios WHERE id_inventario = ?";
-
-    @Override
-    public void eliminarInventario(int idInventario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmtDelete = conn.prepareStatement(SQL_ELIMINAR_INVENTARIO)) {
-
-            pstmtDelete.setInt(1, idInventario);
-
-            int filasAfectadas = pstmtDelete.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new InventarioNoEncontradoException("El inventario con ID " + idInventario + " no existe.");
-            }
-
-        } catch (SQLException e) {
-            if (e.getErrorCode() == 1451) {
-                throw new InventarioNoVacioException("No se puede eliminar: El inventario tiene productos asociados.");
-            }
-            throw new PersistenciaException("Error crítico al intentar eliminar el inventario.", e);
         }
     }
 

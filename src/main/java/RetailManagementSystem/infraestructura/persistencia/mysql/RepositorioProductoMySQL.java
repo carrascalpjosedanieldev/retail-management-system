@@ -55,7 +55,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             } catch (SQLException e) {
                 conn.rollback();
                 if (e.getErrorCode() == 1452) {
-                    throw new InventarioNoEncontradoException("No se puede guardar el producto: El inventario destino no existe en la base de datos.");
+                    throw new InventarioNoEncontradoException("No se puede guardar el producto: El Inventario Destino NO Existe en la Base de Datos.");
                 }
                 throw new RuntimeException("Error en la transacción de inserción", e);
 
