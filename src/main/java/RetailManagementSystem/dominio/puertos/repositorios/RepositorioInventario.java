@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.puertos;
+package RetailManagementSystem.dominio.puertos.repositorios;
 
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 
@@ -17,6 +17,8 @@ public interface RepositorioInventario {
     List<Inventario> obtenerTodosInventariosConCapacidadOcupada();
 
     //UPDATE:
+
+    void validarCapacidadInventario(int idInventario, int stockASumar);
 
     void actualizarInventario(Inventario inventario);
 

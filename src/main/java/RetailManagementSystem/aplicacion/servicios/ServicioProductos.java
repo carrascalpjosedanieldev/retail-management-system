@@ -4,15 +4,17 @@ import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
-import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
-import RetailManagementSystem.dominio.puertos.RepositorioImpuestos;
-import RetailManagementSystem.dominio.puertos.RepositorioPoliticaVencimiento;
-import RetailManagementSystem.dominio.puertos.RepositorioProducto;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioDescuentos;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioImpuestos;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPoliticaVencimiento;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioProducto;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public class ServicioProductos {
+
+    //ATRIBUTOS:
 
     private final RepositorioProducto repositorioProducto;
 
@@ -22,13 +24,19 @@ public class ServicioProductos {
 
     private final RepositorioPoliticaVencimiento repositorioPoliticaVencimiento;
 
-    public ServicioProductos(RepositorioProducto repositorioProducto, RepositorioImpuestos repositorioImpuestos,
-                             RepositorioDescuentos repositorioDescuentos, RepositorioPoliticaVencimiento repositorioPoliticaVencimiento) {
+    //CONSTRUCTOR:
+
+    public ServicioProductos(
+            RepositorioProducto repositorioProducto, RepositorioImpuestos repositorioImpuestos,
+            RepositorioDescuentos repositorioDescuentos, RepositorioPoliticaVencimiento repositorioPoliticaVencimiento
+    ) {
         this.repositorioProducto = repositorioProducto;
         this.repositorioImpuestos = repositorioImpuestos;
         this.repositorioDescuentos = repositorioDescuentos;
         this.repositorioPoliticaVencimiento = repositorioPoliticaVencimiento;
     }
+
+    //MÉTODOS:
 
     public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
         return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
@@ -40,10 +48,6 @@ public class ServicioProductos {
 
     public boolean existeProducto(String codigoProducto){
         return this.repositorioProducto.existeProducto(codigoProducto);
-    }
-
-    public void registrarProducto(int idInventario, Producto producto){
-        this.repositorioProducto.insertarProducto(producto, idInventario);
     }
 
     public void cambiarEstadoProducto(int idInventario, String codigoProducto){

@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PoliticaVencimientoNoEncontradaException;
-import RetailManagementSystem.dominio.puertos.RepositorioPoliticaVencimiento;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPoliticaVencimiento;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.puertos;
+package RetailManagementSystem.dominio.puertos.repositorios;
 
 public interface RepositorioConfiguracion {
 

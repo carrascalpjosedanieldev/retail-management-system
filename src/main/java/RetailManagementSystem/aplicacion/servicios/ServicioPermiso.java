@@ -1,7 +1,7 @@
 package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
-import RetailManagementSystem.dominio.puertos.RepositorioPermiso;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPermiso;
 
 import java.util.ArrayList;
 import java.util.List;

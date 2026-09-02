@@ -1,11 +1,12 @@
-package RetailManagementSystem.infraestructura.persistencia.mysql;
+package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
-import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioDescuentos;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.DescuentoNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 
 import java.math.BigDecimal;
 import java.sql.*;

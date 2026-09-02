@@ -1,4 +1,4 @@
-package RetailManagementSystem.infraestructura.persistencia.mysql;
+package RetailManagementSystem.infraestructura.persistencia.mysql.conexiones;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -19,7 +19,7 @@ public class AdministradorConexion {
     private AdministradorConexion() {
     }
 
-    //METODOS
+    //MÉTODOS:
 
     static {
         Properties props = new Properties();

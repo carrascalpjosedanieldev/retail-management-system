@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-public class ProductoRopa extends Producto{
+public final class ProductoRopa extends Producto{
 
     //ATRIBUTOS:
 

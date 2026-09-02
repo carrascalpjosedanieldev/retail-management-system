@@ -1,9 +1,10 @@
-package RetailManagementSystem.infraestructura.persistencia.mysql;
+package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PermisoNoEncontradoException;
-import RetailManagementSystem.dominio.puertos.RepositorioPermiso;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPermiso;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

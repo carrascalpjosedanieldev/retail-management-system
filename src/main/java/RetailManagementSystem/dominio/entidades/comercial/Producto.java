@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.PRODUCTO;
 
-public abstract class Producto implements ItemFacturable {
+public abstract sealed class Producto implements ItemFacturable permits ProductoRopa, ProductoPerecedero{
 
     //ATRIBUTOS:
 
@@ -122,7 +122,7 @@ public abstract class Producto implements ItemFacturable {
     protected Producto(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
                        int stock, Impuesto impuesto, Descuento descuento, boolean activo){
         if (codigo.length() > 50){
-            throw new IllegalArgumentException("El Codigo del Producto execede los Caracteres Maximos Posibles");
+            throw new IllegalArgumentException("El Código del Producto excede los Caracteres Máximos Posibles");
         }
         if (nombre==null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Producto Invalido");
@@ -158,13 +158,13 @@ public abstract class Producto implements ItemFacturable {
         this(UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, true);
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     protected abstract BigDecimal calcularValorVenta(LocalDate fecha);
 
     public abstract void validarEstadoParaVenta(LocalDate fecha);
 
-    //METODOS MODIFICAR PRODUCTO:
+    //MÉTODOS MODIFICAR PRODUCTO:
 
     public void cambiarValorVentaPorPorcentaje(BigDecimal porcentajeGanancia) {
         if (porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0 || porcentajeGanancia.compareTo(CIEN) > 0) {

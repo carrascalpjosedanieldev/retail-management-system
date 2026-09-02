@@ -1,7 +1,7 @@
 package RetailManagementSystem.infraestructura.configuracion;
 
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
-import RetailManagementSystem.dominio.puertos.RepositorioConfiguracion;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

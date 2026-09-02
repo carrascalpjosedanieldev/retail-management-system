@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.DescuentoNoEncontradoException;
-import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioDescuentos;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

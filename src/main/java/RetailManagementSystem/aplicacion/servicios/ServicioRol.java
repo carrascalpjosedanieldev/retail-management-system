@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
-import RetailManagementSystem.dominio.puertos.RepositorioRol;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioRol;
 
 import java.util.ArrayList;
 import java.util.List;

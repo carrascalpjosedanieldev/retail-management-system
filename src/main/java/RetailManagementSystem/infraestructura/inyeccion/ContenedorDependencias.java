@@ -6,10 +6,21 @@ import RetailManagementSystem.aplicacion.orquestadores.*;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.aplicacion.servicios.*;
-import RetailManagementSystem.dominio.puertos.*;
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
+import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
+import RetailManagementSystem.dominio.puertos.repositorios.*;
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguracionImpl;
-import RetailManagementSystem.infraestructura.persistencia.mysql.*;
+import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaPerecedero;
+import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaProducto;
+import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaRopa;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.GestorTransaccionalMySQL;
+import RetailManagementSystem.infraestructura.persistencia.mysql.repositorios.*;
 import RetailManagementSystem.infraestructura.seguridad.Argon2CodificadorAdapter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ContenedorDependencias {
 
@@ -29,6 +40,13 @@ public class ContenedorDependencias {
     private static EnsambladorDTORol ensambladorDTORol;
     private static EnsambladorDTOUsuario ensambladorDTOUsuario;
 
+    //UTILIDADES:
+
+    private static CodificadorContrasenas codificadorContrasenas;
+    private static ProveedorConfiguracion proveedorConfiguracion;
+    private static Map<Class<? extends Producto>, EstrategiaPersistenciaProducto<?>> despachador;
+    private static GestorTransaccional gestorTransaccional;
+
         //REPOSITORIOS:
 
     private static RepositorioConfiguracion repositorioConfiguracion;
@@ -43,10 +61,7 @@ public class ContenedorDependencias {
     private static RepositorioRol repositorioRol;
     private static RepositorioUsuario repositorioUsuario;
 
-        //UTILIDADES:
 
-    private static CodificadorContrasenas codificadorContrasenas;
-    private static ProveedorConfiguracion proveedorConfiguracion;
 
         //SERVICIOS:
 
@@ -58,6 +73,7 @@ public class ContenedorDependencias {
     private static ServicioInventario servicioInventario;
     private static ServicioPoliticaVencimiento servicioPoliticaVencimiento;
     private static ServicioProductos servicioProductos;
+    private static ServicioGestionStock servicioGestionStock;
     private static ServicioServicios servicioServicios;
     private static ServicioPermiso servicioPermiso;
     private static ServicioRol servicioRol;
@@ -76,7 +92,7 @@ public class ContenedorDependencias {
     private static OrquestadorPermisos orquestadorPermisos;
     private static OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
     private static OrquestadorProductos orquestadorProductos;
-    private static OrquestadorInventarioProducto orquestadorInventarioProducto;
+    private static OrquestadorGestionStock orquestadorGestionStock;
     private static OrquestadorRoles orquestadorRoles;
     private static OrquestadorServicios orquestadorServicios;
     private static OrquestadorUsuarios orquestadorUsuarios;
@@ -109,6 +125,18 @@ public class ContenedorDependencias {
         ensambladorDTORol = new EnsambladorDTORol(ensambladorDTOPermiso);
         ensambladorDTOUsuario = new EnsambladorDTOUsuario(ensambladorDTORol);
 
+        //INSTANCIACIÓN DE UTILIDADES:
+
+        codificadorContrasenas = new Argon2CodificadorAdapter();
+
+        proveedorConfiguracion = new ProveedorConfiguracionImpl(repositorioConfiguracion);
+
+        despachador = new HashMap<>();
+        despachador.put(ProductoRopa.class, new EstrategiaPersistenciaRopa());
+        despachador.put(ProductoPerecedero.class, new EstrategiaPersistenciaPerecedero());
+
+        gestorTransaccional = new GestorTransaccionalMySQL();
+
         //INSTANCIACIÓN DE REPOSITORIOS:
 
         repositorioConfiguracion = new RepositorioConfiguracionMySQL();
@@ -117,21 +145,19 @@ public class ContenedorDependencias {
         repositorioImpuestos = new RepositorioImpuestosMySQL();
         repositorioInventario = new RepositorioInventarioMySQL();
         repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
-        repositorioProducto = new RepositorioProductoMySQL();
+        repositorioProducto = new RepositorioProductoMySQL(despachador);
         repositorioServicio = new RepositorioServicioMySQL();
         repositorioPermiso = new RepositorioPermisoMySQL();
         repositorioRol = new RepositorioRolMySQL();
         repositorioUsuario = new RepositorioUsuarioMySQL();
 
-        //INSTANCIACIÓN DE UTILIDADES:
-
-        codificadorContrasenas = new Argon2CodificadorAdapter();
-        proveedorConfiguracion = new ProveedorConfiguracionImpl(repositorioConfiguracion);
-
         //INSTANCIACIÓN DE SERVICIOS:
 
         servicioProductos = new ServicioProductos(
                 repositorioProducto, repositorioImpuestos, repositorioDescuentos, repositorioPoliticaVencimiento
+        );
+        servicioGestionStock = new ServicioGestionStock(
+                repositorioProducto, repositorioInventario, gestorTransaccional
         );
         servicioServicios = new ServicioServicios(
                 repositorioImpuestos, repositorioDescuentos, repositorioServicio
@@ -162,8 +188,9 @@ public class ContenedorDependencias {
                 servicioPoliticaVencimiento, ensambladorDTOPoliticaVencimiento
         );
         orquestadorProductos = new OrquestadorProductos(ensambladorDTOProducto, servicioProductos);
-        orquestadorInventarioProducto = new OrquestadorInventarioProducto(
-                servicioProductos, servicioInventario, ensambladorDTOProducto, ensambladorDTOInventario
+        orquestadorGestionStock = new OrquestadorGestionStock(
+                servicioProductos, servicioInventario, servicioGestionStock, ensambladorDTOProducto,
+                ensambladorDTOInventario
         );
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorServicios = new OrquestadorServicios(
@@ -406,9 +433,9 @@ public class ContenedorDependencias {
         return orquestadorProductos;
     }
 
-    public static OrquestadorInventarioProducto getOrquestadorInventarioProducto() {
+    public static OrquestadorGestionStock getOrquestadorInventarioProducto() {
         validarInicializado();
-        return orquestadorInventarioProducto;
+        return orquestadorGestionStock;
     }
 
     public static OrquestadorRoles getOrquestadorRoles() {

@@ -1,14 +1,15 @@
-package RetailManagementSystem.infraestructura.persistencia.mysql;
+package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.UsuarioNoEncontradoException;
-import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioUsuario;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 
 import java.sql.*;
 import java.time.LocalDateTime;

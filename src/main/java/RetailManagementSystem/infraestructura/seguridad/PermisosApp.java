@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.seguridad;
 
-import RetailManagementSystem.dominio.puertos.RepositorioPermiso;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPermiso;
 import RetailManagementSystem.infraestructura.inyeccion.ContenedorDependencias;
 
 import java.util.List;

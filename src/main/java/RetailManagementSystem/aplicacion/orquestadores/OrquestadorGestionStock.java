@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
+import RetailManagementSystem.aplicacion.servicios.ServicioGestionStock;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
@@ -14,24 +15,27 @@ import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import java.time.LocalDate;
 import java.util.List;
 
-public class OrquestadorInventarioProducto {
+public class OrquestadorGestionStock {
 
     //ATRIBUTOS:
 
     private final ServicioProductos servicioProductos;
     private final ServicioInventario servicioInventario;
+    private final ServicioGestionStock servicioGestionStock;
 
     private final EnsambladorDTOProducto ensambladorDTOProducto;
     private final EnsambladorDTOInventario ensambladorDTOInventario;
 
     //CONSTRUCTOR:
 
-    public OrquestadorInventarioProducto(
+    public OrquestadorGestionStock(
             ServicioProductos servicioProductos, ServicioInventario servicioInventario,
-            EnsambladorDTOProducto ensambladorDTOProducto, EnsambladorDTOInventario ensambladorDTOInventario
+            ServicioGestionStock servicioGestionStock, EnsambladorDTOProducto ensambladorDTOProducto,
+            EnsambladorDTOInventario ensambladorDTOInventario
     ) {
         this.servicioProductos = servicioProductos;
         this.servicioInventario = servicioInventario;
+        this.servicioGestionStock = servicioGestionStock;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
         this.ensambladorDTOInventario = ensambladorDTOInventario;
     }
@@ -42,8 +46,7 @@ public class OrquestadorInventarioProducto {
             UsuarioDTOCompleto usuario, int idInventario, Producto producto, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_PRODUCTOS);
-        this.servicioInventario.verificarEspacioDisponible(idInventario, producto.getStock());
-        this.servicioProductos.registrarProducto(idInventario, producto);
+        this.servicioGestionStock.registrarProductoEnInventario(idInventario, producto);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(producto, fecha);
     }
 

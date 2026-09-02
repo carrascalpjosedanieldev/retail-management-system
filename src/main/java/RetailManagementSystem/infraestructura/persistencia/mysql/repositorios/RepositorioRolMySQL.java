@@ -1,11 +1,12 @@
-package RetailManagementSystem.infraestructura.persistencia.mysql;
+package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.excepciones.conflictos.RolDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.RolNoEncontradoException;
-import RetailManagementSystem.dominio.puertos.RepositorioRol;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioRol;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 
 import java.sql.*;
 import java.util.ArrayList;

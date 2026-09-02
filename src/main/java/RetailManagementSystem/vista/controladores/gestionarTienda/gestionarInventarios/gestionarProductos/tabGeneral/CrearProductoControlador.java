@@ -13,7 +13,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorGestionStock;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -64,7 +64,7 @@ public class CrearProductoControlador {
 
     private final FabricaProductos fabricaProductos;
 
-    private final OrquestadorInventarioProducto orquestadorInventarioProducto;
+    private final OrquestadorGestionStock orquestadorGestionStock;
 
     private UsuarioDTOCompleto usuarioActual;
 
@@ -73,13 +73,13 @@ public class CrearProductoControlador {
     public CrearProductoControlador(
             OrquestadorImpuestos orquestadorImpuestos, OrquestadorDescuentos orquestadorDescuentos,
             OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento, FabricaProductos fabricaProductos,
-            OrquestadorInventarioProducto orquestadorInventarioProducto
+            OrquestadorGestionStock orquestadorGestionStock
     ) {
         this.orquestadorImpuestos = orquestadorImpuestos;
         this.orquestadorDescuentos = orquestadorDescuentos;
         this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
         this.fabricaProductos = fabricaProductos;
-        this.orquestadorInventarioProducto = orquestadorInventarioProducto;
+        this.orquestadorGestionStock = orquestadorGestionStock;
     }
 
     //MÉTODOS:
@@ -256,7 +256,7 @@ public class CrearProductoControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-                this.orquestadorInventarioProducto.validarEspacioInventarioYGuardarProducto(
+                this.orquestadorGestionStock.validarEspacioInventarioYGuardarProducto(
                         this.usuarioActual, this.idInventario, producto, LocalDate.now()
                 )
         ).thenAccept(productoRegistrado->

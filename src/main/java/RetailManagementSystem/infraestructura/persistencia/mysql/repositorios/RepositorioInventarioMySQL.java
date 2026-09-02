@@ -1,11 +1,14 @@
-package RetailManagementSystem.infraestructura.persistencia.mysql;
+package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
-import RetailManagementSystem.dominio.puertos.RepositorioInventario;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioInventario;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -121,6 +124,51 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
 
     //UPDATE:
+
+    private static final String SQL_VERIFICAR_CAPACIDAD_INVENTARIO =
+            "SELECT " +
+            "COALESCE(SUM(p.stock), 0) + ? > i.capacidad_maxima AS excedido " +
+            "FROM inventarios i " +
+            "LEFT JOIN productos p " +
+            "ON i.id_inventario = p.id_inventario " +
+            "WHERE i.id_inventario = ? " +
+            "GROUP BY i.capacidad_maxima " +
+            "FOR UPDATE ";
+
+    @Override
+    public void validarCapacidadInventario(int idInventario, int stockASumar){
+        Connection conn = VinculadorTransaccion.getConnection();
+
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_VERIFICAR_CAPACIDAD_INVENTARIO)) {
+            pstmt.setInt(1, stockASumar);
+            pstmt.setInt(2, idInventario);
+
+            try (ResultSet rs = pstmt.executeQuery()){
+
+                if (rs.next()){
+                    boolean excedido = rs.getBoolean("excedido");
+
+                    if (excedido){
+                        throw new CapacidadInventarioExcedidaException("La Cantidad " + stockASumar + " Excede la capacidad del Inventario");
+                    } else {
+                        return;
+                    }
+
+                }
+
+                throw new InventarioNoEncontradoException("NO Existe un Inventario con el ID: " + idInventario);
+
+            }
+
+        } catch (SQLException e){
+            throw new PersistenciaException("Error inesperado en la transacción de base de datos", e);
+        }
+    }
+
 
     private static final String SQL_ACTUALIZAR_INVENTARIO =
             "UPDATE inventarios SET nombre = ?, capacidad_maxima = ? WHERE id_inventario = ?";

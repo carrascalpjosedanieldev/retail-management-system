@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.puertos;
+package RetailManagementSystem.dominio.puertos.repositorios;
 
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 

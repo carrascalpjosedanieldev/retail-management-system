@@ -3,7 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorGestionStock;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
@@ -38,14 +38,14 @@ public class MoverProductoAOtroInventarioControlador {
 
     private ObservableList<ProductoResumenDTO> listaObservable;
 
-    private final OrquestadorInventarioProducto orquestadorInventarioProducto;
+    private final OrquestadorGestionStock orquestadorGestionStock;
 
     private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
-    public MoverProductoAOtroInventarioControlador(OrquestadorInventarioProducto orquestadorInventarioProducto) {
-        this.orquestadorInventarioProducto = orquestadorInventarioProducto;
+    public MoverProductoAOtroInventarioControlador(OrquestadorGestionStock orquestadorGestionStock) {
+        this.orquestadorGestionStock = orquestadorGestionStock;
     }
 
     //MÉTODOS:
@@ -82,7 +82,7 @@ public class MoverProductoAOtroInventarioControlador {
 
     private void cargarDatosComboBox(){
         CompletableFuture.supplyAsync(
-                this.orquestadorInventarioProducto::obtenerTodosLosInventarios
+                this.orquestadorGestionStock::obtenerTodosLosInventarios
         ).thenAccept(listaInventarios->
             Platform.runLater(()->{
                 List<InventarioDTO> inventariosFiltrados = new ArrayList<>(listaInventarios);
@@ -115,7 +115,7 @@ public class MoverProductoAOtroInventarioControlador {
         }
         InventarioDTO inventarioDestino = comboInventarios.getValue();
         CompletableFuture.runAsync(()->
-                this.orquestadorInventarioProducto.validarEspacioInventarioYMoverProducto(
+                this.orquestadorGestionStock.validarEspacioInventarioYMoverProducto(
                         this.usuarioActual, this.idInventario, inventarioDestino.idInventario(),
                         seleccionado.codigoProducto(), seleccionado.stock()
                 )

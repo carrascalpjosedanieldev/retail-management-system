@@ -8,7 +8,7 @@ import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.Creden
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioInactivoException;
-import RetailManagementSystem.dominio.puertos.RepositorioUsuario;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioUsuario;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;

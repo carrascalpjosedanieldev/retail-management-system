@@ -1,4 +1,4 @@
-package RetailManagementSystem.dominio.puertos;
+package RetailManagementSystem.dominio.puertos.repositorios;
 
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;

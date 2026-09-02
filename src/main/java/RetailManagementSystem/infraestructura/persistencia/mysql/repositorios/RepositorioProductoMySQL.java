@@ -1,96 +1,89 @@
-package RetailManagementSystem.infraestructura.persistencia.mysql;
+package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
 import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.Talla;
-import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoNoDisponibleException;
-import RetailManagementSystem.dominio.puertos.RepositorioProducto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoNoDisponibleException;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioProducto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaProducto;
 
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RepositorioProductoMySQL implements RepositorioProducto {
 
+    //ATRIBUTOS:
+
+    private final Map<Class<? extends Producto>, EstrategiaPersistenciaProducto<?>> despachador;
+
+    //CONSTRUCTOR:
+
+    public RepositorioProductoMySQL(Map<Class<? extends Producto>, EstrategiaPersistenciaProducto<?>> despachador) {
+        this.despachador = despachador;
+    }
+
+    //MÉTODOS:
+
     //CREATE:
+
+    @Override
+    public void insertarProducto(Producto producto, int idInventario){
+        Connection conn = VinculadorTransaccion.getConnection();
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+        try {
+
+            insertarDatosGenerales(conn, producto, idInventario);
+            ejecutarEstrategia(conn, producto);
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new InventarioNoEncontradoException(
+                "No se puede guardar: El Inventario de ID " + idInventario + " NO Existe."
+            );
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error inesperado en la transacción de base de datos", e);
+        }
+    }
 
     private static final String SQL_INSERTAR_DATOS_PRODUCTO =
             "INSERT INTO productos (codigo_producto, id_inventario, id_impuesto, id_descuento, nombre, " +
-            "valor_compra, porcentaje_ganancia, stock, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "valor_compra, porcentaje_ganancia, stock, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    @Override
-    public void insertarProducto(Producto producto, int idInventario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion()) {
-            try {
-                conn.setAutoCommit(false);
-
-                try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_PRODUCTO)) {
-                    pstmt.setString(1, producto.getCodigo());
-                    pstmt.setInt(2, idInventario);
-                    pstmt.setInt(3, producto.getIdImpuesto());
-                    pstmt.setInt(4, producto.getIdDescuento());
-                    pstmt.setString(5, producto.getNombre());
-                    pstmt.setBigDecimal(6, producto.getValorCompra());
-                    pstmt.setBigDecimal(7, producto.getPorcentajeGanancia());
-                    pstmt.setInt(8, producto.getStock());
-                    pstmt.setBoolean(9, producto.isActivo());
-                    pstmt.executeUpdate();
-                }
-
-                if (producto instanceof ProductoRopa) {
-                    this.insertarEspecificoRopa(conn, (ProductoRopa) producto);
-                } else if (producto instanceof ProductoPerecedero) {
-                    this.insertarEspecificoPerecedero(conn, (ProductoPerecedero) producto);
-                } else {
-                    throw new IllegalArgumentException("Tipo de Producto NO soportado para persistencia.");
-                }
-
-                conn.commit();
-            } catch (SQLException e) {
-                conn.rollback();
-                if (e.getErrorCode() == 1452) {
-                    throw new InventarioNoEncontradoException("No se puede guardar el producto: El Inventario Destino NO Existe en la Base de Datos.");
-                }
-                throw new RuntimeException("Error en la transacción de inserción", e);
-
-            } finally {
-                try {
-                    conn.setAutoCommit(true);
-                } catch (SQLException ignored){}
-            }
-
-        } catch (SQLException e) {
-            throw new PersistenciaException("Error crítico de infraestructura al obtener conexión", e);
-        }
-    }
-
-    private static final String SQL_INSERTAR_DATOS_ROPA =
-            "INSERT INTO producto_ropa (codigo_producto, talla) VALUES (?, ?)";
-
-    private void insertarEspecificoRopa(Connection conn, ProductoRopa ropa) throws SQLException {
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_ROPA)) {
-            pstmt.setString(1, ropa.getCodigo());
-            pstmt.setString(2, ropa.getTalla().toString());
+    private void insertarDatosGenerales(Connection conn, Producto producto, int idInventario) throws SQLException{
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_PRODUCTO)) {
+            pstmt.setString(1, producto.getCodigo());
+            pstmt.setInt(2, idInventario);
+            pstmt.setInt(3, producto.getIdImpuesto());
+            pstmt.setInt(4, producto.getIdDescuento());
+            pstmt.setString(5, producto.getNombre());
+            pstmt.setBigDecimal(6, producto.getValorCompra());
+            pstmt.setBigDecimal(7, producto.getPorcentajeGanancia());
+            pstmt.setInt(8, producto.getStock());
+            pstmt.setBoolean(9, producto.isActivo());
             pstmt.executeUpdate();
         }
     }
 
-    private static final String SQL_INSERTAR_DATOS_PERECEDERO =
-            "INSERT INTO producto_perecedero (codigo_producto, fecha_vencimiento, id_politica) VALUES (?, ?, ?)";
-
-    private void insertarEspecificoPerecedero(Connection conn, ProductoPerecedero perecedero) throws SQLException {
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_PERECEDERO)) {
-            pstmt.setString(1, perecedero.getCodigo());
-            pstmt.setDate(2, java.sql.Date.valueOf(perecedero.getFechaVencimiento()));
-            pstmt.setInt(3, perecedero.getPoliticaVencimiento().getIdPolitica());
-            pstmt.executeUpdate();
+    @SuppressWarnings("unchecked")
+    private <T extends Producto> void ejecutarEstrategia(Connection conn, T producto) throws SQLException {
+        EstrategiaPersistenciaProducto<T> estrategia =
+                (EstrategiaPersistenciaProducto<T>) despachador.get(producto.getClass());
+        if (estrategia == null) {
+            throw new IllegalStateException("NO hay una Estrategia de Persistencia Registrada para: " + producto.getClass().getSimpleName());
         }
+        estrategia.insertarDetalle(conn, producto);
     }
 
 

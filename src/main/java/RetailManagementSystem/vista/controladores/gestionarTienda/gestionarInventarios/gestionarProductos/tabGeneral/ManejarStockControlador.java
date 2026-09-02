@@ -2,7 +2,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarioProducto;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorGestionStock;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
@@ -40,7 +40,7 @@ public class ManejarStockControlador {
 
     private ObservableList<ProductoResumenDTO> listaObservable;
 
-    private final OrquestadorInventarioProducto orquestadorInventarioProducto;
+    private final OrquestadorGestionStock orquestadorGestionStock;
 
     private final OrquestadorProductos orquestadorProductos;
 
@@ -49,9 +49,9 @@ public class ManejarStockControlador {
     //CONSTRUCTOR:
 
     public ManejarStockControlador(
-            OrquestadorInventarioProducto orquestadorInventarioProducto, OrquestadorProductos orquestadorProductos
+            OrquestadorGestionStock orquestadorGestionStock, OrquestadorProductos orquestadorProductos
     ) {
-        this.orquestadorInventarioProducto = orquestadorInventarioProducto;
+        this.orquestadorGestionStock = orquestadorGestionStock;
         this.orquestadorProductos = orquestadorProductos;
     }
 
@@ -164,7 +164,7 @@ public class ManejarStockControlador {
             boolean esReposicion = tglReponer.isSelected();
             CompletableFuture.supplyAsync(()->{
                 if (esReposicion){
-                    return this.orquestadorInventarioProducto.validarEspacioInventarioYAumentarStockProducto(
+                    return this.orquestadorGestionStock.validarEspacioInventarioYAumentarStockProducto(
                             this.usuarioActual, this.idInventario, cantidad, seleccionado.codigoProducto(),
                             LocalDate.now()
                     );

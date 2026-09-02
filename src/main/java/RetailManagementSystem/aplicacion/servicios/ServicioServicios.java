@@ -3,9 +3,9 @@ package RetailManagementSystem.aplicacion.servicios;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.comercial.Servicio;
-import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
-import RetailManagementSystem.dominio.puertos.RepositorioImpuestos;
-import RetailManagementSystem.dominio.puertos.RepositorioServicio;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioDescuentos;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioImpuestos;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioServicio;
 
 import java.math.BigDecimal;
 import java.util.List;

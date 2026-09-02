@@ -4,7 +4,7 @@ import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
 import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 import RetailManagementSystem.dominio.entidades.ventas.ResumenVentaDia;
-import RetailManagementSystem.dominio.puertos.RepositorioFacturas;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioFacturas;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

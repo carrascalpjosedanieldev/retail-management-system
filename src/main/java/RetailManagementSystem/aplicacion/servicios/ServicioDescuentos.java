@@ -1,7 +1,7 @@
 package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
-import RetailManagementSystem.dominio.puertos.RepositorioDescuentos;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioDescuentos;
 
 import java.math.BigDecimal;
 import java.util.List;
