@@ -88,6 +88,7 @@ public class ContenedorDependencias {
     private static OrquestadorDescuentos orquestadorDescuentos;
     private static OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
     private static OrquestadorImpuestos orquestadorImpuestos;
+    private static OrquestadorInventarios orquestadorInventarios;
     private static OrquestadorLogin orquestadorLogin;
     private static OrquestadorPermisos orquestadorPermisos;
     private static OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
@@ -182,6 +183,7 @@ public class ContenedorDependencias {
         orquestadorDescuentos = new OrquestadorDescuentos(servicioDescuentos, ensambladorDTODescuento);
         orquestadorHistoricoDeVentas = new OrquestadorHistoricoDeVentas(servicioFacturas, ensambladorDTOFactura);
         orquestadorImpuestos = new OrquestadorImpuestos(servicioImpuestos, ensambladorDTOImpuesto);
+        orquestadorInventarios = new OrquestadorInventarios(servicioInventario, ensambladorDTOInventario);
         orquestadorLogin = new OrquestadorLogin(servicioUsuario, ensambladorDTOUsuario);
         orquestadorPermisos = new OrquestadorPermisos(ensambladorDTOPermiso, servicioPermiso);
         orquestadorPoliticaVencimiento= new OrquestadorPoliticaVencimiento(
@@ -189,8 +191,7 @@ public class ContenedorDependencias {
         );
         orquestadorProductos = new OrquestadorProductos(ensambladorDTOProducto, servicioProductos);
         orquestadorGestionStock = new OrquestadorGestionStock(
-                servicioProductos, servicioInventario, servicioGestionStock, ensambladorDTOProducto,
-                ensambladorDTOInventario
+                servicioProductos, servicioInventario, servicioGestionStock, ensambladorDTOProducto
         );
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorServicios = new OrquestadorServicios(
@@ -413,6 +414,10 @@ public class ContenedorDependencias {
         return orquestadorImpuestos;
     }
 
+    public static OrquestadorInventarios getOrquestadorInventarios() {
+        return orquestadorInventarios;
+    }
+
     public static OrquestadorLogin getOrquestadorLogin() {
         validarInicializado();
         return orquestadorLogin;
@@ -433,7 +438,7 @@ public class ContenedorDependencias {
         return orquestadorProductos;
     }
 
-    public static OrquestadorGestionStock getOrquestadorInventarioProducto() {
+    public static OrquestadorGestionStock getOrquestadorGestionStock() {
         validarInicializado();
         return orquestadorGestionStock;
     }

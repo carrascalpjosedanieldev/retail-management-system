@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorGestionStock;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarios;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
@@ -40,12 +41,17 @@ public class MoverProductoAOtroInventarioControlador {
 
     private final OrquestadorGestionStock orquestadorGestionStock;
 
+    private final OrquestadorInventarios orquestadorInventarios;
+
     private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
-    public MoverProductoAOtroInventarioControlador(OrquestadorGestionStock orquestadorGestionStock) {
+    public MoverProductoAOtroInventarioControlador(
+            OrquestadorGestionStock orquestadorGestionStock, OrquestadorInventarios orquestadorInventarios
+    ) {
         this.orquestadorGestionStock = orquestadorGestionStock;
+        this.orquestadorInventarios = orquestadorInventarios;
     }
 
     //MÉTODOS:
@@ -82,7 +88,7 @@ public class MoverProductoAOtroInventarioControlador {
 
     private void cargarDatosComboBox(){
         CompletableFuture.supplyAsync(
-                this.orquestadorGestionStock::obtenerTodosLosInventarios
+                this.orquestadorInventarios::obtenerTodosLosInventarios
         ).thenAccept(listaInventarios->
             Platform.runLater(()->{
                 List<InventarioDTO> inventariosFiltrados = new ArrayList<>(listaInventarios);

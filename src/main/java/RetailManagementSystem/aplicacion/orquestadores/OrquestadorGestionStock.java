@@ -1,9 +1,7 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
-import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.ServicioGestionStock;
 import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
@@ -13,7 +11,6 @@ import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class OrquestadorGestionStock {
 
@@ -24,20 +21,17 @@ public class OrquestadorGestionStock {
     private final ServicioGestionStock servicioGestionStock;
 
     private final EnsambladorDTOProducto ensambladorDTOProducto;
-    private final EnsambladorDTOInventario ensambladorDTOInventario;
 
     //CONSTRUCTOR:
 
     public OrquestadorGestionStock(
             ServicioProductos servicioProductos, ServicioInventario servicioInventario,
-            ServicioGestionStock servicioGestionStock, EnsambladorDTOProducto ensambladorDTOProducto,
-            EnsambladorDTOInventario ensambladorDTOInventario
+            ServicioGestionStock servicioGestionStock, EnsambladorDTOProducto ensambladorDTOProducto
     ) {
         this.servicioProductos = servicioProductos;
         this.servicioInventario = servicioInventario;
         this.servicioGestionStock = servicioGestionStock;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
-        this.ensambladorDTOInventario = ensambladorDTOInventario;
     }
 
     //MÉTODOS:
@@ -72,12 +66,6 @@ public class OrquestadorGestionStock {
         );
     }
 
-    public List<InventarioDTO> obtenerTodosLosInventarios(){
-        return this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
-                this.servicioInventario.obtenerTodosLosInventarios()
-        );
-    }
-
     public void validarEspacioInventarioYMoverProducto(
             UsuarioDTOCompleto usuario, int idInventarioSalida, int idInventarioDestino, String codigoProducto,
             int stockProducto
@@ -85,24 +73,6 @@ public class OrquestadorGestionStock {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.TRASLADAR_PRODUCTOS);
         this.servicioInventario.verificarEspacioDisponible(idInventarioDestino, stockProducto);
         this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);
-    }
-
-    public InventarioDTO actualizarInventario(
-            UsuarioDTOCompleto usuario, int idInventario, String nombreNuevo
-    ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_INVENTARIOS);
-        return this.ensambladorDTOInventario.ensamblarDatosInventario(
-                this.servicioInventario.actualizarInventario(idInventario, nombreNuevo)
-        );
-    }
-
-    public InventarioDTO registrarInventario(
-            UsuarioDTOCompleto usuario, String nombre, int capacidadMaxima
-    ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_INVENTARIOS);
-        return this.ensambladorDTOInventario.ensamblarDatosInventario(
-                this.servicioInventario.registrarInventario(nombre, capacidadMaxima)
-        );
     }
 
 }//===================================================================================================================//

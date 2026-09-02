@@ -47,7 +47,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorDependencias.getOrquestadorDescuentos(),
                     ContenedorDependencias.getOrquestadorPoliticaVencimiento(),
                     ContenedorDependencias.getFabricaProductos(),
-                    ContenedorDependencias.getOrquestadorInventarioProducto()
+                    ContenedorDependencias.getOrquestadorGestionStock()
             );
         }
         if (claseControlador == EditarPerecederoControlador.class){
@@ -196,12 +196,12 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == CrearInventarioControlador.class){
             return new CrearInventarioControlador(
-                    ContenedorDependencias.getOrquestadorInventarioProducto()
+                    ContenedorDependencias.getOrquestadorInventarios()
             );
         }
         if (claseControlador == EditarInventarioControlador.class){
             return new EditarInventarioControlador(
-                    ContenedorDependencias.getOrquestadorInventarioProducto()
+                    ContenedorDependencias.getOrquestadorInventarios()
             );
         }
         if (claseControlador == CrearServicioControlador.class){
@@ -216,12 +216,13 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == ManejarStockControlador.class){
             return new ManejarStockControlador(
-                    ContenedorDependencias.getOrquestadorInventarioProducto()
+                    ContenedorDependencias.getOrquestadorGestionStock()
             );
         }
         if (claseControlador == MoverProductoAOtroInventarioControlador.class){
             return new MoverProductoAOtroInventarioControlador(
-                    ContenedorDependencias.getOrquestadorInventarioProducto()
+                    ContenedorDependencias.getOrquestadorGestionStock(),
+                    ContenedorDependencias.getOrquestadorInventarios()
             );
         }
         if (claseControlador == GestionUsuariosControlador.class){
