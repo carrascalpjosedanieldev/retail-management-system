@@ -22,7 +22,7 @@ public class EnsambladorDTOCarrito {
         String tipoArticulo = item.getTipoItem().name();
         String nombreArticulo = item.getNombre();
         BigDecimal precioUnitario = item.getValorVenta(fecha);
-        BigDecimal impuesto = item.calcularImpuesto(item.getValorFinalSinImpuesto(fecha), fecha);
+        BigDecimal impuesto = item.calcularImpuesto(item.getValorFinalSinImpuesto(fecha));
         return new ItemCarritoDTO(
                 codigoArticulo, tipoArticulo, nombreArticulo, itemCarrito.getCantidad(), precioUnitario,
                 itemCarrito.calcularSubtotal(fecha), impuesto

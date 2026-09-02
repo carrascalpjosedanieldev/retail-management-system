@@ -55,16 +55,16 @@ public class Servicio implements ItemFacturable {
 
     @Override
     public BigDecimal getValorVenta(LocalDate fecha) {
-        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase(), fecha);
+        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase());
         BigDecimal precioFinalSinImpuesto = precioBase.subtract(descuentoAplicado);
-        BigDecimal impuesto = calcularImpuesto(precioFinalSinImpuesto, fecha);
+        BigDecimal impuesto = calcularImpuesto(precioFinalSinImpuesto);
         BigDecimal valorVenta = precioFinalSinImpuesto.add(impuesto);
         return valorVenta.setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
-        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase(), fecha);
+        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase());
         return precioBase.subtract(descuentoAplicado);
     }
 
@@ -156,13 +156,13 @@ public class Servicio implements ItemFacturable {
     }
 
     @Override
-    public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto, LocalDate fecha) {
+    public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto) {
         BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(CIEN, 6, RoundingMode.HALF_UP);
         return precioFinalSinImpuesto.multiply(factorImpuesto);
     }
 
     @Override
-    public BigDecimal calcularDescuento(BigDecimal precioBase, LocalDate fecha) {
+    public BigDecimal calcularDescuento(BigDecimal precioBase) {
         if (getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
             return BigDecimal.ZERO;
         }

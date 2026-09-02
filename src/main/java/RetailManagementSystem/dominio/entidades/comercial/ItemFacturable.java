@@ -15,11 +15,11 @@ public interface ItemFacturable {
 
     BigDecimal getPorcentajeImpuesto();
 
-    BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto, LocalDate fecha);
+    BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto);
 
     BigDecimal getPorcentajeDescuento();
 
-    BigDecimal calcularDescuento(BigDecimal valorVenta, LocalDate fecha);
+    BigDecimal calcularDescuento(BigDecimal valorVenta);
 
     BigDecimal getValorFinalSinImpuesto(LocalDate fecha);
 

@@ -28,39 +28,66 @@ public final class ProductoPerecedero extends Producto{
         return politicaVencimiento;
     }
 
-    private void setPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
-        this.politicaVencimiento = politicaVencimiento;
+    //VALIDACIONES:
+
+    private void validarFechaVencimiento(LocalDate fechaVencimiento){
+        if (fechaVencimiento == null){
+            throw new IllegalArgumentException("La Fecha de Vencimiento del Producto es Invalida");
+        }
+    }
+
+    private void validarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
+        if (politicaVencimiento == null){
+            throw new IllegalArgumentException("La Política de Vencimiento del Producto es Obligatoria");
+        }
+    }
+
+    private void validarEstadoPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
+        if (!politicaVencimiento.isActiva()){
+            throw new IllegalArgumentException("La Política de Vencimiento que quieres colocar NO esta Activa");
+        }
     }
 
     //CONSTRUCTOR:
 
-    private ProductoPerecedero(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
-                               int stock, Impuesto impuesto, Descuento descuento, boolean activo, LocalDate fechaVencimiento,
-                               PoliticaVencimiento politicaVencimiento){
+    private ProductoPerecedero(
+            String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
+            Integer stock, Impuesto impuesto, Descuento descuento, Boolean activo, LocalDate fechaVencimiento,
+            PoliticaVencimiento politicaVencimiento
+    ) {
         super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, activo);
+        validarFechaVencimiento(fechaVencimiento);
+        validarPoliticaVencimiento(politicaVencimiento);
         this.fechaVencimiento = fechaVencimiento;
         this.politicaVencimiento = politicaVencimiento;
     }
 
-    public static ProductoPerecedero reconstruirDesdeBD(String codigo, String nombre, BigDecimal valorCompra,
-                                                        BigDecimal porcentajeGanancia, int stock, Impuesto impuesto,
-                                                        Descuento descuento, boolean activo, LocalDate fechaVencimiento,
-                                                        PoliticaVencimiento politicaVencimiento){
+    public static ProductoPerecedero reconstruirDesdeBD(
+            String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
+            Integer stock, Impuesto impuesto, Descuento descuento, Boolean activo, LocalDate fechaVencimiento,
+            PoliticaVencimiento politicaVencimiento
+    ) {
         return new ProductoPerecedero(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento,
                 activo, fechaVencimiento, politicaVencimiento);
     }
 
-    private ProductoPerecedero(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock,
-                               Impuesto impuesto, Descuento descuento, LocalDate fechaVencimiento,
-                               PoliticaVencimiento politicaVencimiento){
+    private ProductoPerecedero(
+            String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, Integer stock,
+            Impuesto impuesto, Descuento descuento, LocalDate fechaVencimiento,
+            PoliticaVencimiento politicaVencimiento
+    ) {
         super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento);
+        validarFechaVencimiento(fechaVencimiento);
+        validarEstadoPoliticaVencimiento(politicaVencimiento);
         this.fechaVencimiento = fechaVencimiento;
         this.politicaVencimiento = politicaVencimiento;
     }
 
-    public static ProductoPerecedero crearNuevo(String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
-                                                int stock, Impuesto impuesto, Descuento descuento,
-                                                LocalDate fechaVencimiento, PoliticaVencimiento politicaVencimiento){
+    public static ProductoPerecedero crearNuevo(
+            String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock,
+            Impuesto impuesto, Descuento descuento, LocalDate fechaVencimiento,
+            PoliticaVencimiento politicaVencimiento
+    ) {
         return new ProductoPerecedero(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento,
                 fechaVencimiento, politicaVencimiento);
     }
@@ -74,25 +101,27 @@ public final class ProductoPerecedero extends Producto{
 
     @Override
     protected BigDecimal calcularValorVenta(LocalDate fechaReferencia) {
-        BigDecimal factorGanancia = getPorcentajeGanancia().divide(CIEN, 6, RoundingMode.HALF_UP);
-        BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
-        BigDecimal precioBase = getValorCompra().add(ganancia);
-        BigDecimal descuentoPolitica = calcularDescuentoPolitica(precioBase, fechaReferencia);
-        BigDecimal descuentoAplicado = calcularDescuento(precioBase, fechaReferencia);
-        BigDecimal precioFinalSinImpuesto = precioBase.subtract(descuentoPolitica).subtract(descuentoAplicado);
-        BigDecimal impuesto = calcularImpuesto(precioFinalSinImpuesto, fechaReferencia);
-        BigDecimal valorVenta = precioFinalSinImpuesto.add(impuesto);
-        return valorVenta.setScale(6, RoundingMode.HALF_UP);
+        BigDecimal precioBase = getPrecioBase();
+        BigDecimal precioFinalSinImpuesto = getPrecioBase().subtract(
+                calcularDescuentoPolitica(precioBase, fechaReferencia)
+        ).subtract(
+                calcularDescuento(precioBase)
+        );
+        return precioFinalSinImpuesto.add(
+                calcularImpuesto(precioFinalSinImpuesto)
+        )
+        .setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal getValorFinalSinImpuesto(LocalDate fechaReferencia) {
-        BigDecimal factorGanancia = getPorcentajeGanancia().divide(CIEN, 6, RoundingMode.HALF_UP);
-        BigDecimal ganancia = getValorCompra().multiply(factorGanancia);
-        BigDecimal precioBase = getValorCompra().add(ganancia);
-        BigDecimal descuentoPolitica = calcularDescuentoPolitica(precioBase, fechaReferencia);
-        BigDecimal descuentoAplicado = calcularDescuento(precioBase, fechaReferencia);
-        return precioBase.subtract(descuentoPolitica).subtract(descuentoAplicado);
+        BigDecimal precioBase = getPrecioBase();
+        return precioBase.subtract(
+                calcularDescuentoPolitica(precioBase, fechaReferencia)
+        ).subtract(
+                calcularDescuento(precioBase)
+        )
+        .setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
@@ -104,21 +133,6 @@ public final class ProductoPerecedero extends Producto{
         }
     }
 
-    @Override
-    public BigDecimal calcularImpuesto(BigDecimal precioBase, LocalDate fecha) {
-        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(CIEN, 6, RoundingMode.HALF_UP);
-        return precioBase.multiply(factorImpuesto);
-    }
-
-    @Override
-    public BigDecimal calcularDescuento(BigDecimal precioBase, LocalDate fecha) {
-        if (getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
-            return BigDecimal.ZERO;
-        }
-        BigDecimal factorDescuento = getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP);
-        return precioBase.multiply(factorDescuento);
-    }
-
     private BigDecimal calcularDescuentoPolitica(BigDecimal precioBase, LocalDate fechaReferencia){
         PoliticaVencimiento pol = this.getPoliticaVencimiento();
         if (!pol.isActiva() || pol.getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
@@ -126,17 +140,17 @@ public final class ProductoPerecedero extends Producto{
         }
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.getFechaVencimiento());
         if (diasRestantes >= 0 && diasRestantes <= pol.getDiasUmbral()) {
-            BigDecimal factorDescuento = pol.getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP);
-            return precioBase.multiply(factorDescuento);
+            return precioBase.multiply(
+                    pol.getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP)
+            )
+            .setScale(6, RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;
     }
 
     public void cambiarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
-        if (!politicaVencimiento.isActiva()){
-            throw new IllegalArgumentException("La Política de Vencimiento que quieres colocar NO esta Activa");
-        }
-        setPoliticaVencimiento(politicaVencimiento);
+        validarEstadoPoliticaVencimiento(politicaVencimiento);
+        this.politicaVencimiento = politicaVencimiento;
     }
 
 }//===================================================================================================================//

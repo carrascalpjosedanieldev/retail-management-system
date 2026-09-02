@@ -52,11 +52,7 @@ public class ServicioProductos {
 
     public void cambiarEstadoProducto(int idInventario, String codigoProducto){
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        if (producto.isActivo()){
-            producto.desactivarProducto();
-        } else {
-            producto.activarProducto();
-        }
+        producto.cambiarEstado();
         this.actualizarProductoDeInventario(idInventario, producto);
     }
 
