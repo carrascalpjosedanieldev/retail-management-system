@@ -3,7 +3,6 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorGestionStock;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
@@ -42,17 +41,12 @@ public class ManejarStockControlador {
 
     private final OrquestadorGestionStock orquestadorGestionStock;
 
-    private final OrquestadorProductos orquestadorProductos;
-
     private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
-    public ManejarStockControlador(
-            OrquestadorGestionStock orquestadorGestionStock, OrquestadorProductos orquestadorProductos
-    ) {
+    public ManejarStockControlador(OrquestadorGestionStock orquestadorGestionStock) {
         this.orquestadorGestionStock = orquestadorGestionStock;
-        this.orquestadorProductos = orquestadorProductos;
     }
 
     //MÉTODOS:
@@ -169,7 +163,7 @@ public class ManejarStockControlador {
                             LocalDate.now()
                     );
                 } else {
-                    return this.orquestadorProductos.reducirStockDeProductoDeInventario(
+                    return this.orquestadorGestionStock.reducirStockProductoDeInventario(
                             this.usuarioActual, this.idInventario, seleccionado.codigoProducto(), cantidad,
                             LocalDate.now()
                     );

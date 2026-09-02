@@ -5,7 +5,7 @@ import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.Talla;
-import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ReferenciaNoEncontradaExcepcion;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoNoDisponibleException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioProducto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
@@ -48,8 +48,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             ejecutarEstrategia(conn, producto);
 
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new InventarioNoEncontradoException(
-                "No se puede guardar: El Inventario de ID " + idInventario + " NO Existe."
+            throw new ReferenciaNoEncontradaExcepcion(
+                "NO se puede Guardar: Una Referencia (Inventario, Impuesto o Descuento) NO Existe en el Sistema."
             );
 
         } catch (SQLException e) {
@@ -346,7 +346,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     //UPDATE:
 
     private static final String SQL_ACTUALIZAR_PRODUCTO =
-            "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, stock = ?, " +
+            "UPDATE productos SET nombre = ?, valor_compra = ?, porcentaje_ganancia = ?, " +
             "id_impuesto = ?, id_descuento = ? , activo = ? " +
             "WHERE id_inventario = ? AND codigo_producto = ?";
 
@@ -358,29 +358,29 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             pstmt.setString(1, producto.getNombre());
             pstmt.setBigDecimal(2, producto.getValorCompra());
             pstmt.setBigDecimal(3, producto.getPorcentajeGanancia());
-            pstmt.setInt(4, producto.getStock());
-            pstmt.setInt(5, producto.getIdImpuesto());
-            pstmt.setInt(6, producto.getIdDescuento());
-            pstmt.setBoolean(7, producto.isActivo());
-            pstmt.setInt(8, idInventario);
-            pstmt.setString(9, producto.getCodigo());
+            pstmt.setInt(4, producto.getIdImpuesto());
+            pstmt.setInt(5, producto.getIdDescuento());
+            pstmt.setBoolean(6, producto.isActivo());
+            pstmt.setInt(7, idInventario);
+            pstmt.setString(8, producto.getCodigo());
 
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new ProductoNoEncontradoException("No se pudo actualizar: El producto no existe en este inventario.");
+                throw new ProductoNoEncontradoException("NO se pudo Actualizar: El Producto NO Existe en este Inventario.");
             }
 
             if (producto instanceof ProductoPerecedero perecedero) {
                 actualizarProductoPerecedero(conn, perecedero);
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new ReferenciaNoEncontradaExcepcion("No se puede actualizar el producto: " +
+                    "El Impuesto, el Descuento o el Inventario destino especificado no existen.");
+
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1452) {
-                throw new IllegalArgumentException("No se puede actualizar el producto: " +
-                        "El Impuesto, el Descuento o el Inventario destino especificado no existen.");
-            }
             throw new PersistenciaException("Error al actualizar el producto: " + producto.getCodigo(), e);
+
         }
     }
 
@@ -393,6 +393,34 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             pstmt.setString(2, perecedero.getCodigo());
 
             pstmt.executeUpdate();
+        }
+    }
+
+
+    private static final String SQL_ACTUALIZAR_STOCK_PRODUCTO =
+            "UPDATE productos SET stock = ? " +
+            "WHERE id_inventario = ? AND codigo_producto = ?";
+
+    @Override
+    public void actualizarStockProducto(Producto producto, int idInventario) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_STOCK_PRODUCTO)){
+
+            pstmt.setInt(1, producto.getStock());
+            pstmt.setInt(2, idInventario);
+            pstmt.setString(3, producto.getCodigo());
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new ProductoNoEncontradoException("NO se pudo Actualizar: El Producto NO Existe en este Inventario.");
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error inesperado en la transacción de base de datos", e);
         }
     }
 

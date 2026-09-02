@@ -28,6 +28,8 @@ public interface RepositorioProducto {
 
     void actualizarProducto(Producto producto, int idInventario);
 
+    void actualizarStockProducto(Producto producto, int idInventario);
+
     void cambiarInventarioProducto(String codigoProducto, int idInventarioOrigen, int idInventarioDestino);
 
 }//===================================================================================================================//

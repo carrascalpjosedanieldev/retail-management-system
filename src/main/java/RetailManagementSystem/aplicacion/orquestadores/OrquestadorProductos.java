@@ -37,15 +37,6 @@ public class OrquestadorProductos {
         );
     }
 
-    public ProductoResumenDTO reducirStockDeProductoDeInventario(
-            UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, int cantidad, LocalDate fecha
-    ){
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MANEJAR_STOCK_PRODUCTO);
-        return this.ensambladorDTOProducto.ensamblarProductoResumen(
-                this.servicioProductos.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidad), fecha
-        );
-    }
-
     public void cambiarEstadoProducto(
             UsuarioDTOCompleto usuario, int idInventario, String codigoProducto
     ) {

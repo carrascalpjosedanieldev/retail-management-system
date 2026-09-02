@@ -105,13 +105,6 @@ public class ServicioProductos {
         return producto;
     }
 
-    public Producto aumentarStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.aumentarStock(cantidad);
-        this.actualizarProductoDeInventario(idInventario, producto);
-        return producto;
-    }
-
     public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){
         this.repositorioProducto.cambiarInventarioProducto(codigoProducto, idInventarioOrigen, idInventarioDestino);
     }

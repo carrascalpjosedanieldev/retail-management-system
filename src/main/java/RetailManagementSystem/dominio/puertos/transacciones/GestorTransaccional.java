@@ -4,5 +4,7 @@ public interface GestorTransaccional {
 
     void ejecutarEnTransaccion(OperacionTransaccional operacion);
 
+    <T> T ejecutarEnTransaccionConRetorno(OperacionTransaccionalConRetorno<T> operacion);
+
 }
 

@@ -216,8 +216,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == ManejarStockControlador.class){
             return new ManejarStockControlador(
-                    ContenedorDependencias.getOrquestadorInventarioProducto(),
-                    ContenedorDependencias.getOrquestadorProductos()
+                    ContenedorDependencias.getOrquestadorInventarioProducto()
             );
         }
         if (claseControlador == MoverProductoAOtroInventarioControlador.class){

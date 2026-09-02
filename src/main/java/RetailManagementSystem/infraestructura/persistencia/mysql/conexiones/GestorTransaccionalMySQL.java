@@ -2,6 +2,7 @@ package RetailManagementSystem.infraestructura.persistencia.mysql.conexiones;
 
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccional;
+import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccionalConRetorno;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 
 import java.sql.Connection;
@@ -11,6 +12,14 @@ public class GestorTransaccionalMySQL implements GestorTransaccional {
 
     @Override
     public void ejecutarEnTransaccion(OperacionTransaccional operacion) {
+        ejecutarEnTransaccionConRetorno(()->{
+            operacion.ejecutar();
+            return null;
+        });
+    }
+
+    @Override
+    public <T> T ejecutarEnTransaccionConRetorno(OperacionTransaccionalConRetorno<T> operacion) {
         Connection connection = null;
         try {
             connection = AdministradorConexion.obtenerConexion();
@@ -18,12 +27,13 @@ public class GestorTransaccionalMySQL implements GestorTransaccional {
 
             VinculadorTransaccion.vincular(connection);
 
-            operacion.ejecutar();
+            T resultado = operacion.ejecutar();
 
             connection.commit();
 
-        } catch (RuntimeException e) {
+            return resultado;
 
+        } catch (RuntimeException e) {
             if (connection != null) {
                 try {
                     connection.rollback();
@@ -32,7 +42,6 @@ public class GestorTransaccionalMySQL implements GestorTransaccional {
             throw e;
 
         } catch (Exception e) {
-
             if (connection != null) {
                 try {
                     connection.rollback();
@@ -48,8 +57,7 @@ public class GestorTransaccionalMySQL implements GestorTransaccional {
                 } catch (SQLException ignored) {}
             }
         }
-
     }
 
-}
+}//===================================================================================================================//
 

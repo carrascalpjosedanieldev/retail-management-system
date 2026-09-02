@@ -28,10 +28,33 @@ public class ServicioGestionStock {
 
     //MÉTODOS:
 
+    private Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
+        return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
+    }
+
     public void registrarProductoEnInventario(int idInventario, Producto producto){
-        gestorTransaccional.ejecutarEnTransaccion(()->{
+        this.gestorTransaccional.ejecutarEnTransaccion(()->{
             this.repositorioInventario.validarCapacidadInventario(idInventario, producto.getStock());
             this.repositorioProducto.insertarProducto(producto, idInventario);
+        });
+    }
+
+    public Producto aumentarStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
+            Producto producto = obtenerProductoDeInventario(idInventario, codigoProducto);
+            producto.aumentarStock(cantidad);
+            this.repositorioInventario.validarCapacidadInventario(idInventario, cantidad);
+            this.repositorioProducto.actualizarStockProducto(producto, idInventario);
+            return producto;
+        });
+    }
+
+    public Producto reducirStockDeProductoDeInventario(int idInventario, String codigoProducto, int cantidad){
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
+            Producto producto = obtenerProductoDeInventario(idInventario, codigoProducto);
+            producto.reducirStock(cantidad);
+            this.repositorioProducto.actualizarStockProducto(producto, idInventario);
+            return producto;
         });
     }
 
