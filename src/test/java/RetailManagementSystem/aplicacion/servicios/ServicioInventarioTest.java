@@ -6,6 +6,8 @@ import RetailManagementSystem.dominio.puertos.repositorios.RepositorioInventario
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,8 +17,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ServicioInventarioTest {
@@ -60,6 +61,18 @@ public class ServicioInventarioTest {
     }
 
     @Test
+    void deberiaObtenerInventarioExistenteCorrectamente() {
+        // ARRANGE
+        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        // ACT
+        Inventario resultado = servicioInventario.obtenerInventario(1);
+        // ASSERT
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getIdInventario());
+        verify(repoInventarioFalso).obtenerInventario(1);
+    }
+
+    @Test
     void deberiaLanzarExcepcionCuandoObtenerInventarioNoExiste(){
         //ARRANGE
         when(repoInventarioFalso.obtenerInventario(99))
@@ -87,6 +100,19 @@ public class ServicioInventarioTest {
         assertEquals(nombreNuevo, inventarioCapturado.getNombre());
     }
 
+    @ParameterizedTest
+    @CsvSource( value = {"null", "''", "'   '"} , nullValues = "null")
+    void noDeberiaActualizarNiPersistirSiElNombreNuevoEsInvalido(String nombreInvalido) {
+        // ARRANGE
+        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        // ACT & ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> servicioInventario.actualizarInventario(1, nombreInvalido)
+        );
+        verify(repoInventarioFalso, never()).actualizarInventario(any());
+    }
+
     @Test
     void deberiaDevolverLaListaConTodosLosInventariosCorrectamente(){
         //ARRANGE
@@ -100,5 +126,32 @@ public class ServicioInventarioTest {
         verify(repoInventarioFalso).obtenerTodosInventariosConCapacidadOcupada();
     }
 
-}
+    @Test
+    void deberiaAumentarLaCapacidadMaximaDelInventarioCorrectamente(){
+        //ARRANGE
+        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        //ACT
+        servicioInventario.aumentarCapacidadMaximaInventario(1, 50);
+        //ASSERT
+        ArgumentCaptor<Inventario> captor = ArgumentCaptor.forClass(Inventario.class);
+        verify(repoInventarioFalso).actualizarInventario(captor.capture());
+        Inventario inventarioCapturado = captor.getValue();
+        assertEquals(1, inventarioCapturado.getIdInventario());
+        assertEquals(550, inventarioCapturado.getCapacidadMaxima());
+    }
+
+    @Test
+    void deberiaLanzarExcepcionYNoPersistirAlAumentarCapacidadDeInventarioInexistente() {
+        // ARRANGE
+        when(repoInventarioFalso.obtenerInventario(99))
+                .thenThrow(new InventarioNoEncontradoException("No existe un Inventario con el ID: 99"));
+        // ACT & ASSERT
+        assertThrows(
+                InventarioNoEncontradoException.class,
+                () -> servicioInventario.aumentarCapacidadMaximaInventario(99, 50)
+        );
+        verify(repoInventarioFalso, never()).actualizarInventario(any());
+    }
+
+}//===================================================================================================================//
 

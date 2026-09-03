@@ -113,5 +113,57 @@ public class InventarioTest {
         assertEquals("Modificado", inventarioMutador.getNombre());
     }
 
-}
+    @ParameterizedTest
+    @DisplayName("Debería lanzar excepción si el nuevo nombre es nulo o vacío al cambiar nombre")
+    @CsvSource(value = {"null", "''", "'   '"}, nullValues = "null")
+    void deberiaLanzarExcepcionSiElNuevoNombreEsInvalidoAlCambiarNombre(String nombreInvalido) {
+        // ACT & ASSERT
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> inventarioMutador.cambiarNombreInventario(nombreInvalido)
+        );
+        assertEquals("El Nombre del Inventario NO puede estar Vacío", exception.getMessage());
+    }
+
+    @Test
+    void deberiaAumentarLaCapacidadMaximaCorrectamente(){
+        //ACT
+        inventarioMutador.aumentarCapacidadMaxima(50);
+        //ASSERT
+        assertEquals(550, inventarioMutador.getCapacidadMaxima());
+    }
+
+    @ParameterizedTest
+    @CsvSource( value = {"null", "-1", "0"}, nullValues = "null")
+    void deberiaLanzarExcepcionSiAlAumentarCapacidadMaximaLaCantidadExtraEsInvalida(Integer capacidadExtra){
+        //ACT AND ASSERT
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                ()-> inventarioMutador.aumentarCapacidadMaxima(capacidadExtra)
+        );
+        assertEquals(
+                "La Capacidad Extra para expandir la Capacidad Maxima del Inventario debe ser Mayor a 0",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void deberiaCalcularCapacidadLibreCorrectamente() {
+        // ACT
+        int capacidadLibre = inventarioMutador.calcularCapacidadLibre();
+        // ASSERT
+        assertEquals(250, capacidadLibre);
+    }
+
+    @Test
+    void deberiaConsiderarIgualesDosInventariosConElMismoId() {
+        // ARRANGE
+        Inventario inventario1 = Inventario.reconstruirDesdeBD(1, "A", 100, 10);
+        Inventario inventario2 = Inventario.reconstruirDesdeBD(1, "B", 200, 20);
+        // ACT & ASSERT
+        assertEquals(inventario1, inventario2);
+        assertEquals(inventario1.hashCode(), inventario2.hashCode());
+    }
+
+}//===================================================================================================================//
 
