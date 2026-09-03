@@ -118,7 +118,7 @@ public class ContenedorDependencias {
         ensambladorDTOProducto = new EnsambladorDTOProducto(
                 ensambladorDTOImpuesto, ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento
         );
-        ensambladorDTOInventario = new EnsambladorDTOInventario(ensambladorDTOProducto);
+        ensambladorDTOInventario = new EnsambladorDTOInventario();
         ensambladorDTOServicio = new EnsambladorDTOServicio(
                 ensambladorDTOImpuesto, ensambladorDTODescuento
         );
@@ -191,7 +191,7 @@ public class ContenedorDependencias {
         );
         orquestadorProductos = new OrquestadorProductos(ensambladorDTOProducto, servicioProductos);
         orquestadorGestionStock = new OrquestadorGestionStock(
-                servicioProductos, servicioInventario, servicioGestionStock, ensambladorDTOProducto
+                servicioProductos, servicioGestionStock, ensambladorDTOProducto
         );
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorServicios = new OrquestadorServicios(

@@ -12,9 +12,9 @@ public class Inventario {
 
     private final Integer idInventario;
 
-    private final int capacidadMaxima;
+    private Integer capacidadMaxima;
 
-    private int capacidadOcupada;
+    private final Integer capacidadOcupada;
 
     //GETTERS Y SETTERS:
 
@@ -109,15 +109,17 @@ public class Inventario {
         setNombre(nuevoNombre);
     }
 
-    public int calcularCapacidadLibre() {
-        return this.capacidadMaxima - this.capacidadOcupada;
+    public void aumentarCapacidadMaxima(Integer capacidadExtra){
+        if (capacidadExtra == null || capacidadExtra <= 0) {
+            throw new IllegalArgumentException(
+                    "La Capacidad Extra para expandir la Capacidad Maxima del Inventario debe ser Mayor a 0"
+            );
+        }
+        this.capacidadMaxima += capacidadExtra;
     }
 
-    public void validarEspacioDisponible(int stockNuevo) {
-        if (stockNuevo > this.calcularCapacidadLibre()) {
-            throw new CapacidadInventarioExcedidaException("Capacidad del Inventario Insuficiente. Libre: " + this.calcularCapacidadLibre() +
-                            ", Solicitado: " + stockNuevo);
-        }
+    public int calcularCapacidadLibre() {
+        return this.capacidadMaxima - this.capacidadOcupada;
     }
 
 }//===================================================================================================================//

@@ -4,7 +4,6 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.ServicioGestionStock;
-import RetailManagementSystem.aplicacion.servicios.ServicioInventario;
 import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
@@ -17,7 +16,6 @@ public class OrquestadorGestionStock {
     //ATRIBUTOS:
 
     private final ServicioProductos servicioProductos;
-    private final ServicioInventario servicioInventario;
     private final ServicioGestionStock servicioGestionStock;
 
     private final EnsambladorDTOProducto ensambladorDTOProducto;
@@ -25,11 +23,10 @@ public class OrquestadorGestionStock {
     //CONSTRUCTOR:
 
     public OrquestadorGestionStock(
-            ServicioProductos servicioProductos, ServicioInventario servicioInventario,
-            ServicioGestionStock servicioGestionStock, EnsambladorDTOProducto ensambladorDTOProducto
+            ServicioProductos servicioProductos, ServicioGestionStock servicioGestionStock,
+            EnsambladorDTOProducto ensambladorDTOProducto
     ) {
         this.servicioProductos = servicioProductos;
-        this.servicioInventario = servicioInventario;
         this.servicioGestionStock = servicioGestionStock;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
     }
@@ -49,7 +46,6 @@ public class OrquestadorGestionStock {
             LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_PRODUCTOS);
-        this.servicioInventario.verificarEspacioDisponible(idInventario, cantidadAAumentarProducto);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(
                 this.servicioGestionStock.aumentarStockDeProductoDeInventario(
                         idInventario, codigoProducto, cantidadAAumentarProducto
@@ -71,7 +67,6 @@ public class OrquestadorGestionStock {
             int stockProducto
     ){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.TRASLADAR_PRODUCTOS);
-        this.servicioInventario.verificarEspacioDisponible(idInventarioDestino, stockProducto);
         this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);
     }
 

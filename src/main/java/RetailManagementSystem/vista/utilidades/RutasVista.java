@@ -117,6 +117,9 @@ public class RutasVista {
     public static final String EDITAR_INVENTARIO_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/EditarInventario.fxml";
 
+    public static final String AUMENTAR_CAPACIDAD_VIEW =
+            "/vista/gestionarTienda/gestionarInventarios/AumentarCapacidad.fxml";
+
     public static final String GESTIONAR_INVENTARIOS_VIEW =
             "/vista/gestionarTienda/gestionarInventarios/GestionInventarios.fxml";
 

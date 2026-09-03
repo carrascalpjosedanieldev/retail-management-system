@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="380.0" prefWidth="450.0" styleClass="fondo-panel" stylesheets="@../../../css/gestionarTienda/gestionarInventarios/estilosCssAumentarCapacidad.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.AumentarCapacidadControlador">
+
+    <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="panel-encabezado">
+        <Label styleClass="titulo-principal" text="📦 Ampliar Capacidad Máxima" />
+        <Label styleClass="subtitulo" text="Ajusta el espacio disponible para este inventario" />
+    </VBox>
+
+    <VBox spacing="25.0" styleClass="panel-formulario" VBox.vgrow="ALWAYS">
+
+        <VBox spacing="8.0" styleClass="caja-info">
+            <Label styleClass="label-info-titulo" text="Detalles del Inventario a Modificar:" />
+            <HBox spacing="10.0">
+                <Label styleClass="label-info-etiqueta" text="ID:" />
+                <Label fx:id="lblIdInventario" styleClass="label-info-valor" text="#0000" />
+            </HBox>
+            <HBox spacing="10.0">
+                <Label styleClass="label-info-etiqueta" text="Nombre:" />
+                <Label fx:id="lblNombreInventario" styleClass="label-info-valor" text="Cargando nombre..." />
+            </HBox>
+        </VBox>
+
+        <VBox spacing="8.0">
+            <Label styleClass="label-formulario" text="¿Cuántas unidades extra vas a añadir a la capacidad máxima?" wrapText="true" />
+            <TextField fx:id="txtCapacidadExtra" promptText="Ej: 50" styleClass="campo-texto" />
+            <Label styleClass="texto-ayuda" text="* Este número se sumará a la capacidad máxima actual." />
+        </VBox>
+
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" prefHeight="70.0" spacing="15.0" styleClass="panel-botones">
+        <Button fx:id="btnGuardar" defaultButton="true" mnemonicParsing="false" onAction="#guardarCambios" prefHeight="40.0" prefWidth="160.0" styleClass="btn-guardar" text="Guardar Cambios" />
+        <Button fx:id="btnCancelar" cancelButton="true" mnemonicParsing="false" onAction="#cerrarVentana" prefHeight="40.0" prefWidth="120.0" styleClass="btn-cancelar" text="Cancelar" />
+    </HBox>
+
+</VBox>

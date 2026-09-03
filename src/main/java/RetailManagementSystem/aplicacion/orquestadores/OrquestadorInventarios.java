@@ -26,6 +26,15 @@ public class OrquestadorInventarios {
 
     //MÉTODOS:
 
+    public InventarioDTO registrarInventario(
+            UsuarioDTOCompleto usuario, String nombre, int capacidadMaxima
+    ) {
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_INVENTARIOS);
+        return this.ensambladorDTOInventario.ensamblarDatosInventario(
+                this.servicioInventario.registrarInventario(nombre, capacidadMaxima)
+        );
+    }
+
     public InventarioDTO actualizarInventario(
             UsuarioDTOCompleto usuario, int idInventario, String nombreNuevo
     ) {
@@ -35,12 +44,12 @@ public class OrquestadorInventarios {
         );
     }
 
-    public InventarioDTO registrarInventario(
-            UsuarioDTOCompleto usuario, String nombre, int capacidadMaxima
+    public InventarioDTO aumentarCapacidadMaxima(
+            UsuarioDTOCompleto usuario, int idInventario, int capacidadExtra
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_INVENTARIOS);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.AUMENTAR_CAPACIDAD_MAXIMA_INVENTARIO);
         return this.ensambladorDTOInventario.ensamblarDatosInventario(
-                this.servicioInventario.registrarInventario(nombre, capacidadMaxima)
+                this.servicioInventario.aumentarCapacidadMaximaInventario(idInventario, capacidadExtra)
         );
     }
 

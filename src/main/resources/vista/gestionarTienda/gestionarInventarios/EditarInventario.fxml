@@ -38,7 +38,7 @@
             <Label styleClass="label-formulario" text="Capacidad Máx:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
             <TextField fx:id="txtCapacidad" editable="false" promptText="Capacidad ..." styleClass="campo-texto, campo-bloqueado" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-            <Label styleClass="texto-ayuda" text="(La capacidad no se puede modificar)" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label styleClass="texto-ayuda" text="(La capacidad se modifica en otra sección)" GridPane.columnIndex="1" GridPane.rowIndex="2">
                 <GridPane.margin>
                     <Insets top="-5.0" />
                 </GridPane.margin>

@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarios;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -77,7 +78,8 @@ public class EditarInventarioControlador {
             );
             return;
         }
-        if (nuevoNombre.equalsIgnoreCase(datosInventario.nombre())) {
+        if (nuevoNombre.equals(datosInventario.nombre())) {
+            cerrarPantalla();
             return;
         }
         CompletableFuture.supplyAsync(()->
@@ -99,7 +101,7 @@ public class EditarInventarioControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Error en los Datos Ingresados",
@@ -112,7 +114,6 @@ public class EditarInventarioControlador {
                            "NO se pudo Completar la Acción.",
                           "Notificale al Administrador este Error:\n" + causa.getMessage()
                     );
-                    cerrarPantalla();
                 }
             });
             return null;

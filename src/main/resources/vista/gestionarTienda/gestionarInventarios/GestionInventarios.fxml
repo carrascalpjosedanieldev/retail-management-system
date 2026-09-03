@@ -43,14 +43,20 @@
             <String fx:value="btn-accion" />
             <String fx:value="button" />
          </styleClass></Button>
+      <Button fx:id="btnAumentarCapacidadMax" maxHeight="46.0" mnemonicParsing="false" onAction="#aumentarCapacidadMax" prefHeight="46.0" prefWidth="210.0" text="Aumentar Capacidad Max">
+         <styleClass>
+            <String fx:value="btn-accion" />
+            <String fx:value="button" />
+         </styleClass>
+      </Button>
 
-        <Region prefHeight="50.0" prefWidth="466.0" HBox.hgrow="ALWAYS" />
+        <Region prefHeight="50.0" HBox.hgrow="ALWAYS" />
 
-        <Button fx:id="btnVerOEditarProductos" maxHeight="45.0" mnemonicParsing="false" onAction="#editarProductosInventario" prefHeight="40.0" prefWidth="246.0" text="Editar Productos del Inventario">
+        <Button fx:id="btnVerOEditarProductos" maxHeight="46.0" mnemonicParsing="false" onAction="#editarProductosInventario" prefHeight="46.0" prefWidth="300.0" text="Editar Productos del Inventario">
          <styleClass>
             <String fx:value="btn-accion" />
             <String fx:value="btn-editar" />
          </styleClass></Button>
-        <Button maxHeight="45.0" mnemonicParsing="false" onAction="#volverAlPanel" prefHeight="40.0" prefWidth="87.0" styleClass="btn-accion, btn-secundario" text="Volver" />
+        <Button maxHeight="46.0" mnemonicParsing="false" onAction="#volverAlPanel" prefHeight="46.0" prefWidth="102.0" styleClass="btn-accion, btn-secundario" text="Volver" />
     </HBox>
 </VBox>

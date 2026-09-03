@@ -113,27 +113,5 @@ public class InventarioTest {
         assertEquals("Modificado", inventarioMutador.getNombre());
     }
 
-    @Test
-    void deberiaValidarEspacioDisponibleSinLanzarExcepcion(){
-        // ACT & ASSERT
-        assertDoesNotThrow(() -> inventarioMutador.validarEspacioDisponible(100));
-    }
-
-    @Test
-    void deberiaLanzarExcepcionSiAlValidarEspacioDisponibleElStockNuevoEsMayorAlDisponible(){
-        //ARRANGE
-        int stockNuevo = 300;
-        int capacidadLibre = inventarioMutador.calcularCapacidadLibre();
-        //ACT AND ASSERT
-        CapacidadInventarioExcedidaException exception = assertThrows(
-                CapacidadInventarioExcedidaException.class,
-                ()-> inventarioMutador.validarEspacioDisponible(stockNuevo)
-        );
-        assertEquals(
-                "Capacidad del Inventario Insuficiente. Libre: " + capacidadLibre + ", Solicitado: " + stockNuevo,
-                exception.getMessage()
-        );
-    }
-
 }
 

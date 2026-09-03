@@ -23,9 +23,8 @@ public class ServicioInventario {
         return this.repositorioInventario.obtenerInventario(idInventario);
     }
 
-    public void verificarEspacioDisponible(int idInventario, int stockNuevo) {
-        Inventario inventario = obtenerInventario(idInventario);
-        inventario.validarEspacioDisponible(stockNuevo);
+    private void actualizarInventario(Inventario inventario){
+        this.repositorioInventario.actualizarInventario(inventario);
     }
 
     public Inventario registrarInventario(String nombre, int capacidad){
@@ -36,7 +35,14 @@ public class ServicioInventario {
     public Inventario actualizarInventario(int idInventario, String nombreNuevo){
         Inventario inventario = obtenerInventario(idInventario);
         inventario.cambiarNombreInventario(nombreNuevo);
-        this.repositorioInventario.actualizarInventario(inventario);
+        actualizarInventario(inventario);
+        return inventario;
+    }
+
+    public Inventario aumentarCapacidadMaximaInventario(int idInventario, int cantidadesExtra){
+        Inventario inventario = obtenerInventario(idInventario);
+        inventario.aumentarCapacidadMaxima(cantidadesExtra);
+        actualizarInventario(inventario);
         return inventario;
     }
 

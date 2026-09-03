@@ -1,30 +1,14 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
-import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
-import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoDTO;
-import RetailManagementSystem.aplicacion.dto.gestion.DetalleInventarioDTO;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnsambladorDTOInventario {
 
-    private final EnsambladorDTOProducto ensambladorDTOProducto;
-
-    public EnsambladorDTOInventario(EnsambladorDTOProducto ensambladorDTOProducto) {
-        this.ensambladorDTOProducto = ensambladorDTOProducto;
-    }
-
-    public DetalleInventarioDTO ensamblarDetalleInventario(Inventario inventario, List<Producto> productos, LocalDate fechaReferencia){
-        List<DatosTotalesProductoDTO> datosProductosDeInventario = new ArrayList<>();
-        for (Producto producto:productos){
-            DatosTotalesProductoDTO datosTotalesProducto = this.ensambladorDTOProducto.ensamblarDatosTotalesProducto(producto, fechaReferencia);
-            datosProductosDeInventario.add(datosTotalesProducto);
-        }
-        return new DetalleInventarioDTO(inventario.getIdInventario(), inventario.getNombre(), inventario.getCapacidadMaxima(), inventario.getCapacidadOcupada(), datosProductosDeInventario);
+    public EnsambladorDTOInventario() {
     }
 
     public InventarioDTO ensamblarDatosInventario(Inventario inventario){

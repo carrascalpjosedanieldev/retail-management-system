@@ -100,13 +100,5 @@ public class ServicioInventarioTest {
         verify(repoInventarioFalso).obtenerTodosInventariosConCapacidadOcupada();
     }
 
-    @Test
-    void deberiaValidarEspacioDisponibleCorrectamente(){
-        //ARRANGE
-        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
-        //ACT AND ASSERT
-        assertDoesNotThrow(()-> servicioInventario.verificarEspacioDisponible(1, 50));
-    }
-
 }
 

@@ -25,6 +25,7 @@ public class PermisosApp {
                 PermisosApp.VER_INVENTARIOS,
                 PermisosApp.REGISTRAR_INVENTARIOS,
                 PermisosApp.EDITAR_INVENTARIOS,
+                PermisosApp.AUMENTAR_CAPACIDAD_MAXIMA_INVENTARIO,
 
                 PermisosApp.VER_PRODUCTOS,
                 PermisosApp.REGISTRAR_PRODUCTOS,
@@ -88,6 +89,7 @@ public class PermisosApp {
     public static final String VER_INVENTARIOS = "VER INVENTARIOS";
     public static final String REGISTRAR_INVENTARIOS = "REGISTRAR INVENTARIOS";
     public static final String EDITAR_INVENTARIOS = "EDITAR INVENTARIOS";
+    public static final String AUMENTAR_CAPACIDAD_MAXIMA_INVENTARIO = "AUMENTAR CAPACIDAD MAXIMA INVENTARIO";
 
     public static final String VER_PRODUCTOS = "VER PRODUCTOS";
     public static final String REGISTRAR_PRODUCTOS = "REGISTRAR PRODUCTOS";

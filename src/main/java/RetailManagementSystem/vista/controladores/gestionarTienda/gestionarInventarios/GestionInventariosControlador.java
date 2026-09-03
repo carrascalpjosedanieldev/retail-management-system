@@ -7,6 +7,7 @@ import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.GestionProductosControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
@@ -39,6 +40,7 @@ public class GestionInventariosControlador {
     @FXML private TextField txtBuscar;
     @FXML private Button btnModificarInv;
     @FXML private Button btnNuevoInv;
+    @FXML private Button btnAumentarCapacidadMax;
     @FXML private Button btnVerOEditarProductos;
 
 
@@ -64,7 +66,8 @@ public class GestionInventariosControlador {
     public void cargarDatos(UsuarioDTOCompleto usuarioActual){
         ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
                 PermisosApp.VER_SERVICIOS,
-                PermisosApp.REGISTRAR_SERVICIOS
+                PermisosApp.REGISTRAR_SERVICIOS,
+                PermisosApp.AUMENTAR_CAPACIDAD_MAXIMA_INVENTARIO
         ));
         this.usuarioActual = usuarioActual;
         configurarVisibilidadModulos();
@@ -86,16 +89,24 @@ public class GestionInventariosControlador {
         ));
         btnModificarInv.setVisible(editar);
         btnModificarInv.setManaged(editar);
-        if (!nuevo){
-            btnVerOEditarProductos.setText("Ver Productos del Inventario");
-        }
+        boolean aumentarCapacidad = tieneAccesoAlModulo(List.of(
+                PermisosApp.AUMENTAR_CAPACIDAD_MAXIMA_INVENTARIO
+        ));
+        btnAumentarCapacidadMax.setVisible(aumentarCapacidad);
+        btnAumentarCapacidadMax.setManaged(aumentarCapacidad);
         boolean visualizar = tieneAccesoAlModulo(List.of(
-                PermisosApp.VER_PRODUCTOS,
+                PermisosApp.VER_PRODUCTOS
+
+        ));
+        boolean productos = tieneAccesoAlModulo(List.of(
                 PermisosApp.REGISTRAR_PRODUCTOS,
                 PermisosApp.EDITAR_PRODUCTO,
                 PermisosApp.CAMBIAR_ESTADO_PRODUCTO,
                 PermisosApp.TRASLADAR_PRODUCTOS
         ));
+        if (!productos){
+            btnVerOEditarProductos.setText("Ver Productos del Inventario");
+        }
         btnVerOEditarProductos.setVisible(visualizar);
         btnVerOEditarProductos.setManaged(visualizar);
     }
@@ -177,7 +188,7 @@ public class GestionInventariosControlador {
                 listaObservable::setAll, Platform::runLater
         ).exceptionally(ex -> {
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error", null,
                         "Se Cerrara la Ventana por Seguridad.\n" +
@@ -278,5 +289,27 @@ public class GestionInventariosControlador {
     }
 
 
+    public void aumentarCapacidadMax(ActionEvent event) {
+        InventarioDTO seleccionado = tablaInventarios.getSelectionModel().getSelectedItem();
+        if (seleccionado == null) {
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Atención", null,
+                    "Selecciona un Inventario para Aumentar su Capacidad Maxima."
+            );
+            return;
+        }
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.AUMENTAR_CAPACIDAD_VIEW,
+                    "Aumentar Capacidad Inventario",
+                    getVentana(),
+                    (AumentarCapacidadControlador c) -> {
+                        c.cargarDatos(this.usuarioActual, seleccionado, listaObservable);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
+    }
 }//===================================================================================================================//
 

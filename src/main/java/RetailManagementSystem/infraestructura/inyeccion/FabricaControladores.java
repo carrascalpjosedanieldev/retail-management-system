@@ -261,6 +261,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorDependencias.getOrquestadorLogin()
             );
         }
+        if (claseControlador == AumentarCapacidadControlador.class){
+            return new AumentarCapacidadControlador(
+                    ContenedorDependencias.getOrquestadorInventarios()
+            );
+        }
         try {
             return claseControlador.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
