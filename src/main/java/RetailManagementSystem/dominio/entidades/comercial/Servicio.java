@@ -79,7 +79,7 @@ public class Servicio implements ItemFacturable {
         return this.impuesto.getId();
     }
 
-    @Override
+
     public BigDecimal getPorcentajeImpuesto(){
         return this.impuesto.getPorcentaje();
     }
@@ -95,7 +95,7 @@ public class Servicio implements ItemFacturable {
         return this.descuento.getId();
     }
 
-    @Override
+
     public BigDecimal getPorcentajeDescuento(){
         return this.descuento.getPorcentaje();
     }
@@ -148,7 +148,7 @@ public class Servicio implements ItemFacturable {
         return new Servicio(nombre, precioBase, impuesto, descuento, true);
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     @Override
     public TipoItem getTipoItem() {

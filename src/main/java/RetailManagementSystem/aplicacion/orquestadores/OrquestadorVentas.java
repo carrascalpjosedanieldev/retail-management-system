@@ -14,6 +14,7 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CarritoVacioEx
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,10 +137,12 @@ public class OrquestadorVentas {
         }
         List<ItemVendido> itemsProcesadosConExito = new ArrayList<>();
         for (ItemCarrito item:carrito.getItems().values()){
+            BigDecimal porcentajeImpuesto = item.getItemFacturable().getImpuesto().isActivo() ?
+                    item.getItemFacturable().getImpuesto().getPorcentaje() : BigDecimal.ZERO;
             ItemVendido itemVendido = ItemVendido.crearNuevo(
                     item.getItemFacturable().getTipoItem(), item.getItemFacturable().getCodigo(),
                     item.getItemFacturable().getNombre(), item.getCantidad(),
-                    item.getItemFacturable().getValorVenta(fecha), item.getItemFacturable().getPorcentajeImpuesto()
+                    item.getItemFacturable().getValorVenta(fecha), porcentajeImpuesto
             );
             itemsProcesadosConExito.add(itemVendido);
         }

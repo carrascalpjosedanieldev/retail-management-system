@@ -65,8 +65,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_PRODUCTO)) {
             pstmt.setString(1, producto.getCodigo());
             pstmt.setInt(2, idInventario);
-            pstmt.setInt(3, producto.getIdImpuesto());
-            pstmt.setInt(4, producto.getIdDescuento());
+            pstmt.setInt(3, producto.getImpuesto().getId());
+            pstmt.setInt(4, producto.getDescuento().getId());
             pstmt.setString(5, producto.getNombre());
             pstmt.setBigDecimal(6, producto.getValorCompra());
             pstmt.setBigDecimal(7, producto.getPorcentajeGanancia());
@@ -358,8 +358,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             pstmt.setString(1, producto.getNombre());
             pstmt.setBigDecimal(2, producto.getValorCompra());
             pstmt.setBigDecimal(3, producto.getPorcentajeGanancia());
-            pstmt.setInt(4, producto.getIdImpuesto());
-            pstmt.setInt(5, producto.getIdDescuento());
+            pstmt.setInt(4, producto.getImpuesto().getId());
+            pstmt.setInt(5, producto.getDescuento().getId());
             pstmt.setBoolean(6, producto.isActivo());
             pstmt.setInt(7, idInventario);
             pstmt.setString(8, producto.getCodigo());

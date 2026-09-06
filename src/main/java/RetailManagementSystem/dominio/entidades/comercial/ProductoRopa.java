@@ -12,10 +12,18 @@ public final class ProductoRopa extends Producto{
 
     private final Talla talla;
 
-    //GETTERS Y SETTERS:
+    //GETTERS:
 
     public Talla getTalla() {
         return talla;
+    }
+
+    //VALIDACIONES:
+
+    private void validarTalla(Talla talla){
+        if (talla == null){
+            throw new IllegalArgumentException("La Talla de la Prenda es Obligatoria");
+        }
     }
 
     //CONSTRUCTOR:
@@ -25,9 +33,7 @@ public final class ProductoRopa extends Producto{
             Integer stock, Impuesto impuesto, Descuento descuento, Boolean activo, Talla talla
     ) {
         super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, activo);
-        if (talla == null){
-            throw new IllegalArgumentException("La Talla de la Prenda es Obligatoria");
-        }
+        validarTalla(talla);
         this.talla=talla;
     }
 
@@ -43,6 +49,7 @@ public final class ProductoRopa extends Producto{
             Impuesto impuesto, Descuento descuento, Talla talla
     ) {
         super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento);
+        validarTalla(talla);
         this.talla = talla;
     }
 

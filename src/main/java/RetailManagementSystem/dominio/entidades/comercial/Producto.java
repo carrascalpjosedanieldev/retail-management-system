@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.PRODUCTO;
 
-public abstract sealed class Producto implements ItemFacturable permits ProductoRopa, ProductoPerecedero{
+public abstract class Producto implements ItemFacturable {
 
     protected static final BigDecimal CIEN = new BigDecimal("100");
 
@@ -73,40 +73,17 @@ public abstract sealed class Producto implements ItemFacturable permits Producto
     }
 
     @Override
-    public BigDecimal getValorVenta(LocalDate fecha){
+    public BigDecimal getValorVenta(LocalDate fecha) {
         return calcularValorVenta(fecha);
     }
 
+    @Override
     public Impuesto getImpuesto() {
         return impuesto;
     }
 
-    public int getIdImpuesto() {
-        return impuesto.getId();
-    }
-
-    @Override
-    public BigDecimal getPorcentajeImpuesto(){
-        if (!impuesto.isActivo()){
-            return BigDecimal.ZERO;
-        }
-        return impuesto.getPorcentaje();
-    }
-
     public Descuento getDescuento(){
         return descuento;
-    }
-
-    public int getIdDescuento(){
-        return descuento.getId();
-    }
-
-    @Override
-    public BigDecimal getPorcentajeDescuento(){
-        if (!descuento.isActivo()) {
-            return BigDecimal.ZERO;
-        }
-        return descuento.getPorcentaje();
     }
 
     public boolean isActivo(){
@@ -131,14 +108,15 @@ public abstract sealed class Producto implements ItemFacturable permits Producto
     }
 
     private void validarValorCompra(BigDecimal valorCompra){
-        if (valorCompra.compareTo(BigDecimal.ZERO) <= 0) {
+        if (valorCompra == null || valorCompra.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Valor de Compra del Producto Invalido");
         }
     }
 
     private void validarPorcentajeGanancia(BigDecimal porcentajeGanancia){
-        if (porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0  || porcentajeGanancia.compareTo(CIEN) > 0){
-            throw new IllegalArgumentException("Porcentaje de Ganancia Invalido");
+        if (porcentajeGanancia == null ||
+                porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0  || porcentajeGanancia.compareTo(CIEN) > 0){
+            throw new IllegalArgumentException("Porcentaje de Ganancia del Producto Invalido");
         }
     }
 
@@ -150,25 +128,25 @@ public abstract sealed class Producto implements ItemFacturable permits Producto
 
     private void validarImpuesto(Impuesto impuesto){
         if (impuesto==null){
-            throw new IllegalArgumentException("El Producto Debe Tener Impuesto");
+            throw new IllegalArgumentException("El Producto Debe Tener Impuesto Obligatoriamente");
         }
     }
 
     private void validarEstadoImpuesto(Impuesto impuesto){
         if (!impuesto.isActivo()){
-            throw new IllegalStateException("El Impuesto que le quieres poner al Producto esta Inactivo");
+            throw new IllegalArgumentException("El Impuesto que le quieres poner al Producto esta Inactivo");
         }
     }
 
     private void validarDescuento(Descuento descuento){
         if (descuento==null){
-            throw new IllegalArgumentException("El Producto Debe Tener Descuento");
+            throw new IllegalArgumentException("El Producto Debe Tener Descuento Obligatoriamente");
         }
     }
 
     private void validarEstadoDescuento(Descuento descuento){
         if (!descuento.isActivo()){
-            throw new IllegalStateException("El Descuento que le quieres poner al Producto esta Inactivo");
+            throw new IllegalArgumentException("El Descuento que le quieres poner al Producto esta Inactivo");
         }
     }
 
@@ -209,20 +187,21 @@ public abstract sealed class Producto implements ItemFacturable permits Producto
 
     //MÉTODOS:
 
+    protected BigDecimal dividirEntreCien(BigDecimal valor){
+        return valor.divide(CIEN, 6, RoundingMode.HALF_UP);
+    }
+
     protected BigDecimal getPrecioBase(){
         return getValorCompra().multiply(
-                (BigDecimal.ONE).add(getPorcentajeGanancia().divide(CIEN, 6, RoundingMode.HALF_UP))
+                (BigDecimal.ONE).add(dividirEntreCien(getPorcentajeGanancia()))
         )
         .setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal calcularDescuento(BigDecimal precioBase) {
-        if (getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
-            return BigDecimal.ZERO;
-        }
         return precioBase.multiply(
-                getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP)
+                dividirEntreCien(this.descuento.getPorcentaje())
         )
         .setScale(6, RoundingMode.HALF_UP);
     }
@@ -230,7 +209,7 @@ public abstract sealed class Producto implements ItemFacturable permits Producto
     @Override
     public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto) {
         return precioFinalSinImpuesto.multiply(
-                getPorcentajeImpuesto().divide(CIEN, 6, RoundingMode.HALF_UP)
+                dividirEntreCien(this.impuesto.getPorcentaje())
         )
         .setScale(6, RoundingMode.HALF_UP);
     }
@@ -249,19 +228,16 @@ public abstract sealed class Producto implements ItemFacturable permits Producto
         .setScale(6, RoundingMode.HALF_UP);
     }
 
-    //Se sobreescribe es Perecedero
-    public void validarEstadoParaVenta(LocalDate fecha) {}
-
     //MÉTODOS MODIFICAR PRODUCTO:
-
-    public void cambiarValorVentaPorPorcentaje(BigDecimal porcentajeGanancia) {
-        validarPorcentajeGanancia(porcentajeGanancia);
-        setPorcentajeGanancia(porcentajeGanancia);
-    }
 
     public void cambiarNombreProducto(String nombre){
         validarNombre(nombre);
         setNombre(nombre);
+    }
+
+    public void cambiarPorcentajeGanancia(BigDecimal porcentajeGanancia) {
+        validarPorcentajeGanancia(porcentajeGanancia);
+        setPorcentajeGanancia(porcentajeGanancia);
     }
 
     public void cambiarValorCompra(BigDecimal valorNuevo){
@@ -269,13 +245,15 @@ public abstract sealed class Producto implements ItemFacturable permits Producto
         setValorCompra(valorNuevo);
     }
 
-    public void aumentarStock(int cantidad){
-        validarStock(stock);
+    public void aumentarStock(Integer cantidad){
+        if (cantidad == null || cantidad<=0){
+            throw new IllegalArgumentException("Cantidad de Producto a Reponer Invalida");
+        }
         this.stock = this.getStock() + cantidad;
     }
 
-    public void reducirStock(int cantidad){
-        if (cantidad<=0){
+    public void reducirStock(Integer cantidad){
+        if (cantidad == null || cantidad<=0){
             throw new IllegalArgumentException("Cantidad de Producto a Retirar Invalida");
         }
         int stockTotal = this.getStock() - cantidad;

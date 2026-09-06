@@ -1,11 +1,13 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.ventas.Carrito;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class ServicioCarrito {
 
@@ -26,7 +28,9 @@ public class ServicioCarrito {
 
     public void agregarProductoAlCarrito(Carrito carrito, String codigoProducto, int cantidad, LocalDate fecha){
         Producto producto = this.servicioProductos.obtenerProductoActivoParaLaVenta(codigoProducto);
-        producto.validarEstadoParaVenta(fecha);
+        if (producto instanceof ProductoPerecedero perecedero){
+            perecedero.validarEstadoParaVenta(fecha);
+        }
         carrito.agregarProducto(producto, cantidad);
     }
 

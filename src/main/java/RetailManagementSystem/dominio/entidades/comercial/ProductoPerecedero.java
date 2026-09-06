@@ -84,7 +84,7 @@ public final class ProductoPerecedero extends Producto{
     }
 
     public static ProductoPerecedero crearNuevo(
-            String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock,
+            String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, Integer stock,
             Impuesto impuesto, Descuento descuento, LocalDate fechaVencimiento,
             PoliticaVencimiento politicaVencimiento
     ) {
@@ -124,7 +124,6 @@ public final class ProductoPerecedero extends Producto{
         .setScale(6, RoundingMode.HALF_UP);
     }
 
-    @Override
     public void validarEstadoParaVenta(LocalDate fechaReferencia){
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
         if (diasRestantes < 0) {
@@ -135,13 +134,13 @@ public final class ProductoPerecedero extends Producto{
 
     private BigDecimal calcularDescuentoPolitica(BigDecimal precioBase, LocalDate fechaReferencia){
         PoliticaVencimiento pol = this.getPoliticaVencimiento();
-        if (!pol.isActiva() || pol.getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
+        if (pol.getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
             return BigDecimal.ZERO;
         }
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.getFechaVencimiento());
         if (diasRestantes >= 0 && diasRestantes <= pol.getDiasUmbral()) {
             return precioBase.multiply(
-                    pol.getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP)
+                    dividirEntreCien(pol.getPorcentajeDescuento())
             )
             .setScale(6, RoundingMode.HALF_UP);
         }
@@ -149,6 +148,7 @@ public final class ProductoPerecedero extends Producto{
     }
 
     public void cambiarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
+        validarPoliticaVencimiento(politicaVencimiento);
         validarEstadoPoliticaVencimiento(politicaVencimiento);
         this.politicaVencimiento = politicaVencimiento;
     }

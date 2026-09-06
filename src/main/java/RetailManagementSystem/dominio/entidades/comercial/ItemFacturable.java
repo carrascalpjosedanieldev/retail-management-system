@@ -1,5 +1,6 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
+import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.math.BigDecimal;
@@ -13,11 +14,9 @@ public interface ItemFacturable {
 
     String getCodigo();
 
-    BigDecimal getPorcentajeImpuesto();
+    Impuesto getImpuesto();
 
     BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto);
-
-    BigDecimal getPorcentajeDescuento();
 
     BigDecimal calcularDescuento(BigDecimal valorVenta);
 

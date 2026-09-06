@@ -27,7 +27,9 @@ public class Descuento {
         this.nombre = nombre.trim();
     }
 
-    public BigDecimal getPorcentaje() { return porcentaje; }
+    public BigDecimal getPorcentaje() {
+        return this.activo ? this.porcentaje : BigDecimal.ZERO;
+    }
     public void setPorcentaje(BigDecimal porcentaje) {
         this.porcentaje = porcentaje.setScale(2, RoundingMode.HALF_UP);
     }

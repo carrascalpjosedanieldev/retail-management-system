@@ -35,7 +35,9 @@ public class PoliticaVencimiento {
 
     public int getDiasUmbral() { return diasUmbral; }
 
-    public BigDecimal getPorcentajeDescuento() { return porcentajeDescuento; }
+    public BigDecimal getPorcentajeDescuento() {
+        return this.isActiva() ? porcentajeDescuento : BigDecimal.ZERO;
+    }
     private void setPorcentajeDescuento(BigDecimal porcentajeDescuento) {
         this.porcentajeDescuento = porcentajeDescuento.setScale(2, RoundingMode.HALF_UP);
     }

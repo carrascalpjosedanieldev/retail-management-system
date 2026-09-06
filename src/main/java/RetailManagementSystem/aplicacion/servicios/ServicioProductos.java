@@ -67,7 +67,7 @@ public class ServicioProductos {
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
         producto.cambiarNombreProducto(nombreNuevo);
         producto.cambiarValorCompra(valorCompra);
-        producto.cambiarValorVentaPorPorcentaje(porcentajeGanancia);
+        producto.cambiarPorcentajeGanancia(porcentajeGanancia);
         Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
         producto.cambiarImpuesto(impuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
@@ -83,7 +83,7 @@ public class ServicioProductos {
         ProductoPerecedero perecedero = (ProductoPerecedero) this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
         perecedero.cambiarNombreProducto(nombreNuevo);
         perecedero.cambiarValorCompra(valorCompra);
-        perecedero.cambiarValorVentaPorPorcentaje(porcentajeGanancia);
+        perecedero.cambiarPorcentajeGanancia(porcentajeGanancia);
         Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
         perecedero.cambiarImpuesto(impuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
