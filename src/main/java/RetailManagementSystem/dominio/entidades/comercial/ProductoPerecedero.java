@@ -32,7 +32,7 @@ public final class ProductoPerecedero extends Producto{
 
     private void validarFechaVencimiento(LocalDate fechaVencimiento){
         if (fechaVencimiento == null){
-            throw new IllegalArgumentException("La Fecha de Vencimiento del Producto es Invalida");
+            throw new IllegalArgumentException("La Fecha de Vencimiento del Producto es Obligatoria");
         }
     }
 
@@ -78,6 +78,7 @@ public final class ProductoPerecedero extends Producto{
     ) {
         super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento);
         validarFechaVencimiento(fechaVencimiento);
+        validarPoliticaVencimiento(politicaVencimiento);
         validarEstadoPoliticaVencimiento(politicaVencimiento);
         this.fechaVencimiento = fechaVencimiento;
         this.politicaVencimiento = politicaVencimiento;
@@ -94,23 +95,33 @@ public final class ProductoPerecedero extends Producto{
 
     //MÉTODOS:
 
+    public void cambiarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
+        validarPoliticaVencimiento(politicaVencimiento);
+        validarEstadoPoliticaVencimiento(politicaVencimiento);
+        this.politicaVencimiento = politicaVencimiento;
+    }
+
     public boolean estaVencido(LocalDate fechaReferencia) {
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
         return diasRestantes < 0;
     }
 
-    @Override
-    protected BigDecimal calcularValorVenta(LocalDate fechaReferencia) {
-        BigDecimal precioBase = getPrecioBase();
-        BigDecimal precioFinalSinImpuesto = getPrecioBase().subtract(
-                calcularDescuentoPolitica(precioBase, fechaReferencia)
-        ).subtract(
-                calcularDescuento(precioBase)
-        );
-        return precioFinalSinImpuesto.add(
-                calcularImpuesto(precioFinalSinImpuesto)
-        )
-        .setScale(6, RoundingMode.HALF_UP);
+    public void validarEstadoParaVenta(LocalDate fechaReferencia){
+        if (estaVencido(fechaReferencia)) {
+            throw new ProductoVencidoException("El Producto -" + this.getNombre() + "- está vencido.");
+        }
+    }
+
+    private BigDecimal calcularDescuentoPolitica(BigDecimal precioBase, LocalDate fechaReferencia){
+        PoliticaVencimiento pol = this.getPoliticaVencimiento();
+        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.getFechaVencimiento());
+        if (diasRestantes >= 0 && diasRestantes <= pol.getDiasUmbral()) {
+            return precioBase.multiply(
+                            dividirEntreCien(pol.getPorcentajeDescuento())
+                    )
+                    .setScale(6, RoundingMode.HALF_UP);
+        }
+        return BigDecimal.ZERO;
     }
 
     @Override
@@ -122,35 +133,6 @@ public final class ProductoPerecedero extends Producto{
                 calcularDescuento(precioBase)
         )
         .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    public void validarEstadoParaVenta(LocalDate fechaReferencia){
-        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
-        if (diasRestantes < 0) {
-            throw new ProductoVencidoException("ALERTA: El Producto -" + this.getNombre() +
-                    "- está vencido. Venta bloqueada.");
-        }
-    }
-
-    private BigDecimal calcularDescuentoPolitica(BigDecimal precioBase, LocalDate fechaReferencia){
-        PoliticaVencimiento pol = this.getPoliticaVencimiento();
-        if (pol.getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
-            return BigDecimal.ZERO;
-        }
-        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.getFechaVencimiento());
-        if (diasRestantes >= 0 && diasRestantes <= pol.getDiasUmbral()) {
-            return precioBase.multiply(
-                    dividirEntreCien(pol.getPorcentajeDescuento())
-            )
-            .setScale(6, RoundingMode.HALF_UP);
-        }
-        return BigDecimal.ZERO;
-    }
-
-    public void cambiarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
-        validarPoliticaVencimiento(politicaVencimiento);
-        validarEstadoPoliticaVencimiento(politicaVencimiento);
-        this.politicaVencimiento = politicaVencimiento;
     }
 
 }//===================================================================================================================//

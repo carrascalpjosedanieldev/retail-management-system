@@ -33,7 +33,9 @@ public class PoliticaVencimiento {
         this.nombre = nombre.trim();
     }
 
-    public int getDiasUmbral() { return diasUmbral; }
+    public int getDiasUmbral() {
+        return diasUmbral;
+    }
 
     public BigDecimal getPorcentajeDescuento() {
         return this.isActiva() ? porcentajeDescuento : BigDecimal.ZERO;
