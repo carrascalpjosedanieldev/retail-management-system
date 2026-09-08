@@ -7,13 +7,23 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogen
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
+
+    //ATRIBUTOS:
+
+    private final MapeadorImpuestos mapeadorImpuestos;
+
+    //CONSTRUCTOR:
+
+    public RepositorioImpuestosMySQL(MapeadorImpuestos mapeadorImpuestos) {
+        this.mapeadorImpuestos = mapeadorImpuestos;
+    }
 
     //CREATE:
 
@@ -49,10 +59,10 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
                 }
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IllegalArgumentException("Ya existe un Impuesto registrado con el Nombre: " + impuesto.getNombre());
+
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Ya existe un Impuesto registrado con el Nombre: " + impuesto.getNombre());
-            }
             throw new PersistenciaException("Error crítico de persistencia al guardar el Impuesto: " + e.getMessage(), e);
         }
     }
@@ -76,14 +86,8 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()) {
-                    int idReal = rs.getInt("id_impuesto");
-                    String nombre = rs.getString("nombre");
-                    BigDecimal porcentaje = rs.getBigDecimal("porcentaje");
-                    boolean activo = rs.getBoolean("activo");
-
-                    return Impuesto.reconstruirDesdeBD(idReal, nombre, porcentaje, activo);
+                    return this.mapeadorImpuestos.mapearImpuesto(rs);
                 }
-
                 throw new ImpuestoNoEncontradoException("No existe un Impuesto con el ID: " + idImpuesto);
 
             }
@@ -105,12 +109,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Impuesto impuesto = Impuesto.reconstruirDesdeBD(
-                        rs.getInt("id_impuesto"),
-                        rs.getString("nombre"),
-                        rs.getBigDecimal("porcentaje"),
-                        rs.getBoolean("activo")
-                );
+                Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
                 impuestos.add(impuesto);
             }
 
@@ -132,11 +131,7 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Impuesto impuesto = Impuesto.reconstruirDesdeBD(rs.getInt("id_impuesto"),
-                        rs.getString("nombre"),
-                        rs.getBigDecimal("porcentaje"),
-                        rs.getBoolean("activo")
-                );
+                Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
                 impuestos.add(impuesto);
             }
 

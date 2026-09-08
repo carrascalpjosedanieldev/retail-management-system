@@ -5,6 +5,7 @@ import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.Talla;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ReferenciaNoEncontradaExcepcion;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoNoDisponibleException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioProducto;
@@ -24,11 +25,11 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     //ATRIBUTOS:
 
-    private final Map<Class<? extends Producto>, EstrategiaPersistenciaProducto<?>> despachador;
+    private final Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador;
 
     //CONSTRUCTOR:
 
-    public RepositorioProductoMySQL(Map<Class<? extends Producto>, EstrategiaPersistenciaProducto<?>> despachador) {
+    public RepositorioProductoMySQL(Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador) {
         this.despachador = despachador;
     }
 
@@ -76,16 +77,14 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends Producto> void ejecutarEstrategiaInsertar(Connection conn, T producto) throws SQLException {
-        EstrategiaPersistenciaProducto<T> estrategia =
-                (EstrategiaPersistenciaProducto<T>) despachador.get(producto.getClass());
+    private void ejecutarEstrategiaInsertar(Connection conn, Producto producto) throws SQLException {
+        EstrategiaPersistenciaProducto<?> estrategia = despachador.get(producto.getTipoProducto());
         if (estrategia == null) {
             throw new IllegalStateException(
-                    "NO hay una Estrategia de Persistencia Registrada para: " + producto.getClass().getSimpleName()
+                    "NO hay una Estrategia de Persistencia Registrada para: " + producto.getTipoProducto()
             );
         }
-        estrategia.insertarDetalleInsertar(conn, producto);
+        estrategia.ejecutarInsertar(conn, producto);
     }
 
 
@@ -94,6 +93,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     private static final String SQL_OBTENER_PRODUCTO_DE_INVENTARIO =
             "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, " +
             "p.activo, " +
+            "tp.nombre AS nombre_tipo, " +
             "r.talla, per.fecha_vencimiento, per.id_politica, " +
             "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
             "i.activo AS impuesto_activo, " +
@@ -104,6 +104,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             "FROM productos p " +
             "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
             "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
+            "INNER JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo " +
             "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
             "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
             "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +

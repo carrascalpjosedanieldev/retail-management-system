@@ -6,9 +6,7 @@ import RetailManagementSystem.aplicacion.orquestadores.*;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.aplicacion.servicios.*;
-import RetailManagementSystem.dominio.entidades.comercial.Producto;
-import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
-import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.puertos.repositorios.*;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguracionImpl;
@@ -16,6 +14,8 @@ import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.Est
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaProducto;
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaRopa;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.GestorTransaccionalMySQL;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
 import RetailManagementSystem.infraestructura.persistencia.mysql.repositorios.*;
 import RetailManagementSystem.infraestructura.seguridad.Argon2CodificadorAdapter;
 
@@ -40,12 +40,17 @@ public class ContenedorDependencias {
     private static EnsambladorDTORol ensambladorDTORol;
     private static EnsambladorDTOUsuario ensambladorDTOUsuario;
 
-    //UTILIDADES:
+        //UTILIDADES:
 
     private static CodificadorContrasenas codificadorContrasenas;
     private static ProveedorConfiguracion proveedorConfiguracion;
-    private static Map<Class<? extends Producto>, EstrategiaPersistenciaProducto<?>> despachador;
+    private static Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador;
     private static GestorTransaccional gestorTransaccional;
+
+        //MAPEADORES:
+
+    private static MapeadorImpuestos mapeadorImpuestos;
+    private static MapeadorDescuentos mapeadorDescuentos;
 
         //REPOSITORIOS:
 
@@ -60,8 +65,6 @@ public class ContenedorDependencias {
     private static RepositorioPermiso repositorioPermiso;
     private static RepositorioRol repositorioRol;
     private static RepositorioUsuario repositorioUsuario;
-
-
 
         //SERVICIOS:
 
@@ -133,17 +136,22 @@ public class ContenedorDependencias {
         proveedorConfiguracion = new ProveedorConfiguracionImpl(repositorioConfiguracion);
 
         despachador = new HashMap<>();
-        despachador.put(ProductoRopa.class, new EstrategiaPersistenciaRopa());
-        despachador.put(ProductoPerecedero.class, new EstrategiaPersistenciaPerecedero());
+        despachador.put(TipoProducto.ROPA, new EstrategiaPersistenciaRopa());
+        despachador.put(TipoProducto.PERECEDERO, new EstrategiaPersistenciaPerecedero());
 
         gestorTransaccional = new GestorTransaccionalMySQL();
+
+        //INSTANTIATION DE MAPEADORES:
+
+        mapeadorImpuestos = new MapeadorImpuestos();
+        mapeadorDescuentos = new MapeadorDescuentos();
 
         //INSTANCIACIÓN DE REPOSITORIOS:
 
         repositorioConfiguracion = new RepositorioConfiguracionMySQL();
-        repositorioDescuentos = new RepositorioDescuentosMySQL();
+        repositorioDescuentos = new RepositorioDescuentosMySQL(mapeadorDescuentos);
         repositorioFacturas = new RepositorioFacturasMySQL();
-        repositorioImpuestos = new RepositorioImpuestosMySQL();
+        repositorioImpuestos = new RepositorioImpuestosMySQL(mapeadorImpuestos);
         repositorioInventario = new RepositorioInventarioMySQL();
         repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
         repositorioProducto = new RepositorioProductoMySQL(despachador);

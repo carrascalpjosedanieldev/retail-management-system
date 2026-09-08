@@ -7,13 +7,23 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogen
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
+
+    //ATRIBUTOS:
+
+    private final MapeadorDescuentos mapeadorDescuentos;
+
+    //CONSTRUCTOR:
+
+    public RepositorioDescuentosMySQL(MapeadorDescuentos mapeadorDescuentos) {
+        this.mapeadorDescuentos = mapeadorDescuentos;
+    }
 
     //CREATE:
 
@@ -45,14 +55,14 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
                             descuento.isActivo()
                     );
                 } else {
-                    throw new IdAutogeneradoNoRecibidoException("La Inserción fue Exitosa, pero no se pudo obtener el ID autogenerado.");
+                    throw new IdAutogeneradoNoRecibidoException("La Inserción fue Exitosa, pero NO se pudo obtener el ID autogenerado.");
                 }
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IllegalArgumentException("Ya existe un Descuento registrado con el Nombre: " + descuento.getNombre());
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Ya existe un Descuento registrado con el Nombre: " + descuento.getNombre());
-            }
+
             throw new PersistenciaException("Error crítico de persistencia al guardar el Descuento: " + e.getMessage(), e);
         }
     }
@@ -76,14 +86,8 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()) {
-                    int idReal = rs.getInt("id_descuento");
-                    String nombre = rs.getString("nombre");
-                    BigDecimal porcentaje = rs.getBigDecimal("porcentaje");
-                    boolean activo = rs.getBoolean("activo");
-
-                    return Descuento.reconstruirDesdeBD(idReal, nombre, porcentaje, activo);
+                    return this.mapeadorDescuentos.mapearDescuento(rs);
                 }
-
                 throw new DescuentoNoEncontradoException("NO existe un Descuento con el ID: " + idDescuento);
 
             }
@@ -105,12 +109,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Descuento descuento = Descuento.reconstruirDesdeBD(
-                        rs.getInt("id_descuento"),
-                        rs.getString("nombre"),
-                        rs.getBigDecimal("porcentaje"),
-                        rs.getBoolean("activo")
-                );
+                Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
                 descuentos.add(descuento);
             }
 
@@ -133,12 +132,7 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Descuento descuento = Descuento.reconstruirDesdeBD(
-                        rs.getInt("id_descuento"),
-                        rs.getString("nombre"),
-                        rs.getBigDecimal("porcentaje"),
-                        rs.getBoolean("activo")
-                );
+                Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
                 descuentos.add(descuento);
             }
         } catch (SQLException e) {
