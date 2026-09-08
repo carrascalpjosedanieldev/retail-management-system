@@ -2,6 +2,7 @@ package RetailManagementSystem.dominio.entidades.comercial;
 
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +32,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Mock
     protected Descuento descuentoActivo;
 
+    protected abstract TipoProducto getTipoProducto();
+
     @BeforeEach
     void setUp() {
         Mockito.lenient().when(impuestoActivo.isActivo()).thenReturn(true);
@@ -53,7 +56,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             1,
                             impuestoActivo,
-                            descuentoActivo
+                            descuentoActivo,
+                            getTipoProducto()
                     ){};
                 }
         );
@@ -75,7 +79,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             1,
                             impuestoActivo,
-                            descuentoActivo
+                            descuentoActivo,
+                            getTipoProducto()
                     ){};
                 }
         );
@@ -97,7 +102,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             porcentajeGanancia,
                             1,
                             impuestoActivo,
-                            descuentoActivo
+                            descuentoActivo,
+                            getTipoProducto()
                     ){};
                 }
         );
@@ -117,7 +123,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             stock,
                             impuestoActivo,
-                            descuentoActivo
+                            descuentoActivo,
+                            getTipoProducto()
                     ){};
                 }
         );
@@ -136,7 +143,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             1,
                             null,
-                            descuentoActivo
+                            descuentoActivo,
+                            getTipoProducto()
                     ){};
                 }
         );
@@ -155,7 +163,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             1,
                             impuestoActivo,
-                            null
+                            null,
+                            getTipoProducto()
                     ){};
                 }
         );
@@ -176,7 +185,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             1,
                             impuestoActivo,
-                            descuentoActivo
+                            descuentoActivo,
+                            getTipoProducto()
                     ){};
                 }
         );
@@ -197,7 +207,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             1,
                             impuestoActivo,
-                            descuentoActivo
+                            descuentoActivo,
+                            getTipoProducto()
                     ){};
                 }
         );

@@ -1,6 +1,7 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
 import RetailManagementSystem.dominio.enums.Talla;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -9,6 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ProductoRopaTest extends ProductoBaseTest<ProductoRopa> {
+
+    @Override
+    protected TipoProducto getTipoProducto() {
+        return TipoProducto.ROPA;
+    }
 
     @Override
     protected ProductoRopa crearNuevoProducto() {

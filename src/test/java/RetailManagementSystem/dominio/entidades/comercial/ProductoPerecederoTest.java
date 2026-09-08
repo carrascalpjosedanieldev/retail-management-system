@@ -1,6 +1,7 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoVencidoException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,6 +24,11 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
 
     @Mock
     protected PoliticaVencimiento politicaVActiva;
+
+    @Override
+    protected TipoProducto getTipoProducto() {
+        return TipoProducto.PERECEDERO;
+    }
 
     @Override
     protected ProductoPerecedero crearNuevoProducto() {
