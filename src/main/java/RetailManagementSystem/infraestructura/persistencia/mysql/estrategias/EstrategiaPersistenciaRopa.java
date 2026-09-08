@@ -1,5 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql.estrategias;
 
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 
 import java.sql.Connection;
@@ -12,7 +13,7 @@ public class EstrategiaPersistenciaRopa implements EstrategiaPersistenciaProduct
             "INSERT INTO producto_ropa (codigo_producto, talla) VALUES (?, ?)";
 
     @Override
-    public void insertarDetalle(Connection conn, ProductoRopa ropa) throws SQLException {
+    public void insertarDetalleInsertar(Connection conn, ProductoRopa ropa) throws SQLException {
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_ROPA)) {
             pstmt.setString(1, ropa.getCodigo());
             pstmt.setString(2, ropa.getTalla().name());
@@ -20,5 +21,10 @@ public class EstrategiaPersistenciaRopa implements EstrategiaPersistenciaProduct
         }
     }
 
-}
+    @Override
+    public Producto obtenerDetalleYObtenerProducto(Connection conn, ProductoBaseDTO datosBase) {
+        return null;
+    }
+
+}//===================================================================================================================//
 

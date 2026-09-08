@@ -3,6 +3,7 @@ package RetailManagementSystem.dominio.entidades.comercial;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.enums.Talla;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 
 import java.math.BigDecimal;
 
@@ -32,7 +33,7 @@ public final class ProductoRopa extends Producto{
             String  codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
             Integer stock, Impuesto impuesto, Descuento descuento, Boolean activo, Talla talla
     ) {
-        super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, activo);
+        super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, activo, TipoProducto.ROPA);
         validarTalla(talla);
         this.talla=talla;
     }
@@ -48,7 +49,7 @@ public final class ProductoRopa extends Producto{
             String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, Integer stock,
             Impuesto impuesto, Descuento descuento, Talla talla
     ) {
-        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento);
+        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, TipoProducto.ROPA);
         validarTalla(talla);
         this.talla = talla;
     }

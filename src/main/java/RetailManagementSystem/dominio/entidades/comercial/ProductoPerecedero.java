@@ -3,6 +3,7 @@ package RetailManagementSystem.dominio.entidades.comercial;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoVencidoException;
 
 import java.math.BigDecimal;
@@ -55,7 +56,7 @@ public final class ProductoPerecedero extends Producto{
             Integer stock, Impuesto impuesto, Descuento descuento, Boolean activo, LocalDate fechaVencimiento,
             PoliticaVencimiento politicaVencimiento
     ) {
-        super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, activo);
+        super(codigo, nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, activo, TipoProducto.PERECEDERO);
         validarFechaVencimiento(fechaVencimiento);
         validarPoliticaVencimiento(politicaVencimiento);
         this.fechaVencimiento = fechaVencimiento;
@@ -76,7 +77,7 @@ public final class ProductoPerecedero extends Producto{
             Impuesto impuesto, Descuento descuento, LocalDate fechaVencimiento,
             PoliticaVencimiento politicaVencimiento
     ) {
-        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento);
+        super(nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, TipoProducto.PERECEDERO);
         validarFechaVencimiento(fechaVencimiento);
         validarPoliticaVencimiento(politicaVencimiento);
         validarEstadoPoliticaVencimiento(politicaVencimiento);

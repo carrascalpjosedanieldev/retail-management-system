@@ -1,5 +1,6 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql.estrategias;
 
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 
 import java.sql.Connection;
@@ -13,7 +14,7 @@ public class EstrategiaPersistenciaPerecedero implements EstrategiaPersistenciaP
             "INSERT INTO producto_perecedero (codigo_producto, fecha_vencimiento, id_politica) VALUES (?, ?, ?)";
 
     @Override
-    public void insertarDetalle(Connection conn, ProductoPerecedero perecedero) throws SQLException {
+    public void insertarDetalleInsertar(Connection conn, ProductoPerecedero perecedero) throws SQLException {
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_PERECEDERO)) {
             pstmt.setString(1, perecedero.getCodigo());
             pstmt.setDate(2, Date.valueOf(perecedero.getFechaVencimiento()));
@@ -22,5 +23,10 @@ public class EstrategiaPersistenciaPerecedero implements EstrategiaPersistenciaP
         }
     }
 
-}
+    @Override
+    public Producto obtenerDetalleYObtenerProducto(Connection conn, ProductoBaseDTO datosBase) {
+        return null;
+    }
+
+}//===================================================================================================================//
 

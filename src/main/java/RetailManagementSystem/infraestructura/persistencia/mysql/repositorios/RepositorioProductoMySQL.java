@@ -34,7 +34,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     //MÉTODOS:
 
-    //CREATE:
+        //CREATE:
 
     @Override
     public void insertarProducto(Producto producto, int idInventario){
@@ -45,7 +45,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         try {
 
             insertarDatosGenerales(conn, producto, idInventario);
-            ejecutarEstrategia(conn, producto);
+            ejecutarEstrategiaInsertar(conn, producto);
 
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new ReferenciaNoEncontradaExcepcion(
@@ -77,13 +77,15 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Producto> void ejecutarEstrategia(Connection conn, T producto) throws SQLException {
+    private <T extends Producto> void ejecutarEstrategiaInsertar(Connection conn, T producto) throws SQLException {
         EstrategiaPersistenciaProducto<T> estrategia =
                 (EstrategiaPersistenciaProducto<T>) despachador.get(producto.getClass());
         if (estrategia == null) {
-            throw new IllegalStateException("NO hay una Estrategia de Persistencia Registrada para: " + producto.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "NO hay una Estrategia de Persistencia Registrada para: " + producto.getClass().getSimpleName()
+            );
         }
-        estrategia.insertarDetalle(conn, producto);
+        estrategia.insertarDetalleInsertar(conn, producto);
     }
 
 

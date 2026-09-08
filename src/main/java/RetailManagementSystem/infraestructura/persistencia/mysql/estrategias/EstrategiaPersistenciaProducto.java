@@ -7,7 +7,9 @@ import java.sql.SQLException;
 
 public interface EstrategiaPersistenciaProducto<T extends Producto> {
 
-    void insertarDetalle(Connection conn, T producto) throws SQLException;
+    void insertarDetalleInsertar(Connection conn, T producto) throws SQLException;
+
+    Producto obtenerDetalleYObtenerProducto(Connection conn, ProductoBaseDTO datosBase);
 
 }
 

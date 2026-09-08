@@ -3,6 +3,7 @@ package RetailManagementSystem.dominio.entidades.comercial;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.enums.TipoItem;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 
 import java.math.BigDecimal;
@@ -17,6 +18,8 @@ public abstract class Producto implements ItemFacturable {
     protected static final BigDecimal CIEN = new BigDecimal("100");
 
     //ATRIBUTOS:
+
+    private final TipoProducto tipoProducto;
 
     private final String codigo;
 
@@ -39,6 +42,10 @@ public abstract class Producto implements ItemFacturable {
     @Override
     public TipoItem getTipoItem() {
         return PRODUCTO;
+    }
+
+    public TipoProducto getTipoProducto(){
+        return tipoProducto;
     }
 
     @Override
@@ -91,6 +98,12 @@ public abstract class Producto implements ItemFacturable {
     }
 
     //VALIDACIONES:
+
+    private void validarTipoProducto(TipoProducto tipoProducto){
+        if (tipoProducto == null){
+            throw new IllegalArgumentException("El Tipo de Producto es Obligatorio.");
+        }
+    }
 
     private void validarCodigo(String codigo){
         if (codigo == null || codigo.isBlank()){
@@ -153,8 +166,11 @@ public abstract class Producto implements ItemFacturable {
     //CONSTRUCTOR:
 
         //Reconstruir desde DB
-    protected Producto(String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
-                       Integer stock, Impuesto impuesto, Descuento descuento, Boolean activo){
+    protected Producto(
+            String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
+            Integer stock, Impuesto impuesto, Descuento descuento, Boolean activo, TipoProducto tipoProducto
+    ) {
+        validarTipoProducto(tipoProducto);
         validarCodigo(codigo);
         validarNombre(nombre);
         validarValorCompra(valorCompra);
@@ -165,6 +181,7 @@ public abstract class Producto implements ItemFacturable {
         if (activo == null){
             throw new IllegalArgumentException("El Estado del Producto es Obligatorio");
         }
+        this.tipoProducto = tipoProducto;
         this.codigo = codigo;
         setNombre(nombre);
         setValorCompra(valorCompra);
@@ -178,9 +195,12 @@ public abstract class Producto implements ItemFacturable {
         //Crear Nuevo
     protected Producto(
             String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, Integer stock,
-            Impuesto impuesto, Descuento descuento
+            Impuesto impuesto, Descuento descuento, TipoProducto tipoProducto
     ) {
-        this(UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento, true);
+        this(
+            UUID.randomUUID().toString(), nombre, valorCompra, porcentajeGanancia, stock, impuesto, descuento,
+            true, tipoProducto
+        );
         validarEstadoImpuesto(impuesto);
         validarEstadoDescuento(descuento);
     }
