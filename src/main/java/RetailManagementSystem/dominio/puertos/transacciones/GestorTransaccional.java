@@ -6,5 +6,7 @@ public interface GestorTransaccional {
 
     <T> T ejecutarEnTransaccionConRetorno(OperacionTransaccionalConRetorno<T> operacion);
 
-}
+    <T> T ejecutarEnTransaccionDeLectura(OperacionTransaccionalConRetorno<T> operacion);
+
+}//===================================================================================================================//
 
