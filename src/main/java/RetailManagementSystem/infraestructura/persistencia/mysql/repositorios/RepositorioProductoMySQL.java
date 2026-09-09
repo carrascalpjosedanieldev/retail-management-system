@@ -12,15 +12,17 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.Persisten
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaProducto;
-import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.ProductoBaseDatos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.DatosProductoBase;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorProductoBase;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class RepositorioProductoMySQL implements RepositorioProducto {
 
@@ -144,63 +146,93 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
     private Producto mapearProductoDesdeResultSet(ResultSet rs, TipoProducto tipoProducto) throws SQLException {
-
         Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
-
         Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
-
-        ProductoBaseDatos productoBase = this.mapeadorProductoBase.mapearProductoBase(rs, impuesto, descuento);
+        DatosProductoBase productoBase = this.mapeadorProductoBase.mapearProductoBase(rs, impuesto, descuento);
 
         EstrategiaPersistenciaProducto<?> estrategia = despachador.get(tipoProducto);
-
         if (estrategia == null) {
             throw new IllegalStateException(
                     "NO hay una Estrategia de Persistencia Registrada para: " + tipoProducto
             );
         }
         return estrategia.obtenerDetalleYConstruirProducto(rs, productoBase);
-
     }
 
 
-
-    private static final String SQL_OBTENER_PRODUCTOS_DE_INVENTARIO =
-            "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
-            "r.talla, per.fecha_vencimiento, per.id_politica, " +
+    private static final String SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIOS =
+            "SELECT " +
+            "p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
             "tp.nombre AS nombre_tipo, " +
             "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
             "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-            "des.activo AS descuento_activo, " +
-            "pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica, " +
-            "pove.activa AS politica_activa " +
+            "des.activo AS descuento_activo " +
             "FROM productos p " +
             "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
             "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
             "INNER JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo " +
-            "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
-            "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
-            "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
             "WHERE p.id_inventario = ?";
 
     @Override
     public List<Producto> obtenerProductosPorInventario(int idInventario) {
-        List<Producto> productos = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTOS_DE_INVENTARIO)) {
+        Connection conn = null;
+        Map<TipoProducto, List<DatosProductoBase>> mapaProductos = new HashMap<>();
+        List<Producto> listaCompleta = new ArrayList<>();
+        try {
 
-            pstmt.setInt(1, idInventario);
+            conn = AdministradorConexion.obtenerConexion();
+            conn.setAutoCommit(false);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
-                    productos.add(mapearProductoDesdeResultSet(rs, tipoProducto));
+            try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIOS)){
+                pstmt.setInt(1, idInventario);
+
+                try (ResultSet rs = pstmt.executeQuery()) {
+
+                    while (rs.next()){
+                        TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
+                        DatosProductoBase datosBase = mapearDatosProductoBase(rs);
+                        mapaProductos.computeIfAbsent(tipoProducto, key -> new ArrayList<>()).add(datosBase);
+                    }
+
+                    for (Entry<TipoProducto, List<DatosProductoBase>> entry : mapaProductos.entrySet()){
+                        EstrategiaPersistenciaProducto<?> estrategia = despachador.get(entry.getKey());
+                        if (estrategia == null) {
+                            throw new IllegalStateException(
+                                    "NO hay una Estrategia de Persistencia Registrada para: " + entry.getKey()
+                            );
+                        }
+                        List<Producto> listaProductos = estrategia.obtenerDetallesYConstruirEnLote(conn, entry.getValue());
+                        listaCompleta.addAll(listaProductos);
+                    }
+
                 }
+
             }
 
-        } catch (SQLException e) {
+            conn.commit();
+
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ignored) {}
+            }
             throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario, e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException ignored) {}
+            }
         }
-        return productos;
+        return listaCompleta;
+    }
+
+    private DatosProductoBase mapearDatosProductoBase(ResultSet rs) throws SQLException{
+        Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
+        Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
+        return this.mapeadorProductoBase.mapearProductoBase(rs, impuesto, descuento);
     }
 
 

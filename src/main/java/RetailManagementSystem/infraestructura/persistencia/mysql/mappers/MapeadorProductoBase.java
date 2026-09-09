@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class MapeadorProductoBase {
 
-    public ProductoBaseDatos mapearProductoBase(ResultSet rs, Impuesto impuesto, Descuento descuento) throws SQLException {
+    public DatosProductoBase mapearProductoBase(ResultSet rs, Impuesto impuesto, Descuento descuento) throws SQLException {
         String codigo = rs.getString("codigo_producto");
         String nombre = rs.getString("nombre");
         BigDecimal valorCompra = rs.getBigDecimal("valor_compra");
@@ -17,7 +17,7 @@ public class MapeadorProductoBase {
         int stock = rs.getInt("stock");
         boolean activo = rs.getBoolean("activo");
 
-        return new ProductoBaseDatos(
+        return new DatosProductoBase(
                 codigo,
                 nombre,
                 valorCompra,

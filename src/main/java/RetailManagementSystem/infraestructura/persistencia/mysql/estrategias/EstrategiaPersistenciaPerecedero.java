@@ -3,11 +3,13 @@ package RetailManagementSystem.infraestructura.persistencia.mysql.estrategias;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
-import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.ProductoBaseDatos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.DatosProductoBase;
 
 import java.sql.*;
+import java.sql.Date;
+import java.util.*;
 
-public class EstrategiaPersistenciaPerecedero implements EstrategiaPersistenciaProducto<ProductoPerecedero> {
+public class EstrategiaPersistenciaPerecedero extends EstrategiaPersistenciaAbstracta<ProductoPerecedero>{
 
     private static final String SQL_INSERTAR_DATOS_PERECEDERO =
             "INSERT INTO producto_perecedero (codigo_producto, fecha_vencimiento, id_politica) VALUES (?, ?, ?)";
@@ -23,7 +25,7 @@ public class EstrategiaPersistenciaPerecedero implements EstrategiaPersistenciaP
     }
 
     @Override
-    public Producto obtenerDetalleYConstruirProducto(ResultSet rs, ProductoBaseDatos datosBase)throws SQLException{
+    public Producto obtenerDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase)throws SQLException{
         Date fechaSql = rs.getDate("fecha_vencimiento");
         PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
                 rs.getInt("id_politica"), rs.getString("nombre_politica"),
@@ -35,6 +37,17 @@ public class EstrategiaPersistenciaPerecedero implements EstrategiaPersistenciaP
                 datosBase.stock(), datosBase.impuesto(), datosBase.descuento(), datosBase.activo(),
                 fechaSql.toLocalDate(), politicaVencimiento
         );
+    }
+
+    @Override
+    protected String generarSqlLote(int cantidadParametros) {
+        String finalConsulta = String.join(", ", Collections.nCopies(cantidadParametros, "?"));
+        return "SELECT per.codigo_producto, per.fecha_vencimiento, per.id_politica, " +
+                "pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica, " +
+                "pove.activa AS politica_activa " +
+                "FROM producto_perecedero per " +
+                "INNER JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
+                "WHERE per.codigo_producto IN (" + finalConsulta + ")";
     }
 
 }//===================================================================================================================//

@@ -135,6 +135,7 @@ public class TabGeneralProductosControlador {
         }).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                ex.printStackTrace();
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico", null,
                         "Ocurrió un Error al cargar los Productos Perecederos. La Ventana se Cerrará por Seguridad.\n" +

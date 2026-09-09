@@ -5,7 +5,7 @@ import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 
 import java.math.BigDecimal;
 
-public record ProductoBaseDatos(
+public record DatosProductoBase(
         String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, boolean activo,
         Impuesto impuesto, Descuento descuento
 ) { }
