@@ -71,7 +71,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     //READ:
 
     private static final String SQL_OBTENER_IMPUESTO =
-            "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE id_impuesto = ?";
+            "SELECT " +
+            "id_impuesto, nombre AS nombre_impuesto, porcentaje AS porcentaje_impuesto, activo AS impuesto_activo " +
+            "FROM impuestos WHERE id_impuesto = ?";
 
     @Override
     public Impuesto obtenerImpuesto(int idImpuesto) {
@@ -99,7 +101,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
 
     private static final String SQL_OBTENER_IMPUESTOS_ACTIVOS =
-            "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos WHERE activo = true";
+            "SELECT " +
+            "id_impuesto, nombre AS nombre_impuesto, porcentaje AS porcentaje_impuesto, activo AS impuesto_activo " +
+            "FROM impuestos WHERE activo = true";
 
     @Override
     public List<Impuesto> obtenerImpuestosActivos() {
@@ -121,7 +125,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
 
     private static final String SQL_OBTENER_TODOS_LOS_IMPUESTOS =
-            "SELECT id_impuesto, nombre, porcentaje, activo FROM impuestos ORDER BY activo DESC, id_impuesto ASC";
+            "SELECT " +
+            "id_impuesto, nombre AS nombre_impuesto, porcentaje AS porcentaje_impuesto, activo AS impuesto_activo " +
+            "FROM impuestos ORDER BY activo DESC, id_impuesto ASC";
 
     @Override
     public List<Impuesto> obtenerTodosLosImpuestos() {

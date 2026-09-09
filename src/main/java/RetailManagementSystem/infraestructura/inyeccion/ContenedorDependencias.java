@@ -16,6 +16,7 @@ import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.Est
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.GestorTransaccionalMySQL;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorProductoBase;
 import RetailManagementSystem.infraestructura.persistencia.mysql.repositorios.*;
 import RetailManagementSystem.infraestructura.seguridad.Argon2CodificadorAdapter;
 
@@ -51,6 +52,7 @@ public class ContenedorDependencias {
 
     private static MapeadorImpuestos mapeadorImpuestos;
     private static MapeadorDescuentos mapeadorDescuentos;
+    private static MapeadorProductoBase mapeadorProductoBase;
 
         //REPOSITORIOS:
 
@@ -135,16 +137,19 @@ public class ContenedorDependencias {
 
         proveedorConfiguracion = new ProveedorConfiguracionImpl(repositorioConfiguracion);
 
-        despachador = new HashMap<>();
-        despachador.put(TipoProducto.ROPA, new EstrategiaPersistenciaRopa());
-        despachador.put(TipoProducto.PERECEDERO, new EstrategiaPersistenciaPerecedero());
-
         gestorTransaccional = new GestorTransaccionalMySQL();
 
         //INSTANTIATION DE MAPEADORES:
 
         mapeadorImpuestos = new MapeadorImpuestos();
         mapeadorDescuentos = new MapeadorDescuentos();
+        mapeadorProductoBase = new MapeadorProductoBase();
+
+        //INSTANTIATION DE ESTRATEGIAS:
+
+        despachador = new HashMap<>();
+        despachador.put(TipoProducto.ROPA, new EstrategiaPersistenciaRopa());
+        despachador.put(TipoProducto.PERECEDERO, new EstrategiaPersistenciaPerecedero());
 
         //INSTANCIACIÓN DE REPOSITORIOS:
 
@@ -154,7 +159,9 @@ public class ContenedorDependencias {
         repositorioImpuestos = new RepositorioImpuestosMySQL(mapeadorImpuestos);
         repositorioInventario = new RepositorioInventarioMySQL();
         repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
-        repositorioProducto = new RepositorioProductoMySQL(despachador);
+        repositorioProducto = new RepositorioProductoMySQL(
+                despachador, mapeadorImpuestos, mapeadorDescuentos, mapeadorProductoBase
+        );
         repositorioServicio = new RepositorioServicioMySQL();
         repositorioPermiso = new RepositorioPermisoMySQL();
         repositorioRol = new RepositorioRolMySQL();

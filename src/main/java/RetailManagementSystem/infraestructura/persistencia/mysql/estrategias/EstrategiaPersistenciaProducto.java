@@ -1,8 +1,10 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql.estrategias;
 
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.ProductoBaseDatos;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface EstrategiaPersistenciaProducto<T extends Producto> {
@@ -14,7 +16,7 @@ public interface EstrategiaPersistenciaProducto<T extends Producto> {
         this.insertarDetalleInsertar(conn, (T) producto);
     }
 
-    Producto obtenerDetalleYObtenerProducto(Connection conn, ProductoBaseDTO datosBase);
+    Producto obtenerDetalleYConstruirProducto(ResultSet rs, ProductoBaseDatos datosBase) throws SQLException;
 
-}
+}//===================================================================================================================//
 

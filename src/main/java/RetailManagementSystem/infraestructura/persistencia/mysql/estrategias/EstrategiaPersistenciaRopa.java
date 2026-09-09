@@ -2,9 +2,12 @@ package RetailManagementSystem.infraestructura.persistencia.mysql.estrategias;
 
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
+import RetailManagementSystem.dominio.enums.Talla;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.ProductoBaseDatos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EstrategiaPersistenciaRopa implements EstrategiaPersistenciaProducto<ProductoRopa>{
@@ -22,8 +25,13 @@ public class EstrategiaPersistenciaRopa implements EstrategiaPersistenciaProduct
     }
 
     @Override
-    public Producto obtenerDetalleYObtenerProducto(Connection conn, ProductoBaseDTO datosBase) {
-        return null;
+    public Producto obtenerDetalleYConstruirProducto(ResultSet rs, ProductoBaseDatos datosBase) throws SQLException {
+        String tallaString = rs.getString("talla");
+        return ProductoRopa.reconstruirDesdeBD(
+                datosBase.codigo(), datosBase.nombre(), datosBase.valorCompra(), datosBase.porcentajeGanancia(),
+                datosBase.stock(), datosBase.impuesto(), datosBase.descuento(), datosBase.activo(),
+                Talla.valueOf(tallaString)
+        );
     }
 
 }//===================================================================================================================//

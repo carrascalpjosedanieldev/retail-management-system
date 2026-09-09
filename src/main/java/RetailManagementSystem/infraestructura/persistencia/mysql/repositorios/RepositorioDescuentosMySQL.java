@@ -71,7 +71,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     //READ:
 
     private static final String SQL_OBTENER_DESCUENTO =
-            "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE id_descuento = ?";
+            "SELECT " +
+            "id_descuento, nombre AS nombre_descuento, porcentaje AS porcentaje_descuento, activo AS descuento_activo " +
+            "FROM descuentos WHERE id_descuento = ?";
 
     @Override
     public Descuento obtenerDescuento(int idDescuento) {
@@ -99,7 +101,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
 
     private static final String SQL_OBTENER_DESCUENTOS_ACTIVOS =
-            "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos WHERE activo = true";
+            "SELECT " +
+            "id_descuento, nombre AS nombre_descuento, porcentaje AS porcentaje_descuento, activo AS descuento_activo " +
+            "FROM descuentos WHERE activo = true";
 
     @Override
     public List<Descuento> obtenerDescuentosActivos() {
@@ -121,7 +125,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
 
     private static final String SQL_OBTENER_TODOS_LOS_DESCUENTOS =
-            "SELECT id_descuento, nombre, porcentaje, activo FROM descuentos ORDER BY activo DESC, id_descuento ASC";
+            "SELECT " +
+            "id_descuento, nombre AS nombre_descuento, porcentaje AS porcentaje_descuento, activo AS descuento_activo " +
+            "FROM descuentos ORDER BY activo DESC, id_descuento ASC";
 
     @Override
     public List<Descuento> obtenerTodosLosDescuentos() {

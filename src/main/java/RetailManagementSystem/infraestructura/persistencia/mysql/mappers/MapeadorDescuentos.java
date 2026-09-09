@@ -9,12 +9,12 @@ import java.sql.SQLException;
 public class MapeadorDescuentos {
 
     public Descuento mapearDescuento(ResultSet rs) throws SQLException{
-        int idReal = rs.getInt("id_descuento");
-        String nombre = rs.getString("nombre");
-        BigDecimal porcentaje = rs.getBigDecimal("porcentaje");
-        boolean activo = rs.getBoolean("activo");
+        int idDescuento = rs.getInt("id_descuento");
+        String nombre = rs.getString("nombre_descuento");
+        BigDecimal porcentaje = rs.getBigDecimal("porcentaje_descuento");
+        boolean activo = rs.getBoolean("descuento_activo");
 
-        return Descuento.reconstruirDesdeBD(idReal, nombre, porcentaje, activo);
+        return Descuento.reconstruirDesdeBD(idDescuento, nombre, porcentaje, activo);
     }
 
 }//===================================================================================================================//

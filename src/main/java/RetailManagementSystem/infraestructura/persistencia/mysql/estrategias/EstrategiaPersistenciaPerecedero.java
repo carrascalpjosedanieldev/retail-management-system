@@ -2,11 +2,10 @@ package RetailManagementSystem.infraestructura.persistencia.mysql.estrategias;
 
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
+import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.ProductoBaseDatos;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class EstrategiaPersistenciaPerecedero implements EstrategiaPersistenciaProducto<ProductoPerecedero> {
 
@@ -24,8 +23,18 @@ public class EstrategiaPersistenciaPerecedero implements EstrategiaPersistenciaP
     }
 
     @Override
-    public Producto obtenerDetalleYObtenerProducto(Connection conn, ProductoBaseDTO datosBase) {
-        return null;
+    public Producto obtenerDetalleYConstruirProducto(ResultSet rs, ProductoBaseDatos datosBase)throws SQLException{
+        Date fechaSql = rs.getDate("fecha_vencimiento");
+        PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
+                rs.getInt("id_politica"), rs.getString("nombre_politica"),
+                rs.getInt("dias_umbral"), rs.getBigDecimal("porcentaje_politica"),
+                rs.getBoolean("politica_activa")
+        );
+        return ProductoPerecedero.reconstruirDesdeBD(
+                datosBase.codigo(), datosBase.nombre(), datosBase.valorCompra(), datosBase.porcentajeGanancia(),
+                datosBase.stock(), datosBase.impuesto(), datosBase.descuento(), datosBase.activo(),
+                fechaSql.toLocalDate(), politicaVencimiento
+        );
     }
 
 }//===================================================================================================================//

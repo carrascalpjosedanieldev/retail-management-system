@@ -3,8 +3,6 @@ package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
-import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
-import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ReferenciaNoEncontradaExcepcion;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoNoDisponibleException;
@@ -14,8 +12,11 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.Persisten
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaProducto;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.ProductoBaseDatos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorProductoBase;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +27,20 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     //ATRIBUTOS:
 
     private final Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador;
+    private final MapeadorImpuestos mapeadorImpuestos;
+    private final MapeadorDescuentos mapeadorDescuentos;
+    private final MapeadorProductoBase mapeadorProductoBase;
 
     //CONSTRUCTOR:
 
-    public RepositorioProductoMySQL(Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador) {
+    public RepositorioProductoMySQL(
+            Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador, MapeadorImpuestos mapeadorImpuestos,
+            MapeadorDescuentos mapeadorDescuentos, MapeadorProductoBase mapeadorProductoBase
+    ) {
         this.despachador = despachador;
+        this.mapeadorImpuestos = mapeadorImpuestos;
+        this.mapeadorDescuentos = mapeadorDescuentos;
+        this.mapeadorProductoBase = mapeadorProductoBase;
     }
 
     //MÉTODOS:
@@ -120,7 +130,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return mapearProductoDesdeResultSet(rs);
+                    TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
+                    return mapearProductoDesdeResultSet(rs, tipoProducto);
                 }
 
                 throw new ProductoNoEncontradoException("Error de negocio: El Producto con Código -" + codigoProducto +
@@ -132,45 +143,23 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         }
     }
 
-    private Producto mapearProductoDesdeResultSet(ResultSet rs) throws SQLException {
-        String codigo = rs.getString("codigo_producto");
-        String nombre = rs.getString("nombre");
-        BigDecimal valorCompra = rs.getBigDecimal("valor_compra");
-        BigDecimal porcentajeGanancia = rs.getBigDecimal("porcentaje_ganancia");
-        int stock = rs.getInt("stock");
-        boolean activoProd = rs.getBoolean("activo");
+    private Producto mapearProductoDesdeResultSet(ResultSet rs, TipoProducto tipoProducto) throws SQLException {
 
-        Impuesto impuesto = Impuesto.reconstruirDesdeBD(
-                rs.getInt("id_impuesto"), rs.getString("nombre_impuesto"),
-                rs.getBigDecimal("porcentaje_impuesto"), rs.getBoolean("impuesto_activo")
-        );
+        Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
 
-        Descuento descuento = Descuento.reconstruirDesdeBD(
-                rs.getInt("id_descuento"), rs.getString("nombre_descuento"),
-                rs.getBigDecimal("porcentaje_descuento"), rs.getBoolean("descuento_activo")
-        );
+        Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
 
-        String tallaString = rs.getString("talla");
-        if (tallaString != null) {
-            return ProductoRopa.reconstruirDesdeBD(
-                    codigo, nombre, valorCompra, porcentajeGanancia, stock,
-                    impuesto, descuento, activoProd, Talla.valueOf(tallaString)
+        ProductoBaseDatos productoBase = this.mapeadorProductoBase.mapearProductoBase(rs, impuesto, descuento);
+
+        EstrategiaPersistenciaProducto<?> estrategia = despachador.get(tipoProducto);
+
+        if (estrategia == null) {
+            throw new IllegalStateException(
+                    "NO hay una Estrategia de Persistencia Registrada para: " + tipoProducto
             );
         }
+        return estrategia.obtenerDetalleYConstruirProducto(rs, productoBase);
 
-        Date fechaSql = rs.getDate("fecha_vencimiento");
-        if (fechaSql != null) {
-            PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
-                    rs.getInt("id_politica"), rs.getString("nombre_politica"),
-                    rs.getInt("dias_umbral"), rs.getBigDecimal("porcentaje_politica"), rs.getBoolean("politica_activa")
-            );
-            return ProductoPerecedero.reconstruirDesdeBD(
-                    codigo, nombre, valorCompra, porcentajeGanancia, stock,
-                    impuesto, descuento, activoProd, fechaSql.toLocalDate(), politicaVencimiento
-            );
-        }
-
-        throw new IllegalStateException("Error de Integridad: El Producto " + codigo + " NO tiene un tipo definido.");
     }
 
 
@@ -178,14 +167,16 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     private static final String SQL_OBTENER_PRODUCTOS_DE_INVENTARIO =
             "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
             "r.talla, per.fecha_vencimiento, per.id_politica, " +
+            "tp.nombre AS nombre_tipo, " +
             "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
             "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
             "des.activo AS descuento_activo, " +
-            "pove.id_politica, pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica, " +
+            "pove.nombre_politica, pove.dias_umbral, pove.porcentaje_descuento AS porcentaje_politica, " +
             "pove.activa AS politica_activa " +
             "FROM productos p " +
             "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
             "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
+            "INNER JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo " +
             "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
             "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
             "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
@@ -201,7 +192,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    productos.add(mapearProductoDesdeResultSet(rs));
+                    TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
+                    productos.add(mapearProductoDesdeResultSet(rs, tipoProducto));
                 }
             }
 
@@ -235,7 +227,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    productosRopa.add(mapearProductoDesdeResultSet(rs));
+                    productosRopa.add(mapearProductoDesdeResultSet(rs, TipoProducto.ROPA));
                 }
             }
 
@@ -273,7 +265,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    productosPerecederos.add(mapearProductoDesdeResultSet(rs));
+                    productosPerecederos.add(mapearProductoDesdeResultSet(rs, TipoProducto.PERECEDERO));
                 }
             }
 
@@ -287,6 +279,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     private static final String SQL_OBTENER_PRODUCTO_ACTIVO_POR_CODIGO =
             "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, " +
             "p.activo, " +
+            "tp.nombre AS nombre_tipo, " +
             "r.talla, per.fecha_vencimiento, per.id_politica, " +
             "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
             "i.activo AS impuesto_activo, " +
@@ -297,6 +290,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             "FROM productos p " +
             "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
             "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
+            "INNER JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo " +
             "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
             "LEFT JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
             "LEFT JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
@@ -311,7 +305,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    Producto producto = mapearProductoDesdeResultSet(rs);
+                    TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
+                    Producto producto = mapearProductoDesdeResultSet(rs, tipoProducto);
                     if (!producto.isActivo()) {
                         throw new ProductoNoDisponibleException("Error de negocio: El Producto con Código -" +
                                 codigoProducto + "- NO esta en Venta");
