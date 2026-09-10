@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.dto.ventas;
+package RetailManagementSystem.aplicacion.dto.consultas;
 
 import java.math.BigDecimal;
 

@@ -20,6 +20,9 @@ public class GestorTransaccionalMySQL implements GestorTransaccional {
 
     @Override
     public <T> T ejecutarEnTransaccionConRetorno(OperacionTransaccionalConRetorno<T> operacion) {
+        if (VinculadorTransaccion.hayConexionVinculada()) {
+            return operacion.ejecutar();
+        }
         Connection connection = null;
         try {
             connection = AdministradorConexion.obtenerConexion();
@@ -61,6 +64,9 @@ public class GestorTransaccionalMySQL implements GestorTransaccional {
 
     @Override
     public <T> T ejecutarEnTransaccionDeLectura(OperacionTransaccionalConRetorno<T> operacion) {
+        if (VinculadorTransaccion.hayConexionVinculada()) {
+            return operacion.ejecutar();
+        }
         Connection connection = null;
         try {
             connection = AdministradorConexion.obtenerConexion();

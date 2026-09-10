@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.dto.ventas.ReporteRecaudoDTO;
+import RetailManagementSystem.aplicacion.dto.consultas.ReporteRecaudoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;

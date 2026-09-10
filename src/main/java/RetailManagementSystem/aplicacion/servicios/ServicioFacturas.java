@@ -1,9 +1,9 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.dto.consultas.ReporteRecaudoDTO;
+import RetailManagementSystem.aplicacion.dto.consultas.ResumenVentaDiaDTO;
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
-import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
-import RetailManagementSystem.dominio.entidades.ventas.ResumenVentaDia;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioFacturas;
 
 import java.math.BigDecimal;
@@ -31,7 +31,7 @@ public class ServicioFacturas {
         return this.repositorioFacturas.insertarFactura(itemsDelCarrito);
     }
 
-    public ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin){
+    public ReporteRecaudoDTO obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin){
         if (fechaInicio == null || fechaFin == null) {
             throw new IllegalArgumentException("Las fechas para el reporte no pueden estar vacías.");
         }
@@ -42,13 +42,13 @@ public class ServicioFacturas {
         return this.repositorioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin);
     }
 
-    public ResumenVentaDia obtenerResumenHoy() {
+    public ResumenVentaDiaDTO obtenerResumenHoy() {
         LocalDate hoy = LocalDate.now();
-        ReporteRecaudo reporteHoy = this.obtenerReporteRecaudo(hoy, hoy);
-        int cantidadFacturas = reporteHoy.getCantidadFacturasEmitidas();
-        BigDecimal totalVentas = reporteHoy.getTotalRecaudo();
+        ReporteRecaudoDTO reporteHoy = this.obtenerReporteRecaudo(hoy, hoy);
+        int cantidadFacturas = reporteHoy.cantidadFacturasEmitidas();
+        BigDecimal totalVentas = reporteHoy.totalRecaudo();
         BigDecimal ultimaVenta = this.repositorioFacturas.obtenerTotalUltimaVenta(hoy);
-        return ResumenVentaDia.reconstruirDesdeBD(totalVentas, cantidadFacturas, ultimaVenta);
+        return new ResumenVentaDiaDTO(totalVentas, cantidadFacturas, ultimaVenta);
     }
 
 }//===================================================================================================================//

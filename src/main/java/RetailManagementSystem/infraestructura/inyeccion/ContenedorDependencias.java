@@ -90,6 +90,7 @@ public class ContenedorDependencias {
 
         //ORQUESTADORES:
 
+    private static OrquestadorConfiguraciones orquestadorConfiguraciones;
     private static OrquestadorDescuentos orquestadorDescuentos;
     private static OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
     private static OrquestadorImpuestos orquestadorImpuestos;
@@ -135,8 +136,6 @@ public class ContenedorDependencias {
 
         codificadorContrasenas = new Argon2CodificadorAdapter();
 
-        proveedorConfiguracion = new ProveedorConfiguracionImpl(repositorioConfiguracion);
-
         gestorTransaccional = new GestorTransaccionalMySQL();
 
         //INSTANTIATION DE MAPEADORES:
@@ -167,6 +166,10 @@ public class ContenedorDependencias {
         repositorioRol = new RepositorioRolMySQL();
         repositorioUsuario = new RepositorioUsuarioMySQL();
 
+        //PROOVEDOR:
+
+        proveedorConfiguracion = new ProveedorConfiguracionImpl(gestorTransaccional, repositorioConfiguracion);
+
         //INSTANCIACIÓN DE SERVICIOS:
 
         servicioProductos = new ServicioProductos(
@@ -180,7 +183,9 @@ public class ContenedorDependencias {
                 repositorioImpuestos, repositorioDescuentos, repositorioServicio
         );
         servicioCarrito = new ServicioCarrito(servicioProductos, servicioServicios);
-        servicioConfiguraciones = new ServicioConfiguraciones(repositorioConfiguracion);
+        servicioConfiguraciones = new ServicioConfiguraciones(
+                repositorioConfiguracion, proveedorConfiguracion, gestorTransaccional
+        );
         servicioDescuentos = new ServicioDescuentos(repositorioDescuentos);
         servicioFacturas = new ServicioFacturas(repositorioFacturas);
         servicioImpuestos = new ServicioImpuestos(repositorioImpuestos);
@@ -196,8 +201,9 @@ public class ContenedorDependencias {
 
         //INSTANCIACIÓN DE ORQUESTADORES:
 
+        orquestadorConfiguraciones = new OrquestadorConfiguraciones(servicioConfiguraciones);
         orquestadorDescuentos = new OrquestadorDescuentos(servicioDescuentos, ensambladorDTODescuento);
-        orquestadorHistoricoDeVentas = new OrquestadorHistoricoDeVentas(servicioFacturas, ensambladorDTOFactura);
+        orquestadorHistoricoDeVentas = new OrquestadorHistoricoDeVentas(servicioFacturas);
         orquestadorImpuestos = new OrquestadorImpuestos(servicioImpuestos, ensambladorDTOImpuesto);
         orquestadorInventarios = new OrquestadorInventarios(servicioInventario, ensambladorDTOInventario);
         orquestadorLogin = new OrquestadorLogin(servicioUsuario, ensambladorDTOUsuario);
@@ -230,99 +236,9 @@ public class ContenedorDependencias {
         }
     }
 
-    public static EnsambladorDTOCarrito getEnsambladorDTOCarrito() {
-        validarInicializado();
-        return ensambladorDTOCarrito;
-    }
-
-    public static EnsambladorDTODescuento getEnsambladorDTODescuento() {
-        validarInicializado();
-        return ensambladorDTODescuento;
-    }
-
-    public static EnsambladorDTOFactura getEnsambladorDTOFactura() {
-        validarInicializado();
-        return ensambladorDTOFactura;
-    }
-
-    public static EnsambladorDTOImpuesto getEnsambladorDTOImpuesto() {
-        validarInicializado();
-        return ensambladorDTOImpuesto;
-    }
-
     public static EnsambladorDTOInventario getEnsambladorDTOInventario() {
         validarInicializado();
         return ensambladorDTOInventario;
-    }
-
-    public static EnsambladorDTOPoliticaVencimiento getEnsambladorDTOPoliticaVencimiento() {
-        validarInicializado();
-        return ensambladorDTOPoliticaVencimiento;
-    }
-
-    public static EnsambladorDTOProducto getEnsambladorDTOProducto() {
-        validarInicializado();
-        return ensambladorDTOProducto;
-    }
-
-    public static EnsambladorDTOServicio getEnsambladorDTOServicio() {
-        validarInicializado();
-        return ensambladorDTOServicio;
-    }
-
-    public static EnsambladorDTOPermiso getEnsambladorDTOPermiso() {
-        validarInicializado();
-        return ensambladorDTOPermiso;
-    }
-
-    public static EnsambladorDTORol getEnsambladorDTORol() {
-        validarInicializado();
-        return ensambladorDTORol;
-    }
-
-    public static EnsambladorDTOUsuario getEnsambladorDTOUsuario() {
-        validarInicializado();
-        return ensambladorDTOUsuario;
-    }
-
-    public static RepositorioConfiguracion getRepositorioConfiguracion() {
-        validarInicializado();
-        return repositorioConfiguracion;
-    }
-
-    public static RepositorioDescuentos getRepositorioDescuentos() {
-        validarInicializado();
-        return repositorioDescuentos;
-    }
-
-    public static RepositorioFacturas getRepositorioFacturas() {
-        validarInicializado();
-        return repositorioFacturas;
-    }
-
-    public static RepositorioImpuestos getRepositorioImpuestos() {
-        validarInicializado();
-        return repositorioImpuestos;
-    }
-
-    public static RepositorioInventario getRepositorioInventario() {
-        validarInicializado();
-        return repositorioInventario;
-    }
-
-    public static RepositorioPoliticaVencimiento getRepositorioPoliticaVencimiento() {
-        validarInicializado();
-        return repositorioPoliticaVencimiento;
-    }
-
-    public static RepositorioProducto getRepositorioProducto() {
-        validarInicializado();
-        return repositorioProducto;
-    }
-
-    public static RepositorioServicio getRepositorioServicio() {
-        validarInicializado();
-        return repositorioServicio;
     }
 
     public static RepositorioPermiso getRepositorioPermiso() {
@@ -330,49 +246,9 @@ public class ContenedorDependencias {
         return repositorioPermiso;
     }
 
-    public static RepositorioRol getRepositorioRol() {
-        validarInicializado();
-        return repositorioRol;
-    }
-
-    public static RepositorioUsuario getRepositorioUsuario() {
-        validarInicializado();
-        return repositorioUsuario;
-    }
-
-    public static CodificadorContrasenas getCodificadorContrasenas() {
-        validarInicializado();
-        return codificadorContrasenas;
-    }
-
-    public static ProveedorConfiguracion getProveedorConfiguracion() {
-        validarInicializado();
-        return proveedorConfiguracion;
-    }
-
-    public static ServicioCarrito getServicioCarrito() {
-        validarInicializado();
-        return servicioCarrito;
-    }
-
     public static ServicioConfiguraciones getServicioConfiguraciones() {
         validarInicializado();
         return servicioConfiguraciones;
-    }
-
-    public static ServicioDescuentos getServicioDescuentos() {
-        validarInicializado();
-        return servicioDescuentos;
-    }
-
-    public static ServicioFacturas getServicioFacturas() {
-        validarInicializado();
-        return servicioFacturas;
-    }
-
-    public static ServicioImpuestos getServicioImpuestos() {
-        validarInicializado();
-        return servicioImpuestos;
     }
 
     public static ServicioInventario getServicioInventario() {
@@ -380,39 +256,14 @@ public class ContenedorDependencias {
         return servicioInventario;
     }
 
-    public static ServicioPoliticaVencimiento getServicioPoliticaVencimiento() {
-        validarInicializado();
-        return servicioPoliticaVencimiento;
-    }
-
-    public static ServicioProductos getServicioProductos() {
-        validarInicializado();
-        return servicioProductos;
-    }
-
-    public static ServicioServicios getServicioServicios() {
-        validarInicializado();
-        return servicioServicios;
-    }
-
-    public static ServicioPermiso getServicioPermiso() {
-        validarInicializado();
-        return servicioPermiso;
-    }
-
-    public static ServicioRol getServicioRol() {
-        validarInicializado();
-        return servicioRol;
-    }
-
-    public static ServicioUsuario getServicioUsuario() {
-        validarInicializado();
-        return servicioUsuario;
-    }
-
     public static FabricaProductos getFabricaProductos() {
         validarInicializado();
         return fabricaProductos;
+    }
+
+    public static OrquestadorConfiguraciones getOrquestadorConfiguraciones() {
+        validarInicializado();
+        return orquestadorConfiguraciones;
     }
 
     public static OrquestadorDescuentos getOrquestadorDescuentos() {

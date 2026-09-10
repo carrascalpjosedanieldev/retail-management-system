@@ -4,6 +4,10 @@ import java.sql.Connection;
 
 public class VinculadorTransaccion {
 
+    public static boolean hayConexionVinculada() {
+        return soporteConexion.get() != null;
+    }
+
     private static final ThreadLocal<Connection> soporteConexion = new ThreadLocal<>();
 
     public static void vincular(Connection connection) {

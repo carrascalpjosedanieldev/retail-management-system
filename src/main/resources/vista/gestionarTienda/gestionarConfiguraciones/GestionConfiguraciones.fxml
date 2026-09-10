@@ -50,7 +50,7 @@
                 <Button fx:id="btnGestionRoles" mnemonicParsing="false" onAction="#abrirGestionRoles" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Gestión de Roles" GridPane.rowIndex="1" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🎨 Apariencia (Tema)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🔔 Alertas y Notificaciones" GridPane.rowIndex="3" />
+                <Button fx:id="btnPoliticasDeBloqueo" mnemonicParsing="false" onAction="#abrirPoliticasDeBloqueo" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="🔒 Politicas de Bloqueo" GridPane.rowIndex="3" />
                 <Button disable="true" mnemonicParsing="false" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="💾 Copias de Seguridad" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
                 <Button fx:id="btnGestionPermisos" mnemonicParsing="false" onAction="#abrirGestionPermisos" prefHeight="65.0" prefWidth="280.0" styleClass="button, btn-config" text="👥 Gestión de Permisos" GridPane.rowIndex="2" />

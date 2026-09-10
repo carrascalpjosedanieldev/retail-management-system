@@ -1,9 +1,10 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
-import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguracionImpl;
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
@@ -21,35 +22,45 @@ public class ServicioConfiguraciones {
 
     private final ProveedorConfiguracion proveedorConfiguracion;
 
-    public ServicioConfiguraciones(RepositorioConfiguracion repositorioConfiguracion) {
+    private final GestorTransaccional gestorTransaccional;
+
+    //CONSTRUCTOR:
+
+    public ServicioConfiguraciones(
+            RepositorioConfiguracion repositorioConfiguracion, ProveedorConfiguracion proveedorConfiguracion,
+            GestorTransaccional gestorTransaccional
+    ) {
         this.repositorioConfiguracion = repositorioConfiguracion;
-        this.proveedorConfiguracion = new ProveedorConfiguracionImpl(repositorioConfiguracion);
+        this.proveedorConfiguracion = proveedorConfiguracion;
+        this.gestorTransaccional = gestorTransaccional;
     }
+
+    //MÉTODOS:
 
     public String obtenerValorConfiguracion(String clave){
-        return this.repositorioConfiguracion.obtenerValorConfiguracion(clave);
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
+                this.repositorioConfiguracion.obtenerValorConfiguracion(clave)
+        );
     }
 
-    public void actualizarValorConfiguracion(String clave, String valor){
+    public ConfiguracionSistemaDTO obtenerValorYDescripcion(String clave){
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
+                this.repositorioConfiguracion.obtenerValorYDescripcion(clave)
+        );
+    }
+
+    private void actualizarValorConfiguracion(String clave, String valor){
         this.repositorioConfiguracion.actualizarValorConfiguracion(clave, valor);
-    }
-
-    public String obtenerDescripcionConfiguracion(String clave){
-        return this.repositorioConfiguracion.obtenerDescripcionConfiguracion(clave);
-    }
-
-    public void actualizarDescripcionConfiguracion(String clave, String descripcion){
-        this.repositorioConfiguracion.actualizarDescripcionConfiguracion(clave, descripcion);
     }
 
     //MÉTODOS ESPECÍFICOS:
 
     public String obtenerNombreTienda(){
-        return this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_DATOS_TIENDA);
+        return obtenerValorConfiguracion(CONF_DATOS_TIENDA);
     }
 
-    public String obtenerDescripcionTienda(){
-        return this.repositorioConfiguracion.obtenerDescripcionConfiguracion(CONF_DATOS_TIENDA);
+    public ConfiguracionSistemaDTO obtenerDatosTienda(){
+        return obtenerValorYDescripcion(CONF_DATOS_TIENDA);
     }
 
     public void cambiarNombreYDescripcionTienda(
@@ -62,22 +73,42 @@ public class ServicioConfiguraciones {
         if (descripcion == null){
             throw new IllegalArgumentException("La Description NO puede ser Nula");
         }
-        this.repositorioConfiguracion.actualizarValorYDescripcionConfiguracion(
-                CONF_DATOS_TIENDA, nombreNuevo, descripcion
+        this.gestorTransaccional.ejecutarEnTransaccion(()->
+                this.repositorioConfiguracion.actualizarValorYDescripcionConfiguracion(
+                        CONF_DATOS_TIENDA, nombreNuevo, descripcion
+                )
         );
         this.proveedorConfiguracion.invalidarCache(CONF_DATOS_TIENDA);
     }
 
+    public ConfiguracionSistemaDTO obtenerMaxIntentosBloqueo(){
+        return obtenerValorYDescripcion(CONF_MAX_INTENTOS);
+    }
+
     public void actualizarMaxIntentos(int nuevoMaximo) {
-        this.repositorioConfiguracion.actualizarValorConfiguracion(
-                CONF_MAX_INTENTOS, String.valueOf(nuevoMaximo)
+        if (nuevoMaximo <= 0){
+            throw new IllegalArgumentException("Los Intentos Máximos son Inválidos");
+        }
+        this.gestorTransaccional.ejecutarEnTransaccion(()->
+                actualizarValorConfiguracion(
+                        CONF_MAX_INTENTOS, String.valueOf(nuevoMaximo)
+                )
         );
         this.proveedorConfiguracion.invalidarCache(CONF_MAX_INTENTOS);
     }
 
+    public ConfiguracionSistemaDTO obtenerMaxMinutosBloqueo(){
+        return obtenerValorYDescripcion(CONF_MINUTOS_BLOQUEO);
+    }
+
     public void actualizarMaxMinutosBloqueos(int nuevosMinutosBloqueo) {
-        this.repositorioConfiguracion.actualizarValorConfiguracion(
-                CONF_MINUTOS_BLOQUEO, String.valueOf(nuevosMinutosBloqueo)
+        if (nuevosMinutosBloqueo <= 0){
+            throw new IllegalArgumentException("Los Minutos de Bloqueo son Inválidos");
+        }
+        this.gestorTransaccional.ejecutarEnTransaccion(()->
+                actualizarValorConfiguracion(
+                        CONF_MINUTOS_BLOQUEO, String.valueOf(nuevosMinutosBloqueo)
+                )
         );
         this.proveedorConfiguracion.invalidarCache(CONF_MINUTOS_BLOQUEO);
     }

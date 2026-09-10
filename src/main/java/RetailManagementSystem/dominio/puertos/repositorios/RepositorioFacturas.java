@@ -1,8 +1,8 @@
 package RetailManagementSystem.dominio.puertos.repositorios;
 
+import RetailManagementSystem.aplicacion.dto.consultas.ReporteRecaudoDTO;
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
-import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ public interface RepositorioFacturas {
 
     //READ:
 
-    ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin);
+    ReporteRecaudoDTO obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin);
 
     BigDecimal obtenerTotalUltimaVenta(LocalDate fecha);
 

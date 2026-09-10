@@ -168,6 +168,7 @@ public class MenuPrincipalControlador {
             });
         }).exceptionally(ex -> {
             Platform.runLater(() -> {
+                ex.printStackTrace();
                 lblNombreTienda.setText("Tienda (Modo Offline)");
                 Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
                 GestorAlertas.mostrarAlertaError(

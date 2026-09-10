@@ -1,8 +1,8 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
+import RetailManagementSystem.aplicacion.dto.consultas.ReporteRecaudoDTO;
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
-import RetailManagementSystem.dominio.entidades.ventas.ReporteRecaudo;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioFacturas;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
@@ -149,9 +149,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             if (conn != null) {
                 try {
                     conn.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+                } catch (SQLException ignored) { }
             }
             throw new PersistenciaException("Venta cancelada: " + e.getMessage(), e);
         } finally {
@@ -159,9 +157,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                 try {
                     conn.setAutoCommit(true);
                     conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                } catch (SQLException ignored) { }
             }
         }
     }
@@ -179,7 +175,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             "WHERE DATE(fecha) BETWEEN ? AND ?";
 
     @Override
-    public ReporteRecaudo obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin) {
+    public ReporteRecaudoDTO obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin) {
         try (Connection conn = AdministradorConexion.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_REPORTE_RECAUDO)) {
 
@@ -194,7 +190,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                     BigDecimal sumaImpuestos = rs.getBigDecimal("suma_impuestos");
                     BigDecimal sumaGeneral = rs.getBigDecimal("suma_general");
 
-                    return ReporteRecaudo.reconstruirDesdeBD(
+                    return new ReporteRecaudoDTO(
                             fechaInicio, fechaFin, cantidad, sumaSubtotal, sumaImpuestos, sumaGeneral
                     );
                 }
@@ -203,7 +199,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             throw new PersistenciaException("Error al generar el reporte de recaudo", e);
         }
 
-        return ReporteRecaudo.reconstruirDesdeBD(
+        return new ReporteRecaudoDTO(
                 fechaInicio, fechaFin, 0, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
         );
     }

@@ -8,6 +8,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiend
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.editarTienda.EdicionTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.GestionPermisosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.GestionRolesControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.politicasDeBloqueo.EditarPoliticasBloqueoControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -26,6 +27,7 @@ public class GestionConfiguracionesControlador {
     @FXML private Button btnEditarNombre;
     @FXML private Button btnGestionRoles;
     @FXML private Button btnGestionPermisos;
+    @FXML private Button btnPoliticasDeBloqueo;
     @FXML private Button btnSalir;
 
     private UsuarioDTOCompleto usuarioActual;
@@ -44,6 +46,7 @@ public class GestionConfiguracionesControlador {
         protegerBoton(btnEditarNombre, PermisosApp.EDITAR_PERFIL_DE_TIENDA);
         protegerBoton(btnGestionRoles, PermisosApp.EDITAR_ROLES);
         protegerBoton(btnGestionPermisos, PermisosApp.GESTIONAR_PERMISOS);
+        protegerBoton(btnPoliticasDeBloqueo, PermisosApp.EDITAR_POLITICAS_DE_BLOQUEO);
     }
 
     private void protegerBoton(Button boton, String permisoRequerido) {
@@ -107,11 +110,24 @@ public class GestionConfiguracionesControlador {
 
 
     @FXML
-    private void volverPanelGestion(ActionEvent event) {
-        volverAGestionarTienda();
+    private void abrirPoliticasDeBloqueo(ActionEvent event) {
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_POLITICAS_DE_BLOQUEO_VIEW,
+                    "Gestion Políticas de Bloqueo",
+                    getVentana(),
+                    (EditarPoliticasBloqueoControlador c)->{
+                        c.cargarDatos(this.usuarioActual);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
-    private void volverAGestionarTienda(){
+
+    @FXML
+    private void volverPanelGestion(ActionEvent event) {
         try {
             CargadorVistas.cambiarPantallaInyectada(
                     getVentana(),

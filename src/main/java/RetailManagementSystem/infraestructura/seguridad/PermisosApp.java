@@ -66,7 +66,9 @@ public class PermisosApp {
                 PermisosApp.EDITAR_USUARIOS,
                 PermisosApp.CAMBIAR_ESTADO_USUARIOS,
                 PermisosApp.GESTIONAR_ROLES_USUARIO,
-                PermisosApp.RESTABLECER_CONTRASENA_USUARIO
+                PermisosApp.RESTABLECER_CONTRASENA_USUARIO,
+
+                PermisosApp.EDITAR_POLITICAS_DE_BLOQUEO
         );
 
         for (String permiso : permisosCodigo) {
@@ -131,6 +133,8 @@ public class PermisosApp {
     public static final String CAMBIAR_ESTADO_USUARIOS = "CAMBIAR ESTADO USUARIOS";
     public static final String GESTIONAR_ROLES_USUARIO = "GESTIONAR ROLES DEL USUARIO";
     public static final String RESTABLECER_CONTRASENA_USUARIO = "RESTABLECER CONTRASEÑA USUARIO";
+
+    public static final String EDITAR_POLITICAS_DE_BLOQUEO = "EDITAR POLÍTICAS DE BLOQUEO";
 
     public static final String VER_PERMISOS = "VER PERMISOS";
     public static final String GESTIONAR_PERMISOS = "GESTIONAR PERMISOS";

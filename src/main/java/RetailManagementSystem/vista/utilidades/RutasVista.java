@@ -60,6 +60,11 @@ public class RutasVista {
     public static final String MODIFICAR_DATOS_ROL_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionRoles/ModificarDatosRol.fxml";
 
+            //POLÍTICAS DE BLOQUEO:
+
+    public static final String EDITAR_POLITICAS_DE_BLOQUEO_VIEW =
+            "/vista/gestionarTienda/gestionarConfiguraciones/politicasDeBloqueo/EditarPoliticasBloqueo.fxml";
+
 
         //GESTIONAR DESCUENTOS:
 

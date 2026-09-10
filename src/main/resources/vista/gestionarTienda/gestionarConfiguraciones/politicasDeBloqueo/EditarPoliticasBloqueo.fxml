@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="485.0" prefWidth="480.0" styleClass="fondo-panel" stylesheets="@../../../../css/gestionarTienda/gestionarConfiguraciones/politicasDeBloqueo/estilosCssPoliticasDeBloqueo.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.politicasDeBloqueo.EditarPoliticasBloqueoControlador">
+
+    <VBox alignment="CENTER_LEFT" spacing="5.0" styleClass="panel-encabezado">
+        <Label styleClass="titulo-principal" text="🔒 Políticas de Bloqueo de Login" />
+        <Label styleClass="subtitulo" text="Configura las reglas de seguridad" />
+    </VBox>
+
+    <VBox spacing="20.0" styleClass="panel-formulario" VBox.vgrow="ALWAYS">
+
+        <VBox prefHeight="80.0" prefWidth="419.0" spacing="5.0" styleClass="caja-info">
+            <Label styleClass="label-info-titulo" text="ℹInformación de Seguridad" />
+            <Label styleClass="texto-ayuda-info" text="Estas reglas determinan cuándo se suspende temporalmente el acceso a un usuario para prevenir accesos no autorizados." wrapText="true" />
+        </VBox>
+
+        <VBox spacing="6.0">
+            <Label styleClass="label-formulario" text="Intentos máximos de error permitidos:" />
+            <TextField fx:id="txtIntentosMaximos" promptText="Ej: 3" styleClass="campo-texto" />
+            <Label fx:id="lblDescripcionMaxErrores" styleClass="texto-ayuda" text="* ..." />
+        </VBox>
+
+        <VBox spacing="6.0">
+            <Label styleClass="label-formulario" text="Tiempo de bloqueo (en minutos):" />
+            <TextField fx:id="txtTiempoBloqueo" promptText="Ej: 15" styleClass="campo-texto" />
+            <Label fx:id="lblDescripcionTiempoBloqueo" styleClass="texto-ayuda" text="* ..." />
+        </VBox>
+
+    </VBox>
+
+    <HBox alignment="CENTER_RIGHT" prefHeight="70.0" spacing="15.0" styleClass="panel-botones">
+        <Button fx:id="btnGuardar" defaultButton="true" mnemonicParsing="false" onAction="#guardarCambios" prefHeight="42.0" prefWidth="160.0" styleClass="btn-guardar" text="Guardar Cambios" />
+        <Button fx:id="btnCancelar" cancelButton="true" mnemonicParsing="false" onAction="#cerrarVentana" prefHeight="42.0" prefWidth="120.0" styleClass="btn-cancelar" text="Cancelar" />
+    </HBox>
+
+</VBox>
