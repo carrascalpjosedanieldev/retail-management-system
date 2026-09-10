@@ -29,7 +29,9 @@ public class ServicioGestionStock {
     //MÉTODOS:
 
     private Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
-        return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
+        return gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
+                this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto)
+        );
     }
 
     public void registrarProductoEnInventario(int idInventario, Producto producto){

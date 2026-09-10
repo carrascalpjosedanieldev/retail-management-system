@@ -63,8 +63,7 @@ public class OrquestadorGestionStock {
     }
 
     public void validarEspacioInventarioYMoverProducto(
-            UsuarioDTOCompleto usuario, int idInventarioSalida, int idInventarioDestino, String codigoProducto,
-            int stockProducto
+            UsuarioDTOCompleto usuario, int idInventarioSalida, int idInventarioDestino, String codigoProducto
     ){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.TRASLADAR_PRODUCTOS);
         this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);

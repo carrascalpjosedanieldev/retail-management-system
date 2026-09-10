@@ -9,7 +9,6 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoNoDisp
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioProducto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaProducto;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.DatosProductoBase;
@@ -47,14 +46,18 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     //MÉTODOS:
 
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
+
         //CREATE:
 
     @Override
     public void insertarProducto(Producto producto, int idInventario){
         Connection conn = VinculadorTransaccion.getConnection();
-        if (conn == null) {
-            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
-        }
+        validarConexion(conn);
         try {
 
             insertarDatosGenerales(conn, producto, idInventario);
@@ -124,8 +127,9 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTO_DE_INVENTARIO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTO_DE_INVENTARIO)) {
 
             pstmt.setInt(1, idInventario);
             pstmt.setString(2, codigoProducto);
@@ -145,11 +149,14 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         }
     }
 
-    private Producto mapearProductoDesdeResultSet(ResultSet rs, TipoProducto tipoProducto) throws SQLException {
+    private DatosProductoBase mapearDatosProductoBase(ResultSet rs) throws SQLException{
         Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
         Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
-        DatosProductoBase productoBase = this.mapeadorProductoBase.mapearProductoBase(rs, impuesto, descuento);
+        return this.mapeadorProductoBase.mapearProductoBase(rs, impuesto, descuento);
+    }
 
+    private Producto mapearProductoDesdeResultSet(ResultSet rs, TipoProducto tipoProducto) throws SQLException {
+        DatosProductoBase productoBase = mapearDatosProductoBase(rs);
         EstrategiaPersistenciaProducto<?> estrategia = despachador.get(tipoProducto);
         if (estrategia == null) {
             throw new IllegalStateException(
@@ -175,64 +182,37 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public List<Producto> obtenerProductosPorInventario(int idInventario) {
-        Connection conn = null;
         Map<TipoProducto, List<DatosProductoBase>> mapaProductos = new HashMap<>();
         List<Producto> listaCompleta = new ArrayList<>();
-        try {
+        Connection conn = VinculadorTransaccion.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIOS)){
+            pstmt.setInt(1, idInventario);
 
-            conn = AdministradorConexion.obtenerConexion();
-            conn.setAutoCommit(false);
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIOS)){
-                pstmt.setInt(1, idInventario);
+                while (rs.next()){
+                    TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
+                    DatosProductoBase datosBase = mapearDatosProductoBase(rs);
+                    mapaProductos.computeIfAbsent(tipoProducto, key -> new ArrayList<>()).add(datosBase);
+                }
 
-                try (ResultSet rs = pstmt.executeQuery()) {
-
-                    while (rs.next()){
-                        TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
-                        DatosProductoBase datosBase = mapearDatosProductoBase(rs);
-                        mapaProductos.computeIfAbsent(tipoProducto, key -> new ArrayList<>()).add(datosBase);
+                for (Entry<TipoProducto, List<DatosProductoBase>> entry : mapaProductos.entrySet()){
+                    EstrategiaPersistenciaProducto<?> estrategia = despachador.get(entry.getKey());
+                    if (estrategia == null) {
+                        throw new IllegalStateException(
+                                "NO hay una Estrategia de Persistencia Registrada para: " + entry.getKey()
+                        );
                     }
-
-                    for (Entry<TipoProducto, List<DatosProductoBase>> entry : mapaProductos.entrySet()){
-                        EstrategiaPersistenciaProducto<?> estrategia = despachador.get(entry.getKey());
-                        if (estrategia == null) {
-                            throw new IllegalStateException(
-                                    "NO hay una Estrategia de Persistencia Registrada para: " + entry.getKey()
-                            );
-                        }
-                        List<Producto> listaProductos = estrategia.obtenerDetallesYConstruirEnLote(conn, entry.getValue());
-                        listaCompleta.addAll(listaProductos);
-                    }
-
+                    List<Producto> listaProductos = estrategia.obtenerDetallesYConstruirEnLote(conn, entry.getValue());
+                    listaCompleta.addAll(listaProductos);
                 }
 
             }
 
-            conn.commit();
-
-        } catch (Exception e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ignored) {}
-            }
-            throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario, e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException ignored) {}
-            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error Crítico al Listar los Productos del Inventario: " + idInventario, e);
         }
         return listaCompleta;
-    }
-
-    private DatosProductoBase mapearDatosProductoBase(ResultSet rs) throws SQLException{
-        Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
-        Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
-        return this.mapeadorProductoBase.mapearProductoBase(rs, impuesto, descuento);
     }
 
 
@@ -252,8 +232,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     @Override
     public List<Producto> obtenerProductosRopaPorInventario(int idInventario) {
         List<Producto> productosRopa = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTOS_ROPA_DE_INVENTARIO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTOS_ROPA_DE_INVENTARIO)) {
 
             pstmt.setInt(1, idInventario);
 
@@ -290,8 +270,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     @Override
     public List<Producto> obtenerProductosPerecederoPorInventario(int idInventario) {
         List<Producto> productosPerecederos = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERECEDEROS_DE_INVENTARIO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERECEDEROS_DE_INVENTARIO)) {
 
             pstmt.setInt(1, idInventario);
 
@@ -330,8 +310,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public Producto obtenerProductoActivoSoloPorCodigo(String codigoProducto) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTO_ACTIVO_POR_CODIGO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTO_ACTIVO_POR_CODIGO)) {
 
             pstmt.setString(1, codigoProducto);
 
@@ -360,8 +340,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public boolean existeProducto(String codigoProducto) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_EXISTE_PRODUCTO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_EXISTE_PRODUCTO)) {
 
             pstmt.setString(1, codigoProducto);
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -382,8 +362,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public void actualizarProducto(Producto producto, int idInventario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_PRODUCTO)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_PRODUCTO)){
 
             pstmt.setString(1, producto.getNombre());
             pstmt.setBigDecimal(2, producto.getValorCompra());
@@ -460,8 +440,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
     @Override
     public void cambiarInventarioProducto(String codigoProducto, int idInventarioOrigen, int idInventarioDestino) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_INVENTARIO_PRODUCTO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_INVENTARIO_PRODUCTO)) {
 
             pstmt.setInt(1, idInventarioDestino);
             pstmt.setInt(2, idInventarioOrigen);

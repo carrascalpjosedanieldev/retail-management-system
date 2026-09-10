@@ -170,7 +170,8 @@ public class ContenedorDependencias {
         //INSTANCIACIÓN DE SERVICIOS:
 
         servicioProductos = new ServicioProductos(
-                repositorioProducto, repositorioImpuestos, repositorioDescuentos, repositorioPoliticaVencimiento
+                repositorioProducto, repositorioImpuestos, repositorioDescuentos, repositorioPoliticaVencimiento,
+                gestorTransaccional
         );
         servicioGestionStock = new ServicioGestionStock(
                 repositorioProducto, repositorioInventario, gestorTransaccional
