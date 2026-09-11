@@ -2,6 +2,7 @@ package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioInventario;
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 
 import java.util.List;
 
@@ -11,15 +12,18 @@ public class ServicioInventario {
 
     private final RepositorioInventario repositorioInventario;
 
+    private final GestorTransaccional gestorTransaccional;
+
     //CONSTRUCTOR:
 
-    public ServicioInventario(RepositorioInventario repositorioInventario) {
+    public ServicioInventario(RepositorioInventario repositorioInventario, GestorTransaccional gestorTransaccional) {
         this.repositorioInventario = repositorioInventario;
+        this.gestorTransaccional = gestorTransaccional;
     }
 
     //MÉTODOS:
 
-    public Inventario obtenerInventario(int idInventario){
+    private Inventario obtenerInventario(int idInventario){
         return this.repositorioInventario.obtenerInventario(idInventario);
     }
 
@@ -29,25 +33,33 @@ public class ServicioInventario {
 
     public Inventario registrarInventario(String nombre, int capacidad){
         Inventario inventario = Inventario.crearNuevo(nombre, capacidad);
-        return this.repositorioInventario.insertarInventario(inventario);
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
+                this.repositorioInventario.insertarInventario(inventario)
+        );
     }
 
     public Inventario actualizarInventario(int idInventario, String nombreNuevo){
-        Inventario inventario = obtenerInventario(idInventario);
-        inventario.cambiarNombreInventario(nombreNuevo);
-        actualizarInventario(inventario);
-        return inventario;
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
+            Inventario inventario = obtenerInventario(idInventario);
+            inventario.cambiarNombreInventario(nombreNuevo);
+            actualizarInventario(inventario);
+            return inventario;
+        });
     }
 
     public Inventario aumentarCapacidadMaximaInventario(int idInventario, int cantidadesExtra){
-        Inventario inventario = obtenerInventario(idInventario);
-        inventario.aumentarCapacidadMaxima(cantidadesExtra);
-        actualizarInventario(inventario);
-        return inventario;
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
+            Inventario inventario = obtenerInventario(idInventario);
+            inventario.aumentarCapacidadMaxima(cantidadesExtra);
+            actualizarInventario(inventario);
+            return inventario;
+        });
     }
 
     public List<Inventario> obtenerTodosLosInventarios(){
-        return this.repositorioInventario.obtenerTodosInventariosConCapacidadOcupada();
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(
+                this.repositorioInventario::obtenerTodosInventariosConCapacidadOcupada
+        );
     }
 
 }//===================================================================================================================//

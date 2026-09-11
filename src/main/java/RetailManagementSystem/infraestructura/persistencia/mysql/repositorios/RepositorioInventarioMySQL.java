@@ -7,7 +7,6 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.Inventar
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 
 import java.sql.*;
@@ -16,6 +15,14 @@ import java.util.List;
 
 public class RepositorioInventarioMySQL implements RepositorioInventario {
 
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
+
     //CREATE:
 
     private static final String SQL_INSERTAR_INVENTARIO =
@@ -23,8 +30,9 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
     @Override
     public Inventario insertarInventario(Inventario borrador) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_INVENTARIO, Statement.RETURN_GENERATED_KEYS)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_INVENTARIO, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, borrador.getNombre());
             pstmt.setInt(2, borrador.getCapacidadMaxima());
@@ -68,8 +76,9 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
         if (idInventario <= 0) {
             throw new IllegalArgumentException("El ID a buscar debe ser un Número Positivo.");
         }
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_INVENTARIO)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_INVENTARIO)){
 
             pstmt.setInt(1, idInventario);
 
@@ -103,8 +112,9 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
     @Override
     public List<Inventario> obtenerTodosInventariosConCapacidadOcupada() {
         List<Inventario> inventarios = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_INVENTARIOS);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_INVENTARIOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -138,10 +148,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
     @Override
     public void validarCapacidadInventario(int idInventario, int stockASumar){
         Connection conn = VinculadorTransaccion.getConnection();
-
-        if (conn == null) {
-            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
-        }
+        validarConexion(conn);
 
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_VERIFICAR_CAPACIDAD_INVENTARIO)) {
             pstmt.setInt(1, stockASumar);
@@ -175,8 +182,9 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
 
     @Override
     public void actualizarInventario(Inventario inventario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_INVENTARIO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_INVENTARIO)) {
 
             pstmt.setString(1, inventario.getNombre());
             pstmt.setInt(2, inventario.getCapacidadMaxima());

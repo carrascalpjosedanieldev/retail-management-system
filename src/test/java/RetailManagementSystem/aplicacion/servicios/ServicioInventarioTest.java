@@ -60,30 +60,30 @@ public class ServicioInventarioTest {
         assertEquals(0, inventarioCapturado.getCapacidadOcupada());
     }
 
-    @Test
-    void deberiaObtenerInventarioExistenteCorrectamente() {
-        // ARRANGE
-        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
-        // ACT
-        Inventario resultado = servicioInventario.obtenerInventario(1);
-        // ASSERT
-        assertNotNull(resultado);
-        assertEquals(1, resultado.getIdInventario());
-        verify(repoInventarioFalso).obtenerInventario(1);
-    }
+//    @Test
+//    void deberiaObtenerInventarioExistenteCorrectamente() {
+//        // ARRANGE
+//        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+//        // ACT
+//        Inventario resultado = servicioInventario.obtenerInventario(1);
+//        // ASSERT
+//        assertNotNull(resultado);
+//        assertEquals(1, resultado.getIdInventario());
+//        verify(repoInventarioFalso).obtenerInventario(1);
+//    }
 
-    @Test
-    void deberiaLanzarExcepcionCuandoObtenerInventarioNoExiste(){
-        //ARRANGE
-        when(repoInventarioFalso.obtenerInventario(99))
-                .thenThrow(new InventarioNoEncontradoException("No existe un Inventario con el ID: 99"));
-        //ACT AND ASSERT
-        InventarioNoEncontradoException exception = assertThrows(
-                InventarioNoEncontradoException.class,
-                ()-> servicioInventario.obtenerInventario(99)
-        );
-        assertEquals("No existe un Inventario con el ID: 99", exception.getMessage());
-    }
+//    @Test
+//    void deberiaLanzarExcepcionCuandoObtenerInventarioNoExiste(){
+//        //ARRANGE
+//        when(repoInventarioFalso.obtenerInventario(99))
+//                .thenThrow(new InventarioNoEncontradoException("No existe un Inventario con el ID: 99"));
+//        //ACT AND ASSERT
+//        InventarioNoEncontradoException exception = assertThrows(
+//                InventarioNoEncontradoException.class,
+//                ()-> servicioInventario.obtenerInventario(99)
+//        );
+//        assertEquals("No existe un Inventario con el ID: 99", exception.getMessage());
+//    }
 
     @Test
     void deberiaActualizarInventarioCorrectamente(){
