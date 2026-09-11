@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.consultas.ResumenVentaDiaDTO;
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioFacturas;
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,10 +17,13 @@ public class ServicioFacturas {
 
     private final RepositorioFacturas repositorioFacturas;
 
+    private final GestorTransaccional gestorTransaccional;
+
     //CONSTRUCTOR:
 
-    public ServicioFacturas(RepositorioFacturas repositorioFacturas) {
+    public ServicioFacturas(RepositorioFacturas repositorioFacturas, GestorTransaccional gestorTransaccional) {
         this.repositorioFacturas = repositorioFacturas;
+        this.gestorTransaccional = gestorTransaccional;
     }
 
     //MÉTODOS:
@@ -28,7 +32,9 @@ public class ServicioFacturas {
         if (itemsDelCarrito == null || itemsDelCarrito.isEmpty()) {
             throw new IllegalArgumentException("NO se puede Registrar una Venta Vacía.");
         }
-        return this.repositorioFacturas.insertarFactura(itemsDelCarrito);
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
+                this.repositorioFacturas.insertarFactura(itemsDelCarrito)
+        );
     }
 
     public ReporteRecaudoDTO obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin){
@@ -39,15 +45,19 @@ public class ServicioFacturas {
             throw new IllegalArgumentException("Error de lógica: La fecha de inicio (" + fechaInicio + ")" +
                     " NO puede ser posterior a la fecha de fin (" + fechaFin + ").");
         }
-        return this.repositorioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin);
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
+                this.repositorioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin)
+        );
     }
 
     public ResumenVentaDiaDTO obtenerResumenHoy() {
         LocalDate hoy = LocalDate.now();
-        ReporteRecaudoDTO reporteHoy = this.obtenerReporteRecaudo(hoy, hoy);
+        ReporteRecaudoDTO reporteHoy = obtenerReporteRecaudo(hoy, hoy);
         int cantidadFacturas = reporteHoy.cantidadFacturasEmitidas();
         BigDecimal totalVentas = reporteHoy.totalRecaudo();
-        BigDecimal ultimaVenta = this.repositorioFacturas.obtenerTotalUltimaVenta(hoy);
+        BigDecimal ultimaVenta = this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
+                this.repositorioFacturas.obtenerTotalUltimaVenta(hoy)
+        );
         return new ResumenVentaDiaDTO(totalVentas, cantidadFacturas, ultimaVenta);
     }
 

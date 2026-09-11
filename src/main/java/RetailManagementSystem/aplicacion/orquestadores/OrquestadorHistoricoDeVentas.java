@@ -27,7 +27,9 @@ public class OrquestadorHistoricoDeVentas {
         return this.servicioFacturas.obtenerResumenHoy();
     }
 
-    public ReporteRecaudoDTO obtenerReporteRecaudoEntre(UsuarioDTOCompleto usuario, LocalDate fechaInicio, LocalDate fechaFin){
+    public ReporteRecaudoDTO obtenerReporteRecaudoEntre(
+            UsuarioDTOCompleto usuario, LocalDate fechaInicio, LocalDate fechaFin
+    ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.VER_HISTORIAL_VENTAS);
         return servicioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin);
     }

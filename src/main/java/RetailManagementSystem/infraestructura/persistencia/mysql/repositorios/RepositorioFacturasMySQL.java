@@ -8,7 +8,7 @@ import RetailManagementSystem.dominio.puertos.repositorios.RepositorioFacturas;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -18,6 +18,14 @@ import java.util.Comparator;
 import java.util.List;
 
 public class RepositorioFacturasMySQL implements RepositorioFacturas {
+
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
 
     //CREATE:
 
@@ -99,11 +107,10 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
     @Override
     public Factura insertarFactura(List<ItemVendido> items) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
 
-        Connection conn = null;
         try {
-            conn = AdministradorConexion.obtenerConexion();
-            conn.setAutoCommit(false);
 
             items.sort(Comparator.comparing(ItemVendido::getCodigo));
 
@@ -133,7 +140,6 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                 psDetalle.executeBatch();
             }
 
-            conn.commit();
 
             return Factura.reconstruirDesdeBD(
                     items,
@@ -145,20 +151,8 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                     factura.getSubTotal()
             );
 
-        } catch (Exception e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ignored) { }
-            }
+        } catch (SQLException e){
             throw new PersistenciaException("Venta cancelada: " + e.getMessage(), e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException ignored) { }
-            }
         }
     }
 
@@ -176,8 +170,9 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
     @Override
     public ReporteRecaudoDTO obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_REPORTE_RECAUDO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_REPORTE_RECAUDO)) {
 
             ps.setDate(1, java.sql.Date.valueOf(fechaInicio));
             ps.setDate(2, java.sql.Date.valueOf(fechaFin));
@@ -198,7 +193,6 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
         } catch (SQLException e) {
             throw new PersistenciaException("Error al generar el reporte de recaudo", e);
         }
-
         return new ReporteRecaudoDTO(
                 fechaInicio, fechaFin, 0, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
         );
@@ -210,8 +204,9 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
 
     @Override
     public BigDecimal obtenerTotalUltimaVenta(LocalDate fecha) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_ULTIMA_VENTA)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement ps = conn.prepareStatement(SQL_OBTENER_ULTIMA_VENTA)) {
 
             ps.setDate(1, java.sql.Date.valueOf(fecha));
 
