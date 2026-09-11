@@ -186,7 +186,7 @@ public class ContenedorDependencias {
         servicioConfiguraciones = new ServicioConfiguraciones(
                 repositorioConfiguracion, proveedorConfiguracion, gestorTransaccional
         );
-        servicioDescuentos = new ServicioDescuentos(repositorioDescuentos);
+        servicioDescuentos = new ServicioDescuentos(repositorioDescuentos, gestorTransaccional);
         servicioFacturas = new ServicioFacturas(repositorioFacturas);
         servicioImpuestos = new ServicioImpuestos(repositorioImpuestos);
         servicioInventario = new ServicioInventario(repositorioInventario);

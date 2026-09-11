@@ -6,7 +6,7 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.Descuent
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
 
 import java.sql.*;
@@ -25,6 +25,14 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
         this.mapeadorDescuentos = mapeadorDescuentos;
     }
 
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
+
     //CREATE:
 
     private static final String SQL_INSERTAR_DESCUENTO =
@@ -32,8 +40,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
     @Override
     public Descuento insertarDescuento(Descuento descuento) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DESCUENTO, Statement.RETURN_GENERATED_KEYS)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DESCUENTO, Statement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, descuento.getNombre());
             pstmt.setBigDecimal(2, descuento.getPorcentaje());
@@ -62,7 +71,6 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new IllegalArgumentException("Ya existe un Descuento registrado con el Nombre: " + descuento.getNombre());
         } catch (SQLException e) {
-
             throw new PersistenciaException("Error crítico de persistencia al guardar el Descuento: " + e.getMessage(), e);
         }
     }
@@ -80,8 +88,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
         if (idDescuento<=0) {
             throw new IllegalArgumentException("El ID a Buscar debe ser un Número Positivo.");
         }
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCUENTO)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCUENTO)){
 
             pstmt.setInt(1, idDescuento);
 
@@ -108,8 +117,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     @Override
     public List<Descuento> obtenerDescuentosActivos() {
         List<Descuento> descuentos = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCUENTOS_ACTIVOS);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DESCUENTOS_ACTIVOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -132,8 +142,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
     @Override
     public List<Descuento> obtenerTodosLosDescuentos() {
         List<Descuento> descuentos = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_DESCUENTOS);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_DESCUENTOS);
 
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -155,8 +166,9 @@ public class RepositorioDescuentosMySQL implements RepositorioDescuentos {
 
     @Override
     public void actualizarDescuento(Descuento descuento) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DESCUENTOS)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DESCUENTOS)) {
 
             pstmt.setString(1, descuento.getNombre());
             pstmt.setBigDecimal(2, descuento.getPorcentaje());

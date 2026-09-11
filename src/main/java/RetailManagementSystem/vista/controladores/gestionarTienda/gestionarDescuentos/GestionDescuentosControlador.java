@@ -238,8 +238,6 @@ public class GestionDescuentosControlador {
                         actualizado,
                         item -> item.idDescuento() == actualizado.idDescuento()
                 );
-                int indice = listaObservableDescuentos.indexOf(descuentoSeleccionado);
-                listaObservableDescuentos.set(indice, actualizado);
             })
         ).exceptionally(ex -> {
             Platform.runLater(() -> {
