@@ -28,7 +28,7 @@ public class Impuesto {
     }
 
     public BigDecimal getPorcentaje() {
-        return this.activo ? this.porcentaje : BigDecimal.ZERO;
+        return porcentaje;
     }
     public void setPorcentaje(BigDecimal porcentaje) {
         this.porcentaje = porcentaje.setScale(2, RoundingMode.HALF_UP);

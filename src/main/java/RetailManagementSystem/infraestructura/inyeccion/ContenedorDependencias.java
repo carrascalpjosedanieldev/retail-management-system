@@ -16,6 +16,7 @@ import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.Est
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.GestorTransaccionalMySQL;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorPoliticasVencimiento;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorProductoBase;
 import RetailManagementSystem.infraestructura.persistencia.mysql.repositorios.*;
 import RetailManagementSystem.infraestructura.seguridad.Argon2CodificadorAdapter;
@@ -53,6 +54,7 @@ public class ContenedorDependencias {
     private static MapeadorImpuestos mapeadorImpuestos;
     private static MapeadorDescuentos mapeadorDescuentos;
     private static MapeadorProductoBase mapeadorProductoBase;
+    private static MapeadorPoliticasVencimiento mapeadorPoliticasVencimiento;
 
         //REPOSITORIOS:
 
@@ -143,12 +145,13 @@ public class ContenedorDependencias {
         mapeadorImpuestos = new MapeadorImpuestos();
         mapeadorDescuentos = new MapeadorDescuentos();
         mapeadorProductoBase = new MapeadorProductoBase();
+        mapeadorPoliticasVencimiento = new MapeadorPoliticasVencimiento();
 
         //INSTANTIATION DE ESTRATEGIAS:
 
         despachador = new HashMap<>();
         despachador.put(TipoProducto.ROPA, new EstrategiaPersistenciaRopa());
-        despachador.put(TipoProducto.PERECEDERO, new EstrategiaPersistenciaPerecedero());
+        despachador.put(TipoProducto.PERECEDERO, new EstrategiaPersistenciaPerecedero(mapeadorPoliticasVencimiento));
 
         //INSTANCIACIÓN DE REPOSITORIOS:
 
@@ -157,7 +160,7 @@ public class ContenedorDependencias {
         repositorioFacturas = new RepositorioFacturasMySQL();
         repositorioImpuestos = new RepositorioImpuestosMySQL(mapeadorImpuestos);
         repositorioInventario = new RepositorioInventarioMySQL();
-        repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL();
+        repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL(mapeadorPoliticasVencimiento);
         repositorioProducto = new RepositorioProductoMySQL(
                 despachador, mapeadorImpuestos, mapeadorDescuentos, mapeadorProductoBase
         );
@@ -190,7 +193,9 @@ public class ContenedorDependencias {
         servicioFacturas = new ServicioFacturas(repositorioFacturas, gestorTransaccional);
         servicioImpuestos = new ServicioImpuestos(repositorioImpuestos, gestorTransaccional);
         servicioInventario = new ServicioInventario(repositorioInventario, gestorTransaccional);
-        servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(repositorioPoliticaVencimiento);
+        servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(
+                repositorioPoliticaVencimiento, gestorTransaccional
+        );
         servicioPermiso = new ServicioPermiso(repositorioPermiso, gestorTransaccional);
         servicioRol = new ServicioRol(repositorioRol);
         servicioUsuario = new ServicioUsuario(repositorioUsuario, codificadorContrasenas, proveedorConfiguracion);
@@ -281,6 +286,7 @@ public class ContenedorDependencias {
     }
 
     public static OrquestadorInventarios getOrquestadorInventarios() {
+        validarInicializado();
         return orquestadorInventarios;
     }
 

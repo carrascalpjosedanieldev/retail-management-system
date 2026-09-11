@@ -38,7 +38,7 @@ public class PoliticaVencimiento {
     }
 
     public BigDecimal getPorcentajeDescuento() {
-        return this.isActiva() ? porcentajeDescuento : BigDecimal.ZERO;
+        return porcentajeDescuento;
     }
     private void setPorcentajeDescuento(BigDecimal porcentajeDescuento) {
         this.porcentajeDescuento = porcentajeDescuento.setScale(2, RoundingMode.HALF_UP);

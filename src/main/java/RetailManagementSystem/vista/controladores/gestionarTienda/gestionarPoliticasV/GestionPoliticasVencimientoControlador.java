@@ -10,7 +10,6 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiend
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
-import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -237,11 +236,8 @@ public class GestionPoliticasVencimientoControlador {
                         politicaSeleccionado.porcentajeDescuento(),
                         !politicaSeleccionado.activo()
                 );
-                UtilidadesLista.reemplazarPorIdentidad(
-                        listaObservablePoliticasVencimiento,
-                        actualizado,
-                        item-> item.idPoliticaVencimiento() == actualizado.idPoliticaVencimiento()
-                );
+                int indice = listaObservablePoliticasVencimiento.indexOf(politicaSeleccionado);
+                listaObservablePoliticasVencimiento.set(indice, actualizado);
             })
         ).exceptionally(ex -> {
             Platform.runLater(() -> {

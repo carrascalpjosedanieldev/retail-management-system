@@ -4,12 +4,25 @@ import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.DatosProductoBase;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorPoliticasVencimiento;
 
 import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
 public class EstrategiaPersistenciaPerecedero extends EstrategiaPersistenciaAbstracta<ProductoPerecedero>{
+
+    //ATRIBUTOS:
+
+    private final MapeadorPoliticasVencimiento mapeadorPoliticasVencimiento;
+
+    //CONSTRUCTOR:
+
+    public EstrategiaPersistenciaPerecedero(MapeadorPoliticasVencimiento mapeadorPoliticasVencimiento) {
+        this.mapeadorPoliticasVencimiento = mapeadorPoliticasVencimiento;
+    }
+
+    //MÉTODOS:
 
     private static final String SQL_INSERTAR_DATOS_PERECEDERO =
             "INSERT INTO producto_perecedero (codigo_producto, fecha_vencimiento, id_politica) VALUES (?, ?, ?)";
@@ -27,11 +40,8 @@ public class EstrategiaPersistenciaPerecedero extends EstrategiaPersistenciaAbst
     @Override
     public Producto obtenerDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase)throws SQLException{
         Date fechaSql = rs.getDate("fecha_vencimiento");
-        PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
-                rs.getInt("id_politica"), rs.getString("nombre_politica"),
-                rs.getInt("dias_umbral"), rs.getBigDecimal("porcentaje_politica"),
-                rs.getBoolean("politica_activa")
-        );
+        PoliticaVencimiento politicaVencimiento = this.mapeadorPoliticasVencimiento.mapearPoliticaVencimiento(rs);
+
         return ProductoPerecedero.reconstruirDesdeBD(
                 datosBase.codigo(), datosBase.nombre(), datosBase.valorCompra(), datosBase.porcentajeGanancia(),
                 datosBase.stock(), datosBase.impuesto(), datosBase.descuento(), datosBase.activo(),

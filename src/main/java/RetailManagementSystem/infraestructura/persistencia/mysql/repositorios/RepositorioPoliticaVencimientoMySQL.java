@@ -6,14 +6,32 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.Politica
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorPoliticasVencimiento;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaVencimiento {
+
+    //ATRIBUTOS:
+
+    private final MapeadorPoliticasVencimiento mapeadorPoliticasVencimiento;
+
+    //CONSTRUCTOR:
+
+    public RepositorioPoliticaVencimientoMySQL(MapeadorPoliticasVencimiento mapeadorPoliticasVencimiento) {
+        this.mapeadorPoliticasVencimiento = mapeadorPoliticasVencimiento;
+    }
+
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
 
     //CREATE:
 
@@ -22,8 +40,9 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
     @Override
     public PoliticaVencimiento insertarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_POLITICA_V, Statement.RETURN_GENERATED_KEYS)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_POLITICA_V, Statement.RETURN_GENERATED_KEYS)){
 
             pstmt.setString(1, politicaVencimiento.getNombre());
             pstmt.setInt(2, politicaVencimiento.getDiasUmbral());
@@ -40,7 +59,8 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                     int idReal = gk.getInt(1);
                     return PoliticaVencimiento.reconstruirDesdeBD(
                             idReal, politicaVencimiento.getNombre(),
-                            politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
+                            politicaVencimiento.getDiasUmbral(),
+                            politicaVencimiento.getPorcentajeDescuento(),
                             politicaVencimiento.isActiva()
                     );
                 } else {
@@ -63,35 +83,31 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
     //READ:
 
     private static final String SQL_OBTENER_POLITICA_V =
-            "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
+            "SELECT " +
+            "id_politica, nombre_politica, dias_umbral, porcentaje_descuento AS porcentaje_politica, " +
+            "activa AS politica_activa " +
             "FROM politicas_vencimiento " +
-            "WHERE id_politica = ?";
+            "WHERE id_politica = ? ";
 
     @Override
     public PoliticaVencimiento obtenerPoliticaVencimiento(int idPoliticaVencimiento) {
         if (idPoliticaVencimiento <= 0){
             throw new IllegalArgumentException("El ID a Buscar debe ser Positivo");
         }
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_POLITICA_V)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_POLITICA_V)){
 
             pstmt.setInt(1, idPoliticaVencimiento);
 
             try (ResultSet rs = pstmt.executeQuery()){
 
                 if (rs.next()) {
-                    int idReal = rs.getInt("id_politica");
-                    String nombre = rs.getString("nombre_politica");
-                    int diasUmbral = rs.getInt("dias_umbral");
-                    BigDecimal porcentaje = rs.getBigDecimal("porcentaje_descuento");
-                    boolean activo = rs.getBoolean("activa");
-
-                    return PoliticaVencimiento.reconstruirDesdeBD(idReal, nombre, diasUmbral, porcentaje, activo);
+                    return this.mapeadorPoliticasVencimiento.mapearPoliticaVencimiento(rs);
                 }
 
-                throw new PoliticaVencimientoNoEncontradaException("NO Existe una Política de Vencimiento con el " +
-                        "ID: " + idPoliticaVencimiento);
-
+                throw new PoliticaVencimientoNoEncontradaException("NO Existe una Política de Vencimiento con el ID: " +
+                        idPoliticaVencimiento);
             }
 
         } catch (SQLException e) {
@@ -101,24 +117,21 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
 
     private static final String SQL_OBTENER_POLITICAS_V_ACTIVAS =
-            "SELECT id_politica, nombre_politica, dias_umbral, porcentaje_descuento, activa " +
+            "SELECT " +
+            "id_politica, nombre_politica, dias_umbral, porcentaje_descuento AS porcentaje_politica, " +
+            "activa AS politica_activa " +
             "FROM politicas_vencimiento WHERE activa = true";
 
     @Override
     public List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas() {
         List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_POLITICAS_V_ACTIVAS);
-             ResultSet rs = pstmt.executeQuery();){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_POLITICAS_V_ACTIVAS);
+             ResultSet rs = pstmt.executeQuery()){
 
             while (rs.next()){
-                PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
-                        rs.getInt("id_politica"),
-                        rs.getString("nombre_politica"),
-                        rs.getInt("dias_umbral"),
-                        rs.getBigDecimal("porcentaje_descuento"),
-                        rs.getBoolean("activa")
-                );
+                PoliticaVencimiento politicaVencimiento = this.mapeadorPoliticasVencimiento.mapearPoliticaVencimiento(rs);
                 politicasVencimiento.add(politicaVencimiento);
             }
 
@@ -136,9 +149,9 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
     @Override
     public List<PoliticaVencimiento> obtenerTodasLasPoliticasDeVencimiento() {
         List<PoliticaVencimiento> politicasVencimiento = new ArrayList<>();
-
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODAS_LAS_POLITICAS_V);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODAS_LAS_POLITICAS_V);
              ResultSet rs = pstmt.executeQuery();){
 
             while (rs.next()){
@@ -168,8 +181,9 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
 
     @Override
     public void actualizarPoliticaVencimiento(PoliticaVencimiento politicaVencimiento) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_POLITICA_V)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_POLITICA_V)){
 
             pstmt.setString(1, politicaVencimiento.getNombre());
             pstmt.setInt(2, politicaVencimiento.getDiasUmbral());
