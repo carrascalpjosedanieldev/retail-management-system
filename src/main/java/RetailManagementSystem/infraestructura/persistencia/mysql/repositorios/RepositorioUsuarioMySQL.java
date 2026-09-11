@@ -9,13 +9,21 @@ import RetailManagementSystem.dominio.puertos.repositorios.RepositorioUsuario;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class RepositorioUsuarioMySQL implements RepositorioUsuario {
+
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
 
     //CREATE:
 
@@ -26,8 +34,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     @Override
     public Usuario insertarUsuarioNuevo(Usuario usuario) {
-        try(Connection conn = AdministradorConexion.obtenerConexion();
-            PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_USUARIO, Statement.RETURN_GENERATED_KEYS)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try(PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_USUARIO, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, usuario.getNombre());
             pstmt.setString(2, usuario.getApellido());
@@ -90,8 +99,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     @Override
     public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_EMAIL)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_EMAIL)) {
 
             pstmt.setString(1, email);
 
@@ -180,8 +190,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     @Override
     public Usuario obtenerUsuarioPorId(Long idUsuario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_ID)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_ID)) {
 
             pstmt.setLong(1, idUsuario);
 
@@ -265,8 +276,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
     @Override
     public List<Usuario> obtenerTodosLosUsuarios() {
         List<Usuario> listaUsuarios = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_USUARIOS);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_USUARIOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()){
@@ -303,8 +315,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     @Override
     public void actualizarDatosLoginUsuario(Usuario usuario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DATOS_LOGIN)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DATOS_LOGIN)) {
 
             pstmt.setInt(1, usuario.getIntentosFallidos());
 
@@ -333,8 +346,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     @Override
     public void actualizarDatosUsuario(Usuario usuario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DATOS_USUARIO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_DATOS_USUARIO)) {
 
             pstmt.setString(1, usuario.getNombre());
             pstmt.setString(2, usuario.getApellido());
@@ -360,8 +374,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
     @Override
     public void actualizarSeguridad(Usuario usuario) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_SEGURIDAD)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_SEGURIDAD)) {
 
             pstmt.setString(1, usuario.getHash());
             pstmt.setBoolean(2, usuario.isDebeCambiarContrasena());
@@ -392,31 +407,14 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
         if (usuario == null){
             throw new IllegalArgumentException("NO puedes Actualizar un Usuario Nulo");
         }
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try {
 
-        try (Connection conn = AdministradorConexion.obtenerConexion()) {
+            borrarRelacionesUsuarioRolViejas(conn, usuario.getIdUsuario());
 
-            try {
-                conn.setAutoCommit(false);
-
-                this.borrarRelacionesUsuarioRolViejas(conn, usuario.getIdUsuario());
-
-                if (!usuario.getRoles().isEmpty()) {
-                    this.insertarPermisosActualizados(conn, usuario);
-                }
-
-                conn.commit();
-
-            } catch (SQLException originalException) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackEx) {
-                    originalException.addSuppressed(rollbackEx);
-                }
-                throw new PersistenciaException("Error en la Transacción de Actualización de Roles", originalException);
-            } finally {
-                try {
-                    conn.setAutoCommit(true);
-                } catch (SQLException ignored) { }
+            if (!usuario.getRoles().isEmpty()) {
+                insertarPermisosActualizados(conn, usuario);
             }
 
         } catch (SQLException e) {
