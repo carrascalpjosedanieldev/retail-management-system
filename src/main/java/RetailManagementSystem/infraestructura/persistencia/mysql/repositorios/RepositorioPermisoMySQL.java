@@ -4,7 +4,7 @@ import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PermisoNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPermiso;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioPermisoMySQL implements RepositorioPermiso {
+
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
 
     //READ:
 
@@ -29,8 +37,9 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
         if (idPermiso <= 0){
             throw new IllegalArgumentException("El ID del Permiso debe ser un Numero Positivo.");
         }
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISO)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISO)){
 
             pstmt.setInt(1, idPermiso);
 
@@ -60,50 +69,61 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
     }
 
 
-    @Override
-    public List<Permiso> obtenerPermisosActivos() {
-        return obtenerPermisosPorEstado(true);
-    }
-
-
-    @Override
-    public List<Permiso> obtenerPermisosInactivos() {
-        return obtenerPermisosPorEstado(false);
-    }
-
-
     private static final String SQL_OBTENER_PERMISOS_POR_ESTADO =
             "SELECT p.id_permiso, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
             "FROM permisos p " +
             "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
-            "WHERE p.activo = ?";
+            "WHERE p.activo = TRUE";
 
-
-    private List<Permiso> obtenerPermisosPorEstado(boolean estado) {
+    @Override
+    public List<Permiso> obtenerPermisosActivos() {
         List<Permiso> permisos = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISOS_POR_ESTADO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISOS_POR_ESTADO);
+             ResultSet rs = pstmt.executeQuery()) {
 
-            pstmt.setBoolean(1, estado);
+            while (rs.next()) {
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-
-                while (rs.next()) {
-
-                    Permiso permiso = this.extraerPermisoDeResultSet(rs);
-                    permisos.add(permiso);
-
-                }
+                Permiso permiso = extraerPermisoDeResultSet(rs);
+                permisos.add(permiso);
 
             }
 
         } catch (SQLException e) {
-            String estadoStr = estado ? "Activos" : "Inactivos";
-            throw new PersistenciaException("Error al listar los Permisos " + estadoStr, e);
+            throw new PersistenciaException("Error al listar los Permisos Activos", e);
         }
         return permisos;
     }
 
+
+    private static final String SQL_OBTENER_TODOS_LOS_PERMISOS =
+            "SELECT p.id_permiso, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
+            "FROM permisos p " +
+            "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
+            "ORDER BY p.activo DESC ";
+
+    @Override
+    public List<Permiso> obtenerTodosLosPermisos() {
+        List<Permiso> listaTodosLosPermisos = new ArrayList<>();
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_PERMISOS);
+             ResultSet rs = pstmt.executeQuery()){
+
+            while (rs.next()){
+
+                Permiso permiso = extraerPermisoDeResultSet(rs);
+                listaTodosLosPermisos.add(permiso);
+
+            }
+
+        } catch (SQLException e){
+            throw new PersistenciaException("Error al listar todos los Permisos", e);
+        }
+        return listaTodosLosPermisos;
+    }
 
     private static final String SQL_OBTENER_NOMBRES_PERMISOS =
             "SELECT nombre FROM permisos ORDER BY id_permiso ASC";
@@ -111,17 +131,16 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
     @Override
     public List<String> obtenerNombresTodosLosPermisos() {
         List<String> permisos = new ArrayList<>();
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
 
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_NOMBRES_PERMISOS)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_NOMBRES_PERMISOS)) {
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 while (rs.next()) {
-
                     String nombrePermiso = rs.getString("nombre");
                     permisos.add(nombrePermiso.toUpperCase());
-
                 }
 
             }
@@ -140,8 +159,9 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
     @Override
     public void cambiarEstado(int idPermiso, boolean activo) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_ESTADO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_ESTADO)) {
 
             pstmt.setBoolean(1, activo);
             pstmt.setInt(2, idPermiso);

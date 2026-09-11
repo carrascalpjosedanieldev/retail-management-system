@@ -7,7 +7,6 @@ import RetailManagementSystem.aplicacion.servicios.ServicioPermiso;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class OrquestadorPermisos {
@@ -28,18 +27,9 @@ public class OrquestadorPermisos {
     //MÉTODOS:
 
     public List<PermisoDTO> obtenerTodosLosPermisos(){
-        List<PermisoDTO> todosLosPermisos = new ArrayList<>();
-        todosLosPermisos.addAll(
-                this.ensambladorDTOPermiso.ensamblarDetallePermisos(
-                        this.servicioPermiso.obtenerPermisosActivos()
-                )
+        return this.ensambladorDTOPermiso.ensamblarDetallePermisos(
+                this.servicioPermiso.obtenerTodosLosPermisos()
         );
-        todosLosPermisos.addAll(
-                this.ensambladorDTOPermiso.ensamblarDetallePermisos(
-                        this.servicioPermiso.obtenerPermisosInactivos()
-                )
-        );
-        return todosLosPermisos;
     }
 
     public List<PermisoDTO> obtenerPermisosActivos(){

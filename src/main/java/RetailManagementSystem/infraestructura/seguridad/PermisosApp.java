@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.seguridad;
 
-import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPermiso;
+import RetailManagementSystem.aplicacion.servicios.ServicioPermiso;
 import RetailManagementSystem.infraestructura.inyeccion.ContenedorDependencias;
 
 import java.util.List;
@@ -14,9 +14,9 @@ public class PermisosApp {
     public static void inicializarYValidarSincronizacionPermisos(){
         if (inicializado) return;
 
-        RepositorioPermiso repositorioPermiso = ContenedorDependencias.getRepositorioPermiso();
+        ServicioPermiso servicioPermiso = ContenedorDependencias.getServicioPermiso();
 
-        List<String> permisosBD = repositorioPermiso.obtenerNombresTodosLosPermisos();
+        List<String> permisosBD = servicioPermiso.obtenerTodosLosNombresPermisos();
 
         List<String> permisosCodigo = List.of(
                 PermisosApp.PROCESAR_VENTA,

@@ -191,7 +191,7 @@ public class ContenedorDependencias {
         servicioImpuestos = new ServicioImpuestos(repositorioImpuestos, gestorTransaccional);
         servicioInventario = new ServicioInventario(repositorioInventario, gestorTransaccional);
         servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(repositorioPoliticaVencimiento);
-        servicioPermiso = new ServicioPermiso(repositorioPermiso);
+        servicioPermiso = new ServicioPermiso(repositorioPermiso, gestorTransaccional);
         servicioRol = new ServicioRol(repositorioRol);
         servicioUsuario = new ServicioUsuario(repositorioUsuario, codificadorContrasenas, proveedorConfiguracion);
 
@@ -241,11 +241,6 @@ public class ContenedorDependencias {
         return ensambladorDTOInventario;
     }
 
-    public static RepositorioPermiso getRepositorioPermiso() {
-        validarInicializado();
-        return repositorioPermiso;
-    }
-
     public static ServicioConfiguraciones getServicioConfiguraciones() {
         validarInicializado();
         return servicioConfiguraciones;
@@ -254,6 +249,10 @@ public class ContenedorDependencias {
     public static ServicioInventario getServicioInventario() {
         validarInicializado();
         return servicioInventario;
+    }
+
+    public static ServicioPermiso getServicioPermiso() {
+        return servicioPermiso;
     }
 
     public static FabricaProductos getFabricaProductos() {

@@ -12,7 +12,7 @@ public interface RepositorioPermiso {
 
     List<Permiso> obtenerPermisosActivos();
 
-    List<Permiso> obtenerPermisosInactivos();
+    List<Permiso> obtenerTodosLosPermisos();
 
     List<String> obtenerNombresTodosLosPermisos();
 
