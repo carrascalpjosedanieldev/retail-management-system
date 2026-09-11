@@ -188,7 +188,7 @@ public class ContenedorDependencias {
         );
         servicioDescuentos = new ServicioDescuentos(repositorioDescuentos, gestorTransaccional);
         servicioFacturas = new ServicioFacturas(repositorioFacturas);
-        servicioImpuestos = new ServicioImpuestos(repositorioImpuestos);
+        servicioImpuestos = new ServicioImpuestos(repositorioImpuestos, gestorTransaccional);
         servicioInventario = new ServicioInventario(repositorioInventario);
         servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(repositorioPoliticaVencimiento);
         servicioPermiso = new ServicioPermiso(repositorioPermiso);

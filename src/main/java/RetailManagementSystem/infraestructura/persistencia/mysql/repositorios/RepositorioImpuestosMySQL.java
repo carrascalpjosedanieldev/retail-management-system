@@ -6,7 +6,7 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.Impuesto
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogeneradoNoRecibidoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
 
 import java.sql.*;
@@ -25,6 +25,14 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
         this.mapeadorImpuestos = mapeadorImpuestos;
     }
 
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
+
     //CREATE:
 
     private static final String SQL_INSERTAR_IMPUESTO =
@@ -32,8 +40,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
     @Override
     public Impuesto insertarImpuesto(Impuesto impuesto) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_IMPUESTO, Statement.RETURN_GENERATED_KEYS)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_IMPUESTO, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, impuesto.getNombre());
             pstmt.setBigDecimal(2, impuesto.getPorcentaje());
@@ -80,8 +89,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
         if (idImpuesto <= 0) {
             throw new IllegalStateException("El ID a buscar debe ser un número positivo.");
         }
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_IMPUESTO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_IMPUESTO)) {
 
             pstmt.setInt(1, idImpuesto);
 
@@ -108,8 +118,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     @Override
     public List<Impuesto> obtenerImpuestosActivos() {
         List<Impuesto> impuestos = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_IMPUESTOS_ACTIVOS);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_IMPUESTOS_ACTIVOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -132,8 +143,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
     @Override
     public List<Impuesto> obtenerTodosLosImpuestos() {
         List<Impuesto> impuestos = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_IMPUESTOS);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_IMPUESTOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -155,8 +167,9 @@ public class RepositorioImpuestosMySQL implements RepositorioImpuestos {
 
     @Override
     public void actualizarImpuesto(Impuesto impuesto) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_IMPUESTO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_IMPUESTO)) {
 
             pstmt.setString(1, impuesto.getNombre());
             pstmt.setBigDecimal(2, impuesto.getPorcentaje());
