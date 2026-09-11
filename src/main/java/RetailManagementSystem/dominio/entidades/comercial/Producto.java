@@ -220,16 +220,18 @@ public abstract class Producto implements ItemFacturable {
 
     @Override
     public BigDecimal calcularDescuento(BigDecimal precioBase) {
+        BigDecimal porcentajeDescuento = this.descuento.isActivo() ? this.descuento.getPorcentaje() : BigDecimal.ZERO;
         return precioBase.multiply(
-                dividirEntreCien(this.descuento.getPorcentaje())
+                dividirEntreCien(porcentajeDescuento)
         )
         .setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto) {
+        BigDecimal porcentajeImpuesto = this.impuesto.isActivo() ? this.impuesto.getPorcentaje() : BigDecimal.ZERO;
         return precioFinalSinImpuesto.multiply(
-                dividirEntreCien(this.impuesto.getPorcentaje())
+                dividirEntreCien(porcentajeImpuesto)
         )
         .setScale(6, RoundingMode.HALF_UP);
     }

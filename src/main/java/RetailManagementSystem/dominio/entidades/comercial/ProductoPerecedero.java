@@ -114,11 +114,12 @@ public final class ProductoPerecedero extends Producto{
     }
 
     private BigDecimal calcularDescuentoPolitica(BigDecimal precioBase, LocalDate fechaReferencia){
-        PoliticaVencimiento pol = this.getPoliticaVencimiento();
-        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.getFechaVencimiento());
+        PoliticaVencimiento pol = getPoliticaVencimiento();
+        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, getFechaVencimiento());
         if (diasRestantes >= 0 && diasRestantes <= pol.getDiasUmbral()) {
+            BigDecimal porcentajePolitica = pol.isActiva() ? pol.getPorcentajeDescuento() : BigDecimal.ZERO;
             return precioBase.multiply(
-                            dividirEntreCien(pol.getPorcentajeDescuento())
+                            dividirEntreCien(porcentajePolitica)
                     )
                     .setScale(6, RoundingMode.HALF_UP);
         }

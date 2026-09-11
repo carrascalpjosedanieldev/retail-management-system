@@ -3,8 +3,8 @@ package RetailManagementSystem.aplicacion.servicios;
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioRol;
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ServicioRol {
@@ -13,10 +13,13 @@ public class ServicioRol {
 
     private final RepositorioRol repositorioRol;
 
+    private final GestorTransaccional gestorTransaccional;
+
     //CONSTRUCTOR:
 
-    public ServicioRol(RepositorioRol repositorioRol) {
+    public ServicioRol(RepositorioRol repositorioRol, GestorTransaccional gestorTransaccional) {
         this.repositorioRol = repositorioRol;
+        this.gestorTransaccional = gestorTransaccional;
     }
 
     //MÉTODOS:
@@ -26,37 +29,43 @@ public class ServicioRol {
         for (Permiso permiso:permisos){
             rolNuevo.anadirPermisoNuevo(permiso);
         }
-        this.repositorioRol.insertarRol(rolNuevo);
+        this.gestorTransaccional.ejecutarEnTransaccion(()->
+                this.repositorioRol.insertarRol(rolNuevo)
+        );
     }
 
     public Rol actualzarDatosRol(int idRol, String nombreNuevo, boolean activo){
-        Rol rol = this.repositorioRol.obtenerRol(idRol);
-        rol.cambiarNombre(nombreNuevo);
-        if (rol.isActivo() && !activo){
-            rol.desactivarRol();
-        } else if (!rol.isActivo() && activo){
-            rol.activarRol();
-        }
-        this.repositorioRol.actualizarDatosRol(rol);
-        return rol;
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
+            Rol rol = this.repositorioRol.obtenerRol(idRol);
+            rol.cambiarNombre(nombreNuevo);
+            if (rol.isActivo() && !activo){
+                rol.desactivarRol();
+            } else if (!rol.isActivo() && activo){
+                rol.activarRol();
+            }
+            this.repositorioRol.actualizarDatosRol(rol);
+            return rol;
+        });
+
     }
 
     public void actualizarPermisosRol(int idRol, List<Permiso> listaPermisosActualizada){
-        Rol rol = this.repositorioRol.obtenerRol(idRol);
-        for (Permiso p:rol.getPermisos().stream().toList()){
-            rol.quitarPermiso(p);
-        }
-        for (Permiso permiso:listaPermisosActualizada){
-              rol.anadirPermisoNuevo(permiso);
-        }
-        this.repositorioRol.actualizarPermisosRol(rol);
+        this.gestorTransaccional.ejecutarEnTransaccion(()->{
+            Rol rol = this.repositorioRol.obtenerRol(idRol);
+            for (Permiso p:rol.getPermisos().stream().toList()){
+                rol.quitarPermiso(p);
+            }
+            for (Permiso permiso:listaPermisosActualizada){
+                rol.anadirPermisoNuevo(permiso);
+            }
+            this.repositorioRol.actualizarPermisosRol(rol);
+        });
     }
 
     public List<Rol> obtenerRoles(){
-        List<Rol> roles = new ArrayList<>();
-        roles.addAll(this.repositorioRol.obtenerRolesActivos());
-        roles.addAll(this.repositorioRol.obtenerRolesInactivos());
-        return roles;
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(
+                this.repositorioRol::obtenerTodosLosRoles
+        );
     }
 
 

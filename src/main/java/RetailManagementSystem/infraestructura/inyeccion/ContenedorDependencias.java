@@ -197,7 +197,7 @@ public class ContenedorDependencias {
                 repositorioPoliticaVencimiento, gestorTransaccional
         );
         servicioPermiso = new ServicioPermiso(repositorioPermiso, gestorTransaccional);
-        servicioRol = new ServicioRol(repositorioRol);
+        servicioRol = new ServicioRol(repositorioRol, gestorTransaccional);
         servicioUsuario = new ServicioUsuario(repositorioUsuario, codificadorContrasenas, proveedorConfiguracion);
 
         //INSTANCIACIÓN DE ORQUESTADORES:
@@ -257,6 +257,7 @@ public class ContenedorDependencias {
     }
 
     public static ServicioPermiso getServicioPermiso() {
+        validarInicializado();
         return servicioPermiso;
     }
 

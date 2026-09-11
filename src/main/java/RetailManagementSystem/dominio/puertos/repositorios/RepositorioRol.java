@@ -14,9 +14,7 @@ public interface RepositorioRol {
 
     Rol obtenerRol(int idRol);
 
-    List<Rol> obtenerRolesActivos();
-
-    List<Rol> obtenerRolesInactivos();
+    List<Rol> obtenerTodosLosRoles();
 
     //UPDATE:
 
