@@ -5,6 +5,7 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PermisoN
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPermiso;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorPermisos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioPermisoMySQL implements RepositorioPermiso {
+
+    //ATRIBUTOS:
+
+    private final MapeadorPermisos mapeadorPermisos;
+
+    //CONSTRUCTOR:
+
+    public RepositorioPermisoMySQL(MapeadorPermisos mapeadorPermisos) {
+        this.mapeadorPermisos = mapeadorPermisos;
+    }
 
     //MÉTODOS:
 
@@ -46,7 +57,7 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()){
-                    return this.extraerPermisoDeResultSet(rs);
+                    return this.mapeadorPermisos.mapearPermiso(rs);
                 }
 
                 throw new PermisoNoEncontradoException("NO existe un Permiso de ID:  " + idPermiso);
@@ -58,19 +69,11 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
         }
     }
 
-    private Permiso extraerPermisoDeResultSet(ResultSet rs) throws SQLException {
-        return Permiso.reconstruirDesdeBD(
-                rs.getInt("id_permiso"),
-                rs.getString("nombre"),
-                rs.getString("descripcion"),
-                rs.getString("nombre_modulo"),
-                rs.getBoolean("activo")
-        );
-    }
-
 
     private static final String SQL_OBTENER_PERMISOS_POR_ESTADO =
-            "SELECT p.id_permiso, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
+            "SELECT " +
+            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS activo_permiso, " +
+            "m.nombre AS nombre_modulo " +
             "FROM permisos p " +
             "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
             "WHERE p.activo = TRUE";
@@ -85,7 +88,7 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
             while (rs.next()) {
 
-                Permiso permiso = extraerPermisoDeResultSet(rs);
+                Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
                 permisos.add(permiso);
 
             }
@@ -98,7 +101,9 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
 
     private static final String SQL_OBTENER_TODOS_LOS_PERMISOS =
-            "SELECT p.id_permiso, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
+            "SELECT " +
+            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS activo_permiso, " +
+            "m.nombre AS nombre_modulo " +
             "FROM permisos p " +
             "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
             "ORDER BY p.activo DESC ";
@@ -114,7 +119,7 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
             while (rs.next()){
 
-                Permiso permiso = extraerPermisoDeResultSet(rs);
+                Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
                 listaTodosLosPermisos.add(permiso);
 
             }

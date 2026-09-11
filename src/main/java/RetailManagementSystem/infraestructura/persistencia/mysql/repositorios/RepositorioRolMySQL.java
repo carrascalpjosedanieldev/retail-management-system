@@ -7,6 +7,8 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.RolNoEnc
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioRol;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorPermisos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorRol;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,6 +17,19 @@ import java.util.List;
 import java.util.Map;
 
 public class RepositorioRolMySQL implements RepositorioRol {
+
+    //ATRIBUTOS:
+
+    private final MapeadorRol mapeadorRol;
+
+    private final MapeadorPermisos mapeadorPermisos;
+
+    //CONSTRUCTOR:
+
+    public RepositorioRolMySQL(MapeadorRol mapeadorRol, MapeadorPermisos mapeadorPermisos) {
+        this.mapeadorRol = mapeadorRol;
+        this.mapeadorPermisos = mapeadorPermisos;
+    }
 
     //MÉTODOS:
 
@@ -137,35 +152,27 @@ public class RepositorioRolMySQL implements RepositorioRol {
 
                 }
 
-                Rol rol = Rol.reconstruirDesdeBD(
-                        rs.getInt("id_rol"),
-                        rs.getString("nombre"),
-                        rs.getBoolean("activo")
-                );
-
-                do {
-
-                    int idPermiso = rs.getInt("id_permiso");
-                    if (!rs.wasNull()) {
-                        Permiso permiso = Permiso.reconstruirDesdeBD(
-                                idPermiso,
-                                rs.getString("nombre_permiso"),
-                                rs.getString("descripcion"),
-                                rs.getString("nombre_modulo"),
-                                rs.getBoolean("activo_permiso")
-                        );
-                        rol.recuperarPermisoDeBD(permiso);
-                    }
-
-                } while (rs.next());
-
-                return rol;
+                return recuperarRolCompleto(rs);
 
             }
 
         } catch (SQLException e) {
             throw new PersistenciaException("Error al Buscar el Rol por ID", e);
         }
+    }
+
+    private Rol recuperarRolCompleto(ResultSet rs) throws SQLException {
+        Rol rol = this.mapeadorRol.mapearRol(rs);
+
+        do {
+            int idPermiso = rs.getInt("id_permiso");
+            if (!rs.wasNull()) {
+                Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
+                rol.recuperarPermisoDeBD(permiso);
+            }
+        } while (rs.next());
+
+        return rol;
     }
 
 
@@ -186,39 +193,33 @@ public class RepositorioRolMySQL implements RepositorioRol {
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_ROLES_SEGUN_ESTADO);
              ResultSet rs = pstmt.executeQuery()) {
 
-            Map<Integer, Rol> rolesMap = new LinkedHashMap<>();
-
-            while (rs.next()){
-
-                int idRol = rs.getInt("id_rol");
-                Rol rolActual = rolesMap.get(idRol);
-                if (rolActual == null) {
-                    rolActual = Rol.reconstruirDesdeBD(
-                            idRol,
-                            rs.getString("nombre"),
-                            rs.getBoolean("activo")
-                    );
-                    rolesMap.put(idRol, rolActual);
-                }
-
-                int idPermiso = rs.getInt("id_permiso");
-                if (!rs.wasNull()) {
-                    Permiso permiso = Permiso.reconstruirDesdeBD(
-                            idPermiso,
-                            rs.getString("nombre_permiso"),
-                            rs.getString("descripcion"),
-                            rs.getString("nombre_modulo"),
-                            rs.getBoolean("activo_permiso")
-                    );
-                    rolActual.recuperarPermisoDeBD(permiso);
-                }
-
-            }
-            return new ArrayList<>(rolesMap.values());
+            return listarRolesDelResulSet(rs);
 
         } catch (SQLException e) {
             throw new PersistenciaException("Error al listar los Todos los Roles.", e);
         }
+    }
+
+    private List<Rol> listarRolesDelResulSet(ResultSet rs) throws SQLException {
+        Map<Integer, Rol> rolesMap = new LinkedHashMap<>();
+
+        while (rs.next()){
+
+            int idRol = rs.getInt("id_rol");
+            Rol rolActual = rolesMap.get(idRol);
+            if (rolActual == null) {
+                rolActual = this.mapeadorRol.mapearRol(rs);
+                rolesMap.put(idRol, rolActual);
+            }
+
+            int idPermiso = rs.getInt("id_permiso");
+            if (!rs.wasNull()) {
+                Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
+                rolActual.recuperarPermisoDeBD(permiso);
+            }
+
+        }
+        return new ArrayList<>(rolesMap.values());
     }
 
 

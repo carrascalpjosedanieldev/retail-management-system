@@ -8,12 +8,23 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogen
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorInventario;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioInventarioMySQL implements RepositorioInventario {
+
+    //ATRIBUTOS:
+
+    private final MapeadorInventario mapeadorInventario;
+
+    //CONSTRUCTOR:
+
+    public RepositorioInventarioMySQL(MapeadorInventario mapeadorInventario) {
+        this.mapeadorInventario = mapeadorInventario;
+    }
 
     //MÉTODOS:
 
@@ -85,12 +96,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()) {
-                    int idReal = rs.getInt("id_inventario");
-                    String nombre = rs.getString("nombre");
-                    int capacidadMaxima = rs.getInt("capacidad_maxima");
-                    int capacidadOcupada = rs.getInt("capacidad_ocupada");
-
-                    return Inventario.reconstruirDesdeBD(idReal, nombre, capacidadMaxima, capacidadOcupada);
+                    return this.mapeadorInventario.mapearInventario(rs);
                 }
 
                 throw new InventarioNoEncontradoException("No existe un Inventario con el ID: " + idInventario);
@@ -118,12 +124,7 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
-                Inventario inv = Inventario.reconstruirDesdeBD(
-                        rs.getInt("id_inventario"),
-                        rs.getString("nombre"),
-                        rs.getInt("capacidad_maxima"),
-                        rs.getInt("capacidad_ocupada")
-                );
+                Inventario inv = this.mapeadorInventario.mapearInventario(rs);
                 inventarios.add(inv);
             }
         } catch (SQLException e) {
