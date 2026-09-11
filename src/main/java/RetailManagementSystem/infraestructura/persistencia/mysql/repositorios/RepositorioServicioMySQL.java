@@ -9,7 +9,7 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.Impuesto
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
-import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.AdministradorConexion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -17,6 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioServicioMySQL implements RepositorioServicio {
+
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
 
     //CREATE:
 
@@ -26,8 +34,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     @Override
     public void insertarServicio(Servicio servicio){
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_SERVICIO)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_SERVICIO)){
 
             pstmt.setString(1, servicio.getCodigo());
             pstmt.setString(2, servicio.getNombre());
@@ -67,8 +76,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     @Override
     public Servicio obtenerServicio(String codigoServicio) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIO)) {
 
             pstmt.setString(1, codigoServicio);
 
@@ -110,35 +120,6 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
     }
 
 
-    private static final String SQL_OBTENER_SERVICIOS_ACTIVOS =
-            "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.id_descuento, s.activo, " +
-            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
-            "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento," +
-            " des.activo AS activo_descuento " +
-            "FROM servicios s " +
-            "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
-            "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
-            "WHERE s.activo = true ";
-
-    @Override
-    public List<Servicio> obtenerServiciosActivos() {
-        List<Servicio> servicios = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIOS_ACTIVOS);
-             ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()){
-                servicios.add(mapearServicioDesdeResultSet(rs));
-            }
-
-        } catch (SQLException e) {
-            throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
-        }
-        return servicios;
-    }
-
-
-
     private static final String SQL_OBTENER_TODOS_LOS_SERVICIOS =
             "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
             "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
@@ -152,8 +133,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
     @Override
     public List<Servicio> obtenerTodosLosServicios() {
         List<Servicio> servicios = new ArrayList<>();
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_SERVICIOS);
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_TODOS_LOS_SERVICIOS);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()){
@@ -179,8 +161,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     @Override
     public Servicio obtenerServicioActivoSoloPorCodigo(String codigoServicio) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIO_POR_CODIGO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_SERVICIO_POR_CODIGO)) {
 
             pstmt.setString(1, codigoServicio);
 
@@ -210,8 +193,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     @Override
     public boolean existeServicio(String codigoServicio) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_EXISTE_SERVICIO)) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_EXISTE_SERVICIO)) {
 
             pstmt.setString(1, codigoServicio);
 
@@ -232,8 +216,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     @Override
     public void actualizarServicio(Servicio servicio) {
-        try (Connection conn = AdministradorConexion.obtenerConexion();
-             PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_SERVICIO)){
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_SERVICIO)){
 
             pstmt.setInt(1, servicio.getIdImpuesto());
             pstmt.setString(2, servicio.getNombre());

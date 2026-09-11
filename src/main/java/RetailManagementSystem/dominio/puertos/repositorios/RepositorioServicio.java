@@ -14,8 +14,6 @@ public interface RepositorioServicio {
 
     Servicio obtenerServicio(String codigoServicio);
 
-    List<Servicio> obtenerServiciosActivos();
-
     List<Servicio> obtenerTodosLosServicios();
 
     Servicio obtenerServicioActivoSoloPorCodigo(String codigoServicio);

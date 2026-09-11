@@ -183,7 +183,7 @@ public class ContenedorDependencias {
                 repositorioProducto, repositorioInventario, gestorTransaccional
         );
         servicioServicios = new ServicioServicios(
-                repositorioImpuestos, repositorioDescuentos, repositorioServicio
+                repositorioImpuestos, repositorioDescuentos, repositorioServicio, gestorTransaccional
         );
         servicioCarrito = new ServicioCarrito(servicioProductos, servicioServicios);
         servicioConfiguraciones = new ServicioConfiguraciones(
