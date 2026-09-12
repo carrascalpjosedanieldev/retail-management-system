@@ -13,6 +13,8 @@ import static RetailManagementSystem.dominio.enums.TipoItem.SERVICIO;
 
 public class Servicio implements ItemFacturable {
 
+    private static final BigDecimal CIEN = new BigDecimal("100");
+
     //ATRIBUTOS:
 
     private String nombre;
@@ -27,25 +29,11 @@ public class Servicio implements ItemFacturable {
 
     private boolean activo;
 
-    private static final BigDecimal CIEN = new BigDecimal("100");
-
     //GETTERS Y SETTERS:
 
     @Override
-    public String getNombre() {
-        return nombre;
-    }
-
-    private void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public BigDecimal getPrecioBase() {
-        return precioBase;
-    }
-
-    private void setPrecioBase(BigDecimal precioBase) {
-        this.precioBase = precioBase;
+    public TipoItem getTipoItem() {
+        return SERVICIO;
     }
 
     @Override
@@ -54,170 +42,177 @@ public class Servicio implements ItemFacturable {
     }
 
     @Override
-    public BigDecimal getValorVenta(LocalDate fecha) {
-        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase());
-        BigDecimal precioFinalSinImpuesto = precioBase.subtract(descuentoAplicado);
-        BigDecimal impuesto = calcularImpuesto(precioFinalSinImpuesto);
-        BigDecimal valorVenta = precioFinalSinImpuesto.add(impuesto);
-        return valorVenta.setScale(6, RoundingMode.HALF_UP);
+    public String getNombre() {
+        return nombre;
+    }
+    private void setNombre(String nombre) {
+        this.nombre = nombre.trim();
     }
 
-    @Override
-    public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
-        BigDecimal descuentoAplicado = calcularDescuento(getPrecioBase());
-        return precioBase.subtract(descuentoAplicado);
+    public BigDecimal getPrecioBase() {
+        return precioBase;
+    }
+    private void setPrecioBase(BigDecimal precioBase) {
+        this.precioBase = precioBase.setScale(6, RoundingMode.HALF_UP);
     }
 
     public Impuesto getImpuesto(){
         return this.impuesto;
     }
-    public void setImpuesto(Impuesto impuesto) {
-        this.impuesto = impuesto;
-    }
-
-    public int getIdImpuesto(){
-        return this.impuesto.getId();
-    }
-
-
-    public BigDecimal getPorcentajeImpuesto(){
-        return this.impuesto.getPorcentaje();
-    }
 
     public Descuento getDescuento(){
         return descuento;
-    }
-    public void setDescuento(Descuento descuento) {
-        this.descuento = descuento;
-    }
-
-    public int getIdDescuento(){
-        return this.descuento.getId();
-    }
-
-
-    public BigDecimal getPorcentajeDescuento(){
-        return this.descuento.getPorcentaje();
     }
 
     public boolean isActivo() {
         return activo;
     }
 
-    private void setActivo(boolean activo) {
-        this.activo = activo;
+    //VALIDACIONES:
+
+    private void validarCodigo(String codigo){
+        if (codigo == null || codigo.isBlank()){
+            throw new IllegalArgumentException("El Código del Producto esta Vacío");
+        }
+        if (codigo.length() > 50){
+            throw new IllegalArgumentException("El Código del Servicio excede los Caracteres Máximos Posibles");
+        }
+    }
+
+    private void validarNombre(String nombre){
+        if (nombre==null || nombre.isBlank()){
+            throw new IllegalArgumentException("Nombre del Servicio Vacío");
+        }
+    }
+
+    private void validarPrecioBase(BigDecimal precioBase){
+        if (precioBase.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Precio del Servicio Invalido");
+        }
+    }
+
+    private void validarImpuesto(Impuesto impuesto){
+        if (impuesto==null){
+            throw new IllegalArgumentException("El Servicio Debe Tener Impuesto Obligatoriamente");
+        }
+    }
+
+    private void validarEstadoImpuesto(Impuesto impuesto){
+        if (!impuesto.isActivo()){
+            throw new IllegalArgumentException("El Impuesto que le quieres poner al Servicio esta Inactivo");
+        }
+    }
+
+    private void validarDescuento(Descuento descuento){
+        if (descuento==null){
+            throw new IllegalArgumentException("El Servicio Debe Tener Descuento Obligatoriamente");
+        }
+    }
+
+    private void validarEstadoDescuento(Descuento descuento){
+        if (!descuento.isActivo()){
+            throw new IllegalArgumentException("El Descuento que le quieres poner al Servicio esta Inactivo");
+        }
     }
 
     //CONSTRUCTOR:
 
-    private Servicio(String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento,
-                     boolean activo){
-        if (codigoServicio.length() > 50){
-            throw new IllegalArgumentException("El Código del Servicio excede los Caracteres Máximos Posibles");
-        }
-        if (nombre==null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Servicio Vacío");
-        }
-        if (precioBase.compareTo(BigDecimal.ZERO) <= 0){
-            throw new IllegalArgumentException("Precio del Servicio Invalido");
-        }
-        if (impuesto==null){
-            throw new IllegalArgumentException("Impuesto del Servicio Invalido");
-        }
-        if (descuento==null){
-            throw new IllegalArgumentException("Descuento del Servicio Invalido");
-        }
-        this.nombre = nombre;
-        this.precioBase = precioBase;
+    private Servicio(
+            String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento,
+            boolean activo
+    ) {
+        validarCodigo(codigoServicio);
+        validarNombre(nombre);
+        validarPrecioBase(precioBase);
+        validarImpuesto(impuesto);
+        validarDescuento(descuento);
         this.codigoServicio = codigoServicio;
+        setNombre(nombre);
+        setPrecioBase(precioBase);
         this.impuesto = impuesto;
         this.descuento = descuento;
         this.activo = activo;
     }
 
-    public static Servicio reconstruirDesdeBD(String codigoServicio, String nombre, BigDecimal precioBase,
-                                              Impuesto impuesto, Descuento descuento, boolean activo){
+    public static Servicio reconstruirDesdeBD(
+            String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento,
+            boolean activo
+    ) {
         return new Servicio(codigoServicio, nombre, precioBase, impuesto, descuento, activo);
     }
 
-    private Servicio(String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento, boolean activo){
-        this(UUID.randomUUID().toString(), nombre, precioBase, impuesto, descuento, activo);
-    }
-
-    public static Servicio crearNuevo(String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento){
-        return new Servicio(nombre, precioBase, impuesto, descuento, true);
+    public static Servicio crearNuevo(
+            String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento
+    ) {
+        return new Servicio(UUID.randomUUID().toString(), nombre, precioBase, impuesto, descuento, true);
     }
 
     //MÉTODOS:
 
-    @Override
-    public TipoItem getTipoItem() {
-        return SERVICIO;
+    private BigDecimal dividirEntreCien(BigDecimal valor){
+        return valor.divide(CIEN, 6, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto) {
-        BigDecimal factorImpuesto = getPorcentajeImpuesto().divide(CIEN, 6, RoundingMode.HALF_UP);
-        return precioFinalSinImpuesto.multiply(factorImpuesto);
+        BigDecimal porcentajeImpuesto = this.impuesto.isActivo() ? this.impuesto.getPorcentaje() : BigDecimal.ZERO;
+        return precioFinalSinImpuesto.multiply(
+                dividirEntreCien(porcentajeImpuesto)
+        )
+        .setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
     public BigDecimal calcularDescuento(BigDecimal precioBase) {
-        if (getPorcentajeDescuento().compareTo(BigDecimal.ZERO) == 0){
-            return BigDecimal.ZERO;
-        }
-        BigDecimal factorDescuento = getPorcentajeDescuento().divide(CIEN, 6, RoundingMode.HALF_UP);
-        return precioBase.multiply(factorDescuento);
+        BigDecimal porcentajeDescuento = this.descuento.isActivo() ? this.descuento.getPorcentaje() : BigDecimal.ZERO;
+        return precioBase.multiply(
+                dividirEntreCien(porcentajeDescuento)
+        )
+        .setScale(6, RoundingMode.HALF_UP);
     }
 
-    //METODOS MODIFICAR SERVICIO:
+    @Override
+    public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
+        return precioBase.subtract(
+                calcularDescuento(getPrecioBase())
+        );
+    }
+
+    @Override
+    public BigDecimal getValorVenta(LocalDate fecha) {
+        BigDecimal precioFinalSinImpuesto = getValorFinalSinImpuesto(fecha);
+        return precioFinalSinImpuesto.add(
+                calcularImpuesto(precioFinalSinImpuesto)
+        )
+        .setScale(6, RoundingMode.HALF_UP);
+    }
+
+    //MÉTODOS MODIFICAR SERVICIO:
 
     public void cambiarNombreServicio(String nombreServicio){
-        if (nombreServicio==null || nombreServicio.isBlank()){
-            throw new IllegalArgumentException("Nombre del Servicio Vacio");
-        }
+        validarNombre(nombre);
         setNombre(nombreServicio);
     }
 
     public void cambiarPrecioBase(BigDecimal precioNuevo){
-        if (precioNuevo.compareTo(BigDecimal.ZERO) <= 0){
-            throw new IllegalArgumentException("Precio del Servicio Invalido");
-        }
+        validarPrecioBase(precioBase);
         setPrecioBase(precioNuevo);
     }
 
     public void cambiarImpuesto(Impuesto impuesto){
-        if (impuesto == getImpuesto()){
-            throw new IllegalArgumentException("El Impuesto nuevo y el vigente son el mismo");
-        }
-        if (!impuesto.isActivo()){
-            throw new IllegalArgumentException("El Impuesto que le quieres poner al Servicio esta Inactivo");
-        }
-        setImpuesto(impuesto);
+        validarImpuesto(impuesto);
+        validarEstadoImpuesto(impuesto);
+        this.impuesto = impuesto;
     }
 
     public void cambiarDescuento(Descuento descuento){
-        if (descuento == getDescuento()){
-            throw new IllegalArgumentException("El Descuento nuevo y el vigente son el mismo");
-        }
-        if (!descuento.isActivo()){
-            throw new IllegalArgumentException("El Descuento que le quieres poner al Servicio esta Inactivo");
-        }
-        setDescuento(descuento);
+        validarDescuento(descuento);
+        validarEstadoDescuento(descuento);
+        this.descuento = descuento;
     }
 
-    public void activarServicio(){
-        if (isActivo()){
-            throw new IllegalStateException("El Servicio ya esta Activo");
-        }
-        setActivo(true);
-    }
-
-    public void desactivarServicio(){
-        if (!isActivo()){
-            throw new IllegalStateException("El Servicio ya esta Inactivo");
-        }
-        setActivo(false);
+    public void cambiarEstado(){
+        this.activo = !this.isActivo();
     }
 
 }//===================================================================================================================//

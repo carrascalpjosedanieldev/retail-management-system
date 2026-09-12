@@ -41,8 +41,8 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             pstmt.setString(1, servicio.getCodigo());
             pstmt.setString(2, servicio.getNombre());
             pstmt.setBigDecimal(3, servicio.getPrecioBase());
-            pstmt.setInt(4, servicio.getIdImpuesto());
-            pstmt.setInt(5, servicio.getIdDescuento());
+            pstmt.setInt(4, servicio.getImpuesto().getId());
+            pstmt.setInt(5, servicio.getDescuento().getId());
 
             int filasAfectadas = pstmt.executeUpdate();
 
@@ -220,10 +220,10 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
         validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_SERVICIO)){
 
-            pstmt.setInt(1, servicio.getIdImpuesto());
+            pstmt.setInt(1, servicio.getImpuesto().getId());
             pstmt.setString(2, servicio.getNombre());
             pstmt.setBigDecimal(3, servicio.getPrecioBase());
-            pstmt.setInt(4, servicio.getIdDescuento());
+            pstmt.setInt(4, servicio.getDescuento().getId());
             pstmt.setBoolean(5, servicio.isActivo());
             pstmt.setString(6, servicio.getCodigo());
 

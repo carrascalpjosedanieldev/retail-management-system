@@ -76,11 +76,11 @@ public class ServicioServicios {
             Servicio servicio = obtenerServicio(codigoServicio);
             servicio.cambiarNombreServicio(nombre);
             servicio.cambiarPrecioBase(precioBase);
-            if (servicio.getIdImpuesto() != idImpuesto){
+            if (servicio.getImpuesto().getId() != idImpuesto){
                 Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
                 servicio.cambiarImpuesto(impuesto);
             }
-            if (servicio.getIdDescuento() != idDescuento){
+            if (servicio.getDescuento().getId() != idDescuento){
                 Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
                 servicio.cambiarDescuento(descuento);
             }
@@ -92,11 +92,7 @@ public class ServicioServicios {
     public void cambiarEstadoServicio(String codigoServicio){
         this.gestorTransaccional.ejecutarEnTransaccion(()->{
             Servicio servicio = obtenerServicio(codigoServicio);
-            if (servicio.isActivo()){
-                servicio.desactivarServicio();
-            } else {
-                servicio.activarServicio();
-            }
+            servicio.cambiarEstado();
             actualizarServicio(servicio);
         });
     }
