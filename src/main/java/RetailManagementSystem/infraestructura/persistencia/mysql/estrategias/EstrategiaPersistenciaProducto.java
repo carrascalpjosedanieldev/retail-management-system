@@ -17,7 +17,7 @@ public interface EstrategiaPersistenciaProducto<T extends Producto> {
         this.insertarDetalleInsertar(conn, (T) producto);
     }
 
-    Producto obtenerDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase) throws SQLException;
+    Producto mapearDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase) throws SQLException;
 
     List<Producto> obtenerDetallesYConstruirEnLote(Connection conn, List<DatosProductoBase> loteBase) throws SQLException;
 

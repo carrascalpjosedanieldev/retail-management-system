@@ -1,6 +1,7 @@
 package RetailManagementSystem.dominio.puertos.repositorios;
 
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 
 import java.util.List;
 
@@ -16,9 +17,7 @@ public interface RepositorioProducto {
 
     List<Producto> obtenerProductosPorInventario(int idInventario);
 
-    List<Producto> obtenerProductosRopaPorInventario(int idInventario);
-
-    List<Producto> obtenerProductosPerecederoPorInventario(int idInventario);
+    List<Producto> obtenerProductosDeTipoDeInventario(int idInventario, TipoProducto tipoProducto);
 
     Producto obtenerProductoActivoSoloPorCodigo(String codigoProducto);
 

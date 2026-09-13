@@ -26,7 +26,7 @@ public class EstrategiaPersistenciaRopa extends EstrategiaPersistenciaAbstracta<
     }
 
     @Override
-    public Producto obtenerDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase) throws SQLException {
+    public Producto mapearDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase) throws SQLException {
         String tallaString = rs.getString("talla");
         return ProductoRopa.reconstruirDesdeBD(
                 datosBase.codigo(), datosBase.nombre(), datosBase.valorCompra(), datosBase.porcentajeGanancia(),

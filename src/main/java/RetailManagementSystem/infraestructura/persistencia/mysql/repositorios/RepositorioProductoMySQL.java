@@ -163,11 +163,11 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                     "NO hay una Estrategia de Persistencia Registrada para: " + tipoProducto
             );
         }
-        return estrategia.obtenerDetalleYConstruirProducto(rs, productoBase);
+        return estrategia.mapearDetalleYConstruirProducto(rs, productoBase);
     }
 
 
-    private static final String SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIOS =
+    private static final String SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIO =
             "SELECT " +
             "p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
             "tp.nombre AS nombre_tipo, " +
@@ -185,7 +185,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         Map<TipoProducto, List<DatosProductoBase>> mapaProductos = new HashMap<>();
         List<Producto> listaCompleta = new ArrayList<>();
         Connection conn = VinculadorTransaccion.getConnection();
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIOS)){
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIO)){
             pstmt.setInt(1, idInventario);
 
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -216,76 +216,56 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
 
-    private static final String SQL_OBTENER_PRODUCTOS_ROPA_DE_INVENTARIO =
-            "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, " +
-            "p.stock, p.activo, r.talla, " +
-            "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
-            "i.activo AS impuesto_activo, " +
+
+    private static final String SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIO_DE_TIPO =
+            "SELECT " +
+            "p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, p.stock, p.activo, " +
+            "tp.nombre AS nombre_tipo, " +
+            "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
             "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
             "des.activo AS descuento_activo " +
             "FROM productos p " +
             "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
             "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
-            "INNER JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
-            "WHERE p.id_inventario = ?";
+            "INNER JOIN tipo_producto tp ON p.id_tipo_producto = tp.id_tipo " +
+            "WHERE p.id_inventario = ? AND tp.nombre = ? ";
 
     @Override
-    public List<Producto> obtenerProductosRopaPorInventario(int idInventario) {
-        List<Producto> productosRopa = new ArrayList<>();
+    public List<Producto> obtenerProductosDeTipoDeInventario(int idInventario, TipoProducto tipoProducto) {
+        List<DatosProductoBase> listaProductosBase = new ArrayList<>();
         Connection conn = VinculadorTransaccion.getConnection();
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PRODUCTOS_ROPA_DE_INVENTARIO)) {
+        try {
 
-            pstmt.setInt(1, idInventario);
+            try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_DATOS_COMUNES_DE_PRODUCTOS_DE_INVENTARIO_DE_TIPO)){
+                pstmt.setInt(1, idInventario);
+                pstmt.setString(2, tipoProducto.name());
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    productosRopa.add(mapearProductoDesdeResultSet(rs, TipoProducto.ROPA));
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    while (rs.next()) {
+                        listaProductosBase.add(mapearDatosProductoBase(rs));
+                    }
+
+                    return obtenerDetallesProductoPorTipoDesdeResultSet(conn, listaProductosBase, tipoProducto);
                 }
             }
 
         } catch (SQLException e) {
             throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario, e);
         }
-        return productosRopa;
     }
 
-
-    private static final String SQL_OBTENER_PERECEDEROS_DE_INVENTARIO =
-            "SELECT p.codigo_producto, p.id_inventario, p.nombre, p.valor_compra, p.porcentaje_ganancia, " +
-            "p.stock, p.activo, per.fecha_vencimiento, per.id_politica, r.talla, " +
-            "i.id_impuesto, i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, " +
-            "i.activo AS impuesto_activo, " +
-            "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-            "des.activo AS descuento_activo, " +
-            "pove.id_politica, pove.nombre_politica, pove.dias_umbral, " +
-            "pove.porcentaje_descuento AS porcentaje_politica, pove.activa AS politica_activa " +
-            "FROM productos p " +
-            "INNER JOIN impuestos i ON p.id_impuesto = i.id_impuesto " +
-            "INNER JOIN descuentos des ON p.id_descuento = des.id_descuento " +
-            "INNER JOIN producto_perecedero per ON p.codigo_producto = per.codigo_producto " +
-            "LEFT JOIN producto_ropa r ON p.codigo_producto = r.codigo_producto " +
-            "INNER JOIN politicas_vencimiento pove ON per.id_politica = pove.id_politica " +
-            "WHERE p.id_inventario = ?";
-
-    @Override
-    public List<Producto> obtenerProductosPerecederoPorInventario(int idInventario) {
-        List<Producto> productosPerecederos = new ArrayList<>();
-        Connection conn = VinculadorTransaccion.getConnection();
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERECEDEROS_DE_INVENTARIO)) {
-
-            pstmt.setInt(1, idInventario);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    productosPerecederos.add(mapearProductoDesdeResultSet(rs, TipoProducto.PERECEDERO));
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new PersistenciaException("Error crítico al listar los productos del inventario: " + idInventario + e.getMessage(), e);
+    private List<Producto> obtenerDetallesProductoPorTipoDesdeResultSet(
+            Connection conn, List<DatosProductoBase> listaBase, TipoProducto tipoProducto
+    ) throws SQLException {
+        EstrategiaPersistenciaProducto<?> estrategia = despachador.get(tipoProducto);
+        if (estrategia == null) {
+            throw new IllegalStateException(
+                    "NO hay una Estrategia de Persistencia Registrada para: " + tipoProducto
+            );
         }
-        return productosPerecederos;
+        return estrategia.obtenerDetallesYConstruirEnLote(conn, listaBase);
     }
+
 
 
     private static final String SQL_OBTENER_PRODUCTO_ACTIVO_POR_CODIGO =
@@ -317,13 +297,13 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
-                    Producto producto = mapearProductoDesdeResultSet(rs, tipoProducto);
-                    if (!producto.isActivo()) {
+                    boolean activo = rs.getBoolean("activo");
+                    if (!activo) {
                         throw new ProductoNoDisponibleException("Error de negocio: El Producto con Código -" +
                                 codigoProducto + "- NO esta en Venta");
                     }
-                    return producto;
+                    TipoProducto tipoProducto = TipoProducto.valueOf(rs.getString("nombre_tipo"));
+                    return mapearProductoDesdeResultSet(rs, tipoProducto);
                 }
 
                 throw new ProductoNoEncontradoException("El Producto de Código -" + codigoProducto + "- NO existe");

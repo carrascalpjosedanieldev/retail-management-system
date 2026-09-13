@@ -38,7 +38,7 @@ public class EstrategiaPersistenciaPerecedero extends EstrategiaPersistenciaAbst
     }
 
     @Override
-    public Producto obtenerDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase)throws SQLException{
+    public Producto mapearDetalleYConstruirProducto(ResultSet rs, DatosProductoBase datosBase)throws SQLException{
         Date fechaSql = rs.getDate("fecha_vencimiento");
         PoliticaVencimiento politicaVencimiento = this.mapeadorPoliticasVencimiento.mapearPoliticaVencimiento(rs);
 

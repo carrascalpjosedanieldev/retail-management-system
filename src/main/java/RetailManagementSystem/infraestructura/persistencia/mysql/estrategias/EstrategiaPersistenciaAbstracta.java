@@ -41,7 +41,7 @@ public abstract class EstrategiaPersistenciaAbstracta<T extends Producto> implem
                     DatosProductoBase datosBase = mapaLoteBase.get(codigo);
 
                     if (datosBase != null) {
-                        listaFinal.add(obtenerDetalleYConstruirProducto(rs, datosBase));
+                        listaFinal.add(mapearDetalleYConstruirProducto(rs, datosBase));
                     }
                 }
             }

@@ -4,6 +4,7 @@ import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioDescuentos;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioImpuestos;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPoliticaVencimiento;
@@ -121,13 +122,13 @@ public class ServicioProductos {
 
     public List<Producto> obtenerProductosRopaDeInventario(int idInventario){
         return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
-                this.repositorioProducto.obtenerProductosRopaPorInventario(idInventario)
+                this.repositorioProducto.obtenerProductosDeTipoDeInventario(idInventario, TipoProducto.ROPA)
         );
     }
 
     public List<Producto> obtenerProductosPerecederoDeInventario(int idInventario){
         return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
-                this.repositorioProducto.obtenerProductosPerecederoPorInventario(idInventario)
+                this.repositorioProducto.obtenerProductosDeTipoDeInventario(idInventario, TipoProducto.PERECEDERO)
         );
     }
 
