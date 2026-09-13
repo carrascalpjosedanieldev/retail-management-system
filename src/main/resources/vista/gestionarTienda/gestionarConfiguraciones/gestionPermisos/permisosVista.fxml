@@ -10,7 +10,6 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox prefHeight="720.0" prefWidth="1280.0" spacing="20.0" styleClass="fondo-panel" stylesheets="@../../../../css/gestionarTienda/gestionarConfiguraciones/gestionPermisos/estilosCssPermisosVista.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.GestionPermisosControlador">
@@ -26,9 +25,9 @@
 
     <HBox spacing="20.0">
 
-        <VBox prefHeight="64.0" prefWidth="320.0" spacing="5.0">
+        <VBox prefHeight="70.0" prefWidth="170.0" spacing="5.0">
             <Label prefHeight="20.0" prefWidth="122.0" styleClass="label-filtro" text="Buscar Permiso:" />
-            <TextField fx:id="txtBuscar" prefHeight="42.0" prefWidth="320.0" promptText="Ej: Vender, Crear..." styleClass="campo-filtro" />
+            <TextField fx:id="txtBuscar" prefHeight="42.0" prefWidth="201.0" promptText="Ej: Vender, Crear..." styleClass="campo-filtro" />
         </VBox>
 
         <VBox spacing="5.0">
@@ -37,7 +36,7 @@
                 <fx:define>
                     <ToggleGroup fx:id="tgEstado" />
                 </fx:define>
-                <ToggleButton fx:id="btnFiltroTodos" prefHeight="38.0" selected="true" styleClass="btn-toggle, btn-toggle-izq" text="Todos" toggleGroup="$tgEstado" />
+                <ToggleButton fx:id="btnFiltroTodos" prefHeight="38.0" selected="true" styleClass="btn-toggle, btn-toggle-izq" text="Todos" toggleGroup="$tgEstado"/>
                 <ToggleButton fx:id="btnFiltroActivos" prefHeight="38.0" styleClass="btn-toggle, btn-toggle-centro" text="Activos" toggleGroup="$tgEstado" />
                 <ToggleButton fx:id="btnFiltroInactivos" prefHeight="38.0" styleClass="btn-toggle, btn-toggle-der" text="Inactivos" toggleGroup="$tgEstado" />
             </HBox>
@@ -45,10 +44,13 @@
 
         <VBox spacing="5.0">
             <Label styleClass="label-filtro" text="Filtrar por Módulo:" />
-            <ComboBox fx:id="cbFiltroModulo" prefWidth="220.0" promptText="Todos los Módulos" styleClass="combo-filtro" />
+            <ComboBox fx:id="cbFiltroModulo" prefHeight="42.0" prefWidth="192.0" promptText="Todos los Módulos" styleClass="combo-filtro" />
         </VBox>
-
-        <Region HBox.hgrow="ALWAYS" />
+      <Button fx:id="btnCambiarDescripcion" mnemonicParsing="false" onAction="#accionCambiarDescripcion" prefHeight="44.0" prefWidth="212.0" text="📝 Cambiar Descripcion">
+         <HBox.margin>
+            <Insets top="25.0" />
+         </HBox.margin>
+      </Button>
       <Button fx:id="btnCambiarEstado" mnemonicParsing="false" onAction="#accionCambiarEstado" prefHeight="44.0" prefWidth="206.0" text="🔄 Activar / Desactivar">
          <HBox.margin>
             <Insets top="25.0" />

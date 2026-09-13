@@ -39,6 +39,7 @@ public class GestionPermisosControlador {
     @FXML private ToggleButton btnFiltroInactivos;
     @FXML private Button btnSalir;
     @FXML private Button btnCambiarEstado;
+    @FXML private Button btnCambiarDescripcion;
     @FXML private TableView<PermisoDTO> tablaPermisos;
     @FXML private TableColumn<PermisoDTO, Integer> colId;
     @FXML private TableColumn<PermisoDTO, String> colNombre;
@@ -200,6 +201,10 @@ public class GestionPermisosControlador {
 
     @FXML
     private void accionCambiarEstado(ActionEvent event) {
+        cambiarEstadoPermiso();
+    }
+
+    private void cambiarEstadoPermiso(){
         PermisoDTO permisoSeleccionado = tablaPermisos.getSelectionModel().getSelectedItem();
         if (permisoSeleccionado == null){
             GestorAlertas.mostrarAlertaWarning(
@@ -217,24 +222,24 @@ public class GestionPermisosControlador {
                         this.usuarioActual, permisoSeleccionado.idPermiso(), permisoSeleccionado.activo()
                 )
         ).thenRun(()->
-            Platform.runLater(()->{
-                GestorAlertas.mostrarAlertaInformacion(
-                        getVentana(), "Éxito", null,
-                        "El Estado se ha Actualizado Correctamente."
-                );
-                PermisoDTO actualizado = new PermisoDTO(
-                        permisoSeleccionado.idPermiso(),
-                        permisoSeleccionado.nombre(),
-                        permisoSeleccionado.descripcion(),
-                        permisoSeleccionado.modulo(),
-                        !permisoSeleccionado.activo()
-                );
-                UtilidadesLista.reemplazarPorIdentidad(
-                        listaMaestraPermisos,
-                        actualizado,
-                        item -> item.idPermiso() == actualizado.idPermiso()
-                );
-            })
+                Platform.runLater(()->{
+                    GestorAlertas.mostrarAlertaInformacion(
+                            getVentana(), "Éxito", null,
+                            "El Estado se ha Actualizado Correctamente."
+                    );
+                    PermisoDTO actualizado = new PermisoDTO(
+                            permisoSeleccionado.idPermiso(),
+                            permisoSeleccionado.nombre(),
+                            permisoSeleccionado.descripcion(),
+                            permisoSeleccionado.modulo(),
+                            !permisoSeleccionado.activo()
+                    );
+                    UtilidadesLista.reemplazarPorIdentidad(
+                            listaMaestraPermisos,
+                            actualizado,
+                            item -> item.idPermiso() == actualizado.idPermiso()
+                    );
+                })
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
@@ -246,6 +251,34 @@ public class GestionPermisosControlador {
             });
             return null;
         });
+    }
+
+
+    @FXML
+    public void accionCambiarDescripcion(ActionEvent event) {
+        cambiarDescripcionPermiso();
+    }
+
+    private void cambiarDescripcionPermiso(){
+        PermisoDTO permisoSeleccionado = tablaPermisos.getSelectionModel().getSelectedItem();
+        if (permisoSeleccionado == null){
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Atención", null,
+                    "Por favor, selecciona un Permiso de la Tabla para cambiar su Descripción."
+            );
+            return;
+        }
+        try {
+            CargadorVistas.abrirModalConInyeccion(
+                    RutasVista.EDITAR_DESCRIPCION_PERMISO_VIEW,
+                    "Editar Descripción", getVentana(),
+                    (EditarDescripcionPermisoControlador c) -> {
+                        c.cargarDatos(this.usuarioActual, listaMaestraPermisos, permisoSeleccionado);
+                    }
+            );
+        } catch (AccesoDenegadoException ex){
+            GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), ex);
+        }
     }
 
 

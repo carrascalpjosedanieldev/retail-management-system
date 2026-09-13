@@ -42,6 +42,9 @@ public class RutasVista {
     public static final String PERMISOS_VISTA_VIEW =
             "/vista/gestionarTienda/gestionarConfiguraciones/gestionPermisos/permisosVista.fxml";
 
+    public static final String EDITAR_DESCRIPCION_PERMISO_VIEW =
+            "/vista/gestionarTienda/gestionarConfiguraciones/gestionPermisos/editarDescripcion.fxml";
+
 
             //GESTION ROLES:
 

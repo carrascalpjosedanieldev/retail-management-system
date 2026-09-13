@@ -18,5 +18,7 @@ public interface RepositorioPermiso {
 
     void cambiarEstado(int idPermiso, boolean activo);
 
+    void cambiarDescripcion(int idPermiso, String descripcion);
+
 }//===================================================================================================================//
 

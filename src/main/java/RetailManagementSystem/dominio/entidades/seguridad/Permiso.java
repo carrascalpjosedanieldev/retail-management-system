@@ -10,7 +10,7 @@ public class Permiso {
 
     private final String nombre;
 
-    private String descripcion;
+    private final String descripcion;
 
     private final String modulo;
 
@@ -29,9 +29,6 @@ public class Permiso {
     public String getDescripcion() {
         return descripcion;
     }
-    private void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
     public String getModulo() {
         return modulo;
@@ -49,8 +46,8 @@ public class Permiso {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Permiso Vacío");
         }
-        if (descripcion == null) {
-            throw new IllegalArgumentException("La Descripción NO puede ser Nula");
+        if (descripcion == null){
+            throw new IllegalArgumentException("Descripción del Permiso Nula");
         }
         this.idPermiso = idPermiso;
         this.nombre = nombre.trim().toUpperCase();
@@ -65,7 +62,7 @@ public class Permiso {
         return new Permiso(idPermiso, nombre, descripcion, modulo, activo);
     }
 
-    public static Permiso crearNuevo(String nombre, String descripcion, String modulo, boolean activo){
+    public static Permiso crearNuevo(String nombre, String descripcion, String modulo, boolean activo) {
         return new Permiso(null, nombre, descripcion, modulo, activo);
     }
 
@@ -82,13 +79,6 @@ public class Permiso {
     @Override
     public int hashCode() {
         return Objects.hash(nombre);
-    }
-
-    public void cambiarDescripcion(String descripcionNueva){
-        if (descripcionNueva == null){
-            throw new IllegalArgumentException("Descripción del Permiso Nula");
-        }
-        setDescripcion(descripcionNueva);
     }
 
 }//==================================================================================================================//

@@ -41,6 +41,15 @@ public class ServicioPermiso {
         );
     }
 
+    public void cambiarDescripcionPermiso(int idPermiso, String descripcion){
+        if (descripcion == null || descripcion.isBlank()){
+            throw new IllegalArgumentException("Descripción del Permiso Vacía");
+        }
+        this.gestorTransaccional.ejecutarEnTransaccion(()->
+            this.repositorioPermiso.cambiarDescripcion(idPermiso, descripcion)
+        );
+    }
+
     public void cambiarEstadoPermiso(int idPermiso, boolean activoActual){
         this.gestorTransaccional.ejecutarEnTransaccion(()->
                 this.repositorioPermiso.cambiarEstado(idPermiso, !activoActual)

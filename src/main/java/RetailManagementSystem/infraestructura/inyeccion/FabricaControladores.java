@@ -1,5 +1,6 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionPermisos.EditarDescripcionPermisoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.gestionRoles.*;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.politicasDeBloqueo.EditarPoliticasBloqueoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescuentos.CrearDescuentoControlador;
@@ -270,6 +271,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == EditarPoliticasBloqueoControlador.class){
             return new EditarPoliticasBloqueoControlador(
                     ContenedorDependencias.getOrquestadorConfiguraciones()
+            );
+        }
+        if (claseControlador == EditarDescripcionPermisoControlador.class){
+            return new EditarDescripcionPermisoControlador(
+                    ContenedorDependencias.getOrquestadorPermisos()
             );
         }
         try {

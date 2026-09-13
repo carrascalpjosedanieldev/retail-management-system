@@ -144,7 +144,31 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
             }
 
         } catch (SQLException e) {
-            throw new PersistenciaException("Error de base de datos al actualizar el Permiso", e);
+            throw new PersistenciaException("Error de base de datos al Actualizar el Permiso", e);
+        }
+    }
+
+
+    private static final String SQL_CAMBIAR_DESCRIPCION =
+            "UPDATE permisos SET descripcion = ? WHERE id_permiso = ?";
+
+    @Override
+    public void cambiarDescripcion(int idPermiso, String descripcion) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_DESCRIPCION)) {
+
+            pstmt.setString(1, descripcion);
+            pstmt.setInt(2, idPermiso);
+
+            int filasAfectadas = pstmt.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                throw new PermisoNoEncontradoException("NO se pudo Actualizar: El Permiso con ID -" + idPermiso + "- NO Existe.");
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error de base de datos al Actualizar el Permiso", e);
         }
     }
 

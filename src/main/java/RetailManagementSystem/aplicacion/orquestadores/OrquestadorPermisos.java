@@ -38,6 +38,11 @@ public class OrquestadorPermisos {
         );
     }
 
+    public void cambiarDescripcionPermiso(UsuarioDTOCompleto usuario, int idPermiso, String descripcion){
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_PERMISOS);
+        this.servicioPermiso.cambiarDescripcionPermiso(idPermiso, descripcion);
+    }
+
     public void cambiarEstadoPermiso(UsuarioDTOCompleto usuario, int idPermiso, boolean activoActual){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_PERMISOS);
         this.servicioPermiso.cambiarEstadoPermiso(idPermiso, activoActual);
