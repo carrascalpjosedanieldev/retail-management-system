@@ -8,6 +8,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarios;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -97,7 +98,7 @@ public class MoverProductoAOtroInventarioControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error", null,
                         "NO se Pudieron Cargar los Inventarios.\n" +
@@ -136,7 +137,7 @@ public class MoverProductoAOtroInventarioControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "NO se pudo Completar la Acción", null,

@@ -11,6 +11,7 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.Servicio
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.*;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -152,7 +153,7 @@ public class MenuDeVentasControlador {
                 agregarItem(null);
             }
         });
-        Platform.runLater(() -> txtCodigo.requestFocus());
+        Platform.runLater(()-> txtCodigo.requestFocus());
     }
 
     private void actualizarTotales() {
@@ -188,7 +189,7 @@ public class MenuDeVentasControlador {
                 })
             ).exceptionally(ex->{
                 Platform.runLater(()->{
-                    Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                    Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                     manejarErrorCritico(causa);
                 });
                 return null;
@@ -227,7 +228,7 @@ public class MenuDeVentasControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof ProductoVencidoException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Producto Vencido", null,
@@ -329,7 +330,7 @@ public class MenuDeVentasControlador {
             )
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof IllegalArgumentException) {
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Error en el Proceso", null,
@@ -376,7 +377,7 @@ public class MenuDeVentasControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 manejarErrorCritico(causa);
             });
             return null;
@@ -433,7 +434,7 @@ public class MenuDeVentasControlador {
                 Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()))
         ).exceptionally(ex -> {
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Entrada Inválida", null,
@@ -482,7 +483,7 @@ public class MenuDeVentasControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof CarritoVacioException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Carrito Vacío", null,

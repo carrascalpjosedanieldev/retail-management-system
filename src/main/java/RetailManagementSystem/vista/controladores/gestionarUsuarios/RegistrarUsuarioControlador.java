@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -120,7 +121,7 @@ public class RegistrarUsuarioControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof EmailDuplicadoException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Email Duplicado", null,

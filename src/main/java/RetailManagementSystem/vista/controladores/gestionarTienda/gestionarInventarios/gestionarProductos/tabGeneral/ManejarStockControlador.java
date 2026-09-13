@@ -7,6 +7,7 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInven
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -183,7 +184,7 @@ public class ManejarStockControlador {
                 })
             ).exceptionally(ex->{
                 Platform.runLater(()->{
-                    Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                    Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                     if (causa instanceof IllegalArgumentException || causa instanceof IllegalStateException){
                         GestorAlertas.mostrarAlertaWarning(
                                 getVentana(), "NO se pudo Completar la Acción", null,

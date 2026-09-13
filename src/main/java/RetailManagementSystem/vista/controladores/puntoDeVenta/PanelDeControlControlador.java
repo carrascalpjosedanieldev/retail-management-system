@@ -6,6 +6,7 @@ import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.Acceso
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
@@ -117,7 +118,7 @@ public class PanelDeControlControlador {
                 lblCantidadFacturas.setText("0");
                 lblTotalVentasHoy.setText("$ 0.00");
                 lblUltimaVenta.setText("$ 0.00");
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error de Conexión",
                         "No se pudieron cargar las métricas de hoy",
@@ -139,7 +140,7 @@ public class PanelDeControlControlador {
         ).exceptionally(ex->{
             Platform.runLater(() -> {
                 lblVersion.setText("Versión --");
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error de Carga", "Error al Cargar la Version",
                         "NO se pudo Cargar la Versión de la Tienda: " + causa.getMessage() + ".\n" +

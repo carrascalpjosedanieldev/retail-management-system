@@ -101,7 +101,7 @@ public class EdicionTiendaControlador {
                 })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof  IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Error en los Datos Ingresados", null,

@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.GestionConfiguracionesControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -138,7 +139,7 @@ public class GestionPermisosControlador {
             });
         }).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Crítico",
                         "No se pudieron cargar los permisos",
@@ -215,7 +216,7 @@ public class GestionPermisosControlador {
                 this.orquestadorPermisos.cambiarEstadoPermiso(
                         this.usuarioActual, permisoSeleccionado.idPermiso(), permisoSeleccionado.activo()
                 )
-        ).thenRun(()->{
+        ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(
                         getVentana(), "Éxito", null,
@@ -233,10 +234,10 @@ public class GestionPermisosControlador {
                         actualizado,
                         item -> item.idPermiso() == actualizado.idPermiso()
                 );
-            });
-        }).exceptionally(ex->{
+            })
+        ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",

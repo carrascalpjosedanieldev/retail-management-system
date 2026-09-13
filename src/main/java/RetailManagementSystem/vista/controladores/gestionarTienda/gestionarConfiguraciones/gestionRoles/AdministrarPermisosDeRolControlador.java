@@ -7,6 +7,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -171,7 +172,7 @@ public class AdministrarPermisosDeRolControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",

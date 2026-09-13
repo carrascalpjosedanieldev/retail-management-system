@@ -5,6 +5,7 @@ import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.Acceso
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.CredencialesInvalidasException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioInactivoException;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.menuPrincipal.MenuPrincipalControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -121,7 +122,7 @@ public class LoginControlador {
                 })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 switch (causa) {
                     case IllegalArgumentException illegalArgumentException -> GestorAlertas.mostrarAlertaError(
                             getVentana(), "Datos Inválidos", null,

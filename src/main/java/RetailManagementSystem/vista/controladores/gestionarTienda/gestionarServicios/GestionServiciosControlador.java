@@ -10,6 +10,7 @@ import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
@@ -187,7 +188,7 @@ public class GestionServiciosControlador {
             )
         ).exceptionally(ex->{
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
@@ -250,7 +251,7 @@ public class GestionServiciosControlador {
             return null;
         }).exceptionally(ex -> {
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaWarning(
                         getVentana(), "Configuración Requerida", null,
                         causa.getMessage()
@@ -327,7 +328,7 @@ public class GestionServiciosControlador {
                 );
             })
         ).exceptionally(ex->{
-            Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+            Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
             GestorAlertas.mostrarAlertaError(
                     getVentana(), "NO se pudo Completar la Acción", null,
                     "Error:  " + causa.getMessage()

@@ -3,6 +3,7 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemVendidoFacturaDTO;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -119,7 +120,7 @@ public class FacturaGeneradaControlador {
         ).exceptionally(ex -> {
             Platform.runLater(() -> {
                 lblNombreTienda.setText("Tienda (Modo Offline)");
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error de Carga",
                         "Error al Obtener el Nombre de la Tienda",

@@ -9,6 +9,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.GestionInventariosControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
@@ -94,7 +95,7 @@ public class TabRopaControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Crítico de Carga",
                         "NO se pudieron Cargar los Datos del Inventario.",
@@ -369,7 +370,7 @@ public class TabRopaControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "NO se pudo Completar la Acción", null,
                         "Error:  " + causa.getMessage()

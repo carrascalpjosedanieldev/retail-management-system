@@ -9,6 +9,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -133,7 +134,7 @@ public class EditarRopaControlador {
             });
         }).exceptionally(ex->{
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(),
                         "Error de Conexión",
@@ -234,7 +235,7 @@ public class EditarRopaControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof  IllegalArgumentException ||
                     causa instanceof  IllegalStateException){
                     GestorAlertas.mostrarAlertaError(

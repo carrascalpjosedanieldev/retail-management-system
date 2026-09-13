@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.GestionInventariosControlador;
 import RetailManagementSystem.vista.utilidades.*;
 
@@ -134,8 +135,7 @@ public class TabGeneralProductosControlador {
             });
         }).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
-                ex.printStackTrace();
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico", null,
                         "Ocurrió un Error al cargar los Productos Perecederos. La Ventana se Cerrará por Seguridad.\n" +
@@ -353,7 +353,7 @@ public class TabGeneralProductosControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "NO se pudo Completar la Acción", null,
                         "Error:  " + causa.getMessage()

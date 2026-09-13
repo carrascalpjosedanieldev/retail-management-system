@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -163,7 +164,7 @@ public class AnadirPermisoAlRolControlador {
             });
         }).exceptionally(ex -> {
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Crítico",
                         "No se pudieron cargar los permisos",

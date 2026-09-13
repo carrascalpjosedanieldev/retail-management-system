@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVen
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
@@ -94,7 +95,7 @@ public class HistorialVentasControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof AccesoDenegadoException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Acceso Denegado", null,

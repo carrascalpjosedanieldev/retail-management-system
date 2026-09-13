@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarios;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 
 import javafx.application.Platform;
@@ -92,7 +93,7 @@ public class CrearInventarioControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Error en los Datos Ingresados",

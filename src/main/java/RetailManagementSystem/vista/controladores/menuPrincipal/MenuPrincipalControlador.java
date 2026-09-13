@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
 import RetailManagementSystem.vista.controladores.gestionarUsuarios.GestionUsuariosControlador;
 import RetailManagementSystem.vista.controladores.puntoDeVenta.PanelDeControlControlador;
@@ -131,7 +132,7 @@ public class MenuPrincipalControlador {
         }).exceptionally(ex->{
             Platform.runLater(() -> {
                 lblVersion.setText("Versión --");
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error de Carga", "Error al Cargar la Version",
                         "NO se pudo Cargar la Versión de la Tienda: " + causa.getMessage() + ".\n" +
@@ -168,9 +169,8 @@ public class MenuPrincipalControlador {
             });
         }).exceptionally(ex -> {
             Platform.runLater(() -> {
-                ex.printStackTrace();
                 lblNombreTienda.setText("Tienda (Modo Offline)");
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error de Carga",
                         "Error al Obtener el Nombre de la Tienda",

@@ -8,6 +8,7 @@ import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.Acceso
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -136,7 +137,7 @@ public class CrearRolNuevoControlador {
             });
         }).exceptionally(ex -> {
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Crítico",
                         "NO se pudieron Cargar los Permisos",
@@ -266,7 +267,7 @@ public class CrearRolNuevoControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Error al Guardar",

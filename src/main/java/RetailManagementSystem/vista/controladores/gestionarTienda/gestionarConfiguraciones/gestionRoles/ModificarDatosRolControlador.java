@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorRoles;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
 
@@ -110,7 +111,7 @@ public class ModificarDatosRolControlador {
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 if (causa instanceof IllegalArgumentException){
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Error",

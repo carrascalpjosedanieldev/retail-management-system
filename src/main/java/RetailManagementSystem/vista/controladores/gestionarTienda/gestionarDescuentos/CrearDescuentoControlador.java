@@ -113,7 +113,6 @@ public class CrearDescuentoControlador {
                                         "Detalle: " + causa.getMessage()
                         );
                         System.err.println("Error no controlado en Guardar Descuento:");
-                        causa.printStackTrace();
                     }
                 }
             });

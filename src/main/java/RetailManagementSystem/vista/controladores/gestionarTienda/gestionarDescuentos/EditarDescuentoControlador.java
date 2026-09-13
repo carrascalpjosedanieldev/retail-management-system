@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
+import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.UtilidadesLista;
@@ -59,7 +60,7 @@ public class EditarDescuentoControlador {
         lblNombreDescuento.setText(this.datosDescuento.nombre());
         txtNombre.setText(this.datosDescuento.nombre());
         txtPorcentaje.setText(this.datosDescuento.porcentaje().toString());
-        Platform.runLater(() -> btnCancelar.requestFocus());
+        Platform.runLater(()-> btnCancelar.requestFocus());
     }
 
     private Window getVentana(){
@@ -108,7 +109,7 @@ public class EditarDescuentoControlador {
             })
         ).exceptionally(ex -> {
             Platform.runLater(() -> {
-                Throwable causa = ex.getCause() != null ? ex.getCause() : ex;
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Critico",
                         "NO se pudo Completar la Acción.",
