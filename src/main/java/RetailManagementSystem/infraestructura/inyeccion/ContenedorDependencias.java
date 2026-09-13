@@ -55,6 +55,8 @@ public class ContenedorDependencias {
     private static MapeadorInventario mapeadorInventario;
     private static MapeadorPermisos mapeadorPermisos;
     private static MapeadorRol mapeadorRol;
+    private static MapeadorServicio mapeadorServicio;
+    private static MapeadorUsuario mapeadorUsuario;
 
         //REPOSITORIOS:
 
@@ -149,6 +151,8 @@ public class ContenedorDependencias {
         mapeadorInventario = new MapeadorInventario();
         mapeadorPermisos = new MapeadorPermisos();
         mapeadorRol = new MapeadorRol();
+        mapeadorServicio = new MapeadorServicio();
+        mapeadorUsuario = new MapeadorUsuario();
 
         //INSTANTIATION DE ESTRATEGIAS:
 
@@ -167,10 +171,10 @@ public class ContenedorDependencias {
         repositorioProducto = new RepositorioProductoMySQL(
                 despachador, mapeadorImpuestos, mapeadorDescuentos, mapeadorProductoBase
         );
-        repositorioServicio = new RepositorioServicioMySQL();
+        repositorioServicio = new RepositorioServicioMySQL(mapeadorServicio, mapeadorImpuestos, mapeadorDescuentos);
         repositorioPermiso = new RepositorioPermisoMySQL(mapeadorPermisos);
         repositorioRol = new RepositorioRolMySQL(mapeadorRol, mapeadorPermisos);
-        repositorioUsuario = new RepositorioUsuarioMySQL();
+        repositorioUsuario = new RepositorioUsuarioMySQL(mapeadorUsuario, mapeadorRol, mapeadorPermisos);
 
         //PROOVEDOR:
 

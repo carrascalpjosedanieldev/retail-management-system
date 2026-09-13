@@ -36,43 +36,9 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
     //READ:
 
-    private static final String SQL_OBTENER_PERMISO =
-            "SELECT p.id_permiso, p.id_modulo, p.nombre, p.descripcion, p.activo, m.nombre AS nombre_modulo " +
-            "FROM permisos p " +
-            "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
-            "WHERE p.id_permiso = ? ";
-
-
-    @Override
-    public Permiso obtenerPermiso(int idPermiso) {
-        if (idPermiso <= 0){
-            throw new IllegalArgumentException("El ID del Permiso debe ser un Numero Positivo.");
-        }
-        Connection conn = VinculadorTransaccion.getConnection();
-        validarConexion(conn);
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISO)){
-
-            pstmt.setInt(1, idPermiso);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-
-                if (rs.next()){
-                    return this.mapeadorPermisos.mapearPermiso(rs);
-                }
-
-                throw new PermisoNoEncontradoException("NO existe un Permiso de ID:  " + idPermiso);
-
-            }
-
-        } catch (SQLException e) {
-            throw new PersistenciaException("Error de base de datos al obtener el Permiso", e);
-        }
-    }
-
-
     private static final String SQL_OBTENER_PERMISOS_POR_ESTADO =
             "SELECT " +
-            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS activo_permiso, " +
+            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo, " +
             "m.nombre AS nombre_modulo " +
             "FROM permisos p " +
             "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
@@ -102,7 +68,7 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
     private static final String SQL_OBTENER_TODOS_LOS_PERMISOS =
             "SELECT " +
-            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS activo_permiso, " +
+            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo, " +
             "m.nombre AS nombre_modulo " +
             "FROM permisos p " +
             "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +

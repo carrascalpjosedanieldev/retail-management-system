@@ -12,7 +12,7 @@ public class MapeadorPermisos {
         String nombre = rs.getString("nombre_permiso");
         String descripcion = rs.getString("descripcion");
         String modulo = rs.getString("nombre_modulo");
-        boolean activo = rs.getBoolean("activo_permiso");
+        boolean activo = rs.getBoolean("permiso_activo");
 
         return Permiso.reconstruirDesdeBD(idPermiso, nombre, descripcion, modulo, activo);
     }

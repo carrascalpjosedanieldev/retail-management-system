@@ -10,12 +10,33 @@ import RetailManagementSystem.infraestructura.persistencia.excepciones.IdAutogen
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorPermisos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorRol;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorUsuario;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class RepositorioUsuarioMySQL implements RepositorioUsuario {
+
+    //ATRIBUTOS:
+
+    private final MapeadorUsuario mapeadorUsuario;
+
+    private final MapeadorRol mapeadorRol;
+
+    private final MapeadorPermisos mapeadorPermisos;
+
+    //CONSTRUCTOR:
+
+    public RepositorioUsuarioMySQL(
+            MapeadorUsuario mapeadorUsuario, MapeadorRol mapeadorRol, MapeadorPermisos mapeadorPermisos
+    ) {
+        this.mapeadorUsuario = mapeadorUsuario;
+        this.mapeadorRol = mapeadorRol;
+        this.mapeadorPermisos = mapeadorPermisos;
+    }
 
     //MÉTODOS:
 
@@ -86,7 +107,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
     private static final String SQL_OBTENER_USUARIO_POR_EMAIL =
             "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
             "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
-            "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+            "r.id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
             "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.id_modulo, p.activo AS permiso_activo, " +
             "m.nombre AS nombre_modulo " +
             "FROM usuarios u " +
@@ -107,64 +128,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
-                Usuario usuario = null;
-                Map<Integer, Rol> rolesMap = new HashMap<>();
-
-                while (rs.next()) {
-
-                    if (usuario == null) {
-                        Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
-                        LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
-                        usuario = Usuario.reconstruirDesdeBD(
-                                rs.getLong("id_usuario"),
-                                rs.getString("nombre"),
-                                rs.getString("apellido"),
-                                rs.getString("email"),
-                                rs.getInt("intentos_fallidos"),
-                                fechaBloqueo,
-                                rs.getString("password_hash"),
-                                rs.getBoolean("activo"),
-                                rs.getBoolean("debe_cambiar_contrasena")
-                        );
-                    }
-
-                    int idRol = rs.getInt("rol_id_rol");
-                    if (!rs.wasNull()){
-
-                        Rol rol = rolesMap.get(idRol);
-                        if (rol == null) {
-                            rol = Rol.reconstruirDesdeBD(
-                                    idRol,
-                                    rs.getString("nombre_rol"),
-                                    rs.getBoolean("rol_activo")
-                            );
-                            rolesMap.put(idRol, rol);
-                        }
-
-                        int idPermiso = rs.getInt("id_permiso");
-                        if (!rs.wasNull()){
-
-                            Permiso permiso = Permiso.reconstruirDesdeBD(
-                                    idPermiso,
-                                    rs.getString("nombre_permiso"),
-                                    rs.getString("descripcion"),
-                                    rs.getString("nombre_modulo"),
-                                    rs.getBoolean("permiso_activo")
-                            );
-                            rol.anadirPermisoNuevo(permiso);
-
-                        }
-
-                    }
-
-                }
-
-                if (usuario != null){
-                    for (Rol rol:rolesMap.values()){
-                        usuario.anadirRol(rol);
-                    }
-                }
-                return Optional.ofNullable(usuario);
+                return recuperarUsuarioCompleto(rs);
 
             }
 
@@ -173,11 +137,52 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
         }
     }
 
+    private Optional<Usuario> recuperarUsuarioCompleto(ResultSet rs) throws SQLException{
+
+        Usuario usuario = null;
+        Map<Integer, Rol> rolesMap = new HashMap<>();
+
+        while (rs.next()) {
+
+            if (usuario == null) {
+                usuario = this.mapeadorUsuario.mapearUsuario(rs);
+            }
+
+            int idRol = rs.getInt("id_rol");
+            if (!rs.wasNull()){
+
+                Rol rol = rolesMap.get(idRol);
+                if (rol == null) {
+                    rol = this.mapeadorRol.mapearRol(rs);
+                    rolesMap.put(idRol, rol);
+                }
+
+                rs.getInt("id_permiso");
+                if (!rs.wasNull()){
+
+                    Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
+                    rol.anadirPermisoNuevo(permiso);
+
+                }
+
+            }
+
+        }
+
+        if (usuario != null){
+            for (Rol rol:rolesMap.values()){
+                usuario.anadirRol(rol);
+            }
+        }
+        return Optional.ofNullable(usuario);
+
+    }
+
 
     private static final String SQL_OBTENER_USUARIO_POR_ID =
             "SELECT u.id_usuario, u.nombre, u.apellido, u.email, u.password_hash, u.intentos_fallidos, " +
                     "u.bloqueado_hasta, u.activo, u.debe_cambiar_contrasena, " +
-                    "r.id_rol AS rol_id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+                    "r.id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
                     "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.id_modulo, p.activo AS permiso_activo, " +
                     "m.nombre AS nombre_modulo " +
                     "FROM usuarios u " +
@@ -198,67 +203,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
-                Usuario usuario = null;
-                Map<Integer, Rol> rolesMap = new HashMap<>();
-
-                while (rs.next()) {
-
-                    if (usuario == null) {
-                        Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
-                        LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
-                        usuario = Usuario.reconstruirDesdeBD(
-                                rs.getLong("id_usuario"),
-                                rs.getString("nombre"),
-                                rs.getString("apellido"),
-                                rs.getString("email"),
-                                rs.getInt("intentos_fallidos"),
-                                fechaBloqueo,
-                                rs.getString("password_hash"),
-                                rs.getBoolean("activo"),
-                                rs.getBoolean("debe_cambiar_contrasena")
-                        );
-                    }
-
-                    int idRol = rs.getInt("rol_id_rol");
-                    if (!rs.wasNull()){
-
-                        Rol rol = rolesMap.get(idRol);
-                        if (rol == null) {
-                            rol = Rol.reconstruirDesdeBD(
-                                    idRol,
-                                    rs.getString("nombre_rol"),
-                                    rs.getBoolean("rol_activo")
-                            );
-                            rolesMap.put(idRol, rol);
-                        }
-
-                        int idPermiso = rs.getInt("id_permiso");
-                        if (!rs.wasNull()){
-
-                            Permiso permiso = Permiso.reconstruirDesdeBD(
-                                    idPermiso,
-                                    rs.getString("nombre_permiso"),
-                                    rs.getString("descripcion"),
-                                    rs.getString("nombre_modulo"),
-                                    rs.getBoolean("permiso_activo")
-                            );
-                            rol.recuperarPermisoDeBD(permiso);
-
-                        }
-
-                    }
-
-                }
-
-                if (usuario != null){
-                    for (Rol rol:rolesMap.values()){
-                        usuario.anadirRol(rol);
-                    }
-                    return usuario;
-                }
-
-                throw new UsuarioNoEncontradoException("El Usuario de ID -" + idUsuario + "- NO Existe.");
-
+                return recuperarUsuarioCompleto(rs)
+                        .orElseThrow(() -> new UsuarioNoEncontradoException("El Usuario de ID -" + idUsuario + "- NO Existe."));
             }
 
         } catch (SQLException e) {
@@ -283,20 +229,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
             while (rs.next()){
 
-                long idUsuario = rs.getLong("id_usuario");
-                Timestamp timestampBloqueado = rs.getTimestamp("bloqueado_hasta");
-                LocalDateTime fechaBloqueo = (timestampBloqueado != null) ? timestampBloqueado.toLocalDateTime() : null;
-                Usuario usuario = Usuario.reconstruirDesdeBD(
-                        idUsuario,
-                        rs.getString("nombre"),
-                        rs.getString("apellido"),
-                        rs.getString("email"),
-                        rs.getInt("intentos_fallidos"),
-                        fechaBloqueo,
-                        rs.getString("password_hash"),
-                        rs.getBoolean("activo"),
-                        rs.getBoolean("debe_cambiar_contrasena")
-                );
+                Usuario usuario = this.mapeadorUsuario.mapearUsuario(rs);
                 listaUsuarios.add(usuario);
 
             }
@@ -332,7 +265,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new UsuarioNoEncontradoException("NO se pudo Actualizar: El Usuario con ID -" + usuario.getIdUsuario() + "- NO Existe.");
+                throw new UsuarioNoEncontradoException("NO se pudo Actualizar: El Usuario con ID -" +
+                        usuario.getIdUsuario() + "- NO Existe.");
             }
 
         } catch (SQLException e) {
@@ -359,7 +293,8 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new UsuarioNoEncontradoException("NO se pudo Actualizar: El Usuario con ID -" + usuario.getIdUsuario() + "- NO Existe.");
+                throw new UsuarioNoEncontradoException("NO se pudo Actualizar: El Usuario con ID -" +
+                        usuario.getIdUsuario() + "- NO Existe.");
             }
 
         } catch (SQLException e) {

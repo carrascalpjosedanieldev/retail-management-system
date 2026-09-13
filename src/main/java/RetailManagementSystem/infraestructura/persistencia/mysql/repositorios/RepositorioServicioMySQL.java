@@ -10,13 +10,34 @@ import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.Servicio
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorDescuentos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorImpuestos;
+import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.MapeadorServicio;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioServicioMySQL implements RepositorioServicio {
+
+    //ATRIBUTOS:
+
+    private final MapeadorServicio mapeadorServicio;
+
+    private final MapeadorImpuestos mapeadorImpuestos;
+
+    private final MapeadorDescuentos mapeadorDescuentos;
+
+    //CONSTRUCTOR:
+
+    public RepositorioServicioMySQL(
+            MapeadorServicio mapeadorServicio, MapeadorImpuestos mapeadorImpuestos,
+            MapeadorDescuentos mapeadorDescuentos
+    ) {
+        this.mapeadorServicio = mapeadorServicio;
+        this.mapeadorImpuestos = mapeadorImpuestos;
+        this.mapeadorDescuentos = mapeadorDescuentos;
+    }
 
     //MÉTODOS:
 
@@ -66,9 +87,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     private static final String SQL_OBTENER_SERVICIO =
             "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
             "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-            "des.activo AS activo_descuento " +
+            "des.activo AS descuento_activo " +
             "FROM servicios s " +
             "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
             "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
@@ -97,34 +118,19 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
     }
 
     private Servicio mapearServicioDesdeResultSet(ResultSet rs) throws SQLException {
-        String codigo = rs.getString("codigo_servicio");
-        String nombre = rs.getString("nombre");
-        BigDecimal precioBase = rs.getBigDecimal("precio_base");
-        boolean activo = rs.getBoolean("activo");
+        Impuesto impuesto = this.mapeadorImpuestos.mapearImpuesto(rs);
 
-        Impuesto impuesto = Impuesto.reconstruirDesdeBD(
-                rs.getInt("id_impuesto"),
-                rs.getString("nombre_impuesto"),
-                rs.getBigDecimal("porcentaje_impuesto"),
-                rs.getBoolean("activo_impuesto")
-        );
+        Descuento descuento = this.mapeadorDescuentos.mapearDescuento(rs);
 
-        Descuento descuento = Descuento.reconstruirDesdeBD(
-                rs.getInt("id_descuento"),
-                rs.getString("nombre_descuento"),
-                rs.getBigDecimal("porcentaje_descuento"),
-                rs.getBoolean("activo_descuento")
-        );
-
-        return Servicio.reconstruirDesdeBD(codigo, nombre, precioBase, impuesto, descuento, activo);
+        return this.mapeadorServicio.mapearServicioCompleto(rs, impuesto, descuento);
     }
 
 
     private static final String SQL_OBTENER_TODOS_LOS_SERVICIOS =
             "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
             "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-            "des.activo AS activo_descuento " +
+            "des.activo AS descuento_activo " +
             "FROM servicios s " +
             "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
             "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
@@ -139,7 +145,8 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()){
-                servicios.add(mapearServicioDesdeResultSet(rs));
+                Servicio servicio = mapearServicioDesdeResultSet(rs);
+                servicios.add(servicio);
             }
 
         } catch (SQLException e) {
@@ -151,9 +158,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
     private static final String SQL_OBTENER_SERVICIO_POR_CODIGO =
             "SELECT s.codigo_servicio, s.nombre, s.precio_base, s.id_impuesto, s.activo, " +
-            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS activo_impuesto, " +
+            "i.nombre AS nombre_impuesto, i.porcentaje AS porcentaje_impuesto, i.activo AS impuesto_activo, " +
             "des.id_descuento, des.nombre AS nombre_descuento, des.porcentaje AS porcentaje_descuento, " +
-            "des.activo AS activo_descuento " +
+            "des.activo AS descuento_activo " +
             "FROM servicios s " +
             "INNER JOIN impuestos i ON i.id_impuesto = s.id_impuesto " +
             "INNER JOIN descuentos des ON s.id_descuento = des.id_descuento " +
@@ -170,12 +177,12 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
             try (ResultSet rs = pstmt.executeQuery()){
 
                 if (rs.next()){
-                    Servicio servicio = mapearServicioDesdeResultSet(rs);
-                    if (!servicio.isActivo()) {
+                    boolean activo = rs.getBoolean("activo");
+                    if (!activo) {
                         throw new ServicioNoDisponibleException("El Servicio con Código -" + codigoServicio +
                                 "- NO esta Disponible");
                     }
-                    return servicio;
+                    return mapearServicioDesdeResultSet(rs);
                 }
 
                 throw new ServicioNoEncontradoException("Error de negocio: El Servicio con código -" + codigoServicio + "- no existe");

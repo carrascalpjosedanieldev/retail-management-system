@@ -125,8 +125,8 @@ public class RepositorioRolMySQL implements RepositorioRol {
     //READ:
 
     private static final String SQL_OBTENER_ROL =
-            "SELECT r.id_rol, r.nombre, r.activo, " +
-                    "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS activo_permiso, " +
+            "SELECT r.id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+                    "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo, " +
                     "m.nombre AS nombre_modulo " +
                     "FROM roles r " +
                     "LEFT JOIN rol_permiso rp ON r.id_rol = rp.id_rol " +
@@ -165,7 +165,7 @@ public class RepositorioRolMySQL implements RepositorioRol {
         Rol rol = this.mapeadorRol.mapearRol(rs);
 
         do {
-            int idPermiso = rs.getInt("id_permiso");
+            rs.getInt("id_permiso");
             if (!rs.wasNull()) {
                 Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
                 rol.recuperarPermisoDeBD(permiso);
@@ -177,8 +177,8 @@ public class RepositorioRolMySQL implements RepositorioRol {
 
 
     private final static String SQL_OBTENER_ROLES_SEGUN_ESTADO =
-            "SELECT r.id_rol, r.nombre, r.activo, " +
-                    "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS activo_permiso, " +
+            "SELECT r.id_rol, r.nombre AS nombre_rol, r.activo AS rol_activo, " +
+                    "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo, " +
                     "m.nombre AS nombre_modulo " +
                     "FROM roles r " +
                     "LEFT JOIN rol_permiso rp ON r.id_rol = rp.id_rol " +
@@ -212,7 +212,7 @@ public class RepositorioRolMySQL implements RepositorioRol {
                 rolesMap.put(idRol, rolActual);
             }
 
-            int idPermiso = rs.getInt("id_permiso");
+            rs.getInt("id_permiso");
             if (!rs.wasNull()) {
                 Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
                 rolActual.recuperarPermisoDeBD(permiso);

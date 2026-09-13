@@ -8,8 +8,6 @@ public interface RepositorioPermiso {
 
     //READ:
 
-    Permiso obtenerPermiso(int idPermiso);
-
     List<Permiso> obtenerPermisosActivos();
 
     List<Permiso> obtenerTodosLosPermisos();

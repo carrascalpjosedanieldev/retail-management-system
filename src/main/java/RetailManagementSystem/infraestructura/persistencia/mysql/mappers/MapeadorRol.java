@@ -9,8 +9,8 @@ public class MapeadorRol {
 
     public Rol mapearRol(ResultSet rs) throws SQLException {
         int idRol = rs.getInt("id_rol");
-        String nombre = rs.getString("nombre");
-        boolean activo = rs.getBoolean("activo");
+        String nombre = rs.getString("nombre_rol");
+        boolean activo = rs.getBoolean("rol_activo");
 
         return Rol.reconstruirDesdeBD(idRol, nombre, activo);
     }
