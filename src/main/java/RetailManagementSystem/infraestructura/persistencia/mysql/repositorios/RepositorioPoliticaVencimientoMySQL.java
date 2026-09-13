@@ -69,13 +69,12 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                 }
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IllegalArgumentException("Ya existe una Política de Vencimiento registrada con el Nombre: " +
+                    politicaVencimiento.getNombre());
+
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Ya existe una Política de Vencimiento registrado con el Nombre: " +
-                        politicaVencimiento.getNombre());
-            }
-            throw new PersistenciaException("Error Crítico de Persistencia al Guardar la Política de Vencimiento: " +
-                    e.getMessage(), e);
+            throw new PersistenciaException("Error Crítico de Persistencia al Guardar la Política de Vencimiento.", e);
         }
     }
 

@@ -93,10 +93,10 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                 }
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new EmailDuplicadoException("El correo electrónico ya se encuentra registrado en el sistema.");
+
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1062) {
-                throw new EmailDuplicadoException("El correo electrónico ya se encuentra registrado en el sistema.");
-            }
             throw new PersistenciaException("Error de base de datos al crear el usuario", e);
         }
     }

@@ -68,10 +68,10 @@ public class RepositorioRolMySQL implements RepositorioRol {
 
             return rol;
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new RolDuplicadoException("El Rol ya se encuentra Registrado en el Sistema.");
+
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1062) {
-                throw new RolDuplicadoException("El Rol ya se encuentra Registrado en el Sistema.");
-            }
             throw new PersistenciaException("Error Crítico de Infraestructura al Obtener Conexión", e);
         }
     }

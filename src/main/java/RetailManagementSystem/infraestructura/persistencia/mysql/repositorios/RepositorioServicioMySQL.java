@@ -71,13 +71,10 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                 throw new IncersionFallidaException("La inserción falló: Ninguna fila fue afectada en la base de datos.");
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new IllegalArgumentException("Violación de integridad: Ya existe un Servicio con este Código o Nombre. O el Impuesto o Descuento a Asignar NO exixte.");
+
         } catch (SQLException e) {
-            if (e.getErrorCode() == 1452) {
-                throw new ImpuestoNoEncontradoException("No se puede guardar el servicio: El impuesto especificado no existe.");
-            }
-            if (e.getErrorCode() == 1062) {
-                throw new IllegalArgumentException("Violación de integridad: Ya existe un servicio con este código o nombre.");
-            }
             throw new PersistenciaException("Error crítico de persistencia al guardar el servicio: " + e.getMessage(), e);
         }
     }
