@@ -32,7 +32,9 @@ public class ServicioDescuentos {
     }
 
     public Descuento obtenerDescuento(int idDescuento){
-        return this.repositorioDescuentos.obtenerDescuento(idDescuento);
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
+                this.repositorioDescuentos.obtenerDescuento(idDescuento)
+        );
     }
 
     public Descuento actualizarDescuento(int idDescuento, String nombre, BigDecimal porcentaje){

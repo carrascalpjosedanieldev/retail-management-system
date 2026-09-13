@@ -159,5 +159,17 @@ public class DescuentoTest {
         assertFalse(descuentoMutador.isActivo());
     }
 
-}
+    @Test
+    void deberiaConsiderarIgualesDosDescuentosConElMismoId() {
+        // ARRANGE
+        Descuento descuento1 =
+                Descuento.reconstruirDesdeBD(1, "Promo A", new BigDecimal("10.00"), true);
+        Descuento descuento2 =
+                Descuento.reconstruirDesdeBD(1, "Promo B", new BigDecimal("20.00"), false);
+        // ACT & ASSERT
+        assertEquals(descuento1, descuento2);
+        assertEquals(descuento1.hashCode(), descuento2.hashCode());
+    }
+
+}//===================================================================================================================//
 
