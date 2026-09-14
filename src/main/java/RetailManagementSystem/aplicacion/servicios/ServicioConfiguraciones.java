@@ -1,6 +1,7 @@
 package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.PoliticaDeBloqueoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
@@ -81,8 +82,10 @@ public class ServicioConfiguraciones {
         this.proveedorConfiguracion.invalidarCache(CONF_DATOS_TIENDA);
     }
 
-    public ConfiguracionSistemaDTO obtenerMaxIntentosBloqueo(){
-        return obtenerValorYDescripcion(CONF_MAX_INTENTOS);
+    public PoliticaDeBloqueoDTO obtenerPoliticaDeBloqueo(){
+        ConfiguracionSistemaDTO maxIntentos = obtenerValorYDescripcion(CONF_MAX_INTENTOS);
+        ConfiguracionSistemaDTO minutosBloqueo = obtenerValorYDescripcion(CONF_MINUTOS_BLOQUEO);
+        return new PoliticaDeBloqueoDTO(maxIntentos, minutosBloqueo);
     }
 
     public void actualizarMaxIntentos(int nuevoMaximo) {
@@ -95,10 +98,6 @@ public class ServicioConfiguraciones {
                 )
         );
         this.proveedorConfiguracion.invalidarCache(CONF_MAX_INTENTOS);
-    }
-
-    public ConfiguracionSistemaDTO obtenerMaxMinutosBloqueo(){
-        return obtenerValorYDescripcion(CONF_MINUTOS_BLOQUEO);
     }
 
     public void actualizarMaxMinutosBloqueos(int nuevosMinutosBloqueo) {

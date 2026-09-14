@@ -1,6 +1,7 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.PoliticaDeBloqueoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
@@ -33,21 +34,13 @@ public class OrquestadorConfiguraciones {
         );
     }
 
-    public ConfiguracionSistemaDTO obtenerMaxIntentosBloqueo(){
-        return this.servicioConfiguraciones.obtenerMaxIntentosBloqueo();
+    public PoliticaDeBloqueoDTO obtenerPoliticaDeBloqueo(){
+        return this.servicioConfiguraciones.obtenerPoliticaDeBloqueo();
     }
 
-    public void actualizarMaxIntentos(UsuarioDTOCompleto usuario, int nuevoMaximo) {
+    public void actualizarPoliticaDeBloqueo(UsuarioDTOCompleto usuario, int nuevoMaximo, int nuevosMinutosBloqueo) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_POLITICAS_DE_BLOQUEO);
         this.servicioConfiguraciones.actualizarMaxIntentos(nuevoMaximo);
-    }
-
-    public ConfiguracionSistemaDTO obtenerMaxMinutosBloqueo(){
-        return this.servicioConfiguraciones.obtenerMaxMinutosBloqueo();
-    }
-
-    public void actualizarMaxMinutosBloqueos(UsuarioDTOCompleto usuario, int nuevosMinutosBloqueo) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_POLITICAS_DE_BLOQUEO);
         this.servicioConfiguraciones.actualizarMaxMinutosBloqueos(nuevosMinutosBloqueo);
     }
 

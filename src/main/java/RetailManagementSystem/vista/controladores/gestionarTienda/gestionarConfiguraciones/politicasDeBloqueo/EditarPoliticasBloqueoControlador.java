@@ -1,6 +1,5 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarConfiguraciones.politicasDeBloqueo;
 
-import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorConfiguraciones;
 
@@ -52,25 +51,17 @@ public class EditarPoliticasBloqueoControlador {
     }
 
     private void cargarDatos(){
-        CompletableFuture<ConfiguracionSistemaDTO> maxIntentos = CompletableFuture.supplyAsync(
-                this.orquestadorConfiguraciones::obtenerMaxIntentosBloqueo
-        );
-        CompletableFuture<ConfiguracionSistemaDTO> maxMinutosBloqueo = CompletableFuture.supplyAsync(
-                this.orquestadorConfiguraciones::obtenerMaxMinutosBloqueo
-        );
-        maxIntentos.thenCombine(
-                maxMinutosBloqueo,
-                (confMaxIntentos, confMaxMinutosBloqueo)->{
-                    Platform.runLater(()->{
-                        txtIntentosMaximos.setText(confMaxIntentos.valor());
-                        lblDescripcionMaxErrores.setText(confMaxIntentos.descripcion());
-                        txtTiempoBloqueo.setText(confMaxMinutosBloqueo.valor());
-                        lblDescripcionTiempoBloqueo.setText(confMaxMinutosBloqueo.descripcion());
-                        btnCancelar.requestFocus();
-                    });
-                    return null;
-                }
-        ).exceptionally(ex->{
+        CompletableFuture.supplyAsync(
+                this.orquestadorConfiguraciones::obtenerPoliticaDeBloqueo
+        ).thenAccept(politicaDeBloqueo ->{
+            Platform.runLater(()->{
+                txtIntentosMaximos.setText(politicaDeBloqueo.maxIntentos().valor());
+                lblDescripcionMaxErrores.setText(politicaDeBloqueo.maxIntentos().descripcion());
+                txtTiempoBloqueo.setText(politicaDeBloqueo.minutosBloqueo().valor());
+                lblDescripcionTiempoBloqueo.setText(politicaDeBloqueo.minutosBloqueo().descripcion());
+                btnCancelar.requestFocus();
+            });
+        }).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
@@ -137,24 +128,16 @@ public class EditarPoliticasBloqueoControlador {
             );
             return;
         }
-        CompletableFuture<Void> guardarMaxIntentos = CompletableFuture.runAsync(()->
-                this.orquestadorConfiguraciones.actualizarMaxIntentos(this.usuarioActual, maxIntentos)
-        );
-        CompletableFuture<Void> guardarMaxTiempo = CompletableFuture.runAsync(()->
-                this.orquestadorConfiguraciones.actualizarMaxMinutosBloqueos(this.usuarioActual, maxTiempo)
-        );
-        guardarMaxIntentos.thenCombine(
-                guardarMaxTiempo,
-                (guardadoIntentos, guardadoTiempo)->{
-                    Platform.runLater(()->{
-                        GestorAlertas.mostrarAlertaInformacion(
-                                getVentana(), "Éxito", null,
-                                "Las Políticas de Bloqueo se han actualizado Exitosamente."
-                        );
-                        cerrarPantalla();
-                    });
-                    return null;
-                }
+        CompletableFuture.runAsync(()->
+                this.orquestadorConfiguraciones.actualizarPoliticaDeBloqueo(this.usuarioActual, maxIntentos, maxIntentos)
+        ).thenRun(()->
+            Platform.runLater(()->{
+                GestorAlertas.mostrarAlertaInformacion(
+                        getVentana(), "Éxito", null,
+                        "Las Políticas de Bloqueo se han actualizado Exitosamente."
+                );
+                cerrarPantalla();
+            })
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
@@ -166,6 +149,12 @@ public class EditarPoliticasBloqueoControlador {
                                     causa.getMessage()
                     );
                     cerrarPantalla();
+                } else if (causa instanceof IllegalArgumentException) {
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Datos Inválidos", null,
+                            "Escribe Datos Validos para la Política de Bloqueo.\n" +
+                                    "Error:  " + causa.getMessage()
+                    );
                 } else {
                     GestorAlertas.mostrarAlertaError(
                             getVentana(), "Error Crítico",
