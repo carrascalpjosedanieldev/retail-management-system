@@ -38,11 +38,7 @@ public class ServicioRol {
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
             Rol rol = this.repositorioRol.obtenerRol(idRol);
             rol.cambiarNombre(nombreNuevo);
-            if (rol.isActivo() && !activo){
-                rol.desactivarRol();
-            } else if (!rol.isActivo() && activo){
-                rol.activarRol();
-            }
+            rol.cambiarEstado();
             this.repositorioRol.actualizarDatosRol(rol);
             return rol;
         });

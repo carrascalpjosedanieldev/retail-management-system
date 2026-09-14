@@ -2,7 +2,6 @@ package RetailManagementSystem.dominio.entidades.seguridad;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ public class Rol {
         return nombre;
     }
     private void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
 
     public Set<Permiso> getPermisos() {
@@ -39,23 +38,42 @@ public class Rol {
         return activo;
     }
 
-    //CONSTRUCTORES:
+    //VALIDACIONES:
 
-    private Rol(Integer idRol, String nombre, boolean activo) {
+    private void validarNombre(String nombre){
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Rol Vacío");
         }
+    }
+
+    private void validarEstado(Boolean activo){
+        if (activo == null){
+            throw new IllegalArgumentException("El Estado del Rol es Obligatorio");
+        }
+    }
+
+    private void validarPermiso(Permiso permiso){
+        if (permiso == null){
+            throw new IllegalArgumentException("El Permiso a Añadir NO Puede ser Nulo");
+        }
+    }
+
+    //CONSTRUCTORES:
+
+    private Rol(Integer idRol, String nombre, Boolean activo) {
+        validarNombre(nombre);
+        validarEstado(activo);
         this.idRol = idRol;
-        this.nombre = nombre;
+        setNombre(nombre);
         this.permisos = new HashSet<>();
         this.activo = activo;
     }
 
-    public static Rol reconstruirDesdeBD(Integer id_rol, String nombre, boolean activo){
+    public static Rol reconstruirDesdeBD(Integer id_rol, String nombre, Boolean activo) {
         return new Rol(id_rol, nombre, activo);
     }
 
-    public static Rol crearNuevo(String nombre, boolean activo){
+    public static Rol crearNuevo(String nombre, Boolean activo) {
         return new Rol(null, nombre, activo);
     }
 
@@ -63,8 +81,12 @@ public class Rol {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Rol rol = (Rol) o;
         if (this.idRol == null || rol.idRol == null) {
             return false;
@@ -78,32 +100,21 @@ public class Rol {
     }
 
     public void cambiarNombre(String nombreNuevo){
-        if (nombreNuevo == null || nombreNuevo.isBlank()){
-            throw new IllegalArgumentException("Nombre del Rol Vacío");
-        }
+        validarNombre(nombreNuevo);
         setNombre(nombreNuevo);
     }
 
-    public void activarRol() {
-        if (this.activo) {
-            throw new IllegalStateException("El Rol ya está activo.");
-        }
-        this.activo = true;
-    }
-
-    public void desactivarRol() {
-        if (!this.activo) {
-            throw new IllegalStateException("El Rol ya está inactivo.");
-        }
-        this.activo = false;
+    public void cambiarEstado(){
+        this.activo = !this.isActivo();
     }
 
     public void anadirPermisoNuevo(Permiso permiso) {
-        Objects.requireNonNull(permiso, "El permiso no puede ser nulo");
+        validarPermiso(permiso);
         this.permisos.add(permiso);
     }
 
     public void recuperarPermisoDeBD(Permiso permiso){
+        validarPermiso(permiso);
         this.permisos.add(permiso);
     }
 
@@ -112,7 +123,9 @@ public class Rol {
     }
 
     public Set<String> obtenerNombresPermisos() {
-        return this.permisos.stream().map(Permiso::getNombre).collect(Collectors.toUnmodifiableSet());
+        return this.permisos.stream()
+                .map(Permiso::getNombre)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
 }//===================================================================================================================//
