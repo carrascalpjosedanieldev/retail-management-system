@@ -2,7 +2,6 @@ package RetailManagementSystem.dominio.entidades.seguridad;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Usuario {
 
@@ -40,21 +39,21 @@ public class Usuario {
         return nombre;
     }
     private void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
 
     public String getApellido() {
         return apellido;
     }
     private void setApellido(String apellido) {
-        this.apellido = apellido;
+        this.apellido = apellido.trim();
     }
 
     public String getEmail() {
         return email;
     }
     private void setEmail(String email) {
-        this.email = email;
+        this.email = email.trim();
     }
 
     public List<Rol> getRoles() {
@@ -68,64 +67,63 @@ public class Usuario {
     public int getIntentosFallidos() {
         return intentosFallidos;
     }
-    private void setIntentosFallidos(int intentosFallidos) {
-        this.intentosFallidos = intentosFallidos;
-    }
 
     public LocalDateTime getBloqueadoHasta() {
         return this.bloqueadoHasta;
-    }
-    private void setBloqueadoHasta(LocalDateTime bloqueadoHasta) {
-        this.bloqueadoHasta = bloqueadoHasta;
     }
 
     public String getHash() {
         return hash;
     }
-    private void setHash(String hash) {
-        this.hash = hash;
-    }
 
     public boolean isActivo() {
         return activo;
-    }
-    private void setActivo(boolean activo) {
-        this.activo = activo;
     }
 
     public boolean isDebeCambiarContrasena() {
         return debeCambiarContrasena;
     }
-    private void setDebeCambiarContrasena(boolean debeCambiarContrasena) {
-        this.debeCambiarContrasena = debeCambiarContrasena;
+
+    //VALIDACIONES:
+
+    private void validarNombre(String nombre){
+        if (nombre == null || nombre.isBlank()){
+            throw new IllegalArgumentException("Nombre del Usuario Vacío");
+        }
+    }
+
+    private void validarApellido(String apellido){
+        if (apellido == null || apellido.isBlank()){
+            throw new IllegalArgumentException("Apellido del Usuario Vacío");
+        }
+    }
+
+    private void validarEmail(String email){
+        if (email == null || email.isBlank()){
+            throw new IllegalArgumentException("Email del Usuario Vacío");
+        }
     }
 
     //CONSTRUCTORES:
 
     private Usuario(
             Long idUsuario, String nombre, String apellido, String email,
-            int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, boolean activo,
-            boolean debeCambiarContrasena
+            Integer intentosFallidos, LocalDateTime bloqueadoHasta, String hash, Boolean activo,
+            Boolean debeCambiarContrasena
     ) {
-        if (nombre == null || nombre.isBlank()){
-            throw new IllegalArgumentException("Nombre del Usuario Vacío");
-        }
-        if (apellido == null || apellido.isBlank()){
-            throw new IllegalArgumentException("Apellido del Usuario Vacío");
-        }
-        if (email == null || email.isBlank()){
-            throw new IllegalArgumentException("Email del Usuario Vacío");
-        }
-        if (intentosFallidos < 0){
+        validarNombre(nombre);
+        validarApellido(apellido);
+        validarEmail(email);
+        if (intentosFallidos == null || intentosFallidos < 0){
             throw new IllegalArgumentException("Intentos Fallidos Inválidos");
         }
         if (hash == null || hash.isBlank()){
             throw new IllegalArgumentException("Hash invalido");
         }
         this.idUsuario = idUsuario;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.email = email;
+        setNombre(nombre);
+        setApellido(apellido);
+        setEmail(email);
         this.roles = new HashSet<>();
         this.permisosCacheados = new HashSet<>();
         this.intentosFallidos = intentosFallidos;
@@ -137,7 +135,7 @@ public class Usuario {
 
     public static Usuario reconstruirDesdeBD(
             Long id_usuario, String nombre, String apellido, String email,
-            int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, boolean activo,
+            int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, Boolean activo,
             boolean debeCambiarContrasena
     ){
         return new Usuario(id_usuario, nombre, apellido, email, intentosFallidos, bloqueadoHasta, hash, activo,
@@ -145,7 +143,7 @@ public class Usuario {
     }
 
     public static Usuario crearNuevo(
-            String nombre, String apellido, String email, String hash, boolean activo
+            String nombre, String apellido, String email, String hash, Boolean activo
     ){
         return new Usuario(null, nombre, apellido, email, 0, null, hash,
                 activo, true);
@@ -154,43 +152,27 @@ public class Usuario {
     //MÉTODOS PARA ACTUALIZAR DATOS:
 
     public void cambiarNombre(String nombreNuevo){
-        if (nombreNuevo == null || nombreNuevo.isBlank()){
-            throw new IllegalArgumentException("Nombre del Usuario Vacío");
-        }
+        validarNombre(nombreNuevo);
         setNombre(nombreNuevo);
     }
 
     public void cambiarApellido(String apellidoNuevo){
-        if (apellidoNuevo == null || apellidoNuevo.isBlank()){
-            throw new IllegalArgumentException("Apellido del Usuario Vacío");
-        }
+        validarApellido(apellidoNuevo);
         setApellido(apellidoNuevo);
     }
 
     public void cambiarEmail(String emailNuevo){
-        if (emailNuevo == null || emailNuevo.isBlank()){
-            throw new IllegalArgumentException("Email del Usuario Vacío");
-        }
+        validarEmail(emailNuevo);
         setEmail(emailNuevo);
     }
 
-    public void activarUsuario(){
-        if (isActivo()){
-            throw new IllegalStateException("El Usuario ya esta Activo");
-        }
-        setActivo(true);
-    }
-
-    public void desactivarUsuario(){
-        if (!isActivo()){
-            throw new IllegalStateException("El Usuario ya esta Inactivo");
-        }
-        setActivo(false);
+    public void cambiarEstado(){
+        this.activo = !this.isActivo();
     }
 
     //MÉTODOS DE VALIDACIÓN LOGIN:
 
-    public void registrarIntentoFallido(int maxIntentosFallidos, int minutosDeBloqueo, LocalDateTime fechaReferencia){
+    public void registrarIntentoFallido(int maxIntentosFallidos, int minutosDeBloqueo, LocalDateTime fechaReferencia) {
         if (maxIntentosFallidos <= 0) {
             throw new IllegalArgumentException("El máximo de intentos debe ser mayor a 0");
         }
@@ -200,16 +182,15 @@ public class Usuario {
         if (fechaReferencia == null) {
             throw new IllegalArgumentException("La fecha de referencia no puede ser nula");
         }
-        setIntentosFallidos(this.intentosFallidos + 1);
+        this.intentosFallidos++;
         if (this.intentosFallidos >= maxIntentosFallidos){
-            LocalDateTime bloqueadoHasta = fechaReferencia.plusMinutes(minutosDeBloqueo);
-            setBloqueadoHasta(bloqueadoHasta);
+            this.bloqueadoHasta = fechaReferencia.plusMinutes(minutosDeBloqueo);
         }
     }
 
     public void limpiarIntentosFallidosYBloqueo(){
-        setIntentosFallidos(0);
-        setBloqueadoHasta(null);
+        this.intentosFallidos = 0;
+        this.bloqueadoHasta = null;
     }
 
     //MÉTODOS PARA ROLES Y PERMISOS:
@@ -226,14 +207,6 @@ public class Usuario {
         }
     }
 
-    public boolean tienePermiso(String nombrePermiso) {
-        return this.permisosCacheados.contains(nombrePermiso.toUpperCase());
-    }
-
-    public boolean tieneRol(Rol rol){
-        return this.roles.contains(rol);
-    }
-
     private void actualizarCachePermisos() {
         this.permisosCacheados.clear();
         for (Rol rol : this.roles) {
@@ -244,36 +217,20 @@ public class Usuario {
     }
 
     public void quitarRol(Rol rolAQuitar){
-        if (!this.roles.contains(rolAQuitar)){
-            throw new IllegalArgumentException("NO tienes ese Rol en tu lista de Roles");
-        }
         this.roles.remove(rolAQuitar);
-    }
-
-    public Set<String> obtenerPermisosTotales() {
-        Set<String> permisosTotales = new HashSet<>();
-        for (Rol rol : this.roles) {
-            permisosTotales.addAll(rol.obtenerNombresPermisos());
-        }
-        return Collections.unmodifiableSet(permisosTotales);
-    }
-
-    public Set<String> obtenerNombresRoles() {
-        return roles.stream().map(Rol::getNombre).collect(Collectors.toUnmodifiableSet());
     }
 
     //MÉTODOS PARA PREESTABLECER CONTRASEÑA:
 
     public void asignarContrasenaTemporal(String nuevoHash) {
-        setHash(nuevoHash);
-        setDebeCambiarContrasena(true);
-        setIntentosFallidos(0);
-        setBloqueadoHasta(null);
+        this.hash = nuevoHash;
+        this.debeCambiarContrasena = true;
+        limpiarIntentosFallidosYBloqueo();
     }
 
     public void establecerContrasenaDefinitiva(String nuevoHash) {
-        setHash(nuevoHash);
-        setDebeCambiarContrasena(false);
+        this.hash = nuevoHash;
+        this.debeCambiarContrasena = false;
     }
 
 }//===================================================================================================================//

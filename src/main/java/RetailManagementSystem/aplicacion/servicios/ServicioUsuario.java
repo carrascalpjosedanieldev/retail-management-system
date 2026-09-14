@@ -154,11 +154,7 @@ public class ServicioUsuario {
     public void cambiarEstadoUsuario(Long idUsuario){
         this.gestorTransaccional.ejecutarEnTransaccion(()->{
             Usuario usuario = this.repositorioUsuario.obtenerUsuarioPorId(idUsuario);
-            if (usuario.isActivo()){
-                usuario.desactivarUsuario();
-            } else {
-                usuario.activarUsuario();
-            }
+            usuario.cambiarEstado();
             this.repositorioUsuario.actualizarDatosUsuario(usuario);
         });
     }
