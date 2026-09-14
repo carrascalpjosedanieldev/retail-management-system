@@ -41,19 +41,21 @@ public class ServicioPermiso {
         );
     }
 
-    public void cambiarDescripcionPermiso(int idPermiso, String descripcion){
-        if (descripcion == null || descripcion.isBlank()){
-            throw new IllegalArgumentException("Descripción del Permiso Vacía");
-        }
-        this.gestorTransaccional.ejecutarEnTransaccion(()->
-            this.repositorioPermiso.cambiarDescripcion(idPermiso, descripcion)
-        );
+    public Permiso actualizarPermiso(int idPermiso, String descripcion){
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()-> {
+            Permiso permiso = this.repositorioPermiso.obtenerPermisoPorId(idPermiso);
+            permiso.cambiarDescripcion(descripcion);
+            this.repositorioPermiso.actualizarPermiso(permiso);
+            return permiso;
+        });
     }
 
-    public void cambiarEstadoPermiso(int idPermiso, boolean activoActual){
-        this.gestorTransaccional.ejecutarEnTransaccion(()->
-                this.repositorioPermiso.cambiarEstado(idPermiso, !activoActual)
-        );
+    public void cambiarEstadoPermiso(int idPermiso){
+        this.gestorTransaccional.ejecutarEnTransaccion(()-> {
+            Permiso permiso = this.repositorioPermiso.obtenerPermisoPorId(idPermiso);
+            permiso.cambiarEstado();
+            this.repositorioPermiso.actualizarPermiso(permiso);
+        });
     }
 
 }//===================================================================================================================//

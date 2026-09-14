@@ -219,7 +219,7 @@ public class GestionPermisosControlador {
         }
         CompletableFuture.runAsync(()->
                 this.orquestadorPermisos.cambiarEstadoPermiso(
-                        this.usuarioActual, permisoSeleccionado.idPermiso(), permisoSeleccionado.activo()
+                        this.usuarioActual, permisoSeleccionado.idPermiso()
                 )
         ).thenRun(()->
                 Platform.runLater(()->{

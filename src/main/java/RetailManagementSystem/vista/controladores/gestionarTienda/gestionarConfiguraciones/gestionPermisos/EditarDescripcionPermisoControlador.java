@@ -79,22 +79,15 @@ public class EditarDescripcionPermisoControlador {
             );
             return;
         }
-        CompletableFuture.runAsync(()->
+        CompletableFuture.supplyAsync(()->
                 this.orquestadorPermisos.cambiarDescripcionPermiso(
                         this.usuarioActual, this.seleccionado.idPermiso(), descripcion
                 )
-        ).thenRun(()->
+        ).thenAccept(actualizado ->
                 Platform.runLater(()->{
                     GestorAlertas.mostrarAlertaInformacion(
                             getVentana(), "Éxito", null,
                             "El Permiso se ha Actualizado con Éxito."
-                    );
-                    PermisoDTO actualizado = new PermisoDTO(
-                            seleccionado.idPermiso(),
-                            seleccionado.nombre(),
-                            descripcion,
-                            seleccionado.modulo(),
-                            seleccionado.activo()
                     );
                     UtilidadesLista.reemplazarPorIdentidad(
                             listaObservable,

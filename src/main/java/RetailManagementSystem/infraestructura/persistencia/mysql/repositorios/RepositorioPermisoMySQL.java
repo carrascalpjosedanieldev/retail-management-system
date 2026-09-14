@@ -36,6 +36,36 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
 
     //READ:
 
+    private static final String SQL_OBTENER_PERMISO_POR_ID =
+            "SELECT " +
+            "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo, " +
+            "m.nombre AS nombre_modulo " +
+            "FROM permisos p " +
+            "INNER JOIN modulos m ON p.id_modulo = m.id_modulo " +
+            "WHERE p.id_permiso = ?";
+
+    @Override
+    public Permiso obtenerPermisoPorId(int idPermiso) {
+        Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_PERMISO_POR_ID)) {
+
+            pstmt.setInt(1, idPermiso);
+
+            try (ResultSet rs = pstmt.executeQuery()){
+
+                if (rs.next()) {
+                    return this.mapeadorPermisos.mapearPermiso(rs);
+                }
+                throw new PermisoNoEncontradoException("NO existe un Permiso con el ID: " + idPermiso);
+
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error de base de datos al obtener el Permiso", e);
+        }
+    }
+
     private static final String SQL_OBTENER_PERMISOS_POR_ESTADO =
             "SELECT " +
             "p.id_permiso, p.nombre AS nombre_permiso, p.descripcion, p.activo AS permiso_activo, " +
@@ -126,52 +156,29 @@ public class RepositorioPermisoMySQL implements RepositorioPermiso {
     //UPDATE:
 
     private static final String SQL_CAMBIAR_ESTADO =
-            "UPDATE permisos SET activo = ? WHERE id_permiso = ?";
+            "UPDATE permisos SET descripcion = ?, activo = ? WHERE id_permiso = ?";
 
     @Override
-    public void cambiarEstado(int idPermiso, boolean activo) {
+    public void actualizarPermiso(Permiso permiso) {
         Connection conn = VinculadorTransaccion.getConnection();
         validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_ESTADO)) {
 
-            pstmt.setBoolean(1, activo);
-            pstmt.setInt(2, idPermiso);
+            pstmt.setString(1, permiso.getDescripcion());
+            pstmt.setBoolean(2, permiso.isActivo());
+            pstmt.setInt(3, permiso.getIdPermiso());
 
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new PermisoNoEncontradoException("NO se pudo Actualizar: El Permiso con ID -" + idPermiso + "- NO Existe.");
+                throw new PermisoNoEncontradoException("NO se pudo Actualizar: El Permiso con ID -" +
+                        permiso.getIdPermiso() + "- NO Existe.");
             }
 
         } catch (SQLException e) {
             throw new PersistenciaException("Error de base de datos al Actualizar el Permiso", e);
         }
     }
-
-
-    private static final String SQL_CAMBIAR_DESCRIPCION =
-            "UPDATE permisos SET descripcion = ? WHERE id_permiso = ?";
-
-    @Override
-    public void cambiarDescripcion(int idPermiso, String descripcion) {
-        Connection conn = VinculadorTransaccion.getConnection();
-        validarConexion(conn);
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_CAMBIAR_DESCRIPCION)) {
-
-            pstmt.setString(1, descripcion);
-            pstmt.setInt(2, idPermiso);
-
-            int filasAfectadas = pstmt.executeUpdate();
-
-            if (filasAfectadas == 0) {
-                throw new PermisoNoEncontradoException("NO se pudo Actualizar: El Permiso con ID -" + idPermiso + "- NO Existe.");
-            }
-
-        } catch (SQLException e) {
-            throw new PersistenciaException("Error de base de datos al Actualizar el Permiso", e);
-        }
-    }
-
 
 }//===================================================================================================================//
 

@@ -38,14 +38,16 @@ public class OrquestadorPermisos {
         );
     }
 
-    public void cambiarDescripcionPermiso(UsuarioDTOCompleto usuario, int idPermiso, String descripcion){
+    public PermisoDTO cambiarDescripcionPermiso(UsuarioDTOCompleto usuario, int idPermiso, String descripcion){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_PERMISOS);
-        this.servicioPermiso.cambiarDescripcionPermiso(idPermiso, descripcion);
+        return this.ensambladorDTOPermiso.ensamblarDatosPermiso(
+                this.servicioPermiso.actualizarPermiso(idPermiso, descripcion)
+        );
     }
 
-    public void cambiarEstadoPermiso(UsuarioDTOCompleto usuario, int idPermiso, boolean activoActual){
+    public void cambiarEstadoPermiso(UsuarioDTOCompleto usuario, int idPermiso){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.GESTIONAR_PERMISOS);
-        this.servicioPermiso.cambiarEstadoPermiso(idPermiso, activoActual);
+        this.servicioPermiso.cambiarEstadoPermiso(idPermiso);
     }
 
 }//===================================================================================================================//

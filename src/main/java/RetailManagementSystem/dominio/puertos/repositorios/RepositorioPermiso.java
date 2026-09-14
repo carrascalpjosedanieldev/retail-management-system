@@ -8,6 +8,8 @@ public interface RepositorioPermiso {
 
     //READ:
 
+    Permiso obtenerPermisoPorId(int idPermiso);
+
     List<Permiso> obtenerPermisosActivos();
 
     List<Permiso> obtenerTodosLosPermisos();
@@ -16,9 +18,7 @@ public interface RepositorioPermiso {
 
     //UPDATE:
 
-    void cambiarEstado(int idPermiso, boolean activo);
-
-    void cambiarDescripcion(int idPermiso, String descripcion);
+    void actualizarPermiso(Permiso permiso);
 
 }//===================================================================================================================//
 

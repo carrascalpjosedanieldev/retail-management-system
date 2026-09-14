@@ -10,11 +10,11 @@ public class Permiso {
 
     private final String nombre;
 
-    private final String descripcion;
+    private String descripcion;
 
     private final String modulo;
 
-    private final boolean activo;
+    private boolean activo;
 
     //GETTERS Y SETTERS:
 
@@ -38,6 +38,14 @@ public class Permiso {
         return activo;
     }
 
+    //VALIDACIÓN:
+
+    private void validarDescripcion(String descripcion){
+        if (descripcion == null || descripcion.isBlank()){
+            throw new IllegalArgumentException("Descripción del Permiso Nula");
+        }
+    }
+
     //CONSTRUCTORES:
 
     private Permiso(
@@ -46,9 +54,7 @@ public class Permiso {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Permiso Vacío");
         }
-        if (descripcion == null){
-            throw new IllegalArgumentException("Descripción del Permiso Nula");
-        }
+        validarDescripcion(descripcion);
         this.idPermiso = idPermiso;
         this.nombre = nombre.trim().toUpperCase();
         this.descripcion = descripcion;
@@ -79,6 +85,15 @@ public class Permiso {
     @Override
     public int hashCode() {
         return Objects.hash(nombre);
+    }
+
+    public void cambiarDescripcion(String descripcionNueva){
+        validarDescripcion(descripcionNueva);
+        this.descripcion = descripcionNueva;
+    }
+
+    public void cambiarEstado(){
+        this.activo = !this.isActivo();
     }
 
 }//==================================================================================================================//
