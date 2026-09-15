@@ -2,8 +2,9 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
-import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
-import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
+import RetailManagementSystem.aplicacion.servicios.ServicioLogin;
+import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
+import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -12,14 +13,14 @@ public class OrquestadorLogin {
 
     //ATRIBUTOS:
 
-    private final ServicioUsuario servicioUsuario;
+    private final ServicioLogin servicioLogin;
 
     private final EnsambladorDTOUsuario ensambladorDTOUsuario;
 
     //CONSTRUCTOR:
 
-    public OrquestadorLogin(ServicioUsuario servicioUsuario, EnsambladorDTOUsuario ensambladorDTOUsuario) {
-        this.servicioUsuario = servicioUsuario;
+    public OrquestadorLogin(ServicioLogin servicioLogin, EnsambladorDTOUsuario ensambladorDTOUsuario) {
+        this.servicioLogin = servicioLogin;
         this.ensambladorDTOUsuario = ensambladorDTOUsuario;
     }
 
@@ -33,17 +34,23 @@ public class OrquestadorLogin {
             throw new IllegalArgumentException("La Contraseña NO puede estar Vacía.");
         }
         try {
-            Usuario usuario = this.servicioUsuario.validarYObtenerUsuarioValido(
-                    email.trim(), contrasenaPlana, LocalDateTime.now()
+            return this.ensambladorDTOUsuario.ensamblarDTOUsuarioCompleto(
+                    this.servicioLogin.validarIngresoYObtenerUsuarioValido(
+                            email.trim(), contrasenaPlana, LocalDateTime.now()
+                    )
             );
-            return this.ensambladorDTOUsuario.ensamblarDTOUsuarioCompleto(usuario);
         } finally {
             Arrays.fill(contrasenaPlana, '\0');
         }
     }
 
     public void cambiarContrasenaDefinitiva(Long idUsuario, char[] nuevaContrasenaPlana){
-        this.servicioUsuario.cambiarContrasenaDefinitiva(idUsuario, nuevaContrasenaPlana);
+        this.servicioLogin.cambiarContrasenaDefinitiva(idUsuario, nuevaContrasenaPlana);
+    }
+
+    public char[] restablecerContrasenaPorAdmin(UsuarioDTOCompleto usuario, Long idUsuario){
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.RESTABLECER_CONTRASENA_USUARIO);
+        return this.servicioLogin.restablecerContrasenaPorAdmin(idUsuario);
     }
 
 }//===================================================================================================================//

@@ -103,7 +103,6 @@ public class LoginControlador {
                 Platform.runLater(()->{
                     try {
                         if (usuarioAutenticado.debeCambiarContrasena()){
-
                             CargadorVistas.cambiarPantallaInyectada(
                                     getVentana(),
                                     RutasVista.CAMBIO_CONTRASENA_VIEW,

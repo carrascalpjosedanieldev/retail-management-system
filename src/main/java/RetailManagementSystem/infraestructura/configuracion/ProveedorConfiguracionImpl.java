@@ -30,15 +30,11 @@ public class ProveedorConfiguracionImpl implements ProveedorConfiguracion {
 
     @Override
     public String obtenerValorConfiguracion(String clave) {
-        return this.cache.computeIfAbsent(clave, key -> {
-            String valorBD = this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
+        return this.cache.computeIfAbsent(clave, key ->
+            this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
                     this.repositorioConfiguracion.obtenerValorConfiguracion(key)
-            );
-            if (valorBD == null) {
-                throw new IllegalArgumentException("La Configuración de Clave -" + key + "- NO existe");
-            }
-            return valorBD;
-        });
+            )
+        );
     }
 
     @Override

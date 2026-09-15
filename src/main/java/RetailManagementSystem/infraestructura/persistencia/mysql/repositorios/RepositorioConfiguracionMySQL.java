@@ -9,6 +9,14 @@ import java.sql.*;
 
 public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
 
+    //MÉTODOS:
+
+    private void validarConexion(Connection conn){
+        if (conn == null) {
+            throw new IllegalStateException("NO hay una Transacción Activa para este Hilo");
+        }
+    }
+
     //READ:
 
     private static final String SQL_OBTENER_VALOR_CONFIGURACION =
@@ -17,6 +25,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
     @Override
     public String obtenerValorConfiguracion(String clave) {
         Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_VALOR_CONFIGURACION)) {
 
             pstmt.setString(1, clave);
@@ -40,6 +49,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
     @Override
     public ConfiguracionSistemaDTO obtenerValorYDescripcion(String clave) {
         Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_VALOR_Y_DESCRIPCION_CONFIGURACION)) {
 
             pstmt.setString(1, clave);
@@ -66,6 +76,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
     @Override
     public void actualizarValorConfiguracion(String clave, String valor) {
         Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_VALOR_CONFIGURACION)) {
 
             if (valor != null){
@@ -94,6 +105,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
     @Override
     public void actualizarValorYDescripcionConfiguracion(String clave, String valor, String descripcion) {
         Connection conn = VinculadorTransaccion.getConnection();
+        validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_VALOR_Y_DESCRIPCION)) {
 
             if (valor != null){

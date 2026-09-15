@@ -1,7 +1,7 @@
 package RetailManagementSystem.vista.controladores.gestionarUsuarios;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorUsuarios;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorLogin;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
@@ -28,14 +28,14 @@ public class RestablecerContrasenaControlador {
     @FXML private Label lblContrasenaTemporal;
     @FXML private Label lblNombreUsuario;
 
-    private final OrquestadorUsuarios orquestadorUsuarios;
+    private final OrquestadorLogin orquestadorLogin;
 
     private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
-    public RestablecerContrasenaControlador(OrquestadorUsuarios orquestadorUsuarios) {
-        this.orquestadorUsuarios = orquestadorUsuarios;
+    public RestablecerContrasenaControlador(OrquestadorLogin orquestadorLogin) {
+        this.orquestadorLogin = orquestadorLogin;
     }
 
     //MÉTODOS:
@@ -45,7 +45,7 @@ public class RestablecerContrasenaControlador {
         this.usuarioActual = usuarioActual;
         lblNombreUsuario.setText(nombreUsuario);
         CompletableFuture.supplyAsync(()->
-                this.orquestadorUsuarios.restablecerContrasenaPorAdmin(this.usuarioActual, idUsuario)
+                this.orquestadorLogin.restablecerContrasenaPorAdmin(this.usuarioActual, idUsuario)
         ).thenAccept(contrasenaArray->
             Platform.runLater(()->{
                 String contrasenaVisible = new String(contrasenaArray);

@@ -119,7 +119,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             "WHERE u.email = ?";
 
     @Override
-    public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
+    public Usuario obtenerUsuarioPorEmail(String email) {
         Connection conn = VinculadorTransaccion.getConnection();
         validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_EMAIL)) {
@@ -137,7 +137,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
         }
     }
 
-    private Optional<Usuario> recuperarUsuarioCompleto(ResultSet rs) throws SQLException{
+    private Usuario recuperarUsuarioCompleto(ResultSet rs) throws SQLException{
 
         Usuario usuario = null;
         Map<Integer, Rol> rolesMap = new HashMap<>();
@@ -173,8 +173,9 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
             for (Rol rol:rolesMap.values()){
                 usuario.recuperarRolDeBD(rol);
             }
+            return usuario;
         }
-        return Optional.ofNullable(usuario);
+        return null;
 
     }
 
@@ -203,8 +204,11 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
-                return recuperarUsuarioCompleto(rs)
-                        .orElseThrow(() -> new UsuarioNoEncontradoException("El Usuario de ID -" + idUsuario + "- NO Existe."));
+                Usuario usuario = recuperarUsuarioCompleto(rs);
+                if (usuario != null){
+                    return usuario;
+                }
+                throw new UsuarioNoEncontradoException("El Usuario de ID -" + idUsuario + "- NO Existe.");
             }
 
         } catch (SQLException e) {

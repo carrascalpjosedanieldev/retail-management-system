@@ -56,6 +56,7 @@ public class GestorTransaccionalMySQL implements GestorTransaccional {
             VinculadorTransaccion.desvincular();
             if (connection != null) {
                 try {
+                    connection.setAutoCommit(true);
                     connection.close();
                 } catch (SQLException ignored) {}
             }

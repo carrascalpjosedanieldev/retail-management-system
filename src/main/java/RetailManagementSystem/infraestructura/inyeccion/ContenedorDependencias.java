@@ -80,6 +80,7 @@ public class ContenedorDependencias {
     private static ServicioFacturas servicioFacturas;
     private static ServicioImpuestos servicioImpuestos;
     private static ServicioInventario servicioInventario;
+    private static ServicioLogin servicioLogin;
     private static ServicioPoliticaVencimiento servicioPoliticaVencimiento;
     private static ServicioProductos servicioProductos;
     private static ServicioGestionStock servicioGestionStock;
@@ -200,13 +201,16 @@ public class ContenedorDependencias {
         servicioFacturas = new ServicioFacturas(repositorioFacturas, gestorTransaccional);
         servicioImpuestos = new ServicioImpuestos(repositorioImpuestos, gestorTransaccional);
         servicioInventario = new ServicioInventario(repositorioInventario, gestorTransaccional);
+        servicioLogin = new ServicioLogin(
+                repositorioUsuario, codificadorContrasenas, proveedorConfiguracion, gestorTransaccional
+        );
         servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(
                 repositorioPoliticaVencimiento, gestorTransaccional
         );
         servicioPermiso = new ServicioPermiso(repositorioPermiso, gestorTransaccional);
         servicioRol = new ServicioRol(repositorioRol, gestorTransaccional);
         servicioUsuario = new ServicioUsuario(
-                repositorioUsuario, codificadorContrasenas, proveedorConfiguracion, gestorTransaccional
+                repositorioUsuario, codificadorContrasenas, gestorTransaccional
         );
 
         //INSTANCIACIÓN DE ORQUESTADORES:
@@ -220,7 +224,7 @@ public class ContenedorDependencias {
         orquestadorHistoricoDeVentas = new OrquestadorHistoricoDeVentas(servicioFacturas);
         orquestadorImpuestos = new OrquestadorImpuestos(servicioImpuestos, ensambladorDTOImpuesto);
         orquestadorInventarios = new OrquestadorInventarios(servicioInventario, ensambladorDTOInventario);
-        orquestadorLogin = new OrquestadorLogin(servicioUsuario, ensambladorDTOUsuario);
+        orquestadorLogin = new OrquestadorLogin(servicioLogin, ensambladorDTOUsuario);
         orquestadorPermisos = new OrquestadorPermisos(ensambladorDTOPermiso, servicioPermiso);
         orquestadorPoliticaVencimiento= new OrquestadorPoliticaVencimiento(
                 servicioPoliticaVencimiento, ensambladorDTOPoliticaVencimiento

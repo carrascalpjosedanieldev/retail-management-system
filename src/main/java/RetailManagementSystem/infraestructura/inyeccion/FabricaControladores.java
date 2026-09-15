@@ -244,7 +244,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == RestablecerContrasenaControlador.class){
             return new RestablecerContrasenaControlador(
-                    ContenedorDependencias.getOrquestadorUsuarios()
+                    ContenedorDependencias.getOrquestadorLogin()
             );
         }
         if (claseControlador == GestionarRolesDeUsuarioControlador.class){

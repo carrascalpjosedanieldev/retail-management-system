@@ -2,6 +2,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.*;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
+import RetailManagementSystem.aplicacion.servicios.ServicioLogin;
 import RetailManagementSystem.aplicacion.servicios.ServicioUsuario;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
@@ -21,7 +22,9 @@ public class OrquestadorUsuarios {
 
     //CONSTRUCTOR:
 
-    public OrquestadorUsuarios(ServicioUsuario servicioUsuario, EnsambladorDTOUsuario ensambladorDTOUsuario) {
+    public OrquestadorUsuarios(
+            ServicioUsuario servicioUsuario, EnsambladorDTOUsuario ensambladorDTOUsuario
+    ) {
         this.servicioUsuario = servicioUsuario;
         this.ensambladorDTOUsuario = ensambladorDTOUsuario;
     }
@@ -76,11 +79,6 @@ public class OrquestadorUsuarios {
         return this.ensambladorDTOUsuario.ensamblarDTOUsuarioCompleto(
                 this.servicioUsuario.obtenerUsuario(idUsuario)
         );
-    }
-
-    public char[] restablecerContrasenaPorAdmin(UsuarioDTOCompleto usuario, Long idUsuario){
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.RESTABLECER_CONTRASENA_USUARIO);
-        return this.servicioUsuario.restablecerContrasenaPorAdmin(idUsuario);
     }
 
     public void actualizarRolesUsuario(
