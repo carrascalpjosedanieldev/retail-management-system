@@ -3,6 +3,9 @@ package RetailManagementSystem.aplicacion.servicios;
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioInventario;
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
+import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccional;
+import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccionalConRetorno;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +28,9 @@ public class ServicioInventarioTest {
     @Mock
     private RepositorioInventario repoInventarioFalso;
 
+    @Mock
+    private GestorTransaccional gestorTransaccionalFalso;
+
     @InjectMocks
     private ServicioInventario servicioInventario;
 
@@ -41,6 +47,21 @@ public class ServicioInventarioTest {
                 CAPACIDAD_MAXIMA_POR_DEFECTO,
                 250
         );
+        lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionConRetorno(any()))
+                .thenAnswer(invocation -> {
+                    OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
+                    return operacion.ejecutar();
+                });
+        lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionDeLectura(any()))
+                .thenAnswer(invocation -> {
+                    OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
+                    return operacion.ejecutar();
+                });
+        lenient().doAnswer(invocation -> {
+            OperacionTransaccional operacion = invocation.getArgument(0);
+            operacion.ejecutar();
+            return null;
+        }).when(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
 
     //TEST'S
@@ -60,32 +81,8 @@ public class ServicioInventarioTest {
         assertEquals(NOMBRE_POR_DEFECTO, inventarioCapturado.getNombre());
         assertEquals(CAPACIDAD_MAXIMA_POR_DEFECTO, inventarioCapturado.getCapacidadMaxima());
         assertEquals(0, inventarioCapturado.getCapacidadOcupada());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
-
-//    @Test
-//    void deberiaObtenerInventarioExistenteCorrectamente() {
-//        // ARRANGE
-//        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
-//        // ACT
-//        Inventario resultado = servicioInventario.obtenerInventario(1);
-//        // ASSERT
-//        assertNotNull(resultado);
-//        assertEquals(1, resultado.getIdInventario());
-//        verify(repoInventarioFalso).obtenerInventario(1);
-//    }
-
-//    @Test
-//    void deberiaLanzarExcepcionCuandoObtenerInventarioNoExiste(){
-//        //ARRANGE
-//        when(repoInventarioFalso.obtenerInventario(99))
-//                .thenThrow(new InventarioNoEncontradoException("No existe un Inventario con el ID: 99"));
-//        //ACT AND ASSERT
-//        InventarioNoEncontradoException exception = assertThrows(
-//                InventarioNoEncontradoException.class,
-//                ()-> servicioInventario.obtenerInventario(99)
-//        );
-//        assertEquals("No existe un Inventario con el ID: 99", exception.getMessage());
-//    }
 
     @Test
     void deberiaActualizarInventarioCorrectamente(){
@@ -100,6 +97,24 @@ public class ServicioInventarioTest {
         Inventario inventarioCapturado = captor.getValue();
         assertEquals(1, inventarioCapturado.getIdInventario());
         assertEquals(nombreNuevo, inventarioCapturado.getNombre());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+    }
+
+    @Test
+    void deberiaLanzarExcepcionSiAlActualizarInventarioNoExiste(){
+        //ARRANGE
+        int idInexistente = 99;
+        String mensajeEsperado = "No existe un Inventario con el ID: " + idInexistente;
+        when(repoInventarioFalso.obtenerInventario(idInexistente))
+                .thenThrow(new InventarioNoEncontradoException(mensajeEsperado));
+        //ACT AND ASSERT
+        InventarioNoEncontradoException exception = assertThrows(
+                InventarioNoEncontradoException.class,
+                ()-> servicioInventario.actualizarInventario(idInexistente, "Modificado")
+        );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verify(repoInventarioFalso, never()).actualizarInventario(any());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
     @ParameterizedTest
@@ -112,7 +127,7 @@ public class ServicioInventarioTest {
                 IllegalArgumentException.class,
                 () -> servicioInventario.actualizarInventario(1, nombreInvalido)
         );
-        verify(repoInventarioFalso, never()).actualizarInventario(any());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
     @Test
@@ -126,6 +141,19 @@ public class ServicioInventarioTest {
         assertEquals(listaEsperada, listaRecibida);
         assertEquals(listaEsperada.size(), listaRecibida.size());
         verify(repoInventarioFalso).obtenerTodosInventariosConCapacidadOcupada();
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+    }
+
+    @Test
+    void deberiaDevolverListaVaciaCuandoNoExistenInventarios() {
+        //ARRANGE
+        when(repoInventarioFalso.obtenerTodosInventariosConCapacidadOcupada()).thenReturn(List.of());
+        //ACT
+        List<Inventario> resultado = servicioInventario.obtenerTodosLosInventarios();
+        //ASSERT
+        assertTrue(resultado.isEmpty());
+        verify(repoInventarioFalso).obtenerTodosInventariosConCapacidadOcupada();
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
     }
 
     @Test
@@ -140,19 +168,38 @@ public class ServicioInventarioTest {
         Inventario inventarioCapturado = captor.getValue();
         assertEquals(1, inventarioCapturado.getIdInventario());
         assertEquals(550, inventarioCapturado.getCapacidadMaxima());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"0", "-5", "-100", "null"} , nullValues = "null")
+    void noDeberiaPersistirSiLaCantidadAAumentarEsInvalida(Integer cantidadInvalida) {
+        //ARRANGE
+        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        //ACT AND ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> servicioInventario.aumentarCapacidadMaximaInventario(1, cantidadInvalida)
+        );
+        verify(repoInventarioFalso, never()).actualizarInventario(any());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
     @Test
     void deberiaLanzarExcepcionYNoPersistirAlAumentarCapacidadDeInventarioInexistente() {
         // ARRANGE
-        when(repoInventarioFalso.obtenerInventario(99))
-                .thenThrow(new InventarioNoEncontradoException("No existe un Inventario con el ID: 99"));
+        int idInexistente = 99;
+        String mensajeEsperado = "No existe un Inventario con el ID: " + idInexistente;
+        when(repoInventarioFalso.obtenerInventario(idInexistente))
+                .thenThrow(new InventarioNoEncontradoException(mensajeEsperado));
         // ACT & ASSERT
-        assertThrows(
+        InventarioNoEncontradoException exception = assertThrows(
                 InventarioNoEncontradoException.class,
                 () -> servicioInventario.aumentarCapacidadMaximaInventario(99, 50)
         );
+        assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoInventarioFalso, never()).actualizarInventario(any());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
 }//===================================================================================================================//

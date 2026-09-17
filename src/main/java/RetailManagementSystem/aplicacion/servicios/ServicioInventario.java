@@ -47,7 +47,7 @@ public class ServicioInventario {
         });
     }
 
-    public Inventario aumentarCapacidadMaximaInventario(int idInventario, int cantidadesExtra){
+    public Inventario aumentarCapacidadMaximaInventario(int idInventario, Integer cantidadesExtra){
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
             Inventario inventario = obtenerInventario(idInventario);
             inventario.aumentarCapacidadMaxima(cantidadesExtra);

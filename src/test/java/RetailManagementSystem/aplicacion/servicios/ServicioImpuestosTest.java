@@ -46,7 +46,12 @@ public class ServicioImpuestosTest {
 
     @BeforeEach
     void setUp() {
-        impuestoPrueba = Impuesto.reconstruirDesdeBD(1, NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, true);
+        impuestoPrueba = Impuesto.reconstruirDesdeBD(
+                1,
+                NOMBRE_POR_DEFECTO,
+                PORCENTAJE_POR_DEFECTO,
+                true
+        );
         lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionConRetorno(any()))
                 .thenAnswer(invocation -> {
                     OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
