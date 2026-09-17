@@ -8,11 +8,24 @@ import java.util.List;
 
 public class EnsambladorDTOInventario {
 
+    //CONSTRUCTOR:
+
     public EnsambladorDTOInventario() {
     }
 
+    //MÉTODOS:
+
     public InventarioDTO ensamblarDatosInventario(Inventario inventario){
-        return new InventarioDTO(inventario.getIdInventario(), inventario.getNombre(), inventario.getCapacidadMaxima(), inventario.getCapacidadOcupada(), inventario.calcularCapacidadLibre());
+        if (inventario == null){
+            throw new IllegalArgumentException("NO puedes ensamblar un DTO de un Inventario Vacío.");
+        }
+        return new InventarioDTO(
+                inventario.getIdInventario(),
+                inventario.getNombre(),
+                inventario.getCapacidadMaxima(),
+                inventario.getCapacidadOcupada(),
+                inventario.calcularCapacidadLibre()
+        );
     }
 
     public List<InventarioDTO> ensamblarDetalleInventarioGeneral(List<Inventario> inventarios){

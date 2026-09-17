@@ -8,10 +8,17 @@ import java.util.List;
 
 public class EnsambladorDTODescuento {
 
+    //CONSTRUCTOR:
+
     public EnsambladorDTODescuento() {
     }
 
+    //MÉTODOS:
+
     public DescuentoDTO ensamblarDatosDescuento(Descuento descuento){
+        if (descuento == null){
+            throw new IllegalArgumentException("NO puedes ensamblar un DTO de un Descuento Vacío.");
+        }
         return new DescuentoDTO(
                 descuento.getId(), descuento.getNombre(), descuento.getPorcentaje(), descuento.isActivo()
         );

@@ -28,6 +28,9 @@ public class EnsambladorDTOServicio {
     //MÉTODOS:
 
     public ServicioDTO ensamblarServicio(Servicio servicio, LocalDate fecha){
+        if (servicio == null){
+            throw new IllegalArgumentException("NO puedes ensamblar un DTO de un Servicio Vacío.");
+        }
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(servicio.getImpuesto());
         DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(servicio.getDescuento());
         return new ServicioDTO(

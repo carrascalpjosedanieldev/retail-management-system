@@ -5,7 +5,6 @@ import RetailManagementSystem.dominio.entidades.ventas.ItemCarrito;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.VistaPreviaCarritoDTO;
 import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
-import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,19 +13,24 @@ import java.util.List;
 
 public class EnsambladorDTOCarrito {
 
+    //CONSTRUCTOR:
+
     public EnsambladorDTOCarrito() {
     }
 
+    //MÉTODOS:
+
     private ItemCarritoDTO ensamblarItemCarritoDTO(ItemCarrito itemCarrito, LocalDate fecha){
         ItemFacturable item = itemCarrito.getItemFacturable();
-        String codigoArticulo = item.getCodigo();
-        TipoItem tipoArticulo = item.getTipoItem();
-        String nombreArticulo = item.getNombre();
-        BigDecimal precioUnitario = item.getValorVenta(fecha);
         BigDecimal impuesto = item.calcularImpuesto(item.getValorFinalSinImpuesto(fecha));
         return new ItemCarritoDTO(
-                codigoArticulo, tipoArticulo, nombreArticulo, itemCarrito.getCantidad(), precioUnitario,
-                itemCarrito.calcularSubtotal(fecha), impuesto
+                item.getCodigo(),
+                item.getTipoItem(),
+                item.getNombre(),
+                itemCarrito.getCantidad(),
+                item.getValorVenta(fecha),
+                itemCarrito.calcularSubtotal(fecha),
+                impuesto
         );
     }
 

@@ -25,9 +25,14 @@ public class EnsambladorDTORol {
         if (rol == null){
             throw new IllegalArgumentException("NO puedes ensamblar un DTO con un Rol Vacío.");
         }
-        List<PermisoDTO> datosPermisos = new ArrayList<>();
-        datosPermisos = this.ensambladorDTOPermiso.ensamblarDetallePermisos(rol.getPermisos().stream().toList());
-        return new RolDTO(rol.getIdRol(), rol.getNombre(), datosPermisos, rol.isActivo());
+        List<PermisoDTO> datosPermisos =
+                this.ensambladorDTOPermiso.ensamblarDetallePermisos(rol.getPermisos().stream().toList());
+        return new RolDTO(
+                rol.getIdRol(),
+                rol.getNombre(),
+                datosPermisos,
+                rol.isActivo()
+        );
     }
 
     public List<RolDTO> ensamblarDetalleRoles(List<Rol> roles){

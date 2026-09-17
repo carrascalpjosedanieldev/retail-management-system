@@ -15,11 +15,15 @@ import java.util.List;
 
 public class EnsambladorDTOProducto {
 
+    //ATRIBUTOS:
+
     private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
 
     private final EnsambladorDTODescuento ensambladorDTODescuento;
 
     private final EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
+
+    //CONSTRUCTOR:
 
     public EnsambladorDTOProducto(
             EnsambladorDTOImpuesto ensambladorDTOImpuesto, EnsambladorDTODescuento ensambladorDTODescuento,
@@ -30,29 +34,31 @@ public class EnsambladorDTOProducto {
         this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
     }
 
-    public DatosTotalesProductoDTO ensamblarDatosTotalesProducto(Producto producto, LocalDate fecha){
+    //VALIDACIONES:
+
+    private void validarProducto(Producto producto){
+        if (producto == null){
+            throw new IllegalArgumentException("NO puedes ensamblar un DTO de un Producto Vacío.");
+        }
+    }
+
+    //MÉTODOS:
+
+    private DatosTotalesProductoDTO ensamblarDatosTotalesProducto(Producto producto, LocalDate fecha){
+        validarProducto(producto);
+        ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(producto.getImpuesto());
+        DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(producto.getDescuento());
         if (producto instanceof ProductoRopa ropa){
-            ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(
-                    ropa.getImpuesto()
-            );
-            DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(
-                    ropa.getDescuento()
-            );
             return new DatosTotalesProductoRopaDTO(
                     ropa.getCodigo(), ropa.getNombre(), ropa.getValorCompra(), ropa.getPorcentajeGanancia(),
                     ropa.getValorVenta(fecha), ropa.getStock(), datosImpuesto, datosDescuento, ropa.getTalla(),
                     ropa.isActivo()
             );
         } else if (producto instanceof ProductoPerecedero perecedero){
-            ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(
-                    perecedero.getImpuesto()
-            );
-            DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento
-                    (perecedero.getDescuento()
+            PoliticaVencimientoDTO datosPoliticaVencimiento =
+                    this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
+                            perecedero.getPoliticaVencimiento()
                     );
-            PoliticaVencimientoDTO datosPoliticaVencimiento = this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
-                    perecedero.getPoliticaVencimiento()
-            );
             return new DatosTotalesProductoPerecederoDTO(
                     perecedero.getCodigo(), perecedero.getNombre(), perecedero.getValorCompra(),
                     perecedero.getPorcentajeGanancia(), perecedero.getValorVenta(fecha), perecedero.getStock(),
@@ -64,16 +70,18 @@ public class EnsambladorDTOProducto {
         }
     }
 
-    public DatosTotalesProductoRopaDTO ensamblarDatosProductoRopa(
-            Producto producto, LocalDate fecha
-    ) {
-        return (DatosTotalesProductoRopaDTO) this.ensamblarDatosTotalesProducto(producto, fecha);
+    public DatosTotalesProductoRopaDTO ensamblarDatosProductoRopa(Producto producto, LocalDate fecha) {
+        validarProducto(producto);
+        return (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, fecha);
     }
 
-    public List<DatosTotalesProductoRopaDTO> ensamblarDetalleProductosRopa(List<Producto> productosRopa, LocalDate fecha){
+    public List<DatosTotalesProductoRopaDTO> ensamblarDetalleProductosRopa(
+            List<Producto> productosRopa, LocalDate fecha
+    ) {
         List<DatosTotalesProductoRopaDTO> datosProductosRopa = new ArrayList<>();
         for (Producto producto:productosRopa){
-            DatosTotalesProductoRopaDTO productoResumen = (DatosTotalesProductoRopaDTO) this.ensamblarDatosTotalesProducto(producto, fecha);
+            DatosTotalesProductoRopaDTO productoResumen =
+                    (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, fecha);
             datosProductosRopa.add(productoResumen);
         }
         return datosProductosRopa;
@@ -82,20 +90,23 @@ public class EnsambladorDTOProducto {
     public DatosTotalesProductoPerecederoDTO ensamblarDatosProductoPerecedero(
             ProductoPerecedero perecedero, LocalDate fecha
     ) {
-        return (DatosTotalesProductoPerecederoDTO) this.ensamblarDatosTotalesProducto(perecedero, fecha);
+        validarProducto(perecedero);
+        return (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(perecedero, fecha);
     }
 
     public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(List<Producto> productosRopa){
         LocalDate fecha = LocalDate.now();
         List<DatosTotalesProductoPerecederoDTO> datosProductosRopa = new ArrayList<>();
         for (Producto producto:productosRopa){
-            DatosTotalesProductoPerecederoDTO productoResumen = (DatosTotalesProductoPerecederoDTO) this.ensamblarDatosTotalesProducto(producto, fecha);
+            DatosTotalesProductoPerecederoDTO productoResumen =
+                    (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(producto, fecha);
             datosProductosRopa.add(productoResumen);
         }
         return datosProductosRopa;
     }
 
     public ProductoResumenDTO ensamblarProductoResumen(Producto producto, LocalDate fecha){
+        validarProducto(producto);
         return new ProductoResumenDTO(
                 producto.getCodigo(), producto.getNombre(), producto.getValorVenta(fecha),
                 producto.getStock(), producto.isActivo()

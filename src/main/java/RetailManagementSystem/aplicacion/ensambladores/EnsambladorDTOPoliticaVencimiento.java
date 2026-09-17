@@ -8,10 +8,17 @@ import java.util.List;
 
 public class EnsambladorDTOPoliticaVencimiento {
 
+    //CONSTRUCTOR:
+
     public EnsambladorDTOPoliticaVencimiento() {
     }
 
+    //MÉTODOS:
+
     public PoliticaVencimientoDTO ensamblarDatosPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
+        if (politicaVencimiento == null){
+            throw new IllegalArgumentException("NO puedes ensamblar un DTO de una Política de Vencimiento Vacía.");
+        }
         return new PoliticaVencimientoDTO(
                 politicaVencimiento.getIdPolitica(), politicaVencimiento.getNombre(),
                 politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
@@ -19,10 +26,12 @@ public class EnsambladorDTOPoliticaVencimiento {
         );
     }
 
-    public List<PoliticaVencimientoDTO> ensamblarDetallePoliticasVencimiento(List<PoliticaVencimiento> politicasVencimiento){
+    public List<PoliticaVencimientoDTO> ensamblarDetallePoliticasVencimiento(
+            List<PoliticaVencimiento> politicasVencimiento
+    ) {
         List<PoliticaVencimientoDTO> detallePoliticasVencimientoActivas = new ArrayList<>();
         for (PoliticaVencimiento politicaVencimiento:politicasVencimiento){
-            PoliticaVencimientoDTO datosPoliticaVencimiento = this.ensamblarDatosPoliticaVencimiento(politicaVencimiento);
+            PoliticaVencimientoDTO datosPoliticaVencimiento = ensamblarDatosPoliticaVencimiento(politicaVencimiento);
             detallePoliticasVencimientoActivas.add(datosPoliticaVencimiento);
         }
         return detallePoliticasVencimientoActivas;
