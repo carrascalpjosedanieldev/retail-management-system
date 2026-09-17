@@ -21,7 +21,8 @@ public class OrquestadorPoliticaVencimiento {
     //CONSTRUCTOR:
 
     public OrquestadorPoliticaVencimiento(
-            ServicioPoliticaVencimiento servicioPoliticaVencimiento, EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento
+            ServicioPoliticaVencimiento servicioPoliticaVencimiento,
+            EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento
     ) {
         this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
         this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;

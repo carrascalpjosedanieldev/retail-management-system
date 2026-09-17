@@ -28,7 +28,6 @@ public class OrquestadorProductos {
         this.servicioProductos = servicioProductos;
     }
 
-
     //MÉTODOS:
 
     public List<ProductoResumenDTO> obtenerResumenProductosDeInventario(int idInventario, LocalDate fecha){

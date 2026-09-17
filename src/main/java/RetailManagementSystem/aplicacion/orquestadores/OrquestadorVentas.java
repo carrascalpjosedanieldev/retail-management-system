@@ -65,7 +65,9 @@ public class OrquestadorVentas {
             TipoItem tipoItem, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        this.servicioCarrito.aumentarCantidadItemDeCarrito(sesionVenta.getCarrito(), codigoItem, cantidad, tipoItem, fecha);
+        this.servicioCarrito.aumentarCantidadItemDeCarrito(
+                sesionVenta.getCarrito(), codigoItem, cantidad, tipoItem, fecha
+        );
         return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 

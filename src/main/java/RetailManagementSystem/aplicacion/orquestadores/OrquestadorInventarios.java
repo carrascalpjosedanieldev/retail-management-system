@@ -19,7 +19,9 @@ public class OrquestadorInventarios {
 
     //CONSTRUCTOR:
 
-    public OrquestadorInventarios(ServicioInventario servicioInventario, EnsambladorDTOInventario ensambladorDTOInventario) {
+    public OrquestadorInventarios(
+            ServicioInventario servicioInventario, EnsambladorDTOInventario ensambladorDTOInventario
+    ) {
         this.servicioInventario = servicioInventario;
         this.ensambladorDTOInventario = ensambladorDTOInventario;
     }
