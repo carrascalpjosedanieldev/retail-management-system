@@ -141,10 +141,11 @@ public class ServicioDescuentosTest {
         when(repoDescuentosFalso.obtenerDescuento(idInexistente))
                 .thenThrow(new DescuentoNoEncontradoException(mensajeEsperado));
         // ACT AND ASSERT
-        assertThrows(
+        DescuentoNoEncontradoException exception = assertThrows(
                 DescuentoNoEncontradoException.class,
                 () -> servicioDescuentos.cambiarEstadoDescuento(idInexistente)
         );
+        assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoDescuentosFalso).obtenerDescuento(idInexistente);
         verifyNoMoreInteractions(repoDescuentosFalso);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());

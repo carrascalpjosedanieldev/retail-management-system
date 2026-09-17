@@ -11,7 +11,9 @@ import java.util.Optional;
 
 public class GestorAlertas {
 
-    private static void mostrarAlerta(Alert.AlertType tipo, Window ventana, String titulo, String encabezado, String contenido){
+    private static void mostrarAlerta(
+            Alert.AlertType tipo, Window ventana, String titulo, String encabezado, String contenido
+    ) {
         Alert alerta = new Alert(tipo);
         if (ventana != null) {
             alerta.initOwner(ventana);

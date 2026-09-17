@@ -32,7 +32,9 @@ public class ServicioImpuestos {
     }
 
     public Impuesto obtenerImpuesto(int idImpuesto){
-        return this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
+                this.repositorioImpuestos.obtenerImpuesto(idImpuesto)
+        );
     }
 
     public Impuesto actualizarImpuesto(int idImpuesto, String nombre, BigDecimal porcentaje){

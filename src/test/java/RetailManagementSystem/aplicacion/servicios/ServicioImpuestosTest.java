@@ -4,6 +4,9 @@ import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioImpuestos;
 
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
+import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccional;
+import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccionalConRetorno;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +32,9 @@ public class ServicioImpuestosTest {
     @Mock
     private RepositorioImpuestos repoImpuestosFalso;
 
+    @Mock
+    private GestorTransaccional gestorTransaccionalFalso;
+
     @InjectMocks
     private ServicioImpuestos servicioImpuestos;
 
@@ -41,7 +47,24 @@ public class ServicioImpuestosTest {
     @BeforeEach
     void setUp() {
         impuestoPrueba = Impuesto.reconstruirDesdeBD(1, NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, true);
+        lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionConRetorno(any()))
+                .thenAnswer(invocation -> {
+                    OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
+                    return operacion.ejecutar();
+                });
+        lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionDeLectura(any()))
+                .thenAnswer(invocation -> {
+                    OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
+                    return operacion.ejecutar();
+                });
+        lenient().doAnswer(invocation -> {
+            OperacionTransaccional operacion = invocation.getArgument(0);
+            operacion.ejecutar();
+            return null;
+        }).when(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
+
+    //TEST'S
 
     @Test
     void deberiaRegistrarUnImpuestoCorrectamente(){
@@ -58,20 +81,24 @@ public class ServicioImpuestosTest {
         assertEquals(NOMBRE_POR_DEFECTO, impuestoCapturado.getNombre());
         assertEquals(0, impuestoCapturado.getPorcentaje().compareTo(PORCENTAJE_POR_DEFECTO));
         assertTrue(impuestoCapturado.isActivo());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
     @Test
     void deberiaLanzarExcepcionCuandoObtenerImpuestoNoExiste(){
         // ARRANGE
-        when(repoImpuestosFalso.obtenerImpuesto(99))
-                .thenThrow(new ImpuestoNoEncontradoException("NO existe un Impuesto con el ID: 99"));
+        int idInexistente = 99;
+        String mensajeEsperado = "NO existe un Impuesto con el ID: " + idInexistente;
+        when(repoImpuestosFalso.obtenerImpuesto(idInexistente))
+                .thenThrow(new ImpuestoNoEncontradoException(mensajeEsperado));
         // ACT AND ASSERT
-        assertThrows(
+        ImpuestoNoEncontradoException exception = assertThrows(
                 ImpuestoNoEncontradoException.class,
-                () -> {
-                    servicioImpuestos.obtenerImpuesto(99);
-                }
+                () -> servicioImpuestos.obtenerImpuesto(99)
         );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verify(repoImpuestosFalso).obtenerImpuesto(idInexistente);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
     }
 
     @Test
@@ -89,6 +116,8 @@ public class ServicioImpuestosTest {
         assertEquals(1, impuestoCapturado.getId());
         assertEquals(nombreNuevo, impuestoCapturado.getNombre());
         assertEquals(0, impuestoCapturado.getPorcentaje().compareTo(porcentajeNuevo));
+        assertTrue(impuestoCapturado.isActivo());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
     @Test
@@ -100,19 +129,26 @@ public class ServicioImpuestosTest {
         // ASSERT
         assertFalse(impuestoPrueba.isActivo());
         verify(repoImpuestosFalso).actualizarImpuesto(impuestoPrueba);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
 
     @Test
     void deberiaLanzarExcepcionSiAlCambiarEstadoElImpuestoNoExiste(){
         // ARRANGE
-        when(repoImpuestosFalso.obtenerImpuesto(99))
-                .thenThrow(new ImpuestoNoEncontradoException("NO existe un Impuesto con el ID: 99"));
+        int idInexistente = 99;
+        String mensajeEsperado = "NO existe un Impuesto con el ID: " + idInexistente;
+        when(repoImpuestosFalso.obtenerImpuesto(idInexistente))
+                .thenThrow(new ImpuestoNoEncontradoException(mensajeEsperado));
         // ACT AND ASSERT
-        assertThrows(ImpuestoNoEncontradoException.class, () -> {
-            servicioImpuestos.cambiarEstadoImpuesto(99);
-        });
-        verify(repoImpuestosFalso).obtenerImpuesto(99);
+        ImpuestoNoEncontradoException exception = assertThrows(
+                ImpuestoNoEncontradoException.class,
+                () ->
+                    servicioImpuestos.cambiarEstadoImpuesto(idInexistente)
+        );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verify(repoImpuestosFalso).obtenerImpuesto(idInexistente);
         verifyNoMoreInteractions(repoImpuestosFalso);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
 
     @Test
@@ -126,6 +162,8 @@ public class ServicioImpuestosTest {
         assertEquals(listaEsperada.size(), listaRecibida.size());
         assertEquals(listaEsperada, listaRecibida);
         verify(repoImpuestosFalso).obtenerImpuestosActivos();
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+
     }
 
     @Test
@@ -139,7 +177,8 @@ public class ServicioImpuestosTest {
         assertEquals(listaEsperada.size(), listaRecibida.size());
         assertEquals(listaEsperada, listaRecibida);
         verify(repoImpuestosFalso).obtenerTodosLosImpuestos();
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
     }
 
-}
+}//===================================================================================================================//
 

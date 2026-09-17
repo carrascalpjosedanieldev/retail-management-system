@@ -43,6 +43,8 @@ public class ServicioInventarioTest {
         );
     }
 
+    //TEST'S
+
     @Test
     void deberiaRegistrarInventarioCorrectamente(){
         //ARRANGE

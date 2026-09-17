@@ -29,7 +29,8 @@ public class ServicioPoliticaVencimiento {
     public PoliticaVencimiento registrarPoliticaVencimiento(
             String nombre, int diasUmbral, BigDecimal porcentaje, boolean activa
     ) {
-        PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.crearNuevo(nombre, diasUmbral, porcentaje, activa);
+        PoliticaVencimiento politicaVencimiento =
+                PoliticaVencimiento.crearNuevo(nombre, diasUmbral, porcentaje, activa);
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
                 this.repositorioPoliticaVencimiento.insertarPoliticaVencimiento(politicaVencimiento)
         );

@@ -88,7 +88,7 @@ public class Factura {
         }
         BigDecimal totalGeneral = subtotal.add(totalImpuestos);
         return new Factura(
-                itemsFinales, null, numeroFactura, fechaHoraEmision, subtotal, totalImpuestos, totalGeneral
+                itemsFinales, null, numeroFactura, fechaHoraEmision, totalGeneral, totalImpuestos, subtotal
         );
     }
 

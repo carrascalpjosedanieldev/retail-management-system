@@ -88,7 +88,8 @@ public class ServicioProductos {
             int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
             BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento
     ) {
-        ProductoPerecedero perecedero = (ProductoPerecedero) this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
+        ProductoPerecedero perecedero =
+                (ProductoPerecedero) this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
         perecedero.cambiarNombreProducto(nombreNuevo);
         perecedero.cambiarValorCompra(valorCompra);
         perecedero.cambiarPorcentajeGanancia(porcentajeGanancia);
@@ -96,7 +97,8 @@ public class ServicioProductos {
         perecedero.cambiarImpuesto(impuesto);
         Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
         perecedero.cambiarDescuento(descuento);
-        PoliticaVencimiento politicaVencimiento = this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
+        PoliticaVencimiento politicaVencimiento =
+                this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
         perecedero.cambiarPoliticaVencimiento(politicaVencimiento);
         this.actualizarProductoDeInventario(idInventario, perecedero);
         return perecedero;
@@ -104,7 +106,9 @@ public class ServicioProductos {
 
     public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){
         this.gestorTransaccional.ejecutarEnTransaccion(()->
-                this.repositorioProducto.cambiarInventarioProducto(codigoProducto, idInventarioOrigen, idInventarioDestino)
+                this.repositorioProducto.cambiarInventarioProducto(
+                        codigoProducto, idInventarioOrigen, idInventarioDestino
+                )
         );
     }
 
