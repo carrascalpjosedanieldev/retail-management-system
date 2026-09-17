@@ -4,6 +4,9 @@ import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PoliticaVencimientoNoEncontradaException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPoliticaVencimiento;
 
+import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
+import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccional;
+import RetailManagementSystem.dominio.puertos.transacciones.OperacionTransaccionalConRetorno;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +28,9 @@ public class ServicioPoliticaVencimientoTest {
     @Mock
     private RepositorioPoliticaVencimiento repoPoliticaVFalso;
 
+    @Mock
+    private GestorTransaccional gestorTransaccionalFalso;
+
     @InjectMocks
     private ServicioPoliticaVencimiento servicioPoliticaVencimiento;
 
@@ -45,6 +51,21 @@ public class ServicioPoliticaVencimientoTest {
                 PORCENTAJE_POR_DEFECTO,
                 true
         );
+        lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionConRetorno(any()))
+                .thenAnswer(invocation -> {
+                    OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
+                    return operacion.ejecutar();
+                });
+        lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionDeLectura(any()))
+                .thenAnswer(invocation -> {
+                    OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
+                    return operacion.ejecutar();
+                });
+        lenient().doAnswer(invocation -> {
+            OperacionTransaccional operacion = invocation.getArgument(0);
+            operacion.ejecutar();
+            return null;
+        }).when(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
 
     //TEST'S
@@ -67,18 +88,23 @@ public class ServicioPoliticaVencimientoTest {
         assertEquals(DIAS_UMBRAL_POR_DEFECTO, politicaVCapturada.getDiasUmbral());
         assertEquals(0, politicaVCapturada.getPorcentajeDescuento().compareTo(PORCENTAJE_POR_DEFECTO));
         assertTrue(politicaVCapturada.isActiva());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
     @Test
     void deberiaLanzarExcepcionCuandoObtenerPoliticaVNoExiste(){
         //ARRANGE
-        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(99))
-                .thenThrow(new PoliticaVencimientoNoEncontradaException("NO Existe una Política de Vencimiento con el ID: 99"));
+        int idInexistente = 99;
+        String mensajeEsperado = "NO Existe una Política de Vencimiento con el ID: " + idInexistente;
+        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(idInexistente))
+                .thenThrow(new PoliticaVencimientoNoEncontradaException(mensajeEsperado));
         //ACT AND ASSERT
-        assertThrows(
+        PoliticaVencimientoNoEncontradaException exception = assertThrows(
                 PoliticaVencimientoNoEncontradaException.class,
                 ()-> servicioPoliticaVencimiento.obtenerPoliticaVencimiento(99)
         );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
     }
 
     @Test
@@ -98,6 +124,7 @@ public class ServicioPoliticaVencimientoTest {
         assertEquals(nombreNuevo, politicaVCapturada.getNombre());
         assertEquals(diasUmbralNuevo, politicaVCapturada.getDiasUmbral());
         assertEquals(0, politicaVCapturada.getPorcentajeDescuento().compareTo(porcentajeNuevo));
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
     @Test
@@ -109,20 +136,25 @@ public class ServicioPoliticaVencimientoTest {
         // ASSERT
         assertFalse(politicaVPrueba.isActiva());
         verify(repoPoliticaVFalso).actualizarPoliticaVencimiento(politicaVPrueba);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
 
     @Test
     void deberiaLanzarExcepcionSiAlCambiarEstadoLaPoliticaVNoExiste(){
         //ARRANGE
-        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(99))
-                .thenThrow(new PoliticaVencimientoNoEncontradaException("NO Existe una Política de Vencimiento con el ID: 99"));
+        int idInexistente = 99;
+        String mensajeEsperado = "NO Existe una Política de Vencimiento con el ID: " + idInexistente;
+        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(idInexistente))
+                .thenThrow(new PoliticaVencimientoNoEncontradaException(mensajeEsperado));
         //ACT AND ASSERT
-        assertThrows(
+        PoliticaVencimientoNoEncontradaException exception = assertThrows(
                 PoliticaVencimientoNoEncontradaException.class,
                 ()-> servicioPoliticaVencimiento.cambiarEstadoPoliticaDeVencimiento(99)
         );
+        assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoPoliticaVFalso).obtenerPoliticaVencimiento(99);
         verifyNoMoreInteractions(repoPoliticaVFalso);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
 
     @Test
@@ -136,6 +168,7 @@ public class ServicioPoliticaVencimientoTest {
         assertEquals(listaEsperada.size(), listaRecibida.size());
         assertEquals(listaEsperada, listaRecibida);
         verify(repoPoliticaVFalso).obtenerPoliticasVencimientoActivas();
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
     }
 
     @Test
@@ -149,6 +182,7 @@ public class ServicioPoliticaVencimientoTest {
         assertEquals(listaEsperada.size(), listaRecibida.size());
         assertEquals(listaEsperada, listaRecibida);
         verify(repoPoliticaVFalso).obtenerTodasLasPoliticasDeVencimiento();
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
     }
 
 }//===================================================================================================================//

@@ -37,7 +37,7 @@ public class ServicioPoliticaVencimiento {
     }
 
     public PoliticaVencimiento obtenerPoliticaVencimiento(int idPoliticaVencimiento){
-        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento)
         );
     }
@@ -70,13 +70,13 @@ public class ServicioPoliticaVencimiento {
     }
 
     public List<PoliticaVencimiento> obtenerPoliticasVencimientoActivas(){
-        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(
                 this.repositorioPoliticaVencimiento::obtenerPoliticasVencimientoActivas
         );
     }
 
     public List<PoliticaVencimiento> obtenerTodasLasPoliticasDeVencimiento(){
-        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(
+        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(
                 this.repositorioPoliticaVencimiento::obtenerTodasLasPoliticasDeVencimiento
         );
     }
