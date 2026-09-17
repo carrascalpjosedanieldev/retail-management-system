@@ -1,13 +1,14 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.ventas.Carrito;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
-import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.dominio.enums.TipoItem;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class ServicioCarrito {
 
@@ -26,53 +27,58 @@ public class ServicioCarrito {
 
     //MÉTODOS:
 
-    public void agregarProductoAlCarrito(Carrito carrito, String codigoProducto, int cantidad, LocalDate fecha){
-        Producto producto = this.servicioProductos.obtenerProductoActivoParaLaVenta(codigoProducto);
-        if (producto instanceof ProductoPerecedero perecedero){
+    public void agregarItemNuevoAlCarrito(Carrito carrito, String codigo, int cantidad, LocalDate fecha) {
+        ItemFacturable item = resolverItemPorCodigo(codigo, fecha);
+        carrito.agregarItem(item, cantidad);
+    }
+
+    private ItemFacturable resolverItemPorCodigo(String codigo, LocalDate fecha) {
+        try {
+            return obtenerYValidarProducto(codigo, fecha);
+        } catch (ProductoNoEncontradoException e) {
+            try {
+                return this.servicioServicios.obtenerServicioActivoParaLaVenta(codigo);
+            } catch (ServicioNoEncontradoException ex) {
+                throw new IllegalArgumentException(
+                        "El Código -" + codigo + "- NO pertenece a un Producto ni a un Servicio Activo."
+                );
+            }
+        }
+    }
+
+    public void aumentarCantidadItemDeCarrito(
+            Carrito carrito, String codigo, int cantidad, TipoItem tipoItem, LocalDate fecha
+    ){
+        ItemFacturable item = obtenerItemValido(codigo, tipoItem, fecha);
+        carrito.agregarItem(item, cantidad);
+    }
+
+    private ItemFacturable obtenerItemValido(String codigo, TipoItem tipo, LocalDate fecha) {
+        return switch (tipo) {
+            case PRODUCTO -> obtenerYValidarProducto(codigo, fecha);
+            case SERVICIO -> this.servicioServicios.obtenerServicioActivoParaLaVenta(codigo);
+        };
+    }
+
+    private Producto obtenerYValidarProducto(String codigo, LocalDate fecha) {
+        Producto producto = this.servicioProductos.obtenerProductoActivoParaLaVenta(codigo);
+        if (producto instanceof ProductoPerecedero perecedero) {
             perecedero.validarEstadoParaVenta(fecha);
         }
-        carrito.agregarProducto(producto, cantidad);
+        return producto;
     }
 
-    public void reducirCantidadProducto(Carrito carrito, String codigoProducto, int cantidadAreducir){
-        carrito.reducirCantidadProducto(codigoProducto, cantidadAreducir);
+    public void reducirCantidadItem(Carrito carrito, String codigo, int cantidadAReducir, TipoItem tipoItem){
+        carrito.reducirCantidadItem(codigo, cantidadAReducir, tipoItem);
     }
 
-    public boolean productoEstaEnElCarrito(Carrito carrito, String codigoProducto){
-        if (carrito.getItems().containsKey(codigoProducto)){
-            return carrito.getItems().get(codigoProducto).getItemFacturable().getTipoItem() == TipoItem.PRODUCTO;
-        }
-        return false;
-    }
-
-    public void eliminarProductoAlCarrito(Carrito carrito, String codigoProducto){
-        carrito.eliminarProducto(codigoProducto);
-    }
-
-    public void agregarServicioAlCarrito(Carrito carrito, String codigoServicio, int cantidad){
-        Servicio servicio = this.servicioServicios.obtenerServicioActivoParaLaVenta(codigoServicio);
-        carrito.agregarServicio(servicio, cantidad);
-    }
-
-    public void reducirCantidadServicio(Carrito carrito, String codigoServicio, int cantidadAReducir){
-        carrito.reducirCantidadServicio(codigoServicio, cantidadAReducir);
-    }
-
-    public boolean servicioEstaEnElCarrito(Carrito carrito, String codigoServicio){
-        if (carrito.getItems().containsKey(codigoServicio)){
-            return carrito.getItems().get(codigoServicio).getItemFacturable().getTipoItem() == TipoItem.SERVICIO;
-        }
-        return false;
-    }
-
-    public void eliminarServicioAlCarrito(Carrito carrito, String codigoServicio){
-        carrito.eliminarServicio(codigoServicio);
+    public void eliminarItem(Carrito carrito, String codigo, TipoItem tipoItem){
+        carrito.eliminarItem(codigo, tipoItem);
     }
 
     public void cancelarCompraTotal(Carrito carrito){
         carrito.vaciarCarrito();
     }
-
 
 }//===================================================================================================================//
 

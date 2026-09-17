@@ -220,7 +220,9 @@ public class MenuDeVentasControlador {
             return;
         }
         CompletableFuture.supplyAsync(()->
-            this.orquestadorVentas.agregarItemAlCarrito(this.usuarioActual, this.sesionVenta, codigo, obtenerFecha())
+            this.orquestadorVentas.agregarItemAlCarrito(
+                    this.usuarioActual, this.sesionVenta, codigo, obtenerFecha()
+            )
         ).thenAccept(carritoActualizado ->
             Platform.runLater(()->{
                 actualizarTablaYTotales(carritoActualizado.carritoItems());
@@ -322,7 +324,8 @@ public class MenuDeVentasControlador {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorVentas.eliminarItemDelCarrito(
-                    this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), obtenerFecha()
+                    this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(),
+                    itemSeleccionado.tipoItem(), obtenerFecha()
             )
         ).thenAccept(carritoActualizado->
             Platform.runLater(()->
@@ -425,10 +428,13 @@ public class MenuDeVentasControlador {
         CompletableFuture.supplyAsync(() -> {
             if (esAumento) {
                 return this.orquestadorVentas.aumentarCantidadItem(
-                        this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+                        this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad,
+                        itemSeleccionado.tipoItem(), obtenerFecha());
             } else {
                 return this.orquestadorVentas.reducirCantidadItem(
-                        this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad, obtenerFecha());
+                        this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad,
+                        itemSeleccionado.tipoItem(), obtenerFecha()
+                );
             }
         }).thenAccept(carritoActualizado ->
                 Platform.runLater(() -> actualizarTablaYTotales(carritoActualizado.carritoItems()))

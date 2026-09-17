@@ -51,12 +51,6 @@ public class ServicioServicios {
         );
     }
 
-    public boolean existeServicio(String codigoServicio){
-        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
-                this.repositorioServicio.existeServicio(codigoServicio)
-        );
-    }
-
     public Servicio registrarServicioNuevo(
             String nombreServicio, BigDecimal precioBase, int idImpuesto, int idDescuento
     ) {

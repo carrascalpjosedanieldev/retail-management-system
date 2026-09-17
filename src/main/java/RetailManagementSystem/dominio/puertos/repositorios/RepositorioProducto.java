@@ -21,8 +21,6 @@ public interface RepositorioProducto {
 
     Producto obtenerProductoActivoSoloPorCodigo(String codigoProducto);
 
-    boolean existeProducto(String codigoProducto);
-
     //UPDATE:
 
     void actualizarProducto(Producto producto, int idInventario);

@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.PRODUCTO;
 
-public abstract class Producto implements ItemFacturable {
+public abstract class Producto implements ItemFacturable, Stockeable {
 
     protected static final BigDecimal CIEN = new BigDecimal("100");
 
@@ -299,6 +299,16 @@ public abstract class Producto implements ItemFacturable {
 
     public void cambiarEstado(){
         this.activo = !this.isActivo();
+    }
+
+    //STOCKEABLE:
+
+    @Override
+    public void validarStockDisponible(int cantidadSolicitada) {
+        if (cantidadSolicitada > this.stock) {
+            throw new StockInsuficienteException("Stock del Producto -" + this.nombre + "- Insuficiente\n" +
+                    "Cantidad Solicitada:  " + cantidadSolicitada + ", Cantidad Existente:  " + this.stock);
+        }
     }
 
 }//===================================================================================================================//

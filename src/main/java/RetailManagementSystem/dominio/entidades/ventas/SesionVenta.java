@@ -15,7 +15,7 @@ public class SesionVenta {
     //CONSTRUCTOR:
 
     private SesionVenta() {
-        this.carrito = Carrito.crearNueva();
+        this.carrito = Carrito.crearNuevo();
     }
 
     public static SesionVenta crearNueva(){

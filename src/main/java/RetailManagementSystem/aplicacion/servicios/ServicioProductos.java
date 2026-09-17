@@ -56,12 +56,6 @@ public class ServicioProductos {
         );
     }
 
-    public boolean existeProducto(String codigoProducto){
-        return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
-                this.repositorioProducto.existeProducto(codigoProducto)
-        );
-    }
-
     public void cambiarEstadoProducto(int idInventario, String codigoProducto){
         Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
         producto.cambiarEstado();

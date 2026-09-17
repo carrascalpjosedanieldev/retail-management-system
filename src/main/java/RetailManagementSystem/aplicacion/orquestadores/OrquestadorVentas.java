@@ -7,9 +7,8 @@ import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOCarrito;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
 import RetailManagementSystem.aplicacion.servicios.ServicioCarrito;
 import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
-import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
-import RetailManagementSystem.aplicacion.servicios.ServicioServicios;
 import RetailManagementSystem.dominio.entidades.ventas.*;
+import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CarritoVacioException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
@@ -25,8 +24,6 @@ public class OrquestadorVentas {
 
     private final ServicioFacturas servicioFacturas;
     private final ServicioCarrito servicioCarrito;
-    private final ServicioProductos servicioProductos;
-    private final ServicioServicios servicioServicios;
 
     private final EnsambladorDTOFactura ensambladorDTOFactura;
     private final EnsambladorDTOCarrito ensambladorDTOCarrito;
@@ -34,14 +31,11 @@ public class OrquestadorVentas {
     //CONSTRUCTOR:
 
     public OrquestadorVentas(
-            ServicioFacturas servicioFacturas, ServicioCarrito servicioCarrito, ServicioProductos servicioProductos,
-            ServicioServicios servicioServicios, EnsambladorDTOFactura ensambladorDTOFactura,
-            EnsambladorDTOCarrito ensambladorDTOCarrito
+            ServicioFacturas servicioFacturas, ServicioCarrito servicioCarrito,
+            EnsambladorDTOFactura ensambladorDTOFactura, EnsambladorDTOCarrito ensambladorDTOCarrito
     ) {
         this.servicioFacturas = servicioFacturas;
         this.servicioCarrito = servicioCarrito;
-        this.servicioProductos = servicioProductos;
-        this.servicioServicios = servicioServicios;
         this.ensambladorDTOFactura = ensambladorDTOFactura;
         this.ensambladorDTOCarrito = ensambladorDTOCarrito;
     }
@@ -62,61 +56,35 @@ public class OrquestadorVentas {
             UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        if (this.servicioProductos.existeProducto(codigoItem)){
-            this.servicioCarrito.agregarProductoAlCarrito(sesionVenta.getCarrito(), codigoItem, 1, fecha);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        if (this.servicioServicios.existeServicio(codigoItem)){
-            this.servicioCarrito.agregarServicioAlCarrito(sesionVenta.getCarrito(), codigoItem, 1);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
+        this.servicioCarrito.agregarItemNuevoAlCarrito(sesionVenta.getCarrito(), codigoItem, 1, fecha);
+        return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
     public VistaPreviaCarritoDTO aumentarCantidadItem(
-            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, int cantidad, LocalDate fecha
+            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, int cantidad,
+            TipoItem tipoItem, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        if (this.servicioCarrito.productoEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
-            this.servicioCarrito.agregarProductoAlCarrito(sesionVenta.getCarrito(), codigoItem, cantidad, fecha);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        if (this.servicioCarrito.servicioEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
-            this.servicioCarrito.agregarServicioAlCarrito(sesionVenta.getCarrito(), codigoItem, cantidad);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
+        this.servicioCarrito.aumentarCantidadItemDeCarrito(sesionVenta.getCarrito(), codigoItem, cantidad, tipoItem, fecha);
+        return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
     public VistaPreviaCarritoDTO reducirCantidadItem(
-            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, int cantidadAReducir, LocalDate fecha
+            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, int cantidadAReducir,
+            TipoItem tipoItem, LocalDate fecha
     ){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        if (this.servicioCarrito.productoEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
-            this.servicioCarrito.reducirCantidadProducto(sesionVenta.getCarrito(), codigoItem, cantidadAReducir);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        if (this.servicioCarrito.servicioEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
-            this.servicioCarrito.reducirCantidadServicio(sesionVenta.getCarrito(), codigoItem, cantidadAReducir);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
-
+        this.servicioCarrito.reducirCantidadItem(sesionVenta.getCarrito(), codigoItem, cantidadAReducir, tipoItem);
+        return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
     public VistaPreviaCarritoDTO eliminarItemDelCarrito(
-            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, LocalDate fecha
+            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem,
+            TipoItem tipoItem, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        if (this.servicioCarrito.productoEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
-            this.servicioCarrito.eliminarProductoAlCarrito(sesionVenta.getCarrito(), codigoItem);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        if (this.servicioCarrito.servicioEstaEnElCarrito(sesionVenta.getCarrito(), codigoItem)){
-            this.servicioCarrito.eliminarServicioAlCarrito(sesionVenta.getCarrito(), codigoItem);
-            return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
-        }
-        throw new IllegalArgumentException("El Código -" + codigoItem + "- NO Pertenece ni a un Producto ni a un Servicio");
+        this.servicioCarrito.eliminarItem(sesionVenta.getCarrito(), codigoItem, tipoItem);
+        return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
     public VistaPreviaCarritoDTO cancelarCompraTotal(
@@ -124,7 +92,7 @@ public class OrquestadorVentas {
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
         this.servicioCarrito.cancelarCompraTotal(sesionVenta.getCarrito());
-        return this.obtenerVistaPreviaCarrito(sesionVenta, fecha);
+        return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
     public FacturaDTO procesarVentaYObtenerFactura(

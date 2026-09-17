@@ -1,8 +1,8 @@
 package RetailManagementSystem.dominio.entidades.ventas;
 
-import RetailManagementSystem.dominio.entidades.comercial.Producto;
-import RetailManagementSystem.dominio.entidades.comercial.Servicio;
-import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
+import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
+import RetailManagementSystem.dominio.entidades.comercial.Stockeable;
+import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,80 +13,73 @@ public class Carrito {
 
     //ATRIBUTOS:
 
-    private final Map<String, ItemCarrito> carritoFinal;
+    private final Map<String, ItemCarrito> itemsCarrito;
 
     //GETTERS Y SETTERS:
 
     public Map<String,ItemCarrito> getItems(){
-        return Map.copyOf(this.carritoFinal);
+        return Map.copyOf(this.itemsCarrito);
     }
 
     //CONSTRUCTOR:
 
     private Carrito() {
-        this.carritoFinal = new LinkedHashMap<>();
+        this.itemsCarrito = new LinkedHashMap<>();
     }
 
-    public static Carrito crearNueva(){
+    public static Carrito crearNuevo(){
         return new Carrito();
+    }
+
+    //VALIDACIONES:
+
+    private void validarExistenciaItem(String codigo, TipoItem tipoItem){
+        if (!this.itemsCarrito.containsKey(codigo)){
+            throw new IllegalArgumentException("NO tienes ese " + tipoItem + " en el Carrito");
+        }
+    }
+
+    private void validarCantidad(int cantidad){
+        if (cantidad <= 0){
+            throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
+        }
     }
 
     //MÉTODOS:
 
-    public void agregarProducto(Producto producto, int cantidad){
-        if (this.carritoFinal.containsKey(producto.getCodigo())){
-            int cantidadTotalSolicitada = this.carritoFinal.get(producto.getCodigo()).getCantidad() + cantidad;
-            if (cantidadTotalSolicitada > producto.getStock()){
-                throw new StockInsuficienteException("Stock del Producto -" + producto.getNombre() + "- Insuficiente\n" +
-                        "Cantidad Solicitada:  " + cantidadTotalSolicitada + ", Cantidad Existente:  " +
-                        producto.getStock());
+    public void agregarItem(ItemFacturable item, int cantidad){
+        validarCantidad(cantidad);
+        int cantidadTotal = consultarCantidadExistente(item.getCodigo()) + cantidad;
+        if (item instanceof Stockeable itemConStock) {
+            itemConStock.validarStockDisponible(cantidadTotal);
+        }
+        this.itemsCarrito.compute(item.getCodigo(), (codigo, existente) -> {
+            if (existente != null) {
+                existente.aumentarCantidad(cantidad);
+                return existente;
             }
-            this.carritoFinal.get(producto.getCodigo()).aumentarCantidad(cantidad);
-            return;
-        }
-        if (cantidad > producto.getStock()){
-            throw new StockInsuficienteException("Stock del Producto -" + producto.getNombre() + "- Insuficiente\n" +
-                    "Cantidad Solicitada:  " + cantidad + ", Cantidad Existente:  " + producto.getStock());
-        }
-        ItemCarrito itemCarrito = ItemCarrito.crearNuevo(producto, cantidad);
-        this.carritoFinal.put(producto.getCodigo(), itemCarrito);
+            return ItemCarrito.crearNuevo(item, cantidad);
+        });
     }
 
-    public void reducirCantidadProducto(String codigoProducto, int cantidadAReducir){
-        if (!this.carritoFinal.containsKey(codigoProducto)){
-            throw new IllegalArgumentException("NO tienes ese Producto en el Carrito");
-        }
-        this.carritoFinal.get(codigoProducto).reducirCantidad(cantidadAReducir);
+    private int consultarCantidadExistente(String codigo) {
+        ItemCarrito existente = this.itemsCarrito.get(codigo);
+        return existente != null ? existente.getCantidad() : 0;
     }
 
-    public  void  eliminarProducto(String codigoProducto){
-        if (!this.carritoFinal.containsKey(codigoProducto)){
-            throw new IllegalArgumentException("NO tienes ese Producto en el Carrito");
+    public void reducirCantidadItem(String codigo, int cantidadAReducir, TipoItem tipoItem){
+        validarExistenciaItem(codigo, tipoItem);
+        validarCantidad(cantidadAReducir);
+        ItemCarrito item = this.itemsCarrito.get(codigo);
+        item.reducirCantidad(cantidadAReducir);
+        if (item.getCantidad() == 0){
+            this.itemsCarrito.remove(codigo);
         }
-        this.carritoFinal.remove(codigoProducto);
     }
 
-    public void agregarServicio(Servicio servicio, int cantidad){
-        if (this.carritoFinal.containsKey(servicio.getCodigo())){
-            this.carritoFinal.get(servicio.getCodigo()).aumentarCantidad(cantidad);
-            return;
-        }
-        ItemCarrito itemCarrito = ItemCarrito.crearNuevo(servicio, cantidad);
-        this.carritoFinal.put(servicio.getCodigo(), itemCarrito);
-    }
-
-    public void reducirCantidadServicio(String codigoServicio, int cantidadAReducir){
-        if (!this.carritoFinal.containsKey(codigoServicio)){
-            throw new IllegalArgumentException("NO tienes ese Servicio en el Carrito");
-        }
-        this.carritoFinal.get(codigoServicio).reducirCantidad(cantidadAReducir);
-    }
-
-    public void eliminarServicio(String codigoServicio){
-        if (!this.carritoFinal.containsKey(codigoServicio)){
-            throw new IllegalArgumentException("NO tienes ese Servicio en el Carrito");
-        }
-        this.carritoFinal.remove(codigoServicio);
+    public void eliminarItem(String codigo, TipoItem tipoItem){
+        validarExistenciaItem(codigo, tipoItem);
+        this.itemsCarrito.remove(codigo);
     }
 
     public BigDecimal calcularTotal(LocalDate fecha) {
@@ -99,7 +92,7 @@ public class Carrito {
     }
 
     public void vaciarCarrito() {
-        this.carritoFinal.clear();
+        this.itemsCarrito.clear();
     }
 
 }//===================================================================================================================//

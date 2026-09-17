@@ -5,7 +5,6 @@ import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ServicioNoDisponibleException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioServicio;
-import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.IncersionFallidaException;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
@@ -188,26 +187,6 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
 
         } catch (SQLException e) {
             throw new PersistenciaException("Error crítico de infraestructura al intentar obtener el Servicio", e);
-        }
-    }
-
-
-    private static final String SQL_EXISTE_SERVICIO =
-            "SELECT 1 FROM servicios WHERE codigo_servicio = ?";
-
-    @Override
-    public boolean existeServicio(String codigoServicio) {
-        Connection conn = VinculadorTransaccion.getConnection();
-        validarConexion(conn);
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_EXISTE_SERVICIO)) {
-
-            pstmt.setString(1, codigoServicio);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            throw new PersistenciaException("Error crítico de infraestructura al intentar verificar el Servicio", e);
         }
     }
 

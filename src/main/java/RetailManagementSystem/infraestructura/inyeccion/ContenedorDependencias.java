@@ -239,9 +239,8 @@ public class ContenedorDependencias {
         );
         orquestadorUsuarios = new OrquestadorUsuarios(servicioUsuario, ensambladorDTOUsuario);
         orquestadorVentas = new OrquestadorVentas(
-                servicioFacturas, servicioCarrito, servicioProductos, servicioServicios,
-                ensambladorDTOFactura, ensambladorDTOCarrito
-                );
+                servicioFacturas, servicioCarrito, ensambladorDTOFactura, ensambladorDTOCarrito
+        );
 
         inicializado = true;
     }

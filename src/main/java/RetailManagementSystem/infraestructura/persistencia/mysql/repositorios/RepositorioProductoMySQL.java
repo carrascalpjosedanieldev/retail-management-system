@@ -315,24 +315,6 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
 
-    private static final String SQL_EXISTE_PRODUCTO =
-            "SELECT 1 FROM productos WHERE codigo_producto = ?";
-
-    @Override
-    public boolean existeProducto(String codigoProducto) {
-        Connection conn = VinculadorTransaccion.getConnection();
-        try (PreparedStatement pstmt = conn.prepareStatement(SQL_EXISTE_PRODUCTO)) {
-
-            pstmt.setString(1, codigoProducto);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            throw new PersistenciaException("Error al verificar la existencia del producto: " + codigoProducto, e);
-        }
-    }
-
-
     //UPDATE:
 
     private static final String SQL_ACTUALIZAR_PRODUCTO =

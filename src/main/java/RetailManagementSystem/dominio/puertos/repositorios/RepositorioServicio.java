@@ -18,8 +18,6 @@ public interface RepositorioServicio {
 
     Servicio obtenerServicioActivoSoloPorCodigo(String codigoServicio);
 
-    boolean existeServicio(String codigoServicio);
-
     //UPDATE:
 
     void actualizarServicio(Servicio servicio);
