@@ -25,10 +25,6 @@ public class ItemCarrito {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-    }
-
     //CONSTRUCTORES:
 
     private ItemCarrito(ItemFacturable itemFacturable, int cantidad) {
@@ -46,7 +42,7 @@ public class ItemCarrito {
         return new ItemCarrito(itemFacturable, cantidad);
     }
 
-    //METODOS:
+    //MÉTODOS:
 
     public BigDecimal calcularSubtotal(LocalDate fecha) {
         BigDecimal valorProducto = this.itemFacturable.getValorVenta(fecha);
@@ -69,7 +65,7 @@ public class ItemCarrito {
         if (cantidadTotal <= 0){
             throw new StockInsuficienteException("La Cantidad a Reducir es Mayor o Igual a la Cantidad Existente");
         }
-        setCantidad(cantidadTotal);
+        this.cantidad = cantidadTotal;
     }
 
 }//===================================================================================================================//

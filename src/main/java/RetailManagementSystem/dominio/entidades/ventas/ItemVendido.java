@@ -67,8 +67,10 @@ public class ItemVendido {
 
     //CONSTRUCTOR:
 
-    private ItemVendido(TipoItem tipoItem, String codigo, String nombre, int cantidad, BigDecimal precioUnitario,
-                        BigDecimal porcentajeImpuesto) {
+    private ItemVendido(
+            TipoItem tipoItem, String codigo, String nombre, int cantidad, BigDecimal precioUnitario,
+            BigDecimal porcentajeImpuesto
+    ) {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("El Nombre del Item de Código -" + codigo + "- NO puede estar Vacío.");
         }
@@ -91,12 +93,17 @@ public class ItemVendido {
         this.precioUnitario = precioUnitario;
         this.totalLinea = this.precioUnitario.multiply(BigDecimal.valueOf(cantidad));
         this.porcentajeImpuesto = porcentajeImpuesto;
-        BigDecimal factorDivisor = BigDecimal.ONE.add(this.porcentajeImpuesto.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP));
+        BigDecimal factorDivisor = BigDecimal.ONE.add(
+                this.porcentajeImpuesto.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP)
+        );
         this.subtotalNeto = this.totalLinea.divide(factorDivisor, 6, RoundingMode.HALF_UP);
         this.montoImpuesto = this.totalLinea.subtract(this.subtotalNeto);
     }
 
-    public static ItemVendido crearNuevo(TipoItem tipoItem, String codigo, String nombre, int cantidad, BigDecimal precioUnitario, BigDecimal porcentajeImpuesto){
+    public static ItemVendido crearNuevo(
+            TipoItem tipoItem, String codigo, String nombre, int cantidad, BigDecimal precioUnitario,
+            BigDecimal porcentajeImpuesto
+    ) {
         return new ItemVendido(tipoItem, codigo, nombre, cantidad, precioUnitario, porcentajeImpuesto);
     }
 
