@@ -17,30 +17,31 @@
 
 ## Description
 
-It is a desktop application designed to manage the operation of a retail store and the sales process for products and services. It allows for the management of global configurations, products, services, multiple inventories, taxes, discounts, users, roles, and permissions, as well as managing the authentication process and access control for the system's various functionalities. It is geared towards managing a single store and was designed considering the main business requirements and regulations present in sales processes.
+The system is a desktop application designed to manage retail store operations and the unified sales process for products and services. It enables the management of global configurations, product and service catalogs, multiple isolated inventories, and business rules (taxes, discounts, and expiration policies), as well as comprehensive management of users, roles, and permissions under a strict access control model. Geared toward centralized store operations, it is designed to meet real-world business requirements, ensure accounting consistency, and maintain data integrity.
 
-The project aims to offer a centralized point-of-sale and management system with a strong emphasis on domain modeling, business rules, and access control. The store domain was chosen for the diversity of scenarios it allows to represent, such as inventory management, tax and discount calculation, handling different types of products, invoice generation, and the administration of different access levels through roles and permissions. A design that reflects the actual behavior of the business and keeps the responsibilities of its different components separate is prioritized.
+The project prioritizes a rich domain model that is decoupled from the infrastructure. The choice of the retail domain reflects the diverse, complex scenarios it allows the system to address: rigorous stock control, high-precision financial calculations using `BigDecimal`, polymorphic handling of billable items, invoice processing via atomic transactions, and a defense-in-depth security scheme.
 
-This project began as a console application with the goal of learning object-oriented programming and gradually evolved into a complete desktop application. Throughout its development, persistence will be incorporated using JDBC and MySQL, along with a layered architecture, services and orchestrators, and a graphical interface with JavaFX. An authentication and authorization system was also implemented, allowing for the management of users, roles, and permissions, including mechanisms for password management and restricting access to operations based on user permissions. The entire project was developed without using frameworks in order to gain a deep understanding of Java fundamentals, software design, persistence, and architecture before working with technologies like Spring Boot.
+The project began as a console-based exercise focused on mastering Object-Oriented Programming and evolved into a full-fledged layered architecture with a JavaFX graphical user interface. Developed intentionally without frameworks like Spring Boot, the project aims to explore low-level Java fundamentals: native persistence using JDBC and HikariCP, manual dependency injection implementation, transaction abstraction, design patterns for extensibility (Strategy and Mappers), cryptographic resilience (Argon2), and a decoupled structure ready for automated test suites using JUnit 5 and Mockito.
 
 ---
 
 ## 🚧 Project status
 
-**Current Version:** 1.1.0
+**Current Version:** 1.1.1
 
-| Module           | Status            |
-|------------------|-------------------|
-| Store Management | ✅ Completed       |
-| Point of Sale    | ✅ Completed       |
-| User management  | ✅ Completed       |
-| Login            | ✅ Completed       |
-| Documentation    | 🚧 In Development |
-| Version 1.1.0    | ✅ Completed       |
+| Module           | Status             |
+|------------------|--------------------|
+| Store Management | ✅ Completed        |
+| Point of Sale    | ✅ Completed        |
+| User management  | ✅ Completed        |
+| Login            | ✅ Completed        |
+| Documentation    | 🚧 In Development  |
+| Testing          | 🚧 In Development  |
+| Version 1.1.1    | ✅ Completed        |
 
 ### Next Goal
 
-Finish the **ReadMe** and the project documentation
+Implement **automated testing** across the entire project.
 
 ---
 
@@ -51,66 +52,61 @@ Finish the **ReadMe** and the project documentation
 - Management of general business information.
 
 ### 📦 Product Management
-- Registration, viewing, updating, and deletion of products.
+- Registration, lookup, updating, and deactivation (soft delete) of products to preserve sales history.
 - Support for multiple product types with specific behaviors.
-- Association of specific features based on product type.
-- Monitoring of product availability status.
+- Association of specific attributes based on product type.
+- Control of product availability status.
 
 ### 🛠️ Service Management
-- Independent management of services.
-- Treatment of products and services as billable items within the sales process.
-- Monitoring of service availability status.
+- Independent service management.
+- Handling of products and services as billable items within the sales process.
+- Control of service availability status.
 
 ### 📚 Inventory Management
 - Management of multiple inventories.
 - Association of any product type with an inventory.
 - Stock control per inventory.
 
-### 💰 Sales Management
+### 💰 Commercial Management
 - Management of taxes and discounts.
-- Price management using BigDecimal to ensure accuracy in monetary calculations.
-- Expiration policy configuration.
-- Activation and deactivation of business configurations.
+- Price management using `BigDecimal` to ensure precision in monetary calculations.
+- Configuration of expiration policies.
+- Activation and deactivation of commercial settings to avoid breaking past references.
 
-### 🧾 Billing
-- Invoice generation.
-- Recording of complete sales details.
-- Automatic application of taxes and discounts.
-- Accurate calculation of subtotals and totals.
+### 🧾 Invoicing
+- Invoice generation with a record of full sales details.
+- Automatic application of configured taxes and discounts.
+- Precise calculation of subtotals and totals without using floating-point data.
+- Sales processing with atomicity guarantees (Unit of Work): if an error occurs during invoicing, inventory changes are automatically rolled back to prevent inconsistencies.
 
 ### 🖥️ Point of Sale
-- Sales process via a graphical interface.
-- Product and service selection.
-- Automatic invoice generation.
-- Application of configured sales rules.
-- Inventory updates as part of the sales process.
+- Sales process via an interactive graphical interface.
+- Unified shopping cart management, supporting the simultaneous and seamless addition of products and services.
+- Real-time polymorphic validation: strict stock verification for physical items and expiration validation for perishable products before finalizing the sale.
+- Automatic invoice generation and inventory update in a synchronized workflow.
 
 ### 👤 User Management
-- Registration of new users by administrators.
-- Management and editing of existing users.
-- Activation and deactivation of users.
-- Assignment and deletion of roles.
-- Assignment of multiple roles to the same user.
-- Password reset using temporary passwords.
+- Centralized registration of new users by administrators.
+- Management and updating of existing accounts. - User activation and deactivation (logical deletion) while maintaining audit trails.
+- Flexible assignment of multiple roles to a single user.
+- Secure password resetting via temporary credential issuance.
 
 ### 🔐 Authentication
-- Login via email and password.
-- Detection of the first login attempt using a temporary password.
-- Password change prompt when using a temporary password.
-- Temporary account lockout after multiple failed login attempts.
-- Configuration of account lockout durations.
+- Login using email and password.
+- Advanced cryptographic credential protection using the Argon2 algorithm.
+- Active defense against user enumeration attacks by executing a hashing operation with a decoy string to normalize response times.
+- Detection of initial access and mandatory temporary password change workflow.
+- Preventive temporary account lockout after multiple failed attempts to mitigate brute-force attacks, with a configurable penalty period.
 
 ### 👥 Role Management
-- Creating new roles.
-- Editing existing roles.
-- Activating and deactivating roles.
-- Assigning and removing role permissions.
+- Creation and editing of custom roles.
+- Role activation and deactivation for secure decommissioning.
+- Modular assignment and removal of permissions associated with each role.
 
 ### 🛡️ Permission Management
-- Managing existing permissions.
-- Activating and deactivating permissions.
-- Controlling access to features based on assigned permissions.
-- Available permissions correspond to actions defined by the system.
+- Centralized administration of existing permissions, mapped uniquely to actions defined in the system code.
+- Permission activation and deactivation.
+- Dual-validation security scheme: Restrictive access control at the UI level, mandatorily backed by cryptographic or session re-validation within backend orchestrators prior to execution.
 
 ---
 
@@ -167,7 +163,7 @@ Module responsible for managing the business rules used throughout the system. I
 ### 7. Configuration Management
 
 <p>
-    <img src="docs/images/spanish/screenshots/Gestion_Configuraciones.png" alt="Configuration Management" width="1606">
+    <img src="docs/images/spanish/screenshots/Gestion_Configuraciones.png" alt="Configuration Management" width="1605">
 </p>
 
 Central panel for managing general store and system settings. It allows you to manage the store name and access role and permission management, centralizing the configuration options available for application operation and access control.
@@ -241,121 +237,63 @@ This allows you to manage users registered in the system from a centralized view
 
 ## Design Decisions
 
-### 1. Product Specialization
+### 1. Clean Architecture and Strict Domain Isolation
 
-Products are not modeled as a generic entity. Each product type has its own attributes and business rules that can modify its behavior both during management and in the sales process. To maintain a flexible and scalable model, information common to all products is separated from the specific characteristics of each category. Currently, the system implements products such as Clothing and Perishables, and its design allows for the incorporation of new product types without modifying the existing structure, such as future technological products.
+The application enforces rigid boundaries between the user interface, orchestration (application services), the domain, and the infrastructure. The presentation layer never interacts directly with business entities; data transfer flows exclusively through DTOs constructed by Assembler classes. This isolation ensures that UI changes do not pollute business rules and that the domain model remains unconstrained by display requirements.
 
-This decision avoids concentrating all characteristics and behaviors in a single generic entity, facilitating the scalability of the model and allowing the incorporation of new types of products without affecting existing ones.
+### 2. Centralized Transactional Infrastructure (Unit of Work Pattern)
 
-### 2. Distinction between Products and Services
+A custom Transaction Manager was implemented to manage the connection lifecycle using `ThreadLocal`. This abstraction allows for the execution of complex logical blocks while guaranteeing ACID properties, without coupling the service layer to the JDBC API. The manager handles advanced propagation scenarios (such as independent transactional scopes for security auditing), defensive resource control, and the prevention of connection pool pollution by strictly resetting the `autoCommit` state.
 
-Products and services are modeled as independent entities due to differences in their behavior within the domain. While a product is part of inventory and is subject to stock control, a service does not require stock or inventory management. Despite these differences, both participate in the sales process as billable items, allowing the same invoice to include products and services through a unified billing flow. This separation keeps the domain model consistent without duplicating sales process logic.
+### 3. Low-Level, Agnostic Persistence and Dedicated Mappers
 
-This decision avoids treating services as a special type of product and allows each entity to implement only the business rules that correspond to it.
+Commercial ORMs were rejected in favor of raw JDBC to maintain absolute control over performance, SQL execution, and in-memory mapping. To prevent repositories from assuming multiple responsibilities, object hydration (translating `ResultSet` data into Entities) was delegated to specialized Mapper components. This keeps repositories focused exclusively on executing DML commands and structural queries.
 
-### 3. Use of BigDecimal
+### 4. Polymorphic Persistence (Strategy Pattern and OCP Compliance)
 
-All operations involving monetary values and percentages were implemented using Java's BigDecimal class. This decision ensures accurate calculations in operations such as applying taxes and discounts, as well as obtaining subtotals, totals, and final prices, avoiding the precision errors associated with floating-point data types.
+Saving and retrieving products of different natures (e.g., Clothing, Perishables) was addressed by applying the Strategy Pattern within the `ProductRepository`. Instead of using conditional control structures—which degrade code quality with every new product type—the repository dynamically delegates SQL execution to the appropriate strategy. This ensures adherence to the Open/Closed Principle (OCP), allowing for the integration of future product families without altering a single line of existing persistence logic.
 
-This decision guarantees the accuracy of monetary calculations and reflects a widely used practice in business applications where the accuracy of values is a fundamental requirement.
+### 5. Segregated Domain Model (Inventory Items vs. Services)
 
-### 4. Layered Architecture
+The sales catalog semantically separates physical goods from services. Although both implement the `ItemFacturable` contract to converge polymorphically within the shopping cart, they exhibit distinct behaviors: products are subject to a capability interface (`Inventariable`) for strict stock control, whereas services operate without inventory constraints. This respects the Interface Segregation Principle (ISP) and avoids injecting null validations or dummy methods into the services.
 
-From the early stages of the project, a layered architecture was adopted to clearly separate the responsibilities of each system component. The user interface, business logic, and persistence are developed independently, allowing each layer to focus solely on its function. This facilitates code maintenance, improves readability, and allows for the incorporation of changes or new functionalities without unnecessarily affecting the rest of the application.
+### 6. High Cohesion and Decoupling in the Application Layer
 
-This decision reduces coupling between components and promotes a more maintainable, scalable, and easily evolving system.
+The service layer adheres to the Single Responsibility Principle (SRP), avoiding "God Objects." Disparate functions that previously coexisted in monolithic classes have been segregated into narrowly scoped services (e.g., splitting authentication logic into a standalone `LoginService`, leaving `UserService` focused on CRUD administration). Services act as thin orchestrators that delegate actual business rules to domain entities.
 
-### 5. Inter-Layer Communication
+### 7. Immutable Financial Precision (BigDecimal)
 
-Communication between the user interface and the domain is handled through DTOs and assemblers, preventing the presentation layer from directly accessing business entities. Similarly, access to persistence is abstracted through interfaces and dependency injection, allowing the business logic to be decoupled from its implementation. This approach facilitates the replacement or evolution of individual components without affecting the operation of the rest of the system and maintains a clear separation between the different responsibilities of the application.
+The system completely eliminates the use of primitive floating-point types (`float`, `double`) for handling monetary values. All arithmetic operations involving base prices, tax application, discounts, and invoice totalization are performed using `BigDecimal`. This architectural guideline is non-negotiable to prevent discrepancies caused by binary representation errors, ensuring accounting accuracy at the transactional level.
 
-This decision avoids unnecessary dependencies between layers and promotes a more flexible, decoupled, and easy-to-maintain design.
+### 8. RBAC Authorization and Defense in Depth (Double Validation)
 
-### 6. Persistence Using Pure JDBC
+Access control is based on a Role-Based Access Control (RBAC) scheme, where permissions are not created dynamically but map directly to pre-existing code operations. A Zero Trust approach is employed for UI-backend communication: although the view hides components based on user role, each orchestrator cryptographically or session-validates that the user holds the precise authorization required before executing any system mutation.
 
-The persistence layer was developed using pure JDBC instead of frameworks or ORMs. This decision was made to gain a deep understanding of how data access, connection management, SQL query execution, and the mapping between the domain model and the database work. The project implements its own persistence layer, keeping the data access logic completely separate from the domain and business logic.
+### 9. Cryptographic Resilience and Anti-Enumeration in Authentication
 
-This decision allowed for building a solid foundation in Java persistence fundamentals before incorporating higher-level tools like Spring Data or Hibernate.
+The authentication mechanism goes beyond simple hashing. It employs Argon2 to withstand hardware-based brute-force attacks (ASIC/GPU). Countermeasures against user enumeration attacks have been implemented: when a non-existent email is entered, the system performs a hashing operation using a decoy string to normalize response times. Furthermore, temporary passwords are not stored as such; instead, they mandate a password renewal process upon the first login.
 
-### 7. Persistence Decoupling
+### 10. Historical Immutability and Multi-Inventory Isolation
 
-The domain defines data access contracts through interfaces, while their concrete implementations reside in the infrastructure layer. In this way, the business logic depends solely on abstractions and not on specific persistence technologies. This organization allows for replacing the data access implementation without modifying the domain or the application services.
-
-This decision reduces the coupling with persistence technology and facilitates system evolution and maintenance.
-
-### 8. Multiple Inventories
-
-The system allows the management of multiple inventories within the same store, treating each inventory as an independent unit for stock control. Products are managed through their corresponding inventory, maintaining a clear separation between product information and its storage location. This allows for the representation of different storage spaces while maintaining independence between them and precise control over the products recorded in each inventory.
-
-This decision keeps the product model decoupled from inventory control and facilitates consistent stock management.
-
-### 9. Historical Preservation Through Logical Deletion
-
-Entities involved in business processes, such as products, services, taxes, discounts, and expiration policies, cannot be deleted from the application. Instead, the system allows their availability to be activated or deactivated, preventing them from falling into disuse without losing the associated historical information.
-
-This decision ensures that historical records, such as invoices, retain all their original references even when some of these elements are no longer used in daily operations. This allows for accurate retrieval of past sales without compromising data integrity. The user interface allows for managing the status of these entities through activation and deactivation options, enabling them to be hidden from daily operations without deleting them from the database.
-
-This decision preserves the integrity of the business history, prevents inconsistencies in historical records, and allows for the removal of operational elements without affecting previously recorded information.
-
-### 10. Database Integrity
-
-The database was designed prioritizing data integrity and consistency through a relational model that reflects the relationships between entities in the domain. Integrity constraints, foreign keys, and validation rules are used to ensure the consistency of the stored data.
-
-The system avoids unnecessary data duplication through relationships between entities, ensuring that products, taxes, discounts, and expiration policies maintain consistent references within the data model. Furthermore, most required attributes are stored as non-null values, reducing the possibility of recording incomplete or inconsistent information.
-
-This decision strengthens data reliability and allows business rules to be based on a consistent and secure data model.
-
-### 11. Independent Configuration Catalogs
-
-Taxes, discounts, and expiration policies are modeled as product-independent entities and managed through their own catalogs. Instead of storing these values ​​directly in each product, the system maintains references to the corresponding configurations. This approach allows for centralized modification or expansion of these elements, facilitating system adaptation to changes in business or regulatory conditions without altering the product model. It also promotes the reuse of common configurations across multiple products and avoids data duplication.
-
-This decision centralizes the management of configurable business rules, improves data consistency, and facilitates system evolution in response to future changes.
-
-### 12. Role- and Permission-Based Authorization
-
-Users do not receive permissions directly. Instead, permissions are grouped within roles, and users can have multiple roles assigned. A user's effective permissions are determined by the roles they hold.
-
-This approach allows for the reuse of permission sets among different users and avoids having to individually configure each permission for each account. It also allows for combining different roles to represent different levels of access without creating a specific role for each possible combination.
-
-### 13. System-Defined Permissions
-
-Available permissions cannot be created through the normal application workflow. Each permission represents a specific action that must already exist in the code, so adding new permissions requires modifying the system implementation. From within the application, the administrator can only manage existing permissions by assigning them to roles and enabling or disabling them.
-
-This approach maintains a controlled correspondence between stored permissions and the actions that actually exist in the application, preventing the creation of arbitrary permissions without an associated operation.
-
-### 14. Double Authorization Validation
-
-Access to protected functionalities is controlled at two levels. The user interface visually limits the actions available to the user based on their permissions and restricts access to the corresponding screens. However, these restrictions are not considered a sufficient security measure. Before executing a protected operation, the corresponding orchestrator re-verifies that the current user has the required permission. If the authorization is invalid, a specific exception is thrown, and the operation is not executed.
-
-This decision prevents security from relying on interface elements that can be compromised or bypassed and places validation at the layer that actually controls the execution of operations.
-
-### 15. Password Management Using Temporary Credentials
-
-Accounts are created exclusively by administrators, and a temporary password is generated during registration or reset. When a user logs in using a temporary password, the system detects this and prompts them to set a new password before allowing normal use of the application. Passwords are not stored directly in the database. Argon2 is used to generate their hash, and only this value is persisted.
-
-This decision allows for centralized account creation and recovery without requiring the administrator to permanently set the user's personal password, while also avoiding storing the original credentials in the database.
-
-### 16. Authentication Process Protection
-
-The authentication process incorporates various mechanisms to reduce account attacks. After three incorrect password attempts, the user is temporarily locked out for a configurable period. Additionally, when the provided email address does not correspond to an existing user, the system also performs a hashing operation using a fake hash.
-
-This decision aims to hinder both brute-force attacks and user enumeration by creating observable differences in the processing time of authentication requests.
+The relational model safeguards the historical integrity of business operations. Key entities—such as products, tax rates, and discounts—operate under a logical deletion model (Activation/Inactivation), preventing the breakage of foreign key references in previously issued invoices. Additionally, the stock architecture natively supports multiple inventories, isolating available quantities by physical warehouse without duplicating the base product definition.
 
 ---
 
 ## Technologies Used
 
-| Technology | Use                                     |
-|------------|-----------------------------------------|
-| Java       | Business Logic                          |
-| JavaFX     | Desktop Graphical Interface             |
-| FXML       | Definition of Interface Views           |
-| CSS        | Graphical Interface Styles              |
-| JDBC       | Data Persistence                        |
-| HikariCP   | JDBC Connection Pool                    |
-| Argon2     | Password Encoder                        |
-| MySQL      | Relational Database                     |
-| Maven      | Dependency Management and Project Build |
+| Technology  | Use                                                   |
+|-------------|-------------------------------------------------------|
+| Java        | Business Logic                                        |
+| JavaFX      | Desktop Graphical Interface                           |
+| FXML        | Definition of Interface Views                         |
+| CSS         | Graphical Interface Styles                            |
+| JDBC        | Data Persistence                                      |
+| HikariCP    | JDBC Connection Pool                                  |
+| Argon2      | Password Encoder                                      |
+| MySQL       | Relational Database                                   |
+| Maven       | Dependency Management and Project Build               |
+| JUnit 5     | Framework for automated unit testing                  |
+| Mockito     | Object simulation (mocks) for test isolation          |
 
 ---
 
@@ -379,21 +317,23 @@ cd retail-management-system
 
 ### 2. Configure the database
 
-A copy of the project's database is included in the database/ folder.
+A copy of the project's database is included in the **database/** folder.
 
-Import the SQL file into MySQL. The script will automatically create the "mi_tienda" database if it doesn't already exist.
+Import the SQL file into MySQL. The script will automatically create the **"retail_management_system"** database if it doesn't already exist.
 
 ### 3. Configure the connection
 
 Rename the file:
 
-text
+```text
 application.properties.example
+```
 
 to
 
-text
+```text
 application.properties
+```
 
 and configure the following information:
 
@@ -401,7 +341,7 @@ and configure the following information:
 - Username
 - Password
 
-For your convenience, the instructions are also included in text application.properties.example
+For your convenience, the instructions are also included in ```application.properties.example```
 
 ### 4. Run the project
 
@@ -413,9 +353,11 @@ Open the project with your preferred Maven-compatible IDE (IntelliJ IDEA), wait 
 
 ### General Description
 
-The system is organized using a layered architecture, where each component has a clearly defined responsibility. The graphical interface handles user interaction and communicates with the application through orchestrators. These act as the entry point to application operations, performing the necessary permissions, coordinating service usage, and transforming domain entities into DTOs to deliver only the required information to the presentation layer. Business logic is encapsulated within services, while data access is decoupled through ports and implementations specific to MySQL.
+The system is organized using a layered architecture, where each component has a clearly defined responsibility. The graphical interface handles user interaction and communicates with the application via orchestrators. These act as entry points for business operations and implement a defense-in-depth (Zero Trust) security scheme: they reinforce the interface's visual restrictions by strictly revalidating user permissions before allowing any execution.
 
-This organization allows for the separation of presentation, operational coordination, business logic, and persistence, facilitating code maintenance and enabling the modification or replacement of components in one layer without directly affecting others.
+Once authorization is granted, the orchestrators coordinate the use of domain services and transform the resulting entities into DTOs, delivering only the necessary information to the presentation layer. The core business logic is encapsulated within these services, while data access is completely decoupled through the use of ports (interfaces) and native implementations using pure JDBC for MySQL.
+
+This organization separates presentation, access control, business logic, and persistence, facilitating code maintenance and allowing components within a layer to be modified or replaced without directly affecting the others.
 
 ### Layered Architecture
 
@@ -443,35 +385,54 @@ java/
 RetailManagementSystem
 │
 ├── application
-│ ├── dto
-│ ├── assemblers
-│ ├── factories
-│ ├── orchestrators
-│ ├── ports
-│ └── services
+│   ├── dto
+│   │   ├── commercial
+│   │   ├── queries
+│   │   ├── management
+│   │   ├── security
+│   │   └── sales
+│   ├── assemblers
+│   ├── factories
+│   ├── orchestrators
+│   ├── ports
+│   └── services
 │
 ├── domain
-│ ├── entities
-│ ├── enums
-│ ├── exceptions
-│ └── ports
+│   ├── entities
+│   │   ├── commercial
+│   │   ├── management
+│   │   ├── security
+│   │   └── sales
+│   ├── enums
+│   ├── exceptions
+│   │   ├── authenticationAndSecurity
+│   │   ├── conflicts
+│   │   ├── resourceNotFound
+│   │   └── businessRules
+│   └── ports
+│       ├── repositories
+│       └── transactions
 │
 ├── infrastructure
-│ ├── configuration
-│ ├── injection
-│ ├── Persistence
-│ │ ├── Exceptions
-│ │ └── MySQL
-│ └── Security
+│   ├── configuration
+│   ├── injection
+│   ├── persistence
+│   │   ├── exceptions
+│   │   └── mysql
+│   │       ├── connections
+│   │       ├── strategies
+│   │       ├── mappers
+│   │       └── repositories
+│   └── security
 │
-├── View
-│ ├── Configuration
-│ ├── Controllers
-│ │ ├── ManageStore
-│ │ ├── ManageUsers
-│ │ ├── Login
-│ │ ├── MainMenu
-│ │ └── PointOfSale
+├── view
+│ ├── configuration
+│ ├── controllers
+│ │ ├── manageStore
+│ │ ├── manageUsers
+│ │ ├── login
+│ │ ├── mainMenu
+│ │ └── pointOfSale
 │ ├── exceptions
 │ └── utilities
 │
@@ -506,13 +467,12 @@ resources
 
 The project structure is organized following a layered architecture. Each package groups components with a specific responsibility, promoting separation of responsibilities and decoupling between the user interface, business logic, domain, and infrastructure.
 
-| Package           | Responsibility                                                                                                                                      |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `application`     | Contains the services, orchestrators, DTOs, assemblers, ports, and factories that coordinate the application's use cases.                           |
-| `domain`          | Defines the domain's entities, ports, enumerations, and exceptions.                                                                                 |
-| `infrastructure`  | Implements persistence using JDBC/MySQL, dependency injection, the classes responsible for security, and the application's technical configuration. |
-| `view`            | Contains the JavaFX drivers and utilities related to the graphical interface.                                                                       |
-
+| Package          | Responsibility and Key Components                                                                                                                                                                                                                                                                                                                            |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `application`    | **Orchestration and Use Cases:** Coordinates application flow using Orchestrators and Application Services.<br><br>**Data Transfer:** Contains DTOs, Assemblers, and Factories to communicate between the UI and the backend without exposing domain entities.                                                                                               |
+| `domain`         | **Business Core:** Models system logic using pure Entities, Value Objects, and Enumerations.<br><br>**Abstractions:** Defines business Exceptions and Ports (interfaces) that establish data access contracts.                                                                                                                                               |
+| `infrastructure` | **Persistence & Transactions:** JDBC/MySQL implementation with HikariCP pooling, `TransactionManager`, and dedicated Mappers.<br><br>**Security & Patterns:** Polymorphic repositories based on the Strategy pattern (OCP), Argon2 cryptographic hashing, and dependency injection.                                                                          |
+| `view`           | **Controllers and Navigation:** JavaFX controllers, centralized screen flow management via `ViewLoader`, and `ViewRoutes` definition.<br><br>**Utilities & Visual Resilience:** `AlertManager` for standardized feedback, `NumberFormatter` for monetary values, UI exceptions, and `ExceptionConfigurator` for early failure detection during view startup. |
 
 ---
 
@@ -521,15 +481,10 @@ The project structure is organized following a layered architecture. Each packag
 The following features are planned for future versions of the system:
 
 - 🔐 Implement automated testing.
-
-- 🌐 Add support for multiple languages (Spanish and English).
-
-- 📄 Enable the export and printing of invoices and reports in PDF and Excel formats.
-
 - 💻 Expand the system catalog with a new category of technology products.
-
+- 🌐 Add support for multiple languages (Spanish and English).
+- 📄 Enable the export and printing of invoices and reports in PDF and Excel formats.
 - 📊 Incorporate indicators and statistics for the control panel.
-
 - ⚙️ Complete the system configuration module with advanced customization options.
 
 ---
@@ -561,30 +516,31 @@ This project is distributed under the MIT license.
 
 ## Descripción
 
-Es una aplicación de escritorio diseñada para gestionar la operación de una tienda minorista y el proceso de venta de productos y servicios. Permite administrar configuraciones globales, productos, servicios, múltiples inventarios, impuestos, descuentos, usuarios, roles y permisos, además de gestionar el proceso de autenticación y control de acceso a las diferentes funcionalidades del sistema. Está orientada a la gestión de una única tienda y fue diseñada considerando los principales requisitos de negocio y normativos presentes en los procesos de venta.
+El sistema es una aplicación de escritorio diseñada para gestionar la operación de una tienda minorista y el proceso de venta unificado de productos y servicios. Permite administrar configuraciones globales, catálogos de productos y servicios, múltiples inventarios aislados, reglas comerciales (impuestos, descuentos y políticas de vencimiento), así como la gestión completa de usuarios, roles y permisos bajo un modelo de control de acceso estricto. Está orientada a la operación de una tienda centralizada, diseñada para responder a requisitos reales de negocio, consistencia contable e integridad de datos.
 
-El proyecto busca ofrecer un sistema de gestión y punto de venta centralizado con un fuerte énfasis en el modelado del dominio, las reglas de negocio y el control de acceso. El dominio de una tienda fue elegido por la diversidad de escenarios que permite representar, como la gestión de inventarios, el cálculo de impuestos y descuentos, el manejo de distintos tipos de productos, la generación de facturas y la administración de diferentes niveles de acceso mediante roles y permisos. Se prioriza un diseño que refleje el comportamiento real del negocio y mantenga separadas las responsabilidades de sus diferentes componentes.
+El proyecto prioriza un modelado del dominio rico y desacoplado de la infraestructura. La elección del dominio minorista responde a la diversidad de escenarios complejos que permite abordar: control riguroso de stock, cálculo financiero de alta precisión con BigDecimal, manejo polimórfico de ítems facturables, procesamiento de facturas bajo transacciones atómicas y un esquema de seguridad de defensa en profundidad.
 
-Este proyecto comenzó como una aplicación de consola con el objetivo de aprender programación orientada a objetos y evolucionó gradualmente hasta convertirse en una aplicación de escritorio completa. A lo largo de su desarrollo se incorporaron persistencia mediante JDBC y MySQL, una arquitectura por capas, servicios y orquestadores, así como una interfaz gráfica con JavaFX. También se implementó un sistema de autenticación y autorización que permite administrar usuarios, roles y permisos, incluyendo mecanismos para gestionar contraseñas y restringir el acceso a las operaciones según los permisos del usuario. Todo el proyecto fue desarrollado sin utilizar frameworks con el propósito de comprender en profundidad los fundamentos de Java, el diseño de software, la persistencia y la arquitectura antes de trabajar con tecnologías como Spring Boot.
+El proyecto nació como un ejercicio de consola enfocado en dominar la Programación Orientada a Objetos y evolucionó progresivamente hasta convertirse en una arquitectura por capas completa con interfaz gráfica en JavaFX. Desarrollado intencionalmente sin frameworks como Spring Boot, el proyecto busca comprender los fundamentos de bajo nivel en Java: persistencia nativa con JDBC y HikariCP, implementación manual de inyección de dependencias, abstracción transaccional, patrones de diseño para extensibilidad (Estrategia y Mapeadores), resiliencia criptográfica (Argon2) y una estructura desacoplada lista para suites de pruebas automatizadas con JUnit 5 y Mockito.
 
 ---
 
 ## 🚧 Estado del proyecto
 
-**Versión actual:** 1.1.0
+**Versión actual:** 1.1.1
 
-| Módulo               | Estado           |
-|----------------------|------------------|
-| Gestión de la tienda | ✅ Finalizado     |
-| Punto de venta       | ✅ Finalizado     |
-| Gestion de usuarios  | ✅ Finalizado     |
-| Login                | ✅ Finalizado     |
-| Documentación        | 🚧 En desarrollo |
-| Versión 1.1.0        | ✅ Finalizado     |
+| Módulo               | Estado            |
+|----------------------|-------------------|
+| Gestión de la tienda | ✅ Finalizado      |
+| Punto de venta       | ✅ Finalizado      |
+| Gestion de usuarios  | ✅ Finalizado      |
+| Login                | ✅ Finalizado      |
+| Documentación        | 🚧 En desarrollo  |
+| Testing              | 🚧 En desarrollo  |
+| Versión 1.1.1        | ✅ Finalizado      |
 
 ### Proximo Objetivo
 
-Implementar **Testing Automatizado**.
+Implementar **Testing Automatizado** en todo el proyecto.
 
 ---
 
@@ -595,7 +551,7 @@ Implementar **Testing Automatizado**.
 - Administración de información general del negocio.
 
 ### 📦 Gestión de Productos
-- Registro, consulta, actualización y eliminación de productos.
+- Registro, consulta, actualización e inactivación (borrado lógico) de productos para preservar el historial de ventas.
 - Soporte para múltiples tipos de productos con comportamientos específicos.
 - Asociación de características propias según el tipo de producto.
 - Control del estado de disponibilidad de los productos.
@@ -612,49 +568,45 @@ Implementar **Testing Automatizado**.
 
 ### 💰 Gestión Comercial
 - Administración de impuestos y descuentos.
-- Gestión de precios utilizando BigDecimal para garantizar precisión en cálculos monetarios.
+- Gestión de precios utilizando `BigDecimal` para garantizar precisión en cálculos monetarios.
 - Configuración de políticas de vencimiento.
-- Activación e inactivación de configuraciones comerciales.
+- Activación e inactivación de configuraciones comerciales para evitar romper referencias pasadas.
 
 ### 🧾 Facturación
-- Generación de facturas.
-- Registro del detalle completo de la venta.
-- Aplicación automática de impuestos y descuentos.
-- Cálculo preciso de subtotales y totales.
+- Generación de facturas con registro del detalle completo de la venta. 
+- Aplicación automática de impuestos y descuentos configurados.
+- Cálculo preciso de subtotales y totales sin utilizar datos de punto flotante.
+- Procesamiento de ventas con garantía de atomicidad: si ocurre un error durante la facturación, se revierten automáticamente los cambios en el inventario para evitar inconsistencias.
 
 ### 🖥️ Punto de Venta
-- Proceso de venta desde una interfaz gráfica.
-- Selección de productos y servicios.
-- Generación automática de la factura.
-- Aplicación de las reglas comerciales configuradas.
-- Actualización del inventario como parte del proceso de venta.
+- Proceso de venta desde una interfaz gráfica interactiva. 
+- Gestión unificada de carrito de compras, soportando la adición simultánea y transparente de productos y servicios. 
+- Validación polimórfica en tiempo real: verificación estricta de stock para ítems físicos y validación de caducidad para productos perecederos antes de concretar la venta. 
+- Generación automática de la factura y actualización del inventario en un flujo sincronizado.
 
 ### 👤 Gestión de Usuarios
-- Registro de nuevos usuarios por parte de administradores.
-- Administración y edición de usuarios existentes.
-- Activación e inactivación de usuarios.
-- Asignación y eliminación de roles.
-- Asignación de múltiples roles a un mismo usuario.
-- Restablecimiento de contraseñas mediante contraseñas temporales.
+- Registro centralizado de nuevos usuarios por parte de administradores. 
+- Administración y actualización de cuentas existentes. 
+- Activación e inactivación (borrado lógico) de usuarios sin pérdida de trazabilidad. 
+- Asignación flexible de múltiples roles a un mismo usuario. 
+- Restablecimiento seguro de contraseñas delegando credenciales temporales.
 
 ### 🔐 Autenticación
-- Inicio de sesión mediante correo electrónico y contraseña.
-- Detección del primer acceso mediante contraseña temporal.
-- Solicitud de cambio de contraseña al utilizar una contraseña temporal.
-- Bloqueo temporal de cuentas después de múltiples intentos fallidos.
-- Configuración del tiempo de bloqueo de las cuentas.
+- Inicio de sesión mediante correo electrónico y contraseña. 
+- Protección criptográfica avanzada de credenciales mediante el algoritmo Argon2. 
+- Defensa activa contra ataques de enumeración de usuarios (User Enumeration) mediante la ejecución de un cómputo de hashing con cadena señuelo para unificar los tiempos de respuesta. 
+- Detección del primer acceso y flujo obligatorio de cambio de contraseña temporal. 
+- Bloqueo temporal preventivo de cuentas tras múltiples intentos fallidos para mitigar ataques de fuerza bruta, con tiempo de penalización configurable.
 
 ### 👥 Gestión de Roles
-- Creación de nuevos roles.
-- Edición de roles existentes.
-- Activación e inactivación de roles.
-- Asignación y eliminación de permisos de un rol.
+- Creación y edición de roles personalizados. 
+- Activación e inactivación de roles para retiro seguro de operación. 
+- Asignación modular y remoción de permisos asociados a cada rol.
 
 ### 🛡️ Gestión de Permisos
-- Administración de permisos existentes.
-- Activación e inactivación de permisos.
-- Control de acceso a las funcionalidades según los permisos asignados.
-- Los permisos disponibles corresponden a acciones definidas por el sistema.
+- Administración centralizada de permisos existentes, los cuales mapean unívocamente a acciones definidas en el código del sistema. 
+- Activación e inactivación de permisos. 
+- Esquema de seguridad de doble validación: Control de acceso restrictivo en la interfaz visual, respaldado obligatoriamente por una revalidación criptográfica o de sesión en los orquestadores del backend antes de cualquier ejecución.
 
 ---
 
@@ -711,10 +663,10 @@ Módulo encargado de administrar las reglas comerciales utilizadas por el sistem
 ### 7. Gestion Configuraciones
 
 <p>
-  <img src="docs/images/spanish/screenshots/Gestion_Configuraciones.png" alt="Gestion de Configuraciones" width="1606">
+  <img src="docs/images/spanish/screenshots/Gestion_Configuraciones.png" alt="Gestion de Configuraciones" width="1605">
 </p>
 
-Panel central para administrar las configuraciones generales de la tienda y del sistema. Permite gestionar el nombre de la tienda y acceder a la administración de roles y permisos, centralizando las opciones de configuración disponibles para la operación y el control de acceso de la aplicación.
+Panel central para administrar las configuraciones generales de la tienda y del sistema. Permite gestionar el nombre de la tienda, acceder a la administración de roles y permisos, y modificar las políticas de bloqueo, centralizando las opciones de configuración disponibles para la operación y el control de acceso de la aplicación.
 
 ### 8. Panel de control POS (Punto de Venta)
 
@@ -786,121 +738,63 @@ Permite administrar los usuarios registrados en el sistema desde una vista centr
 
 Las siguientes decisiones de diseño reflejan los principios que guiaron el desarrollo del proyecto. En cada caso se buscó construir un modelo de dominio coherente con el funcionamiento de una tienda minorista, priorizando la claridad del diseño, la mantenibilidad del código y la integridad de la información antes que la rapidez de implementación.
 
-### 1. Especialización de Productos
+### 1. Arquitectura Limpia y Aislamiento Estricto del Dominio
+   
+La aplicación impone fronteras rígidas entre la interfaz de usuario, la orquestación (servicios de aplicación), el dominio y la infraestructura. La capa de presentación jamás interactúa directamente con las entidades del negocio; la transferencia de datos fluye exclusivamente a través de DTO construidos por clases Ensambladoras. Este aislamiento garantiza que los cambios en la UI no contaminen las reglas de negocio y que el modelo de dominio no se vea condicionado por los requerimientos de visualización.
 
-Los productos no se modelan como una entidad genérica. Cada tipo de producto posee atributos y reglas de negocio propias que pueden modificar su comportamiento tanto durante la gestión como en el proceso de venta. Para mantener un modelo flexible y escalable, la información común de todos los productos se separa de las características específicas de cada categoría. Actualmente el sistema implementa productos como Ropa y Perecederos, y su diseño permite incorporar nuevos tipos de productos sin modificar la estructura existente, como futuros productos tecnológicos.
+### 2. Infraestructura Transaccional Centralizada (Patrón Unit of Work)
+   
+Se implementó un GestorTransaccional personalizado que administra el ciclo de vida de las conexiones mediante ThreadLocal. Esta abstracción permite ejecutar bloques lógicos complejos garantizando propiedades ACID sin acoplar la capa de servicios a la API de JDBC. El gestor maneja escenarios avanzados de propagación (burbujas transaccionales independientes para auditoría de seguridad), control defensivo de los recursos y prevención de polución de conexiones en el pool mediante el restablecimiento estricto del estado autoCommit.
 
-Esta decisión evita concentrar todas las características y comportamientos en una única entidad genérica, facilitando la escalabilidad del modelo y permitiendo incorporar nuevos tipos de productos sin afectar los ya existentes.
+### 3. Persistencia Agnóstica de Bajo Nivel y Mapeadores Dedicados
+   
+Se descartó el uso de ORM`s comerciales a favor de JDBC puro para mantener un control absoluto sobre el rendimiento, la ejecución SQL y el mapeo en memoria. Para evitar que los repositorios asuman múltiples responsabilidades, la hidratación de objetos (traducción de ResultSet a Entidades) se delegó a componentes Mapeadores especializados. Esto mantiene los repositorios enfocados exclusivamente en la ejecución de comandos DML y consultas estructurales.
 
-### 2. Separación entre Productos y Servicios
+### 4. Persistencia Polimórfica (Patrón Estrategia y Cumplimiento OCP)
+   
+El guardado y recuperación de productos con distintas naturalezas (Ropa, Perecederos) se resolvió aplicando el Patrón Estrategia en el RepositorioProducto. En lugar de utilizar estructuras de control condicionales que degradan el código con cada nuevo tipo de producto, el repositorio delega dinámicamente la ejecución SQL a la estrategia correspondiente. Esto garantiza el Principio de Abierto/Cerrado (OCP), permitiendo la integración de futuras familias de productos sin alterar una sola línea de la lógica de persistencia existente.
 
-Los productos y los servicios se modelan como entidades independientes debido a las diferencias en su comportamiento dentro del dominio. Mientras que un producto forma parte de un inventario y está sujeto al control de stock, un servicio no requiere existencias ni gestión de inventario. A pesar de estas diferencias, ambos participan en el proceso de venta como ítems facturables, permitiendo que una misma factura incluya productos y servicios mediante un flujo de facturación unificado. Esta separación mantiene el modelo de dominio coherente sin duplicar la lógica del proceso de venta.
+### 5. Modelo de Dominio Segregado (Inventariables vs. Servicios)
 
-Esta decision evita tratar los servicios como un tipo especial de producto y permite que cada entidad implemente únicamente las reglas de negocio que le corresponden.
+El catálogo de ventas separa semánticamente los bienes físicos de los servicios. Aunque ambos implementan el contrato ItemFacturable para converger polimórficamente en el carrito de compras, mantienen un comportamiento dispar: los productos están sujetos a una interfaz de capacidad (Inventariable) para el control estricto de stock, mientras que los servicios operan sin restricciones de existencias. Esto respeta el Principio de Segregación de Interfaces (ISP) y evita la inyección de validaciones nulas o métodos fantasma en los servicios.
 
-### 3. Uso de BigDecimal
+### 6. Alta Cohesión y Desacoplamiento en la Capa de Aplicación
 
-Todas las operaciones relacionadas con valores monetarios y porcentajes se implementaron utilizando la clase BigDecimal de Java. Esta decisión garantiza cálculos precisos en operaciones como la aplicación de impuestos y descuentos, así como en la obtención de subtotales, totales y precios finales, evitando los errores de precisión asociados a los tipos de dato de punto flotante.
+La capa de servicios sigue el Principio de Responsabilidad Única (SRP), evitando los "God Objects". Funciones dispares que antes convivían en clases monolíticas fueron segregadas en servicios de alcance estrecho (por ejemplo, la bifurcación de la lógica de autenticación hacia un ServicioLogin autónomo, dejando al ServicioUsuario enfocado en la administración CRUD). Los servicios actúan como orquestadores delgados que delegan las verdaderas reglas de negocio a las entidades del dominio.
 
-Esta decisión garantiza la precisión de los cálculos monetarios y refleja una práctica ampliamente utilizada en aplicaciones empresariales donde la exactitud de los valores es un requisito fundamental.
+### 7. Precisión Financiera Inmutable (BigDecimal)
+   
+El sistema erradica por completo el uso de tipos primitivos de punto flotante (float, double) para el manejo de valores monetarios. Toda operación aritmética relacionada con precios base, aplicación de catálogos de impuestos, descuentos y totalización de facturas se ejecuta mediante BigDecimal. Esta directriz arquitectónica es innegociable para evitar desviaciones por errores de representación binaria, garantizando exactitud contable a nivel transaccional.
 
-### 4. Arquitectura por capas
+### 8. Autorización RBAC y Defensa en Profundidad (Doble Validación)
+   
+El control de acceso se basa en un esquema de Roles y Permisos (RBAC), donde los permisos no se crean dinámicamente, sino que mapean directamente a operaciones de código preexistentes. Se emplea un enfoque de confianza cero (Zero Trust) en la comunicación UI-Backend: aunque la vista oculta componentes según el rol, cada Orquestador reválida criptográficamente o por sesión que el usuario posea la autorización exacta antes de ejecutar cualquier mutación en el sistema.
 
-Desde las primeras etapas del proyecto se adoptó una arquitectura por capas con el objetivo de separar claramente las responsabilidades de cada componente del sistema. La interfaz de usuario, la lógica de negocio y la persistencia se desarrollan de forma independiente, permitiendo que cada capa se centre únicamente en su función. Facilitando el mantenimiento del código, mejorando su legibilidad y permitiendo incorporar cambios o nuevas funcionalidades sin afectar innecesariamente al resto de la aplicación.
+### 9. Resiliencia Criptográfica y Anti-Enumeración en Autenticación
+   
+El mecanismo de autenticación va más allá del simple hashing. Utiliza Argon2 para resistir ataques de fuerza bruta por hardware (ASIC/GPU). Se implementaron contramedidas para ataques de enumeración (User Enumeration): cuando se ingresa un correo inexistente, el sistema ejecuta un cómputo de hashing con una cadena señuelo para unificar los tiempos de respuesta. Además, las contraseñas temporales no se almacenan como tales, sino que fuerzan un flujo de renovación obligatorio en el primer ingreso.
 
-Esta decisión reduce el acoplamiento entre los componentes y favorece un sistema más mantenible, escalable y fácil de evolucionar.
-
-### 5. Comunicación entre capas
-
-La comunicación entre la interfaz de usuario y el dominio se realiza mediante DTO y ensambladores, evitando que la capa de presentación acceda directamente a las entidades del negocio. De igual forma, el acceso a la persistencia se abstrae mediante interfaces e inyección de dependencias, permitiendo desacoplar la lógica de negocio de su implementación. Este enfoque facilita la sustitución o evolución de componentes individuales sin afectar el funcionamiento del resto del sistema y mantiene una clara separación entre las distintas responsabilidades de la aplicación.
-
-Esta decisión evita dependencias innecesarias entre las capas y favorece un diseño más flexible, desacoplado y fácil de mantener.
-
-### 6. Persistencia mediante JDBC puro
-
-La capa de persistencia fue desarrollada utilizando JDBC puro en lugar de frameworks u ORM. Esta decisión fue tomada con el objetivo de comprender en profundidad el funcionamiento del acceso a datos, la gestión de conexiones, la ejecución de consultas SQL y el mapeo entre el modelo de dominio y la base de datos. El proyecto implementa una capa de persistencia propia, manteniendo la lógica de acceso a datos completamente separada del dominio y de la lógica de negocio.
-
-Esta decisión permitió construir una base sólida sobre los fundamentos de la persistencia en Java antes de incorporar herramientas de mayor nivel como Spring Data o Hibernate.
-
-### 7. Desacoplamiento de la persistencia
-
-El dominio define los contratos de acceso a datos mediante interfaces, mientras que sus implementaciones concretas se encuentran en la capa de infraestructura. De esta manera, la lógica de negocio depende únicamente de abstracciones y no de tecnologías específicas de persistencia. Esta organización permite reemplazar la implementación de acceso a datos sin modificar el dominio ni los servicios de la aplicación.
-
-Esta decisión reduce el acoplamiento con la tecnología de persistencia y facilita la evolución y el mantenimiento del sistema.
-
-### 8. Multiples Inventarios
-
-El sistema permite administrar múltiples inventarios dentro de una misma tienda, considerando cada inventario como una unidad independiente para el control del stock. Los productos son gestionados a través de su inventario correspondiente, manteniendo una clara separación entre la información del producto y el lugar donde se almacena. Lo que permite representar distintos espacios de almacenamiento manteniendo la independencia entre ellos y un control preciso sobre los productos registrados en cada inventario.
-
-Esta decisión mantiene desacoplado el modelo de productos del control de inventarios y facilita una gestión consistente del stock.
-
-### 9. Conservación del historial mediante borrado lógico
-
-Las entidades que participan en procesos de negocio, como productos, servicios, impuestos, descuentos y políticas de vencimiento, no pueden eliminarse desde la aplicación. En su lugar, el sistema permite activar o desactivar su disponibilidad, evitando que dejen de utilizarse sin perder la información histórica asociada. 
-
-Esta decisión garantiza que registros históricos, como las facturas, conserven todas sus referencias originales incluso cuando alguno de estos elementos deja de utilizarse en la operación diaria. De esta forma, es posible consultar correctamente ventas realizadas en el pasado sin comprometer la integridad de la información. Desde la interfaz de usuario es posible administrar el estado de estas entidades mediante opciones de activación e inactivación, permitiendo ocultarlas de la operación cotidiana sin eliminarlas de la base de datos.
-
-Esta decisión preserva la integridad del historial del negocio, evita inconsistencias en los registros históricos y permite retirar elementos de operación sin afectar la información previamente registrada.
-
-### 10. Integridad de la base de datos
-
-La base de datos fue diseñada priorizando la integridad y consistencia de la información mediante un modelo relacional que refleja las relaciones existentes entre las entidades del dominio. Para ello se emplean restricciones de integridad, claves foráneas y reglas de validación que garantizan la coherencia de los datos almacenados.
-
-El sistema evita la duplicación innecesaria de información mediante relaciones entre entidades, de forma que productos, impuestos, descuentos y políticas de vencimiento mantienen referencias consistentes dentro del modelo de datos. Asimismo, la mayoría de los atributos obligatorios se almacenan como valores no nulos, reduciendo la posibilidad de registrar información incompleta o inconsistente.
-
-Esta decisión fortalece la confiabilidad de la información y permite que las reglas de negocio se apoyen sobre un modelo de datos consistente y segura.
-
-### 11. Catálogos independientes de configuración
-
-Los impuestos, descuentos y políticas de vencimiento se modelan como entidades independientes del producto y se administran mediante sus propios catálogos. En lugar de almacenar estos valores directamente en cada producto, el sistema mantiene referencias a las configuraciones correspondientes. Este enfoque permite modificar o ampliar estos elementos de forma centralizada, facilitando la adaptación del sistema ante cambios en las condiciones comerciales o normativas sin alterar el modelo de los productos. Además, promueve la reutilización de configuraciones comunes entre múltiples productos y evita la duplicación de información.
-
-Esta decisión centraliza la administración de las reglas configurables del negocio, mejora la consistencia de la información y facilita la evolución del sistema ante cambios futuros.
-
-### 12. Autorización basada en roles y permisos
-
-Los usuarios no reciben permisos directamente. En su lugar, los permisos se agrupan dentro de roles y los usuarios pueden tener múltiples roles asignados. Los permisos efectivos de un usuario se determinan a partir de los roles que tiene asociados.
-
-Esta decisión permite reutilizar conjuntos de permisos entre diferentes usuarios y evita tener que configurar individualmente cada permiso para cada cuenta. Además, permite combinar diferentes roles para representar distintos niveles de acceso sin crear un rol específico para cada combinación posible.
-
-### 13. Permisos definidos por el sistema
-
-Los permisos disponibles no pueden crearse mediante el flujo normal de la aplicación. Cada permiso representa una acción concreta que debe existir previamente en el código, por lo que la incorporación de nuevos permisos requiere una modificación de la implementación del sistema. Desde la aplicación, el administrador únicamente puede administrar los permisos existentes mediante su asignación a roles y su activación o inactivación.
-
-Esta decisión mantiene una correspondencia controlada entre los permisos almacenados y las acciones que realmente existen en la aplicación, evitando que se puedan crear permisos arbitrarios que no tengan una operación asociada.
-
-### 14. Doble validación de autorización
-
-El acceso a las funcionalidades protegidas se controla en dos niveles. La interfaz de usuario limita visualmente las acciones disponibles para el usuario según sus permisos y restringe el acceso a las pantallas correspondientes. Sin embargo, estas restricciones no se consideran una medida de seguridad suficiente. Antes de ejecutar una operación protegida, el orquestador correspondiente vuelve a verificar que el usuario actual posea el permiso requerido. Si la autorización no es válida, se lanza una excepción específica y la operación no se ejecuta.
-
-Esta decisión evita que la seguridad dependa de elementos de la interfaz que pueden ser vulnerados o evadidos y establece la validación en la capa que realmente controla la ejecución de las operaciones.
-
-### 15. Gestión de contraseñas mediante credenciales temporales
-
-Las cuentas son creadas exclusivamente por administradores y, durante su registro o restablecimiento, se genera una contraseña temporal. Cuando el usuario inicia sesión utilizando una contraseña temporal, el sistema detecta esta condición y solicita establecer una nueva contraseña antes de permitir el uso normal de la aplicación. Las contraseñas no se almacenan directamente en la base de datos. Se utiliza Argon2 para generar su hash y únicamente este valor es persistido.
-
-Esta decisión permite centralizar la creación y recuperación de cuentas sin que el administrador tenga que establecer permanentemente la contraseña personal del usuario, al mismo tiempo que evita almacenar las credenciales originales en la base de datos.
-
-### 16. Protección del proceso de autenticación
-
-El proceso de autenticación incorpora diferentes mecanismos para reducir ataques sobre las cuentas. Después de tres intentos incorrectos de contraseña, el usuario queda bloqueado temporalmente durante un período configurable. Además, cuando el correo electrónico proporcionado no corresponde a un usuario existente, el sistema realiza igualmente una operación de hashing utilizando un hash falso.
-
-Esta decisión busca dificultar tanto los ataques de fuerza bruta como la enumeración de usuarios mediante diferencias observables en el tiempo de procesamiento de las solicitudes de autenticación.
+### 10. Inmutabilidad del Historial y Aislamiento de Múltiples Inventarios
+    
+El modelo relacional protege la integridad histórica de las operaciones comerciales. Entidades clave como productos, tasas de impuestos y descuentos operan bajo un modelo de borrado lógico (Activación/Inactivación), impidiendo que se rompan las claves foráneas de facturas emitidas en el pasado. Además, la arquitectura de stock soporta multi-inventario nativo, aislando las cantidades disponibles por almacén físico sin replicar la definición base del producto.
 
 ---
 
 ## Tecnologías utilizadas
 
-| Tecnología | Uso                                                 |
-|------------|-----------------------------------------------------|
-| Java       | Lógica de negocio                                   |
-| JavaFX     | Interfaz gráfica de escritorio                      |
-| FXML       | Definición de las vistas de la interfaz             |
-| CSS        | Estilos de la interfaz gráfica                      |
-| JDBC       | Persistencia de datos                               |
-| HikariCP   | Pool de conexiones JDBC                             |
-| Argon2     | Codificador de contraseñas                          |
-| MySQL      | Base de datos relacional                            |
-| Maven      | Gestión de dependencias y construcción del proyecto |
+| Tecnología | Uso                                                        |
+|------------|------------------------------------------------------------|
+| Java       | Lógica de negocio                                          |
+| JavaFX     | Interfaz gráfica de escritorio                             |
+| FXML       | Definición de las vistas de la interfaz                    |
+| CSS        | Estilos de la interfaz gráfica                             |
+| JDBC       | Persistencia de datos                                      |
+| HikariCP   | Pool de conexiones JDBC                                    |
+| Argon2     | Codificador de contraseñas                                 |
+| MySQL      | Base de datos relacional                                   |
+| Maven      | Gestión de dependencias y construcción del proyecto        |
+| JUnit 5    | Framework para pruebas unitarias automatizadas             |
+| Mockito    | Simulación de objetos (mocks) para aislamiento en pruebas  |
 
 ---
 
@@ -924,21 +818,23 @@ cd retail-management-system
 
 ### 2. Configurar la base de datos
 
-En la carpeta database/ se incluye una copia de la base de datos del proyecto.
+En la carpeta **database/** se incluye una copia de la base de datos del proyecto.
 
-Importa el archivo SQL en MySQL. El script crea automáticamente la base de datos "mi_tienda" si no existe.
+Importa el archivo SQL en MySQL. El script crea automáticamente la base de datos **"retail_management_system"** si no existe.
 
 ### 3. Configurar la conexión
 
 Renombra el archivo:
 
-text
+```text
 application.properties.example
+```
 
 por
 
-text
+```text
 application.properties
+```
 
 y configura los siguientes datos:
 
@@ -946,7 +842,7 @@ y configura los siguientes datos:
 - Usuario
 - Contraseña
 
-Para más comodidad las instrucciones también están en text application.properties.example
+Para más comodidad las instrucciones también están en ```application.properties.example```
 
 ### 4. Ejecutar el proyecto
 
@@ -958,9 +854,11 @@ Abre el proyecto con tu IDE preferido compatible con Maven (IntelliJ IDEA), espe
 
 ### Descripción General
 
-El sistema está organizado siguiendo una arquitectura por capas, donde cada componente posee una responsabilidad claramente definida. La interfaz gráfica se encarga de la interacción con el usuario y se comunica con la aplicación mediante orquestadores. Estos actúan como punto de entrada a las operaciones de la aplicación, realizando las validaciones de permisos correspondientes, coordinando el uso de los servicios y transformando las entidades del dominio en DTO's para entregar a la capa de presentación únicamente la información necesaria. La lógica de las operaciones de negocio se encuentra encapsulada en servicios, mientras que el acceso a los datos se encuentra desacoplado mediante puertos e implementaciones específicas para MySQL.
+El sistema está organizado siguiendo una arquitectura por capas, donde cada componente posee una responsabilidad claramente definida. La interfaz gráfica se encarga de la interacción con el usuario y se comunica con la aplicación mediante orquestadores. Estos actúan como punto de entrada a las operaciones de negocio e implementan un esquema de seguridad de defensa en profundidad (Zero Trust): respaldan las restricciones visuales de la interfaz revalidando de forma estricta los permisos del usuario antes de permitir cualquier ejecución.
 
-Esta organización permite separar la presentación, la coordinación de las operaciones, la lógica de negocio y la persistencia, favoreciendo el mantenimiento del código y permitiendo modificar o reemplazar componentes de una capa sin afectar directamente a las demás.
+Una vez superada la barrera de autorización, los orquestadores coordinan el uso de los servicios de dominio y transforman las entidades resultantes en DTO, entregando a la capa de presentación únicamente la información necesaria. La verdadera lógica del negocio reside encapsulada dentro de estos servicios, mientras que el acceso a los datos se encuentra completamente desacoplado mediante el uso de puertos (interfaces) e implementaciones nativas en JDBC puro para MySQL.
+
+Esta organización permite separar la presentación, el control de acceso, la lógica de negocio y la persistencia, favoreciendo el mantenimiento del código y permitiendo modificar o reemplazar componentes de una capa sin afectar directamente a las demás.
 
 ### Arquitectura por capas
 
@@ -988,6 +886,11 @@ RetailManagementSystem
 │
 ├── aplicacion 
 │   ├── dto
+│   │   ├── comercial
+│   │   ├── consultas
+│   │   ├── gestion
+│   │   ├── seguridad
+│   │   └── ventas
 │   ├── ensambladores
 │   ├── fabricas
 │   ├── orquestadores
@@ -996,9 +899,19 @@ RetailManagementSystem
 │
 ├── dominio
 │   ├── entidades
+│   │   ├── comercial
+│   │   ├── gestion
+│   │   ├── seguridad
+│   │   └── ventas
 │   ├── enums
 │   ├── excepciones
+│   │   ├── autenticacionYSeguridad
+│   │   ├── conflictos
+│   │   ├── recursosNoEncontrados
+│   │   └── reglasDeNegocio
 │   └── puertos
+│       ├── repositorios
+│       └── transacciones
 │
 ├── infraestructura
 │   ├── configuracion
@@ -1006,6 +919,10 @@ RetailManagementSystem
 │   ├── persistencia
 │   │   ├── excepciones
 │   │   └── mysql
+│   │       ├── conexiones
+│   │       ├── estrategias
+│   │       ├── mappers
+│   │       └── repositorios
 │   └── seguridad
 │
 ├── vista
@@ -1051,12 +968,12 @@ resources
 
 La estructura del proyecto está organizada siguiendo una arquitectura por capas. Cada paquete agrupa componentes con una responsabilidad específica, favoreciendo la separación de responsabilidades y el desacoplamiento entre la interfaz de usuario, la lógica de negocio, el dominio y la infraestructura.
 
-| Paquete              | Responsabilidad                                                                                                                                                  |
-|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `aplicacion`         | Contiene los servicios, orquestadores, DTO, ensambladores, puertos y fábricas que coordinan los casos de uso de la aplicación.                                   |
-| `dominio`            | Define las entidades, puertos, enumeraciones y excepciones del dominio.                                                                                          |
-| `infraestructura`    | Implementa la persistencia mediante JDBC/MySQL, la inyeccion de dependencias, las clases encargadas de la seguridad y la configuración técnica de la aplicación. |
-| `vista`              | Contiene los controladores JavaFX y las utilidades relacionadas con la interfaz gráfica.                                                                         |
+| Paquete           | Responsabilidad y Componentes Clave                                                                                                                                                                                                                                                                                                                                                                                   |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `aplicacion`      | **Orquestación y Casos de Uso:** Coordina el flujo de la aplicación mediante Orquestadores y Servicios de aplicación.<br><br>**Transferencia de Datos:** Contiene DTOs, Ensambladores y Fábricas para comunicar la UI con el backend sin exponer las entidades del dominio.                                                                                                                                           |
+| `dominio`         | **Núcleo del Negocio:** Modela la lógica del sistema a través de Entidades, Valores y Enumeraciones puras.<br><br>**Abstracciones:** Define las Excepciones del negocio y los Puertos (interfaces) que determinan los contratos de acceso a datos.                                                                                                                                                                    |
+| `infraestructura` | **Persistencia & Transacciones:** Implementación JDBC/MySQL con pool HikariCP, `GestorTransaccional` y Mapeadores dedicados.<br><br>**Seguridad & Patrones:** Repositorios polimórficos basados en el patrón Estrategia (OCP), hashing criptográfico Argon2 e inyección de dependencias.                                                                                                                              |
+| `vista`           | **Controladores y Navegación:** Controladores JavaFX, gestión centralizada del flujo de pantallas con `CargadorVistas` y definición de `RutasVistas`.<br><br>**Utilidades & Resiliencia Visual:** `GestorAlertas` para retroalimentación estandarizada, `FormateadorNumeros` para valores monetarios, excepciones de UI y `ConfiguradorExcepciones` para la captura temprana de fallos en el arranque de la vista.    |
 
 ---
 
@@ -1065,9 +982,9 @@ La estructura del proyecto está organizada siguiendo una arquitectura por capas
 Las siguientes funcionalidades están planificadas para futuras versiones del sistema:
 
 - 🔐 Implementar testing automatizado.
+- 💻 Ampliar el catálogo del sistema con una nueva categoría de productos tecnológicos.
 - 🌐 Agregar soporte para múltiples idiomas (Español e Inglés).
 - 📄 Permitir la exportación e impresión de facturas y reportes en formatos PDF y Excel.
-- 💻 Ampliar el catálogo del sistema con una nueva categoría de productos tecnológicos.
 - 📊 Incorporar indicadores y estadísticas para el panel de control.
 - ⚙️ Completar el módulo de configuración del sistema con opciones avanzadas de personalización.
 
