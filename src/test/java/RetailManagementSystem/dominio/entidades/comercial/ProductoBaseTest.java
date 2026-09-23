@@ -24,7 +24,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
 
     protected abstract T crearNuevoProducto();
 
-    protected T productoFixture;
+    protected T productoPrueba;
 
     @Mock
     protected Impuesto impuestoActivo;
@@ -38,7 +38,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
     void setUp() {
         Mockito.lenient().when(impuestoActivo.isActivo()).thenReturn(true);
         Mockito.lenient().when(descuentoActivo.isActivo()).thenReturn(true);
-        productoFixture = crearNuevoProducto();
+        productoPrueba = crearNuevoProducto();
     }
 
     //TESTS CREAR NUEVO
@@ -221,9 +221,9 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @CsvSource({"   Modificado   ", "Modificado"})
     void deberiaCambiarNombreCorrectamente(String nombreNuevo){
         //ACT
-        productoFixture.cambiarNombreProducto(nombreNuevo);
+        productoPrueba.cambiarNombreProducto(nombreNuevo);
         //ASSERT
-        assertEquals("Modificado", productoFixture.getNombre());
+        assertEquals("Modificado", productoPrueba.getNombre());
     }
 
     @ParameterizedTest
@@ -232,7 +232,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.cambiarNombreProducto(nombreInvalido)
+                ()-> productoPrueba.cambiarNombreProducto(nombreInvalido)
         );
         assertEquals("Nombre del Producto Invalido", exception.getMessage());
     }
@@ -243,9 +243,9 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ARRANGE
         BigDecimal porcentajeNuevo = new BigDecimal(porcentajeNuevoSt);
         //ACT
-        productoFixture.cambiarPorcentajeGanancia(porcentajeNuevo);
+        productoPrueba.cambiarPorcentajeGanancia(porcentajeNuevo);
         //ASSERT
-        assertEquals(0, productoFixture.getPorcentajeGanancia().compareTo(porcentajeNuevo));
+        assertEquals(0, productoPrueba.getPorcentajeGanancia().compareTo(porcentajeNuevo));
     }
 
     @ParameterizedTest
@@ -256,7 +256,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.cambiarPorcentajeGanancia(porcentajeInvalido)
+                ()-> productoPrueba.cambiarPorcentajeGanancia(porcentajeInvalido)
         );
         assertEquals("Porcentaje de Ganancia del Producto Invalido", exception.getMessage());
     }
@@ -266,9 +266,9 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ARRANGE
         BigDecimal valorNuevo = new BigDecimal("65000");
         //ACT
-        productoFixture.cambiarValorCompra(valorNuevo);
+        productoPrueba.cambiarValorCompra(valorNuevo);
         //ASSERT
-        assertEquals(0, productoFixture.getValorCompra().compareTo(valorNuevo));
+        assertEquals(0, productoPrueba.getValorCompra().compareTo(valorNuevo));
     }
 
     @ParameterizedTest
@@ -279,7 +279,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.cambiarValorCompra(valorInvalido)
+                ()-> productoPrueba.cambiarValorCompra(valorInvalido)
         );
         assertEquals("Valor de Compra del Producto Invalido", exception.getMessage());
     }
@@ -287,11 +287,11 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaAumentarStockCorrectamente(){
         //ARRANGE
-        int stockInicial = productoFixture.getStock();
+        int stockInicial = productoPrueba.getStock();
         //ACT
-        productoFixture.aumentarStock(10);
+        productoPrueba.aumentarStock(10);
         //ASSERT
-        assertEquals(stockInicial + 10, productoFixture.getStock());
+        assertEquals(stockInicial + 10, productoPrueba.getStock());
     }
 
     @ParameterizedTest
@@ -300,7 +300,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.aumentarStock(cantidadInvalida)
+                ()-> productoPrueba.aumentarStock(cantidadInvalida)
         );
         assertEquals("Cantidad de Producto a Reponer Invalida", exception.getMessage());
     }
@@ -310,12 +310,12 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ARRANGE
         int cantidadAnadida = 50;
         int cantidadAReducir = 20;
-        productoFixture.aumentarStock(cantidadAnadida);
-        int stockPrevioAOperacion = productoFixture.getStock();
+        productoPrueba.aumentarStock(cantidadAnadida);
+        int stockPrevioAOperacion = productoPrueba.getStock();
         //ACT
-        productoFixture.reducirStock(cantidadAReducir);
+        productoPrueba.reducirStock(cantidadAReducir);
         //ASSERT
-        assertEquals(stockPrevioAOperacion - cantidadAReducir, productoFixture.getStock());
+        assertEquals(stockPrevioAOperacion - cantidadAReducir, productoPrueba.getStock());
     }
 
     @ParameterizedTest
@@ -324,7 +324,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.reducirStock(cantidadInvalida)
+                ()-> productoPrueba.reducirStock(cantidadInvalida)
         );
         assertEquals("Cantidad de Producto a Retirar Invalida", exception.getMessage());
     }
@@ -332,11 +332,11 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaLanzarExcepcionSiLaCantidadARetirarEsMayorALaExistente(){
         //ARRANGE
-        int cantidadInvalida = productoFixture.getStock() + 1;
+        int cantidadInvalida = productoPrueba.getStock() + 1;
         //ACT AND ASSERT
         StockInsuficienteException exception = assertThrows(
                 StockInsuficienteException.class,
-                ()-> productoFixture.reducirStock(cantidadInvalida)
+                ()-> productoPrueba.reducirStock(cantidadInvalida)
         );
         assertEquals("La Cantidad de Producto a Reducir es Mayor a la Cantidad Existente", exception.getMessage());
     }
@@ -347,9 +347,9 @@ public abstract class ProductoBaseTest<T extends Producto> {
         Impuesto impuestoActivoNuevo = Mockito.mock(Impuesto.class);
         Mockito.when(impuestoActivoNuevo.isActivo()).thenReturn(true);
         //ACT
-        productoFixture.cambiarImpuesto(impuestoActivoNuevo);
+        productoPrueba.cambiarImpuesto(impuestoActivoNuevo);
         //ASSERT
-        assertEquals(impuestoActivoNuevo, productoFixture.getImpuesto());
+        assertEquals(impuestoActivoNuevo, productoPrueba.getImpuesto());
     }
 
     @Test
@@ -357,7 +357,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.cambiarImpuesto(null)
+                ()-> productoPrueba.cambiarImpuesto(null)
         );
         assertEquals("El Producto Debe Tener Impuesto Obligatoriamente", exception.getMessage());
     }
@@ -370,7 +370,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.cambiarImpuesto(impuestoInactivo)
+                ()-> productoPrueba.cambiarImpuesto(impuestoInactivo)
         );
         assertEquals("El Impuesto que le quieres poner al Producto esta Inactivo", exception.getMessage());
     }
@@ -381,9 +381,9 @@ public abstract class ProductoBaseTest<T extends Producto> {
         Descuento descuentoActivoNuevo = Mockito.mock(Descuento.class);
         Mockito.when(descuentoActivoNuevo.isActivo()).thenReturn(true);
         //ACT
-        productoFixture.cambiarDescuento(descuentoActivoNuevo);
+        productoPrueba.cambiarDescuento(descuentoActivoNuevo);
         //ASSERT
-        assertEquals(descuentoActivoNuevo, productoFixture.getDescuento());
+        assertEquals(descuentoActivoNuevo, productoPrueba.getDescuento());
     }
 
     @Test
@@ -391,7 +391,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.cambiarDescuento(null)
+                ()-> productoPrueba.cambiarDescuento(null)
         );
         assertEquals("El Producto Debe Tener Descuento Obligatoriamente", exception.getMessage());
     }
@@ -404,7 +404,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                ()-> productoFixture.cambiarDescuento(descuentoInactivo)
+                ()-> productoPrueba.cambiarDescuento(descuentoInactivo)
         );
         assertEquals("El Descuento que le quieres poner al Producto esta Inactivo", exception.getMessage());
     }
@@ -412,11 +412,11 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaCambiarEstadoCorrectamente(){
         //ARRANGE
-        boolean estadoAnterior = productoFixture.isActivo();
+        boolean estadoAnterior = productoPrueba.isActivo();
         //ACT
-        productoFixture.cambiarEstado();
+        productoPrueba.cambiarEstado();
         //ASSERT
-        assertNotEquals(estadoAnterior, productoFixture.isActivo());
+        assertNotEquals(estadoAnterior, productoPrueba.isActivo());
     }
 
     //TEST CÁLCULOS
@@ -435,10 +435,10 @@ public abstract class ProductoBaseTest<T extends Producto> {
         BigDecimal valorCompra = new BigDecimal(valorCompraSt);
         BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
         BigDecimal precioBaseEsperado = new BigDecimal(precioBaseEsperadoSt);
-        productoFixture.cambiarValorCompra(valorCompra);
-        productoFixture.cambiarPorcentajeGanancia(porcentajeGanancia);
+        productoPrueba.cambiarValorCompra(valorCompra);
+        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
         //ACT
-        BigDecimal precioBase = productoFixture.getPrecioBase();
+        BigDecimal precioBase = productoPrueba.getPrecioBase();
         //ASSERT
         assertEquals(precioBaseEsperado, precioBase);
     }
@@ -459,7 +459,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
         BigDecimal precioBase = new BigDecimal(precioBaseSt);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
-        BigDecimal resultado = productoFixture.calcularDescuento(precioBase);
+        BigDecimal resultado = productoPrueba.calcularDescuento(precioBase);
         //ASSERT
         assertEquals(resultadoEsperado, resultado);
     }
@@ -476,10 +476,10 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ARRANGE
         BigDecimal porcentaje = new BigDecimal(porcentajeSt);
         Mockito.when(impuestoActivo.getPorcentaje()).thenReturn(porcentaje);
-        BigDecimal precioBase = new BigDecimal(precioBaseSt);
+        BigDecimal precioFinalSinImpuesto = new BigDecimal(precioBaseSt);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
-        BigDecimal resultado = productoFixture.calcularImpuesto(precioBase);
+        BigDecimal resultado = productoPrueba.calcularImpuesto(precioFinalSinImpuesto);
         //ASSERT
         assertEquals(resultadoEsperado, resultado);
     }
@@ -499,12 +499,12 @@ public abstract class ProductoBaseTest<T extends Producto> {
         BigDecimal valorCompra = new BigDecimal(valorCompraSt);
         BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
         BigDecimal descuento = new BigDecimal(descuentoSt);
-        productoFixture.cambiarValorCompra(valorCompra);
-        productoFixture.cambiarPorcentajeGanancia(porcentajeGanancia);
+        productoPrueba.cambiarValorCompra(valorCompra);
+        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
         Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(descuento);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
-        BigDecimal resultado = productoFixture.getValorFinalSinImpuesto(fecha);
+        BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fecha);
         //ASSERT
         assertEquals(resultadoEsperado, resultado);
     }
@@ -525,13 +525,13 @@ public abstract class ProductoBaseTest<T extends Producto> {
         BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
         BigDecimal descuento = new BigDecimal(descuentoSt);
         BigDecimal impuesto = new BigDecimal(impuestoSt);
-        productoFixture.cambiarValorCompra(valorCompra);
-        productoFixture.cambiarPorcentajeGanancia(porcentajeGanancia);
+        productoPrueba.cambiarValorCompra(valorCompra);
+        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
         Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(descuento);
         Mockito.when(impuestoActivo.getPorcentaje()).thenReturn(impuesto);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
-        BigDecimal resultado = productoFixture.calcularValorVenta(fecha);
+        BigDecimal resultado = productoPrueba.calcularValorVenta(fecha);
         //ASSERT
         assertEquals(resultadoEsperado, resultado);
     }

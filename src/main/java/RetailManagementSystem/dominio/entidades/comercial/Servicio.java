@@ -17,17 +17,17 @@ public class Servicio implements ItemFacturable {
 
     //ATRIBUTOS:
 
+    private final String codigoServicio;
+
     private String nombre;
 
     private BigDecimal precioBase;
-
-    private final String codigoServicio;
 
     private Impuesto impuesto;
 
     private Descuento descuento;
 
-    private boolean activo;
+    private Boolean activo;
 
     //GETTERS Y SETTERS:
 
@@ -43,14 +43,14 @@ public class Servicio implements ItemFacturable {
 
     @Override
     public String getNombre() {
-        return nombre;
+        return this.nombre;
     }
     private void setNombre(String nombre) {
         this.nombre = nombre.trim();
     }
 
     public BigDecimal getPrecioBase() {
-        return precioBase;
+        return this.precioBase;
     }
     private void setPrecioBase(BigDecimal precioBase) {
         this.precioBase = precioBase.setScale(6, RoundingMode.HALF_UP);
@@ -61,7 +61,7 @@ public class Servicio implements ItemFacturable {
     }
 
     public Descuento getDescuento(){
-        return descuento;
+        return this.descuento;
     }
 
     public boolean isActivo() {
@@ -72,7 +72,7 @@ public class Servicio implements ItemFacturable {
 
     private void validarCodigo(String codigo){
         if (codigo == null || codigo.isBlank()){
-            throw new IllegalArgumentException("El Código del Producto esta Vacío");
+            throw new IllegalArgumentException("El Código del Servicio esta Vacío");
         }
         if (codigo.length() > 50){
             throw new IllegalArgumentException("El Código del Servicio excede los Caracteres Máximos Posibles");
@@ -86,30 +86,32 @@ public class Servicio implements ItemFacturable {
     }
 
     private void validarPrecioBase(BigDecimal precioBase){
-        if (precioBase.compareTo(BigDecimal.ZERO) <= 0){
-            throw new IllegalArgumentException("Precio del Servicio Invalido");
+        if (precioBase == null || precioBase.compareTo(BigDecimal.ZERO) <= 0){
+            throw new IllegalArgumentException("Precio Base del Servicio Invalido");
         }
     }
 
-    private void validarImpuesto(Impuesto impuesto){
+    private static void validarImpuesto(Impuesto impuesto){
         if (impuesto==null){
             throw new IllegalArgumentException("El Servicio Debe Tener Impuesto Obligatoriamente");
         }
     }
 
-    private void validarEstadoImpuesto(Impuesto impuesto){
+    private static void validarEstadoImpuesto(Impuesto impuesto){
+        validarImpuesto(impuesto);
         if (!impuesto.isActivo()){
             throw new IllegalArgumentException("El Impuesto que le quieres poner al Servicio esta Inactivo");
         }
     }
 
-    private void validarDescuento(Descuento descuento){
+    private static void validarDescuento(Descuento descuento){
         if (descuento==null){
             throw new IllegalArgumentException("El Servicio Debe Tener Descuento Obligatoriamente");
         }
     }
 
-    private void validarEstadoDescuento(Descuento descuento){
+    private static void validarEstadoDescuento(Descuento descuento){
+        validarDescuento(descuento);
         if (!descuento.isActivo()){
             throw new IllegalArgumentException("El Descuento que le quieres poner al Servicio esta Inactivo");
         }
@@ -119,13 +121,16 @@ public class Servicio implements ItemFacturable {
 
     private Servicio(
             String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento,
-            boolean activo
+            Boolean activo
     ) {
         validarCodigo(codigoServicio);
         validarNombre(nombre);
         validarPrecioBase(precioBase);
         validarImpuesto(impuesto);
         validarDescuento(descuento);
+        if (activo == null){
+            throw new IllegalArgumentException("El Estado del Servicio es Obligatorio");
+        }
         this.codigoServicio = codigoServicio;
         setNombre(nombre);
         setPrecioBase(precioBase);
@@ -136,7 +141,7 @@ public class Servicio implements ItemFacturable {
 
     public static Servicio reconstruirDesdeBD(
             String codigoServicio, String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento,
-            boolean activo
+            Boolean activo
     ) {
         return new Servicio(codigoServicio, nombre, precioBase, impuesto, descuento, activo);
     }
@@ -144,6 +149,8 @@ public class Servicio implements ItemFacturable {
     public static Servicio crearNuevo(
             String nombre, BigDecimal precioBase, Impuesto impuesto, Descuento descuento
     ) {
+        validarEstadoImpuesto(impuesto);
+        validarEstadoDescuento(descuento);
         return new Servicio(UUID.randomUUID().toString(), nombre, precioBase, impuesto, descuento, true);
     }
 
@@ -173,9 +180,12 @@ public class Servicio implements ItemFacturable {
 
     @Override
     public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
-        return precioBase.subtract(
-                calcularDescuento(getPrecioBase())
-        );
+        return getPrecioBase().subtract(
+                calcularDescuento(
+                        getPrecioBase()
+                )
+        )
+        .setScale(6, RoundingMode.HALF_UP);
     }
 
     @Override
@@ -190,12 +200,12 @@ public class Servicio implements ItemFacturable {
     //MÉTODOS MODIFICAR SERVICIO:
 
     public void cambiarNombreServicio(String nombreServicio){
-        validarNombre(nombre);
+        validarNombre(nombreServicio);
         setNombre(nombreServicio);
     }
 
     public void cambiarPrecioBase(BigDecimal precioNuevo){
-        validarPrecioBase(precioBase);
+        validarPrecioBase(precioNuevo);
         setPrecioBase(precioNuevo);
     }
 
