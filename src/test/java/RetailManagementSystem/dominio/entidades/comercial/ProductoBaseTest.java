@@ -7,38 +7,37 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficie
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 public abstract class ProductoBaseTest<T extends Producto> {
 
     protected abstract T crearNuevoProducto();
 
     protected T productoPrueba;
 
-    @Mock
-    protected Impuesto impuestoActivo;
+    protected final Impuesto impuestoActivo = Impuesto.crearNuevo("IVA", new BigDecimal("19"), true);
 
-    @Mock
-    protected Descuento descuentoActivo;
+    protected final Descuento descuentoActivo = Descuento.crearNuevo("Descuento", new BigDecimal("15"), true);
 
     protected abstract TipoProducto getTipoProducto();
 
     @BeforeEach
     void setUp() {
-        Mockito.lenient().when(impuestoActivo.isActivo()).thenReturn(true);
-        Mockito.lenient().when(descuentoActivo.isActivo()).thenReturn(true);
         productoPrueba = crearNuevoProducto();
+    }
+
+    protected Impuesto crearImpuestoConPorcentaje(String porcentaje) {
+        return Impuesto.crearNuevo("IMP_TEST", new BigDecimal(porcentaje), true);
+    }
+
+    protected Descuento crearDescuentoConPorcentaje(String porcentaje) {
+        return Descuento.crearNuevo("DESC_TEST", new BigDecimal(porcentaje), true);
     }
 
     //TESTS CREAR NUEVO
@@ -174,7 +173,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaLanzarExcepcionSiElImpuestoEstaInactivoAlCrearNuevo(){
         //ARRANGE
-        Mockito.when(impuestoActivo.isActivo()).thenReturn(false);
+        Impuesto impuestoInactivo = Impuesto.crearNuevo("Inactivo", new BigDecimal("20"), false);
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -184,7 +183,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             BigDecimal.ONE,
                             1,
-                            impuestoActivo,
+                            impuestoInactivo,
                             descuentoActivo,
                             getTipoProducto()
                     ){};
@@ -196,7 +195,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaLanzarExcepcionSiElDescuentoEstaInactivoAlCrearNuevo(){
         //ARRANGE
-        Mockito.when(descuentoActivo.isActivo()).thenReturn(false);
+        Descuento descuentoInactivo = Descuento.crearNuevo("Inactivo", new BigDecimal("5"), false);
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -207,7 +206,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
                             BigDecimal.ONE,
                             1,
                             impuestoActivo,
-                            descuentoActivo,
+                            descuentoInactivo,
                             getTipoProducto()
                     ){};
                 }
@@ -344,8 +343,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaCambiarImpuestoCorrectamente(){
         //ARRANGE
-        Impuesto impuestoActivoNuevo = Mockito.mock(Impuesto.class);
-        Mockito.when(impuestoActivoNuevo.isActivo()).thenReturn(true);
+        Impuesto impuestoActivoNuevo = Impuesto.crearNuevo("Nuevo", new BigDecimal("5"), true);
         //ACT
         productoPrueba.cambiarImpuesto(impuestoActivoNuevo);
         //ASSERT
@@ -365,8 +363,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaLanzarExcepcionSiAlCambiarImpuestoEstaInactivo(){
         //ARRANGE
-        Impuesto impuestoInactivo = Mockito.mock(Impuesto.class);
-        Mockito.when(impuestoInactivo.isActivo()).thenReturn(false);
+        Impuesto impuestoInactivo = Impuesto.crearNuevo("Nuevo", new BigDecimal("5"), false);
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -378,8 +375,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaCambiarDescuentoCorrectamente(){
         //ARRANGE
-        Descuento descuentoActivoNuevo = Mockito.mock(Descuento.class);
-        Mockito.when(descuentoActivoNuevo.isActivo()).thenReturn(true);
+        Descuento descuentoActivoNuevo = Descuento.crearNuevo("Nuevo", new BigDecimal("10"), true);
         //ACT
         productoPrueba.cambiarDescuento(descuentoActivoNuevo);
         //ASSERT
@@ -399,8 +395,7 @@ public abstract class ProductoBaseTest<T extends Producto> {
     @Test
     void deberiaLanzarExcepcionSiAlCambiarDescuentoEstaInactivo(){
         //ARRANGE
-        Descuento descuentoInactivo = Mockito.mock(Descuento.class);
-        Mockito.when(descuentoInactivo.isActivo()).thenReturn(false);
+        Descuento descuentoInactivo = Descuento.crearNuevo("Inactivo", new BigDecimal("10"), false);
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -454,8 +449,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
             String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
     ) {
         //ARRANGE
-        BigDecimal porcentaje = new BigDecimal(porcentajeSt);
-        Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(porcentaje);
+        Descuento descuento = crearDescuentoConPorcentaje(porcentajeSt);
+        productoPrueba.cambiarDescuento(descuento);
         BigDecimal precioBase = new BigDecimal(precioBaseSt);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
@@ -474,8 +469,8 @@ public abstract class ProductoBaseTest<T extends Producto> {
             String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
     ) {
         //ARRANGE
-        BigDecimal porcentaje = new BigDecimal(porcentajeSt);
-        Mockito.when(impuestoActivo.getPorcentaje()).thenReturn(porcentaje);
+        Impuesto impuesto = crearImpuestoConPorcentaje(porcentajeSt);
+        productoPrueba.cambiarImpuesto(impuesto);
         BigDecimal precioFinalSinImpuesto = new BigDecimal(precioBaseSt);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
@@ -498,10 +493,10 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ARRANGE
         BigDecimal valorCompra = new BigDecimal(valorCompraSt);
         BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
-        BigDecimal descuento = new BigDecimal(descuentoSt);
         productoPrueba.cambiarValorCompra(valorCompra);
         productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
-        Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(descuento);
+        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
+        productoPrueba.cambiarDescuento(descuento);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
         BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fecha);
@@ -511,10 +506,10 @@ public abstract class ProductoBaseTest<T extends Producto> {
 
     @ParameterizedTest
     @CsvSource({
-            // valorCompra, ganancia, descuento, impuesto, esperado,       fecha
-            "85000,         30,       10,       19,       118345.500000,   2026-12-31",
-            "125000,        20,       0,        19,       178500.000000,   2026-10-15",
-            "67500,         25,       5,        8,        86568.750000,    2026-11-20"
+            // valorCompra,  ganancia,  descuento,  impuesto,  esperado,        fecha
+            "85000,          30,        10,         19,        118345.500000,   2026-12-31",
+            "125000,         20,        0,          19,        178500.000000,   2026-10-15",
+            "67500,          25,        5,          8,         86568.750000,    2026-11-20"
     })
     void deberiaCalcularElValorVentaCorrectamente(
             String valorCompraSt, String porcentajeGananciaSt, String descuentoSt, String impuestoSt,
@@ -523,12 +518,12 @@ public abstract class ProductoBaseTest<T extends Producto> {
         //ARRANGE
         BigDecimal valorCompra = new BigDecimal(valorCompraSt);
         BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
-        BigDecimal descuento = new BigDecimal(descuentoSt);
-        BigDecimal impuesto = new BigDecimal(impuestoSt);
         productoPrueba.cambiarValorCompra(valorCompra);
         productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
-        Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(descuento);
-        Mockito.when(impuestoActivo.getPorcentaje()).thenReturn(impuesto);
+        Impuesto impuesto = crearImpuestoConPorcentaje(impuestoSt);
+        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
+        productoPrueba.cambiarImpuesto(impuesto);
+        productoPrueba.cambiarDescuento(descuento);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         //ACT
         BigDecimal resultado = productoPrueba.calcularValorVenta(fecha);

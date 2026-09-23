@@ -31,7 +31,7 @@ public class Descuento {
         return porcentaje;
     }
     public void setPorcentaje(BigDecimal porcentaje) {
-        this.porcentaje = porcentaje.setScale(2, RoundingMode.HALF_UP);
+        this.porcentaje = porcentaje.setScale(6, RoundingMode.HALF_UP);
     }
 
     public boolean isActivo() {

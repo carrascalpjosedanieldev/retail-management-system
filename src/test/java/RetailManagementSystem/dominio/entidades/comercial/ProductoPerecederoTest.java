@@ -1,13 +1,13 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
+import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoVencidoException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,13 +17,17 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>{
 
     private static final String NOMBRE_POR_DEFECTO = "Perecedero";
+
     private static final BigDecimal VALOR_COMPRA_POR_DEFECTO = new BigDecimal("5000");
+
     private static final BigDecimal PORCENTAJE_GANANCIA_POR_DEFECTO = new BigDecimal("100");
+
     private static final int STOCK_POR_DEFECTO = 35;
+
     private static final LocalDate FECHA_VENCIMIENTO_POR_DEFECTO = LocalDate.of(2028,11,19);
 
-    @Mock
-    protected PoliticaVencimiento politicaVActiva;
+    private final PoliticaVencimiento politicaVActiva =
+            PoliticaVencimiento.crearNuevo("Política", 3, new BigDecimal("15"), true);
 
     @Override
     protected TipoProducto getTipoProducto() {
@@ -32,7 +36,6 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
 
     @Override
     protected ProductoPerecedero crearNuevoProducto() {
-        Mockito.lenient().when(politicaVActiva.isActiva()).thenReturn(true);
         return ProductoPerecedero.crearNuevo(
                 NOMBRE_POR_DEFECTO,
                 VALOR_COMPRA_POR_DEFECTO,
@@ -86,8 +89,8 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
     @Test
     void deberiaLanzarExcepcionSiLaPoliticaDeVencimientoEstaInactivaAlCrearNuevo(){
         //ARRANGE
-        PoliticaVencimiento politicaVInactiva = Mockito.mock(PoliticaVencimiento.class);
-        Mockito.when(politicaVInactiva.isActiva()).thenReturn(false);
+        PoliticaVencimiento politicaVInactiva =
+                PoliticaVencimiento.crearNuevo("Inactiva", 3, new BigDecimal("15"), false);
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -108,8 +111,8 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
     @Test
     void deberiaCambiarPoliticaDeVencimientoCorrectamente(){
         //ARRANGE
-        PoliticaVencimiento politicaVValida = Mockito.mock(PoliticaVencimiento.class);
-        Mockito.when(politicaVValida.isActiva()).thenReturn(true);
+        PoliticaVencimiento politicaVValida =
+                PoliticaVencimiento.crearNuevo("Nueva", 3, new BigDecimal("15"), true);
         //ACT
         productoPrueba.cambiarPoliticaVencimiento(politicaVValida);
         //ASSERT
@@ -129,8 +132,8 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
     @Test
     void deberiaLanzarExcepcionSiAlCambiarPoliticaDeVencimientoEstaInactiva(){
         //ARRANGE
-        PoliticaVencimiento politicaVInvalida = Mockito.mock(PoliticaVencimiento.class);
-        Mockito.when(politicaVInvalida.isActiva()).thenReturn(false);
+        PoliticaVencimiento politicaVInvalida =
+                PoliticaVencimiento.crearNuevo("Inactiva", 3, new BigDecimal("15"), false);
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -221,10 +224,14 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
         // ARRANGE
         productoPrueba.cambiarValorCompra(new BigDecimal("5000"));
         productoPrueba.cambiarPorcentajeGanancia(new BigDecimal("100"));
-        Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(BigDecimal.ZERO);
-        Mockito.when(politicaVActiva.getDiasUmbral()).thenReturn(10);
+        int diasUmbralPreparado = 10;
+        PoliticaVencimiento politicaVencimiento =
+                PoliticaVencimiento.crearNuevo("Política", diasUmbralPreparado, BigDecimal.ZERO, true);
+        Descuento descuento = crearDescuentoConPorcentaje("0");
+        productoPrueba.cambiarPoliticaVencimiento(politicaVencimiento);
+        productoPrueba.cambiarDescuento(descuento);
             // Simulamos que faltan 11 días (Fuera del umbral) calculándolo dinámicamente
-        LocalDate fechaReferencia = productoPrueba.getFechaVencimiento().minusDays(11);
+        LocalDate fechaReferencia = productoPrueba.getFechaVencimiento().minusDays(diasUmbralPreparado + 1);
         // ACT
         BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fechaReferencia);
         // ASSERT
@@ -244,9 +251,11 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
         // ARRANGE
         productoPrueba.cambiarValorCompra(new BigDecimal(valorCompraSt));
         productoPrueba.cambiarPorcentajeGanancia(new BigDecimal(porcentajeGananciaSt));
-        Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(BigDecimal.ZERO);
-        Mockito.when(politicaVActiva.getDiasUmbral()).thenReturn(diasUmbral);
-        Mockito.when(politicaVActiva.getPorcentajeDescuento()).thenReturn(new BigDecimal(porcentajePoliticaSt));
+        Descuento descuento = crearDescuentoConPorcentaje("0");
+        PoliticaVencimiento politicaVencimiento =
+                PoliticaVencimiento.crearNuevo("Política", diasUmbral, new BigDecimal(porcentajePoliticaSt), true);
+        productoPrueba.cambiarDescuento(descuento);
+        productoPrueba.cambiarPoliticaVencimiento(politicaVencimiento);
             //Calculamos dinámicamente la fecha de referencia restando diasRestantes
         LocalDate fechaReferencia = productoPrueba.getFechaVencimiento().minusDays(diasRestantes);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
@@ -271,11 +280,11 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
         // ARRANGE
         BigDecimal valorCompra = new BigDecimal(valorCompraSt);
         BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
-        BigDecimal descuento = new BigDecimal(descuentoSt);
         BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
         productoPrueba.cambiarValorCompra(valorCompra);
         productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
-        Mockito.when(descuentoActivo.getPorcentaje()).thenReturn(descuento);
+        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
+        productoPrueba.cambiarDescuento(descuento);
         // ACT
         BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fechaReferencia);
         // ASSERT
