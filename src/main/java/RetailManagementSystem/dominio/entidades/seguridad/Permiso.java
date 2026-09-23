@@ -14,7 +14,7 @@ public class Permiso {
 
     private final String modulo;
 
-    private boolean activo;
+    private Boolean activo;
 
     //GETTERS Y SETTERS:
 
@@ -34,7 +34,7 @@ public class Permiso {
         return modulo;
     }
 
-    public boolean isActivo() {
+    public Boolean isActivo() {
         return activo;
     }
 
@@ -49,12 +49,18 @@ public class Permiso {
     //CONSTRUCTORES:
 
     private Permiso(
-            Integer idPermiso, String nombre, String descripcion, String modulo, boolean activo
+            Integer idPermiso, String nombre, String descripcion, String modulo, Boolean activo
     ) {
         if (nombre == null || nombre.isBlank()){
             throw new IllegalArgumentException("Nombre del Permiso Vacío");
         }
         validarDescripcion(descripcion);
+        if (modulo == null || modulo.isBlank()){
+            throw new IllegalArgumentException("Nombre del Modulo del Permiso Vacío");
+        }
+        if (activo == null){
+            throw new IllegalArgumentException("El Estado del Permiso es Obligatorio");
+        }
         this.idPermiso = idPermiso;
         this.nombre = nombre.trim().toUpperCase();
         this.descripcion = descripcion;
@@ -63,21 +69,21 @@ public class Permiso {
     }
 
     public static Permiso reconstruirDesdeBD(
-            Integer idPermiso, String nombre, String descripcion, String modulo, boolean activo
+            Integer idPermiso, String nombre, String descripcion, String modulo, Boolean activo
     ){
         return new Permiso(idPermiso, nombre, descripcion, modulo, activo);
-    }
-
-    public static Permiso crearNuevo(String nombre, String descripcion, String modulo, boolean activo) {
-        return new Permiso(null, nombre, descripcion, modulo, activo);
     }
 
     //MÉTODOS:
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Permiso permiso = (Permiso) o;
         return nombre.equalsIgnoreCase(permiso.nombre);
     }
