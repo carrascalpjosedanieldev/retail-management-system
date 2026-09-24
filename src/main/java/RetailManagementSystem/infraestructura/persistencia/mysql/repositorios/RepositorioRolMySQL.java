@@ -63,7 +63,7 @@ public class RepositorioRolMySQL implements RepositorioRol {
             );
 
             for (Permiso permiso:rolNuevo.getPermisos()){
-                rol.recuperarPermisoDeBD(permiso);
+                rol.anadirPermiso(permiso);
             }
 
             return rol;
@@ -168,7 +168,7 @@ public class RepositorioRolMySQL implements RepositorioRol {
             rs.getInt("id_permiso");
             if (!rs.wasNull()) {
                 Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
-                rol.recuperarPermisoDeBD(permiso);
+                rol.anadirPermiso(permiso);
             }
         } while (rs.next());
 
@@ -215,7 +215,7 @@ public class RepositorioRolMySQL implements RepositorioRol {
             rs.getInt("id_permiso");
             if (!rs.wasNull()) {
                 Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
-                rolActual.recuperarPermisoDeBD(permiso);
+                rolActual.anadirPermiso(permiso);
             }
 
         }

@@ -3,7 +3,6 @@ package RetailManagementSystem.dominio.entidades.seguridad;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Rol {
 
@@ -15,7 +14,7 @@ public class Rol {
 
     private final Set<Permiso> permisos;
 
-    private boolean activo;
+    private Boolean activo;
 
     //GETTERS Y SETTERS:
 
@@ -46,12 +45,6 @@ public class Rol {
         }
     }
 
-    private void validarEstado(Boolean activo){
-        if (activo == null){
-            throw new IllegalArgumentException("El Estado del Rol es Obligatorio");
-        }
-    }
-
     private void validarPermiso(Permiso permiso){
         if (permiso == null){
             throw new IllegalArgumentException("El Permiso a Añadir NO Puede ser Nulo");
@@ -62,7 +55,9 @@ public class Rol {
 
     private Rol(Integer idRol, String nombre, Boolean activo) {
         validarNombre(nombre);
-        validarEstado(activo);
+        if (activo == null){
+            throw new IllegalArgumentException("El Estado del Rol es Obligatorio");
+        }
         this.idRol = idRol;
         setNombre(nombre);
         this.permisos = new HashSet<>();
@@ -108,24 +103,13 @@ public class Rol {
         this.activo = !this.isActivo();
     }
 
-    public void anadirPermisoNuevo(Permiso permiso) {
-        validarPermiso(permiso);
-        this.permisos.add(permiso);
-    }
-
-    public void recuperarPermisoDeBD(Permiso permiso){
+    public void anadirPermiso(Permiso permiso) {
         validarPermiso(permiso);
         this.permisos.add(permiso);
     }
 
     public void quitarPermiso(Permiso permiso) {
         this.permisos.remove(permiso);
-    }
-
-    public Set<String> obtenerNombresPermisos() {
-        return this.permisos.stream()
-                .map(Permiso::getNombre)
-                .collect(Collectors.toUnmodifiableSet());
     }
 
 }//===================================================================================================================//

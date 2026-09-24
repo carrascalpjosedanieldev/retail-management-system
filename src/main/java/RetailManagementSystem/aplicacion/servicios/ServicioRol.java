@@ -27,7 +27,7 @@ public class ServicioRol {
     public void registrarRol(String nombre, boolean activo, List<Permiso> permisos){
         Rol rolNuevo = Rol.crearNuevo(nombre, activo);
         for (Permiso permiso:permisos){
-            rolNuevo.anadirPermisoNuevo(permiso);
+            rolNuevo.anadirPermiso(permiso);
         }
         this.gestorTransaccional.ejecutarEnTransaccion(()->
                 this.repositorioRol.insertarRol(rolNuevo)
@@ -52,7 +52,7 @@ public class ServicioRol {
                 rol.quitarPermiso(p);
             }
             for (Permiso permiso:listaPermisosActualizada){
-                rol.anadirPermisoNuevo(permiso);
+                rol.anadirPermiso(permiso);
             }
             this.repositorioRol.actualizarPermisosRol(rol);
         });

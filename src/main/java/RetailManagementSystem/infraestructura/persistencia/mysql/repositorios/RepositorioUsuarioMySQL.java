@@ -161,7 +161,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
                 if (!rs.wasNull()){
 
                     Permiso permiso = this.mapeadorPermisos.mapearPermiso(rs);
-                    rol.recuperarPermisoDeBD(permiso);
+                    rol.anadirPermiso(permiso);
 
                 }
 
