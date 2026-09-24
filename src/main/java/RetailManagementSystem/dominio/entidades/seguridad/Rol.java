@@ -3,6 +3,7 @@ package RetailManagementSystem.dominio.entidades.seguridad;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Rol {
 
@@ -110,6 +111,12 @@ public class Rol {
 
     public void quitarPermiso(Permiso permiso) {
         this.permisos.remove(permiso);
+    }
+
+    public Set<String> obtenerNombresPermisos() {
+        return this.permisos.stream()
+                .map(Permiso::getNombre)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
 }//===================================================================================================================//

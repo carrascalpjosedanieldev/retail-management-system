@@ -171,7 +171,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
 
         if (usuario != null){
             for (Rol rol:rolesMap.values()){
-                usuario.recuperarRolDeBD(rol);
+                usuario.anadirRol(rol);
             }
             return usuario;
         }

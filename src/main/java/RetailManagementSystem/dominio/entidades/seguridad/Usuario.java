@@ -115,10 +115,16 @@ public class Usuario {
         validarApellido(apellido);
         validarEmail(email);
         if (intentosFallidos == null || intentosFallidos < 0){
-            throw new IllegalArgumentException("Intentos Fallidos Inválidos");
+            throw new IllegalArgumentException("Intentos Fallidos del Usuario Inválidos");
         }
         if (hash == null || hash.isBlank()){
-            throw new IllegalArgumentException("Hash invalido");
+            throw new IllegalArgumentException("Hash del Usuario Invalido");
+        }
+        if (activo == null){
+            throw new IllegalArgumentException("El Estado del Usuario es Obligatorio");
+        }
+        if (debeCambiarContrasena == null){
+            throw new IllegalArgumentException("El Dato Asignado sobre si debe Cambiar Contraseña o NO es Obligatorio");
         }
         this.idUsuario = idUsuario;
         setNombre(nombre);
@@ -135,8 +141,8 @@ public class Usuario {
 
     public static Usuario reconstruirDesdeBD(
             Long id_usuario, String nombre, String apellido, String email,
-            int intentosFallidos, LocalDateTime bloqueadoHasta, String hash, Boolean activo,
-            boolean debeCambiarContrasena
+            Integer intentosFallidos, LocalDateTime bloqueadoHasta, String hash, Boolean activo,
+            Boolean debeCambiarContrasena
     ){
         return new Usuario(id_usuario, nombre, apellido, email, intentosFallidos, bloqueadoHasta, hash, activo,
                 debeCambiarContrasena);
@@ -197,12 +203,6 @@ public class Usuario {
 
     public void anadirRol(Rol rolNuevo){
         if (this.roles.add(rolNuevo)) {
-            actualizarCachePermisos();
-        }
-    }
-
-    public void recuperarRolDeBD(Rol rol){
-        if (this.roles.add(rol)) {
             actualizarCachePermisos();
         }
     }
