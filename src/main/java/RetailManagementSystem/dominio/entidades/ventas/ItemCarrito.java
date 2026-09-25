@@ -1,6 +1,7 @@
 package RetailManagementSystem.dominio.entidades.ventas;
 
 import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
+import RetailManagementSystem.dominio.entidades.comercial.Stockeable;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
 
 import java.math.BigDecimal;
@@ -35,6 +36,7 @@ public class ItemCarrito {
             throw new IllegalArgumentException("La Cantidad del Item Carrito Debe Ser Positiva");
         }
         this.itemFacturable = itemFacturable;
+        verificarStockDisponible(cantidad);
         this.cantidad = cantidad;
     }
 
@@ -42,19 +44,23 @@ public class ItemCarrito {
         return new ItemCarrito(itemFacturable, cantidad);
     }
 
-    //MÉTODOS:
+    //VALIDACIONES:
 
-    public BigDecimal calcularSubtotal(LocalDate fecha) {
-        BigDecimal valorProducto = this.itemFacturable.getValorVenta(fecha);
-        valorProducto = valorProducto.multiply(new BigDecimal(this.cantidad));
-        return valorProducto.setScale(6, RoundingMode.HALF_UP);
+    private void verificarStockDisponible(int cantidadDeseada) {
+        if (this.itemFacturable instanceof Stockeable itemConStock) {
+            itemConStock.validarStockDisponible(cantidadDeseada);
+        }
     }
+
+    //MÉTODOS:
 
     public void aumentarCantidad(int cantidadExtra) {
         if (cantidadExtra <= 0){
             throw new IllegalArgumentException("Cantidad a comprar Invalida");
         }
-        this.cantidad += cantidadExtra;
+        int nuevaCantidad = this.cantidad + cantidadExtra;
+        verificarStockDisponible(nuevaCantidad);
+        this.cantidad = nuevaCantidad;
     }
 
     public void reducirCantidad(int cantidadAReducir){
@@ -66,6 +72,12 @@ public class ItemCarrito {
             throw new StockInsuficienteException("La Cantidad a Reducir es Mayor a la Cantidad Existente");
         }
         this.cantidad = cantidadTotal;
+    }
+
+    public BigDecimal calcularSubtotal(LocalDate fecha) {
+        BigDecimal valorProducto = this.itemFacturable.getValorVenta(fecha);
+        valorProducto = valorProducto.multiply(new BigDecimal(this.cantidad));
+        return valorProducto.setScale(6, RoundingMode.HALF_UP);
     }
 
 }//===================================================================================================================//

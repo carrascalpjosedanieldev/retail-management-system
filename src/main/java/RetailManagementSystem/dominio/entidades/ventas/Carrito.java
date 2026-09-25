@@ -1,7 +1,6 @@
 package RetailManagementSystem.dominio.entidades.ventas;
 
 import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
-import RetailManagementSystem.dominio.entidades.comercial.Stockeable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,10 +47,6 @@ public class Carrito {
 
     public void agregarItem(ItemFacturable item, int cantidad){
         validarCantidad(cantidad);
-        int cantidadTotal = consultarCantidadExistente(item.getCodigo()) + cantidad;
-        if (item instanceof Stockeable itemConStock) {
-            itemConStock.validarStockDisponible(cantidadTotal);
-        }
         this.itemsCarrito.compute(item.getCodigo(), (codigo, existente) -> {
             if (existente != null) {
                 existente.aumentarCantidad(cantidad);
@@ -59,11 +54,6 @@ public class Carrito {
             }
             return ItemCarrito.crearNuevo(item, cantidad);
         });
-    }
-
-    private int consultarCantidadExistente(String codigo) {
-        ItemCarrito existente = this.itemsCarrito.get(codigo);
-        return existente != null ? existente.getCantidad() : 0;
     }
 
     public void reducirCantidadItem(String codigo, int cantidadAReducir){

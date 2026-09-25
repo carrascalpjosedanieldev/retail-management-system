@@ -46,6 +46,14 @@ public class CarritoTest {
                     true
             );
 
+    private static final String CODIGO_PRODUCTO_POR_DEFECTO = "producto1234567890";
+
+    private static final String NOMBRE_PRODUCTO_POR_DEFECTO = "Producto";
+
+    private static final BigDecimal VALOR_COMPRA_POR_DEFECTO = new BigDecimal("3000");
+
+    private static final BigDecimal PORCENTAJE_GANANCIA_POR_DEFECTO = new BigDecimal("85");
+
     private Producto productoRopaPruebas;
 
     private Carrito carritoPruebas;
@@ -54,10 +62,10 @@ public class CarritoTest {
     void setUp(){
         carritoPruebas = Carrito.crearNuevo();
         productoRopaPruebas = ProductoRopa.reconstruirDesdeBD(
-                "producto1234567890",
-                "Producto",
-                new BigDecimal("3000"),
-                new BigDecimal("85"),
+                CODIGO_PRODUCTO_POR_DEFECTO,
+                NOMBRE_PRODUCTO_POR_DEFECTO,
+                VALOR_COMPRA_POR_DEFECTO,
+                PORCENTAJE_GANANCIA_POR_DEFECTO,
                 25,
                 impuesto,
                 descuento,
@@ -79,12 +87,24 @@ public class CarritoTest {
     @Test
     void deberiaAgregarItemProductoCorrectamente(){
         //ARRANGE
-        int cantidad = productoRopaPruebas.getStock() - 1;
+        int stock = 10;
+        Producto productoRopa = ProductoRopa.reconstruirDesdeBD(
+                CODIGO_PRODUCTO_POR_DEFECTO,
+                NOMBRE_PRODUCTO_POR_DEFECTO,
+                VALOR_COMPRA_POR_DEFECTO,
+                PORCENTAJE_GANANCIA_POR_DEFECTO,
+                stock,
+                impuesto,
+                descuento,
+                true,
+                Talla.M
+        );
+        int cantidad = stock - 1;
         //ACT
-        carritoPruebas.agregarItem(productoRopaPruebas, cantidad);
+        carritoPruebas.agregarItem(productoRopa, cantidad);
         //ASSERT
-        assertTrue(carritoPruebas.getItems().containsKey(productoRopaPruebas.getCodigo()));
-        assertEquals(cantidad, carritoPruebas.getItems().get(productoRopaPruebas.getCodigo()).getCantidad());
+        assertTrue(carritoPruebas.getItems().containsKey(productoRopa.getCodigo()));
+        assertEquals(cantidad, carritoPruebas.getItems().get(productoRopa.getCodigo()).getCantidad());
     }
 
     @Test
@@ -125,29 +145,52 @@ public class CarritoTest {
     @Test
     void deberiaAumentarLaCantidadSiElItemProductoYaEstaEnElCarrito(){
         //ARRANGE
-        productoRopaPruebas.aumentarStock(10);
+        int stock = 10;
+        Producto productoRopa = ProductoRopa.reconstruirDesdeBD(
+                CODIGO_PRODUCTO_POR_DEFECTO,
+                NOMBRE_PRODUCTO_POR_DEFECTO,
+                VALOR_COMPRA_POR_DEFECTO,
+                PORCENTAJE_GANANCIA_POR_DEFECTO,
+                stock,
+                impuesto,
+                descuento,
+                true,
+                Talla.M
+        );
         int cantidadInicial = 5;
         int cantidadAAgregar = 3;
         int cantidadEsperada = 8;
-        carritoPruebas.agregarItem(productoRopaPruebas, cantidadInicial);
+        carritoPruebas.agregarItem(productoRopa, cantidadInicial);
         //ACT
-        carritoPruebas.agregarItem(productoRopaPruebas, cantidadAAgregar);
+        carritoPruebas.agregarItem(productoRopa, cantidadAAgregar);
         //ASSERT
-        assertEquals(cantidadEsperada, carritoPruebas.getItems().get(productoRopaPruebas.getCodigo()).getCantidad());
+        assertEquals(cantidadEsperada, carritoPruebas.getItems().get(productoRopa.getCodigo()).getCantidad());
     }
 
     @Test
     void deberiaLanzarExcepcionSiAlAgregarItemProductoNoAlcanzaElStock(){
         //ARRANGE
-        int cantidadExcedida = productoRopaPruebas.getStock() + 1;
+        int stock = 10;
+        Producto productoRopa = ProductoRopa.reconstruirDesdeBD(
+                CODIGO_PRODUCTO_POR_DEFECTO,
+                NOMBRE_PRODUCTO_POR_DEFECTO,
+                VALOR_COMPRA_POR_DEFECTO,
+                PORCENTAJE_GANANCIA_POR_DEFECTO,
+                stock,
+                impuesto,
+                descuento,
+                true,
+                Talla.M
+        );
+        int cantidadExcedida = stock + 1;
         //ACT AND ASSERT
         StockInsuficienteException exception = assertThrows(
                 StockInsuficienteException.class,
-                ()-> carritoPruebas.agregarItem(productoRopaPruebas, cantidadExcedida)
+                ()-> carritoPruebas.agregarItem(productoRopa, cantidadExcedida)
         );
         assertEquals(
-                "Stock del Producto -" + productoRopaPruebas.getNombre() + "- Insuficiente\n" +
-                "Cantidad Solicitada:  " + cantidadExcedida + ", Cantidad Existente:  " + productoRopaPruebas.getStock(),
+                "Stock del Producto -" + productoRopa.getNombre() + "- Insuficiente\n" +
+                "Cantidad Solicitada:  " + cantidadExcedida + ", Cantidad Existente:  " + productoRopa.getStock(),
                 exception.getMessage()
         );
     }
@@ -169,14 +212,25 @@ public class CarritoTest {
     @Test
     void deberiaEliminarProductoDelCarritoSiAlReducirCantidadEsCero(){
         //ARRANGE
-        int cantidadInicial = 10;
-        int cantidadAReducir = 10;
-        ItemFacturable item = servicioPruebas;
-        carritoPruebas.agregarItem(item, cantidadInicial);
+        int stock = 10;
+        Producto productoRopa = ProductoRopa.reconstruirDesdeBD(
+                CODIGO_PRODUCTO_POR_DEFECTO,
+                NOMBRE_PRODUCTO_POR_DEFECTO,
+                VALOR_COMPRA_POR_DEFECTO,
+                PORCENTAJE_GANANCIA_POR_DEFECTO,
+                stock,
+                impuesto,
+                descuento,
+                true,
+                Talla.M
+        );
+        int cantidadInicial = 8;
+        int cantidadAReducir = 8;
+        carritoPruebas.agregarItem(productoRopa, cantidadInicial);
         //ACT
-        carritoPruebas.reducirCantidadItem(item.getCodigo(), cantidadAReducir);
+        carritoPruebas.reducirCantidadItem(productoRopa.getCodigo(), cantidadAReducir);
         //ASSERT
-        assertFalse(carritoPruebas.getItems().containsKey(item.getCodigo()));
+        assertFalse(carritoPruebas.getItems().containsKey(productoRopa.getCodigo()));
     }
 
     @Test
@@ -246,13 +300,49 @@ public class CarritoTest {
         assertEquals("NO tienes ese Item en el Carrito", exception.getMessage());
     }
 
-    @Test
-    void deberiaCalcularElTotalCorrectamente(){
+    @ParameterizedTest
+    @CsvSource({
+          //pServicio,    cServ, cProducto,  gProducto, cProd, imp%, desc%,      totalEsperado
+            "15000,       2,     3000,       85,        3,     19,   25,         41635.125000",
+            "100.123456,  3,     50.111111,  20,        2,     19,   10,         450.502263",
+            "999.00,      1,     999.00,     33.333333, 1,     19,   33.333333,  1849.234506"
+    })
+    void deberiaCalcularElTotalCorrectamente(
+            String precioServicioSt, int cantidadServicio,
+            String costoProductoSt, String gananciaProductoSt, int cantidadProducto,
+            String porcentajeImpuesto, String porcentajeDescuento, String totalEsperadoSt
+    ){
         // ARRANGE
         LocalDate fecha = LocalDate.now();
-        carritoPruebas.agregarItem(servicioPruebas, 2);
-        carritoPruebas.agregarItem(productoRopaPruebas, 3);
-        BigDecimal totalEsperado = new BigDecimal("41635.125000");
+        Impuesto impuestoDinamico = Impuesto.reconstruirDesdeBD(
+                1, "Impuesto Test", new BigDecimal(porcentajeImpuesto), true
+        );
+        Descuento descuentoDinamico = Descuento.reconstruirDesdeBD(
+                1, "Descuento Test", new BigDecimal(porcentajeDescuento), true
+        );
+        Servicio servicio = Servicio.reconstruirDesdeBD(
+                "serv_test",
+                "Servicio Test",
+                new BigDecimal(precioServicioSt),
+                impuestoDinamico,
+                descuentoDinamico,
+                true
+        );
+        int stockSeguro = cantidadProducto + 10;
+        ProductoRopa producto = ProductoRopa.reconstruirDesdeBD(
+                "prod_test",
+                "Producto Test",
+                new BigDecimal(costoProductoSt),
+                new BigDecimal(gananciaProductoSt),
+                stockSeguro,
+                impuestoDinamico,
+                descuentoDinamico,
+                true,
+                Talla.M
+        );
+        carritoPruebas.agregarItem(servicio, cantidadServicio);
+        carritoPruebas.agregarItem(producto, cantidadProducto);
+        BigDecimal totalEsperado = new BigDecimal(totalEsperadoSt);
         // ACT
         BigDecimal totalCalculado = carritoPruebas.calcularTotal(fecha);
         // ASSERT
@@ -262,12 +352,22 @@ public class CarritoTest {
     @Test
     void deberiaVaciarElCarritoCorrectamente(){
         //ARRANGE
-        ItemFacturable itemProducto = productoRopaPruebas;
-        productoRopaPruebas.aumentarStock(10);
+        int stock = 10;
+        Producto productoRopa = ProductoRopa.reconstruirDesdeBD(
+                CODIGO_PRODUCTO_POR_DEFECTO,
+                NOMBRE_PRODUCTO_POR_DEFECTO,
+                VALOR_COMPRA_POR_DEFECTO,
+                PORCENTAJE_GANANCIA_POR_DEFECTO,
+                stock,
+                impuesto,
+                descuento,
+                true,
+                Talla.M
+        );
         int cantidadServicio = 5;
-        int cantidadProducto = 10;
+        int cantidadProducto = 8;
         carritoPruebas.agregarItem(servicioPruebas, cantidadServicio);
-        carritoPruebas.agregarItem(itemProducto, cantidadProducto);
+        carritoPruebas.agregarItem(productoRopa, cantidadProducto);
         //ACT
         carritoPruebas.vaciarCarrito();
         //ASSERT
