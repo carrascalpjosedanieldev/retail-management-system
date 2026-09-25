@@ -87,17 +87,18 @@ public class ItemVendido {
             throw new IllegalArgumentException("El Porcentaje de Impuesto del Item -" + nombre + "- es Invalido.");
         }
         this.tipoItem = tipoItem;
-        this.codigo = codigo;
-        this.nombre = nombre;
+        this.codigo = codigo.trim();
+        this.nombre = nombre.trim();
         this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
-        this.totalLinea = this.precioUnitario.multiply(BigDecimal.valueOf(cantidad));
-        this.porcentajeImpuesto = porcentajeImpuesto;
+        this.precioUnitario = precioUnitario.setScale(6, RoundingMode.HALF_UP);
+        this.totalLinea = this.precioUnitario.multiply(BigDecimal.valueOf(cantidad))
+                .setScale(6, RoundingMode.HALF_UP);
+        this.porcentajeImpuesto = porcentajeImpuesto.setScale(6, RoundingMode.HALF_UP);
         BigDecimal factorDivisor = BigDecimal.ONE.add(
                 this.porcentajeImpuesto.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP)
         );
         this.subtotalNeto = this.totalLinea.divide(factorDivisor, 6, RoundingMode.HALF_UP);
-        this.montoImpuesto = this.totalLinea.subtract(this.subtotalNeto);
+        this.montoImpuesto = this.totalLinea.subtract(this.subtotalNeto).setScale(6, RoundingMode.HALF_UP);
     }
 
     public static ItemVendido crearNuevo(
