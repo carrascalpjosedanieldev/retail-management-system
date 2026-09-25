@@ -1,8 +1,10 @@
 package RetailManagementSystem.dominio.entidades.ventas;
 
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.FacturaSinItemsException;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 public class Factura {
@@ -30,7 +32,7 @@ public class Factura {
     }
 
     public List<ItemVendido> getItemsFinales(){
-        return Collections.unmodifiableList(this.itemsFinales);
+        return this.itemsFinales;
     }
 
     public String getNumeroFactura() {
@@ -61,11 +63,11 @@ public class Factura {
     ) {
         this.itemsFinales = List.copyOf(itemsFinales);
         this.idFactura = idFactura;
-        this.numeroFactura = numeroFactura;
+        this.numeroFactura = numeroFactura.trim();
         this.fechaHoraEmision = fechaHoraEmision;
-        this.totalGeneral = totalGeneral;
-        this.totalImpuestos = totalImpuestos;
-        this.subTotal = subTotal;
+        this.totalGeneral = totalGeneral.setScale(6, RoundingMode.HALF_UP);
+        this.totalImpuestos = totalImpuestos.setScale(6, RoundingMode.HALF_UP);
+        this.subTotal = subTotal.setScale(6, RoundingMode.HALF_UP);
     }
 
     public static Factura reconstruirDesdeBD(
@@ -80,6 +82,9 @@ public class Factura {
     public static Factura crearNueva(
             List<ItemVendido> itemsFinales, String numeroFactura, LocalDateTime fechaHoraEmision
     ) {
+        if (itemsFinales == null || itemsFinales.isEmpty()) {
+            throw new FacturaSinItemsException("NO se Puede Emitir una Factura sin Items Vendidos.");
+        }
         BigDecimal subtotal = BigDecimal.ZERO;
         BigDecimal totalImpuestos = BigDecimal.ZERO;
         for (ItemVendido item : itemsFinales) {
