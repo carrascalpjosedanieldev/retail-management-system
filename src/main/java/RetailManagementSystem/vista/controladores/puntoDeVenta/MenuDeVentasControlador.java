@@ -324,8 +324,7 @@ public class MenuDeVentasControlador {
         }
         CompletableFuture.supplyAsync(()->
             this.orquestadorVentas.eliminarItemDelCarrito(
-                    this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(),
-                    itemSeleccionado.tipoItem(), obtenerFecha()
+                    this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), obtenerFecha()
             )
         ).thenAccept(carritoActualizado->
             Platform.runLater(()->
@@ -433,7 +432,7 @@ public class MenuDeVentasControlador {
             } else {
                 return this.orquestadorVentas.reducirCantidadItem(
                         this.usuarioActual, this.sesionVenta, itemSeleccionado.codigoArticulo(), cantidad,
-                        itemSeleccionado.tipoItem(), obtenerFecha()
+                        obtenerFecha()
                 );
             }
         }).thenAccept(carritoActualizado ->

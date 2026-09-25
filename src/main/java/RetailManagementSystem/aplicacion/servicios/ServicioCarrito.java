@@ -68,12 +68,12 @@ public class ServicioCarrito {
         return producto;
     }
 
-    public void reducirCantidadItem(Carrito carrito, String codigo, int cantidadAReducir, TipoItem tipoItem){
-        carrito.reducirCantidadItem(codigo, cantidadAReducir, tipoItem);
+    public void reducirCantidadItem(Carrito carrito, String codigo, int cantidadAReducir){
+        carrito.reducirCantidadItem(codigo, cantidadAReducir);
     }
 
-    public void eliminarItem(Carrito carrito, String codigo, TipoItem tipoItem){
-        carrito.eliminarItem(codigo, tipoItem);
+    public void eliminarItem(Carrito carrito, String codigo){
+        carrito.eliminarItem(codigo);
     }
 
     public void cancelarCompraTotal(Carrito carrito){

@@ -73,19 +73,18 @@ public class OrquestadorVentas {
 
     public VistaPreviaCarritoDTO reducirCantidadItem(
             UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, int cantidadAReducir,
-            TipoItem tipoItem, LocalDate fecha
+            LocalDate fecha
     ){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        this.servicioCarrito.reducirCantidadItem(sesionVenta.getCarrito(), codigoItem, cantidadAReducir, tipoItem);
+        this.servicioCarrito.reducirCantidadItem(sesionVenta.getCarrito(), codigoItem, cantidadAReducir);
         return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
     public VistaPreviaCarritoDTO eliminarItemDelCarrito(
-            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem,
-            TipoItem tipoItem, LocalDate fecha
+            UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        this.servicioCarrito.eliminarItem(sesionVenta.getCarrito(), codigoItem, tipoItem);
+        this.servicioCarrito.eliminarItem(sesionVenta.getCarrito(), codigoItem);
         return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 

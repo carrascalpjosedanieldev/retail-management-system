@@ -47,7 +47,7 @@ public class ItemCarrito {
     public BigDecimal calcularSubtotal(LocalDate fecha) {
         BigDecimal valorProducto = this.itemFacturable.getValorVenta(fecha);
         valorProducto = valorProducto.multiply(new BigDecimal(this.cantidad));
-        return valorProducto.setScale(2, RoundingMode.HALF_UP);
+        return valorProducto.setScale(6, RoundingMode.HALF_UP);
     }
 
     public void aumentarCantidad(int cantidadExtra) {
@@ -62,8 +62,8 @@ public class ItemCarrito {
             throw new IllegalArgumentException("Cantidad a Reducir Invalida");
         }
         int cantidadTotal = getCantidad() - cantidadAReducir;
-        if (cantidadTotal <= 0){
-            throw new StockInsuficienteException("La Cantidad a Reducir es Mayor o Igual a la Cantidad Existente");
+        if (cantidadTotal < 0){
+            throw new StockInsuficienteException("La Cantidad a Reducir es Mayor a la Cantidad Existente");
         }
         this.cantidad = cantidadTotal;
     }

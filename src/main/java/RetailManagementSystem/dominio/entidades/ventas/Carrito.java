@@ -2,7 +2,6 @@ package RetailManagementSystem.dominio.entidades.ventas;
 
 import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
 import RetailManagementSystem.dominio.entidades.comercial.Stockeable;
-import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,15 +32,15 @@ public class Carrito {
 
     //VALIDACIONES:
 
-    private void validarExistenciaItem(String codigo, TipoItem tipoItem){
+    private void validarExistenciaItem(String codigo){
         if (!this.itemsCarrito.containsKey(codigo)){
-            throw new IllegalArgumentException("NO tienes ese " + tipoItem + " en el Carrito");
+            throw new IllegalArgumentException("NO tienes ese Item en el Carrito");
         }
     }
 
     private void validarCantidad(int cantidad){
         if (cantidad <= 0){
-            throw new IllegalArgumentException("La cantidad debe ser mayor a cero.");
+            throw new IllegalArgumentException("La Cantidad debe ser Mayor a Cero.");
         }
     }
 
@@ -67,8 +66,8 @@ public class Carrito {
         return existente != null ? existente.getCantidad() : 0;
     }
 
-    public void reducirCantidadItem(String codigo, int cantidadAReducir, TipoItem tipoItem){
-        validarExistenciaItem(codigo, tipoItem);
+    public void reducirCantidadItem(String codigo, int cantidadAReducir){
+        validarExistenciaItem(codigo);
         validarCantidad(cantidadAReducir);
         ItemCarrito item = this.itemsCarrito.get(codigo);
         item.reducirCantidad(cantidadAReducir);
@@ -77,8 +76,8 @@ public class Carrito {
         }
     }
 
-    public void eliminarItem(String codigo, TipoItem tipoItem){
-        validarExistenciaItem(codigo, tipoItem);
+    public void eliminarItem(String codigo){
+        validarExistenciaItem(codigo);
         this.itemsCarrito.remove(codigo);
     }
 
@@ -88,7 +87,7 @@ public class Carrito {
             BigDecimal valorItem = item.calcularSubtotal(fecha);
             total = total.add(valorItem) ;
         }
-        return total.setScale(2, RoundingMode.HALF_UP);
+        return total.setScale(6, RoundingMode.HALF_UP);
     }
 
     public void vaciarCarrito() {
