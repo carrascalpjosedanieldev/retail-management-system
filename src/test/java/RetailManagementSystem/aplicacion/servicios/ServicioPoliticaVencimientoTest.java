@@ -92,6 +92,21 @@ public class ServicioPoliticaVencimientoTest {
     }
 
     @Test
+    void deberiaObtenerPoliticaDeVencimientoCorrectamente(){
+        //ARRANGE
+        int idExistente = 1;
+        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(idExistente)).thenReturn(politicaVPrueba);
+        //ACT
+        PoliticaVencimiento resultado = servicioPoliticaVencimiento.obtenerPoliticaVencimiento(idExistente);
+        //ASSERT
+        assertNotNull(resultado);
+        assertEquals(politicaVPrueba.getIdPolitica(), resultado.getIdPolitica());
+        assertEquals(politicaVPrueba.getNombre(), resultado.getNombre());
+        verify(repoPoliticaVFalso).obtenerPoliticaVencimiento(idExistente);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+    }
+
+    @Test
     void deberiaLanzarExcepcionCuandoObtenerPoliticaVNoExiste(){
         //ARRANGE
         int idInexistente = 99;

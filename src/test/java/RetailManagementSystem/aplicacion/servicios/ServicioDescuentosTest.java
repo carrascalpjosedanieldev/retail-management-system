@@ -83,6 +83,22 @@ public class ServicioDescuentosTest {
 
 
     @Test
+    void deberiaObtenerDescuentoCorrectamenteCuandoExiste(){
+        // ARRANGE
+        int idExistente = 1;
+        when(repoDescuentosFalso.obtenerDescuento(idExistente)).thenReturn(descuentoPrueba);
+        // ACT
+        Descuento resultado = servicioDescuentos.obtenerDescuento(idExistente);
+        // ASSERT
+        assertNotNull(resultado);
+        assertEquals(descuentoPrueba.getId(), resultado.getId());
+        assertEquals(descuentoPrueba.getNombre(), resultado.getNombre());
+        verify(repoDescuentosFalso).obtenerDescuento(idExistente);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+    }
+
+
+    @Test
     void deberiaLanzarExcepcionCuandoObtenerDescuentoNoExiste(){
         // ARRANGE
         int idInexistente = 99;

@@ -90,6 +90,21 @@ public class ServicioImpuestosTest {
     }
 
     @Test
+    void deberiaObtenerImpuestoCorrectamente(){
+        //ARRANGE
+        int idExistente = 1;
+        when(repoImpuestosFalso.obtenerImpuesto(idExistente)).thenReturn(impuestoPrueba);
+        //ACT
+        Impuesto resultado = servicioImpuestos.obtenerImpuesto(idExistente);
+        //ASSERT
+        assertNotNull(resultado);
+        assertEquals(impuestoPrueba.getId(), resultado.getId());
+        assertEquals(impuestoPrueba.getNombre(), resultado.getNombre());
+        verify(repoImpuestosFalso).obtenerImpuesto(idExistente);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+    }
+
+    @Test
     void deberiaLanzarExcepcionCuandoObtenerImpuestoNoExiste(){
         // ARRANGE
         int idInexistente = 99;

@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -406,10 +408,13 @@ public class UsuarioTest {
     void deberiaAgregarRolCorrectamente(){
         //ARRANGE
         rolPruebas.anadirPermiso(permisoPruebas);
+        Set<String> rolesEsperados = rolPruebas.getPermisos().stream()
+                .map(Permiso::getNombre)
+                .collect(Collectors.toSet());
         //ACT
         usuarioPruebas.anadirRol(rolPruebas);
         //ASSERT
-        assertEquals(rolPruebas.obtenerNombresPermisos(), usuarioPruebas.getPermisosCacheados());
+        assertEquals(rolesEsperados, usuarioPruebas.getPermisosCacheados());
         assertTrue(usuarioPruebas.getRoles().contains(rolPruebas));
     }
 
