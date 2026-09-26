@@ -1,6 +1,8 @@
 package RetailManagementSystem.infraestructura.persistencia.mysql.repositorios;
 
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ConfiguracionDelsistemaNoEncontradaException;
+import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ValorConfiguracionNoEncontradaException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
 import RetailManagementSystem.infraestructura.persistencia.excepciones.PersistenciaException;
 import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.VinculadorTransaccion;
@@ -34,7 +36,9 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
                 if (rs.next()) {
                     return rs.getString("valor");
                 }
-                throw new RuntimeException("El Valor para la Configuración de Clave -" + clave + "- NO Existe.");
+                throw new ValorConfiguracionNoEncontradaException(
+                        "El Valor para la Configuración de Clave -" + clave + "- NO Existe."
+                );
             }
 
         } catch (SQLException e) {
@@ -47,7 +51,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             "SELECT valor, descripcion FROM configuraciones_sistema WHERE clave = ?";
 
     @Override
-    public ConfiguracionSistemaDTO obtenerValorYDescripcion(String clave) {
+    public ConfiguracionSistemaDTO obtenerConfiguracionSistema(String clave) {
         Connection conn = VinculadorTransaccion.getConnection();
         validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_VALOR_Y_DESCRIPCION_CONFIGURACION)) {
@@ -60,7 +64,9 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
                     String descripcion =  rs.getString("descripcion");
                     return new ConfiguracionSistemaDTO(valor, descripcion);
                 }
-                throw new RuntimeException("La Descripción para la Configuración de Clave -" + clave + "- NO Existe.");
+                throw new ConfiguracionDelsistemaNoEncontradaException(
+                        "La Configuración del Sistema de Clave -" + clave + "- NO Existe."
+                );
             }
 
         } catch (SQLException e) {
@@ -90,7 +96,9 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new IllegalArgumentException("NO se pudo Actualizar: La Clave NO le Pertenece a ninguna Configuración.");
+                throw new ValorConfiguracionNoEncontradaException(
+                        "NO se pudo Actualizar: La Clave NO le Pertenece a ninguna Configuración."
+                );
             }
 
         } catch (SQLException e) {
@@ -103,7 +111,7 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             "UPDATE configuraciones_sistema SET valor = ? , descripcion = ? WHERE clave = ?";
 
     @Override
-    public void actualizarValorYDescripcionConfiguracion(String clave, String valor, String descripcion) {
+    public void actualizarConfiguracionSistemaConfiguracion(String clave, String valor, String descripcion) {
         Connection conn = VinculadorTransaccion.getConnection();
         validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_ACTUALIZAR_VALOR_Y_DESCRIPCION)) {
@@ -125,7 +133,9 @@ public class RepositorioConfiguracionMySQL implements RepositorioConfiguracion {
             int filasAfectadas = pstmt.executeUpdate();
 
             if (filasAfectadas == 0) {
-                throw new IllegalArgumentException("NO se pudo Actualizar: La Clave NO le Pertenece a ninguna Configuración.");
+                throw new ValorConfiguracionNoEncontradaException(
+                        "NO se pudo Actualizar: La Clave NO le Pertenece a ninguna Configuración."
+                );
             }
 
         } catch (SQLException e) {

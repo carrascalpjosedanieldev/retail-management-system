@@ -28,9 +28,9 @@ public class OrquestadorConfiguraciones {
     public void cambiarNombreYDescripcionTienda(
             UsuarioDTOCompleto usuario, String nuevoNombre, String nuevaDescripcion
     ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_POLITICAS_DE_BLOQUEO);
+        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PERFIL_DE_TIENDA);
         this.servicioConfiguraciones.cambiarNombreYDescripcionTienda(
-                usuario, nuevoNombre, nuevaDescripcion
+                nuevoNombre, nuevaDescripcion
         );
     }
 

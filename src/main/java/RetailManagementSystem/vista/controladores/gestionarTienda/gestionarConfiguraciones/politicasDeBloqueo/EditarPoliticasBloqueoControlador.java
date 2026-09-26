@@ -129,7 +129,8 @@ public class EditarPoliticasBloqueoControlador {
             return;
         }
         CompletableFuture.runAsync(()->
-                this.orquestadorConfiguraciones.actualizarPoliticaDeBloqueo(this.usuarioActual, maxIntentos, maxIntentos)
+                this.orquestadorConfiguraciones
+                        .actualizarPoliticaDeBloqueo(this.usuarioActual, maxIntentos, maxIntentos)
         ).thenRun(()->
             Platform.runLater(()->{
                 GestorAlertas.mostrarAlertaInformacion(

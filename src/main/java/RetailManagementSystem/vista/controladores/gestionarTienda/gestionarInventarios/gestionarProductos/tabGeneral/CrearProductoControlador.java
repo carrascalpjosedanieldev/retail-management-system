@@ -127,7 +127,8 @@ public class CrearProductoControlador {
         rbPerecedero.setToggleGroup(grupoTipo);
         rbRopa.setUserData(TipoProducto.ROPA);
         rbPerecedero.setUserData(TipoProducto.PERECEDERO);
-        grupoTipo.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+        grupoTipo.selectedToggleProperty()
+                .addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 TipoProducto tipoSeleccionado = (TipoProducto) newVal.getUserData();
                 boolean esRopa = (tipoSeleccionado == TipoProducto.ROPA);

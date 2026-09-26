@@ -8,13 +8,13 @@ public interface RepositorioConfiguracion {
 
     String obtenerValorConfiguracion(String clave);
 
-    ConfiguracionSistemaDTO obtenerValorYDescripcion(String clave);
+    ConfiguracionSistemaDTO obtenerConfiguracionSistema(String clave);
 
     //UPDATE:
 
     void actualizarValorConfiguracion(String clave, String valor);
 
-    void actualizarValorYDescripcionConfiguracion(String clave, String valor, String descripcion);
+    void actualizarConfiguracionSistemaConfiguracion(String clave, String valor, String descripcion);
 
 }//===================================================================================================================//
 

@@ -73,7 +73,8 @@ public class ManejarStockControlador {
 
     @FXML
     public void initialize() {
-        grupoAccion.selectedToggleProperty().addListener((obs, viejoBoton, nuevoBoton) -> {
+        grupoAccion.selectedToggleProperty()
+                .addListener((obs, viejoBoton, nuevoBoton) -> {
             if (nuevoBoton == null) {
                 viejoBoton.setSelected(true);
             } else {
@@ -135,7 +136,6 @@ public class ManejarStockControlador {
             }
         }
     }
-
 
     @FXML
     private void accionGuardar(ActionEvent event) {

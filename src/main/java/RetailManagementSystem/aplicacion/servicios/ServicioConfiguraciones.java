@@ -2,12 +2,9 @@ package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.PoliticaDeBloqueoDTO;
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
-import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
-import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
 public class ServicioConfiguraciones {
 
@@ -44,9 +41,9 @@ public class ServicioConfiguraciones {
         );
     }
 
-    public ConfiguracionSistemaDTO obtenerValorYDescripcion(String clave){
+    public ConfiguracionSistemaDTO obtenerConfiguracionSistema(String clave){
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
-                this.repositorioConfiguracion.obtenerValorYDescripcion(clave)
+                this.repositorioConfiguracion.obtenerConfiguracionSistema(clave)
         );
     }
 
@@ -61,30 +58,27 @@ public class ServicioConfiguraciones {
     }
 
     public ConfiguracionSistemaDTO obtenerDatosTienda(){
-        return obtenerValorYDescripcion(CONF_DATOS_TIENDA);
+        return obtenerConfiguracionSistema(CONF_DATOS_TIENDA);
     }
 
-    public void cambiarNombreYDescripcionTienda(
-            UsuarioDTOCompleto usuario, String nombreNuevo, String descripcion
-    ) {
-        ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PERFIL_DE_TIENDA);
+    public void cambiarNombreYDescripcionTienda(String nombreNuevo, String descripcion) {
         if (nombreNuevo == null || nombreNuevo.isBlank()){
             throw new IllegalArgumentException("El Nombre de la Tienda NO puede estar Vacío.");
         }
-        if (descripcion == null){
-            throw new IllegalArgumentException("La Description NO puede ser Nula");
+        if (descripcion == null || descripcion.isBlank()){
+            throw new IllegalArgumentException("La Description NO puede estar Vacía.");
         }
         this.gestorTransaccional.ejecutarEnTransaccion(()->
-                this.repositorioConfiguracion.actualizarValorYDescripcionConfiguracion(
-                        CONF_DATOS_TIENDA, nombreNuevo, descripcion
+                this.repositorioConfiguracion.actualizarConfiguracionSistemaConfiguracion(
+                        CONF_DATOS_TIENDA, nombreNuevo.trim(), descripcion.trim()
                 )
         );
         this.proveedorConfiguracion.invalidarCache(CONF_DATOS_TIENDA);
     }
 
     public PoliticaDeBloqueoDTO obtenerPoliticaDeBloqueo(){
-        ConfiguracionSistemaDTO maxIntentos = obtenerValorYDescripcion(CONF_MAX_INTENTOS);
-        ConfiguracionSistemaDTO minutosBloqueo = obtenerValorYDescripcion(CONF_MINUTOS_BLOQUEO);
+        ConfiguracionSistemaDTO maxIntentos = obtenerConfiguracionSistema(CONF_MAX_INTENTOS);
+        ConfiguracionSistemaDTO minutosBloqueo = obtenerConfiguracionSistema(CONF_MINUTOS_BLOQUEO);
         return new PoliticaDeBloqueoDTO(maxIntentos, minutosBloqueo);
     }
 
