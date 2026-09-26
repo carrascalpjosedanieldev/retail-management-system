@@ -46,6 +46,14 @@ public class ServicioCarrito {
         }
     }
 
+    private Producto obtenerYValidarProducto(String codigo, LocalDate fecha) {
+        Producto producto = this.servicioProductos.obtenerProductoActivoParaLaVenta(codigo);
+        if (producto instanceof ProductoPerecedero perecedero) {
+            perecedero.validarEstadoParaVenta(fecha);
+        }
+        return producto;
+    }
+
     public void aumentarCantidadItemDeCarrito(
             Carrito carrito, String codigo, int cantidad, TipoItem tipoItem, LocalDate fecha
     ){
@@ -58,14 +66,6 @@ public class ServicioCarrito {
             case PRODUCTO -> obtenerYValidarProducto(codigo, fecha);
             case SERVICIO -> this.servicioServicios.obtenerServicioActivoParaLaVenta(codigo);
         };
-    }
-
-    private Producto obtenerYValidarProducto(String codigo, LocalDate fecha) {
-        Producto producto = this.servicioProductos.obtenerProductoActivoParaLaVenta(codigo);
-        if (producto instanceof ProductoPerecedero perecedero) {
-            perecedero.validarEstadoParaVenta(fecha);
-        }
-        return producto;
     }
 
     public void reducirCantidadItem(Carrito carrito, String codigo, int cantidadAReducir){
