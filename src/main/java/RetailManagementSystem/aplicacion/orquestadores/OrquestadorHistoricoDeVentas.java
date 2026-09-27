@@ -24,7 +24,8 @@ public class OrquestadorHistoricoDeVentas {
     //MÉTODOS:
 
     public ResumenVentaDiaDTO obtenerResumenHoy(){
-        return this.servicioFacturas.obtenerResumenHoy();
+        LocalDate fechaHoy = LocalDate.now();
+        return this.servicioFacturas.obtenerResumenHoy(fechaHoy);
     }
 
     public ReporteRecaudoDTO obtenerReporteRecaudoEntre(

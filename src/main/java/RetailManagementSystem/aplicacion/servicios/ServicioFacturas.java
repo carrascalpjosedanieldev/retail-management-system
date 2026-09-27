@@ -39,24 +39,28 @@ public class ServicioFacturas {
 
     public ReporteRecaudoDTO obtenerReporteRecaudo(LocalDate fechaInicio, LocalDate fechaFin){
         if (fechaInicio == null || fechaFin == null) {
-            throw new IllegalArgumentException("Las fechas para el reporte no pueden estar vacías.");
+            throw new IllegalArgumentException("Las Fechas para el Reporte NO pueden estar Vacías.");
         }
         if (fechaInicio.isAfter(fechaFin)) {
-            throw new IllegalArgumentException("Error de lógica: La fecha de inicio (" + fechaInicio + ")" +
-                    " NO puede ser posterior a la fecha de fin (" + fechaFin + ").");
+            throw new IllegalArgumentException("La Fecha de Inicio (" + fechaInicio + ")" +
+                    " NO puede ser Posterior a la Fecha de Fin (" + fechaFin + ").");
         }
         return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioFacturas.obtenerReporteRecaudo(fechaInicio, fechaFin)
         );
     }
 
-    public ResumenVentaDiaDTO obtenerResumenHoy() {
-        LocalDate hoy = LocalDate.now();
-        ReporteRecaudoDTO reporteHoy = obtenerReporteRecaudo(hoy, hoy);
+    public ResumenVentaDiaDTO obtenerResumenHoy(LocalDate fechaHoy) {
+        if (fechaHoy == null){
+            throw new IllegalArgumentException(
+                    "La Fecha NO Puede estar Vacía para Obtener el Resumen de Venta de Hoy."
+            );
+        }
+        ReporteRecaudoDTO reporteHoy = obtenerReporteRecaudo(fechaHoy, fechaHoy);
         int cantidadFacturas = reporteHoy.cantidadFacturasEmitidas();
         BigDecimal totalVentas = reporteHoy.totalRecaudo();
         BigDecimal ultimaVenta = this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
-                this.repositorioFacturas.obtenerTotalUltimaVenta(hoy)
+                this.repositorioFacturas.obtenerTotalUltimaVenta(fechaHoy)
         );
         return new ResumenVentaDiaDTO(totalVentas, cantidadFacturas, ultimaVenta);
     }

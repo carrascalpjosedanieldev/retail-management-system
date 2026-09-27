@@ -140,7 +140,6 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
                 psDetalle.executeBatch();
             }
 
-
             return Factura.reconstruirDesdeBD(
                     items,
                     idFacturaBD,
@@ -152,7 +151,7 @@ public class RepositorioFacturasMySQL implements RepositorioFacturas {
             );
 
         } catch (SQLException e){
-            throw new PersistenciaException("Venta cancelada: " + e.getMessage(), e);
+            throw new PersistenciaException("Venta Cancelada: " + e.getMessage(), e);
         }
     }
 

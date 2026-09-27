@@ -27,7 +27,8 @@ public class ConfiguradorExcepciones {
                             stagePrincipal, "Error Interno",
                             "Fallo Crítico del Sistema",
                             "Ocurrió un Error Inesperado al Procesar la Solicitud.\n" +
-                                    "El Problema ha sido Registrado. Verifique su Conexión y Notifíquele al Administrador el Error."
+                                    "El Problema ha sido Registrado. Verifique su Conexión y Notifíquele al " +
+                                    "Administrador el Error."
                     );
                 }
             });
