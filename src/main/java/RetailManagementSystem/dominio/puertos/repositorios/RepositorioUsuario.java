@@ -13,7 +13,7 @@ public interface RepositorioUsuario {
 
     //READ:
 
-    Usuario obtenerUsuarioPorEmail(String email);
+    Optional<Usuario> obtenerUsuarioPorEmail(String email);
 
     Usuario obtenerUsuarioPorId(Long idUsuario);
 

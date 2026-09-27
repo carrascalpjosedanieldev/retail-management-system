@@ -9,6 +9,7 @@ import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class ServicioUsuario {
 
@@ -48,10 +49,10 @@ public class ServicioUsuario {
     public Usuario registrarUsuario(
             String nombre, String apellido, String email, char[] contrasenaPlana, boolean activo
     ) {
-        Usuario usuario = this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
+        Optional<Usuario> usuario = this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
                 this.repositorioUsuario.obtenerUsuarioPorEmail(email)
         );
-        if (usuario != null){
+        if (usuario.isPresent()){
             throw new EmailDuplicadoException("El correo electrónico " + email + " ya está registrado.");
         }
         String hashNuevo;
@@ -72,10 +73,10 @@ public class ServicioUsuario {
         Usuario usuarioPorID = this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioUsuario.obtenerUsuarioPorId(idUsuario)
         );
-        Usuario usuarioPorEmail = this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
+        Optional<Usuario> usuarioPorEmail = this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioUsuario.obtenerUsuarioPorEmail(nuevoEmail)
         );
-        if (usuarioPorEmail != null && usuarioPorEmail.getEmail().equalsIgnoreCase(nuevoEmail)) {
+        if (usuarioPorEmail.isPresent() && usuarioPorEmail.get().getEmail().equalsIgnoreCase(nuevoEmail)) {
                 throw new EmailDuplicadoException("El Correo Electrónico -" + nuevoEmail + "- Ya está Registrado.");
         }
         usuarioPorID.cambiarNombre(nuevoNombre);

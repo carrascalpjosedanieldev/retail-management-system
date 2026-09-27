@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class ServicioLogin {
 
@@ -49,33 +50,32 @@ public class ServicioLogin {
     public Usuario validarIngresoYObtenerUsuarioValido(
             String email, char[] contrasenaPlana, LocalDateTime fechaReferencia
     ) {
-        Usuario usuario = this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
+        Optional<Usuario> usuarioOptional = this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioUsuario.obtenerUsuarioPorEmail(email)
         );
-        String hashAVerificar = usuario != null ? usuario.getHash() : HASH_FALSO;
+        String hashAVerificar = usuarioOptional.map(Usuario::getHash).orElse(HASH_FALSO);
         boolean claveCorrecta;
         try {
             claveCorrecta = this.codificadorContrasenas.verificar(contrasenaPlana, hashAVerificar);
         } finally {
             Arrays.fill(contrasenaPlana, '\0');
         }
-        if (usuario == null || !claveCorrecta) {
-            if (usuario != null) {
-                this.gestorTransaccional.ejecutarEnTransaccion(()->
-                        registrarFalloYPosibleBloqueo(usuario, fechaReferencia)
-                );
-            }
+        if (usuarioOptional.isEmpty() || !claveCorrecta) {
+            usuarioOptional.ifPresent(usuarioValor -> this.gestorTransaccional.ejecutarEnTransaccion(() ->
+                    registrarFalloYPosibleBloqueo(usuarioValor, fechaReferencia)
+            ));
             throw new CredencialesInvalidasException("Credenciales Inválidas.");
         }
-        validarBloqueoTemporal(usuario, fechaReferencia);
-        if (!usuario.isActivo()){
+        Usuario usuarioValido = usuarioOptional.get();
+        validarBloqueoTemporal(usuarioValido, fechaReferencia);
+        if (!usuarioValido.isActivo()){
             throw new UsuarioInactivoException("Lo sentimos, NO puedes Ingresar porque NO estas Activo. " +
                     "Para mas información habla con el Administrador");
         }
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
-            usuario.limpiarIntentosFallidosYBloqueo();
-            this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
-            return usuario;
+            usuarioValido.limpiarIntentosFallidosYBloqueo();
+            this.repositorioUsuario.actualizarDatosLoginUsuario(usuarioValido);
+            return usuarioValido;
         });
     }
 
