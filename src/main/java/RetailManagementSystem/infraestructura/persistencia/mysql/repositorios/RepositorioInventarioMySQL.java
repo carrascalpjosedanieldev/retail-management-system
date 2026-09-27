@@ -161,13 +161,13 @@ public class RepositorioInventarioMySQL implements RepositorioInventario {
                     boolean excedido = rs.getBoolean("excedido");
 
                     if (excedido){
-                        throw new CapacidadInventarioExcedidaException("La Cantidad " + stockASumar + " Excede la capacidad del Inventario");
+                        throw new CapacidadInventarioExcedidaException(
+                                "La Cantidad " + stockASumar + " Excede la capacidad del Inventario"
+                        );
                     } else {
                         return;
                     }
-
                 }
-
                 throw new InventarioNoEncontradoException("NO Existe un Inventario con el ID: " + idInventario);
 
             }
