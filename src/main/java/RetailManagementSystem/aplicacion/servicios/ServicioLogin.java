@@ -3,6 +3,7 @@ package RetailManagementSystem.aplicacion.servicios;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
+import RetailManagementSystem.dominio.enums.ClaveConfiguracion;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.CredencialesInvalidasException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioInactivoException;
@@ -16,10 +17,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public class ServicioLogin {
-
-    private static final String CONF_MAX_INTENTOS = "SEGURIDAD_MAX_INTENTOS";
-
-    private static final String CONF_MINUTOS_BLOQUEO = "SEGURIDAD_MINUTOS_BLOQUEO";
 
     private static final String HASH_FALSO = "$argon2id$v=19$m=65536,t=3,p=1$c2FsdGdlbmVyYWRv$hashfalsoejemplo...";
 
@@ -81,10 +78,10 @@ public class ServicioLogin {
 
     private void registrarFalloYPosibleBloqueo(Usuario usuario, LocalDateTime fechaReferencia){
         int maxIntentos = Integer.parseInt(
-                this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MAX_INTENTOS)
+              this.proveedorConfiguracion.obtenerValorConfiguracion(ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD())
         );
         int minutosBloqueo = Integer.parseInt(
-                this.proveedorConfiguracion.obtenerValorConfiguracion(CONF_MINUTOS_BLOQUEO)
+              this.proveedorConfiguracion.obtenerValorConfiguracion(ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD())
         );
         usuario.registrarIntentoFallido(maxIntentos, minutosBloqueo, fechaReferencia);
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);

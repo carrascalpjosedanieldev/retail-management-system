@@ -3,18 +3,13 @@ package RetailManagementSystem.aplicacion.servicios;
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.PoliticaDeBloqueoDTO;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
+import RetailManagementSystem.dominio.enums.ClaveConfiguracion;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 
 public class ServicioConfiguraciones {
 
     //ATRIBUTOS:
-
-    private static final String CONF_DATOS_TIENDA = "NOMBRE_PROYECTO_PROPIO_ORIGINAL";
-
-    private static final String CONF_MAX_INTENTOS = "SEGURIDAD_MAX_INTENTOS";
-
-    private static final String CONF_MINUTOS_BLOQUEO = "SEGURIDAD_MINUTOS_BLOQUEO";
 
     private final RepositorioConfiguracion repositorioConfiguracion;
 
@@ -54,11 +49,11 @@ public class ServicioConfiguraciones {
     //MÉTODOS ESPECÍFICOS:
 
     public String obtenerNombreTienda(){
-        return obtenerValorConfiguracion(CONF_DATOS_TIENDA);
+        return obtenerValorConfiguracion(ClaveConfiguracion.DATOS_TIENDA.getClaveBD());
     }
 
     public ConfiguracionSistemaDTO obtenerDatosTienda(){
-        return obtenerConfiguracionSistema(CONF_DATOS_TIENDA);
+        return obtenerConfiguracionSistema(ClaveConfiguracion.DATOS_TIENDA.getClaveBD());
     }
 
     public void cambiarNombreYDescripcionTienda(String nombreNuevo, String descripcion) {
@@ -70,15 +65,17 @@ public class ServicioConfiguraciones {
         }
         this.gestorTransaccional.ejecutarEnTransaccion(()->
                 this.repositorioConfiguracion.actualizarConfiguracionSistemaConfiguracion(
-                        CONF_DATOS_TIENDA, nombreNuevo.trim(), descripcion.trim()
+                        ClaveConfiguracion.DATOS_TIENDA.getClaveBD(), nombreNuevo.trim(), descripcion.trim()
                 )
         );
-        this.proveedorConfiguracion.invalidarCache(CONF_DATOS_TIENDA);
+        this.proveedorConfiguracion.invalidarCache(ClaveConfiguracion.DATOS_TIENDA.getClaveBD());
     }
 
     public PoliticaDeBloqueoDTO obtenerPoliticaDeBloqueo(){
-        ConfiguracionSistemaDTO maxIntentos = obtenerConfiguracionSistema(CONF_MAX_INTENTOS);
-        ConfiguracionSistemaDTO minutosBloqueo = obtenerConfiguracionSistema(CONF_MINUTOS_BLOQUEO);
+        ConfiguracionSistemaDTO maxIntentos =
+                obtenerConfiguracionSistema(ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD());
+        ConfiguracionSistemaDTO minutosBloqueo =
+                obtenerConfiguracionSistema(ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD());
         return new PoliticaDeBloqueoDTO(maxIntentos, minutosBloqueo);
     }
 
@@ -88,10 +85,10 @@ public class ServicioConfiguraciones {
         }
         this.gestorTransaccional.ejecutarEnTransaccion(()->
                 actualizarValorConfiguracion(
-                        CONF_MAX_INTENTOS, String.valueOf(nuevoMaximo)
+                        ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD(), String.valueOf(nuevoMaximo)
                 )
         );
-        this.proveedorConfiguracion.invalidarCache(CONF_MAX_INTENTOS);
+        this.proveedorConfiguracion.invalidarCache(ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD());
     }
 
     public void actualizarMaxMinutosBloqueos(int nuevosMinutosBloqueo) {
@@ -100,10 +97,10 @@ public class ServicioConfiguraciones {
         }
         this.gestorTransaccional.ejecutarEnTransaccion(()->
                 actualizarValorConfiguracion(
-                        CONF_MINUTOS_BLOQUEO, String.valueOf(nuevosMinutosBloqueo)
+                        ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD(), String.valueOf(nuevosMinutosBloqueo)
                 )
         );
-        this.proveedorConfiguracion.invalidarCache(CONF_MINUTOS_BLOQUEO);
+        this.proveedorConfiguracion.invalidarCache(ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD());
     }
 
 }//===================================================================================================================//
