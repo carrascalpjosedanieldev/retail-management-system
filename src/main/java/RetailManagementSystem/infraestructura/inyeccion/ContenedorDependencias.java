@@ -230,9 +230,7 @@ public class ContenedorDependencias {
                 servicioPoliticaVencimiento, ensambladorDTOPoliticaVencimiento
         );
         orquestadorProductos = new OrquestadorProductos(ensambladorDTOProducto, servicioProductos);
-        orquestadorGestionStock = new OrquestadorGestionStock(
-                servicioProductos, servicioGestionStock, ensambladorDTOProducto
-        );
+        orquestadorGestionStock = new OrquestadorGestionStock(servicioGestionStock, ensambladorDTOProducto);
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorServicios = new OrquestadorServicios(
                 servicioServicios, ensambladorDTOServicio

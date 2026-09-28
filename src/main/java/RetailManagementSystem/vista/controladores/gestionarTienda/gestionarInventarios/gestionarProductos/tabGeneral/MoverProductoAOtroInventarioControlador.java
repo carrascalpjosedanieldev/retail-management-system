@@ -124,7 +124,7 @@ public class MoverProductoAOtroInventarioControlador {
         CompletableFuture.runAsync(()->
                 this.orquestadorGestionStock.validarEspacioInventarioYMoverProducto(
                         this.usuarioActual, this.idInventario, inventarioDestino.idInventario(),
-                        seleccionado.codigoProducto()
+                        seleccionado.codigoProducto(), seleccionado.stock()
                 )
         ).thenRun(()->
             Platform.runLater(()->{

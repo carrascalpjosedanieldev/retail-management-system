@@ -290,5 +290,62 @@ public class ServicioGestionStockTest {
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
     }
 
+    @Test
+    void deberiaMoverProductoAInventarioCorrectamente() {
+        // ARRANGE
+        int idInventarioOrigen = 1;
+        int idInventarioDestino = 2;
+        // ACT
+        servicioGestionStock.moverProductoAInventario(
+                idInventarioOrigen, idInventarioDestino, CODIGO_PRODUCTO_POR_DEFECTO, STOCK_POR_DEFECTO
+        );
+        // ASSERT
+        verify(repositorioInventarioFalso).validarCapacidadInventario(idInventarioDestino, STOCK_POR_DEFECTO);
+        verify(repositorioProductoFalso)
+                .cambiarInventarioProducto(CODIGO_PRODUCTO_POR_DEFECTO, idInventarioOrigen, idInventarioDestino);
+        verifyNoMoreInteractions(repositorioInventarioFalso, repositorioProductoFalso);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
+        verifyNoMoreInteractions(gestorTransaccionalFalso);
+    }
+
+    @Test
+    void deberiaLanzarExcepcionSiInventarioOrigenYDestinoSonIgualesAlMoverProducto() {
+        // ARRANGE
+        int idInventarioOrigen = 1;
+        int idInventarioDestino = 1;
+        // ACT & ASSERT
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> servicioGestionStock.moverProductoAInventario(
+                        idInventarioOrigen, idInventarioDestino, CODIGO_PRODUCTO_POR_DEFECTO, STOCK_POR_DEFECTO
+                )
+        );
+        assertEquals("El Inventario Destino y Origen son el mismo", exception.getMessage());
+        verifyNoInteractions(repositorioInventarioFalso, repositorioProductoFalso, gestorTransaccionalFalso);
+    }
+
+    @Test
+    void deberiaPropagarExcepcionYNoMoverProductoSiElDestinoNoTieneCapacidad() {
+        // ARRANGE
+        int idInventarioOrigen = 1;
+        int idInventarioDestino = 2;
+        String mensajeEsperado = "La Cantidad " + STOCK_POR_DEFECTO + " Excede la capacidad del Inventario";
+        doThrow(new CapacidadInventarioExcedidaException(mensajeEsperado))
+                .when(repositorioInventarioFalso).validarCapacidadInventario(idInventarioDestino, STOCK_POR_DEFECTO);
+        // ACT & ASSERT
+        CapacidadInventarioExcedidaException exception = assertThrows(
+                CapacidadInventarioExcedidaException.class,
+                () -> servicioGestionStock.moverProductoAInventario(
+                        idInventarioOrigen, idInventarioDestino, CODIGO_PRODUCTO_POR_DEFECTO, STOCK_POR_DEFECTO
+                )
+        );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verify(repositorioInventarioFalso).validarCapacidadInventario(idInventarioDestino, STOCK_POR_DEFECTO);
+        verifyNoMoreInteractions(repositorioInventarioFalso);
+        verifyNoInteractions(repositorioProductoFalso);
+        verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
+        verifyNoMoreInteractions(gestorTransaccionalFalso);
+    }
+
 }//===================================================================================================================//
 

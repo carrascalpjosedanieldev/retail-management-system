@@ -61,5 +61,17 @@ public class ServicioGestionStock {
         });
     }
 
+    public void moverProductoAInventario(
+            int idInventarioOrigen, int idInventarioDestino, String codigoProducto, int stockAMover
+    ) {
+        if (idInventarioOrigen == idInventarioDestino){
+            throw new IllegalArgumentException("El Inventario Destino y Origen son el mismo");
+        }
+        this.gestorTransaccional.ejecutarEnTransaccion(()-> {
+            this.repositorioInventario.validarCapacidadInventario(idInventarioDestino, stockAMover);
+            this.repositorioProducto.cambiarInventarioProducto(codigoProducto, idInventarioOrigen, idInventarioDestino);
+        });
+    }
+
 }//===================================================================================================================//
 

@@ -44,10 +44,12 @@ public class ServicioProductos {
 
     //MÉTODOS:
 
-    public Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
-        return gestorTransaccional.ejecutarEnTransaccionConRetorno(()->
-                this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto)
-        );
+    private Producto obtenerProductoDeInventario(int idInventario, String codigoProducto){
+        return this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
+    }
+
+    private void actualizarProductoDeInventario(int idInventario, Producto producto){
+        this.repositorioProducto.actualizarProducto(producto, idInventario);
     }
 
     public Producto obtenerProductoActivoParaLaVenta(String codigoProducto){
@@ -57,74 +59,65 @@ public class ServicioProductos {
     }
 
     public void cambiarEstadoProducto(int idInventario, String codigoProducto){
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarEstado();
-        this.actualizarProductoDeInventario(idInventario, producto);
-    }
-
-    private void actualizarProductoDeInventario(int idInventario, Producto producto){
-        this.gestorTransaccional.ejecutarEnTransaccion(()->
-                this.repositorioProducto.actualizarProducto(producto, idInventario)
-        );
+        this.gestorTransaccional.ejecutarEnTransaccion(()-> {
+            Producto producto = obtenerProductoDeInventario(idInventario, codigoProducto);
+            producto.cambiarEstado();
+            actualizarProductoDeInventario(idInventario, producto);
+        });
     }
 
     public Producto actualizarProductoRopaDeInventario(
             int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
             BigDecimal porcentajeGanancia,int idImpuesto, int idDescuento
     ) {
-        Producto producto = this.obtenerProductoDeInventario(idInventario, codigoProducto);
-        producto.cambiarNombreProducto(nombreNuevo);
-        producto.cambiarValorCompra(valorCompra);
-        producto.cambiarPorcentajeGanancia(porcentajeGanancia);
-        Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
-        producto.cambiarImpuesto(impuesto);
-        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
-        producto.cambiarDescuento(descuento);
-        this.actualizarProductoDeInventario(idInventario, producto);
-        return producto;
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()-> {
+            Producto producto = obtenerProductoDeInventario(idInventario, codigoProducto);
+            producto.cambiarNombreProducto(nombreNuevo);
+            producto.cambiarValorCompra(valorCompra);
+            producto.cambiarPorcentajeGanancia(porcentajeGanancia);
+            Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
+            producto.cambiarImpuesto(impuesto);
+            Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+            producto.cambiarDescuento(descuento);
+            actualizarProductoDeInventario(idInventario, producto);
+            return producto;
+        });
     }
 
     public ProductoPerecedero actualizarProductoPerecederoDeInventario(
             int idInventario, String codigoProducto, String nombreNuevo, BigDecimal valorCompra,
             BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento
     ) {
-        ProductoPerecedero perecedero =
-                (ProductoPerecedero) this.repositorioProducto.obtenerProductoDeInventario(idInventario, codigoProducto);
-        perecedero.cambiarNombreProducto(nombreNuevo);
-        perecedero.cambiarValorCompra(valorCompra);
-        perecedero.cambiarPorcentajeGanancia(porcentajeGanancia);
-        Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
-        perecedero.cambiarImpuesto(impuesto);
-        Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
-        perecedero.cambiarDescuento(descuento);
-        PoliticaVencimiento politicaVencimiento =
-                this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
-        perecedero.cambiarPoliticaVencimiento(politicaVencimiento);
-        this.actualizarProductoDeInventario(idInventario, perecedero);
-        return perecedero;
+        return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()-> {
+            ProductoPerecedero perecedero = (ProductoPerecedero) obtenerProductoDeInventario(idInventario, codigoProducto);
+            perecedero.cambiarNombreProducto(nombreNuevo);
+            perecedero.cambiarValorCompra(valorCompra);
+            perecedero.cambiarPorcentajeGanancia(porcentajeGanancia);
+            Impuesto impuesto = this.repositorioImpuestos.obtenerImpuesto(idImpuesto);
+            perecedero.cambiarImpuesto(impuesto);
+            Descuento descuento = this.repositorioDescuentos.obtenerDescuento(idDescuento);
+            perecedero.cambiarDescuento(descuento);
+            PoliticaVencimiento politicaVencimiento =
+                    this.repositorioPoliticaVencimiento.obtenerPoliticaVencimiento(idPoliticaVencimiento);
+            perecedero.cambiarPoliticaVencimiento(politicaVencimiento);
+            actualizarProductoDeInventario(idInventario, perecedero);
+            return perecedero;
+        });
     }
 
-    public void moverProductoAInventario(int idInventarioOrigen, int idInventarioDestino, String codigoProducto){
-        this.gestorTransaccional.ejecutarEnTransaccion(()->
-                this.repositorioProducto.cambiarInventarioProducto(
-                        codigoProducto, idInventarioOrigen, idInventarioDestino
-                )
-        );
-    }
-
-    public List<Producto> obtenerProductosDeInventario(int idInventario){
+    public List<Producto> obtenerTodosLosProductosDeInventario(int idInventario){
         return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioProducto.obtenerProductosPorInventario(idInventario)
         );
     }
 
-    public List<Producto> obtenerProductosRopaDeInventario(int idInventario){
+    public List<Producto> obtenerTodosLosProductosRopaDeInventario(int idInventario){
         return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioProducto.obtenerProductosDeTipoDeInventario(idInventario, TipoProducto.ROPA)
         );
     }
 
-    public List<Producto> obtenerProductosPerecederoDeInventario(int idInventario){
+    public List<Producto> obtenerTodosLosProductosPerecederoDeInventario(int idInventario){
         return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(()->
                 this.repositorioProducto.obtenerProductosDeTipoDeInventario(idInventario, TipoProducto.PERECEDERO)
         );

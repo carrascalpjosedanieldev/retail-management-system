@@ -32,7 +32,7 @@ public class OrquestadorProductos {
 
     public List<ProductoResumenDTO> obtenerResumenProductosDeInventario(int idInventario, LocalDate fecha){
         return this.ensambladorDTOProducto.ensamblarDetalleProductosResumen(
-                this.servicioProductos.obtenerProductosDeInventario(idInventario), fecha
+                this.servicioProductos.obtenerTodosLosProductosDeInventario(idInventario), fecha
         );
     }
 
@@ -45,7 +45,7 @@ public class OrquestadorProductos {
 
     public List<DatosTotalesProductoRopaDTO> obtenerProductosRopaDeInventario(int idInventario, LocalDate fecha){
         return this.ensambladorDTOProducto.ensamblarDetalleProductosRopa(
-                this.servicioProductos.obtenerProductosRopaDeInventario(idInventario), fecha
+                this.servicioProductos.obtenerTodosLosProductosRopaDeInventario(idInventario), fecha
         );
     }
 
@@ -64,7 +64,7 @@ public class OrquestadorProductos {
 
     public List<DatosTotalesProductoPerecederoDTO> obtenerProductosPerecederosDeInventario(int idInventario){
         return this.ensambladorDTOProducto.ensamblarDetalleProductosPerecedero(
-                this.servicioProductos.obtenerProductosPerecederoDeInventario(idInventario)
+                this.servicioProductos.obtenerTodosLosProductosPerecederoDeInventario(idInventario)
         );
     }
 

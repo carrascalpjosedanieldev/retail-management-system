@@ -15,8 +15,6 @@ public class OrquestadorGestionStock {
 
     //ATRIBUTOS:
 
-    private final ServicioProductos servicioProductos;
-
     private final ServicioGestionStock servicioGestionStock;
 
     private final EnsambladorDTOProducto ensambladorDTOProducto;
@@ -24,10 +22,8 @@ public class OrquestadorGestionStock {
     //CONSTRUCTOR:
 
     public OrquestadorGestionStock(
-            ServicioProductos servicioProductos, ServicioGestionStock servicioGestionStock,
-            EnsambladorDTOProducto ensambladorDTOProducto
+            ServicioGestionStock servicioGestionStock, EnsambladorDTOProducto ensambladorDTOProducto
     ) {
-        this.servicioProductos = servicioProductos;
         this.servicioGestionStock = servicioGestionStock;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
     }
@@ -64,10 +60,13 @@ public class OrquestadorGestionStock {
     }
 
     public void validarEspacioInventarioYMoverProducto(
-            UsuarioDTOCompleto usuario, int idInventarioSalida, int idInventarioDestino, String codigoProducto
+            UsuarioDTOCompleto usuario, int idInventarioSalida, int idInventarioDestino, String codigoProducto,
+            int stockAMover
     ){
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.TRASLADAR_PRODUCTOS);
-        this.servicioProductos.moverProductoAInventario(idInventarioSalida, idInventarioDestino, codigoProducto);
+        this.servicioGestionStock.moverProductoAInventario(
+                idInventarioSalida, idInventarioDestino, codigoProducto, stockAMover
+        );
     }
 
 }//===================================================================================================================//
