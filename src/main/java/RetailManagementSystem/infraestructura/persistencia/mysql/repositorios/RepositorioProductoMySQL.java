@@ -141,8 +141,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
                 }
 
                 throw new ProductoNoEncontradoException(
-                        "Error de negocio: El Producto con Código -" + codigoProducto +
-                                "- NO existe en el Inventario con ID " + idInventario
+                        "El Producto con Código -" + codigoProducto + "- NO existe en el Inventario con ID " +
+                                idInventario
                 );
             }
 

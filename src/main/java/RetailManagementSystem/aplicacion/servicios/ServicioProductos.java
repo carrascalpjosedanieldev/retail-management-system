@@ -89,7 +89,8 @@ public class ServicioProductos {
             BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, int idPoliticaVencimiento
     ) {
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()-> {
-            ProductoPerecedero perecedero = (ProductoPerecedero) obtenerProductoDeInventario(idInventario, codigoProducto);
+            ProductoPerecedero perecedero =
+                    (ProductoPerecedero) obtenerProductoDeInventario(idInventario, codigoProducto);
             perecedero.cambiarNombreProducto(nombreNuevo);
             perecedero.cambiarValorCompra(valorCompra);
             perecedero.cambiarPorcentajeGanancia(porcentajeGanancia);
