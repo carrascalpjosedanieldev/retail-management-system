@@ -64,11 +64,7 @@ public class ServicioLogin {
             throw new CredencialesInvalidasException("Credenciales Inválidas.");
         }
         Usuario usuarioValido = usuarioOptional.get();
-        validarBloqueoTemporal(usuarioValido, fechaReferencia);
-        if (!usuarioValido.isActivo()){
-            throw new UsuarioInactivoException("Lo sentimos, NO puedes Ingresar porque NO estas Activo. " +
-                    "Para mas información habla con el Administrador");
-        }
+        validarBloqueoTemporalYEstado(usuarioValido, fechaReferencia);
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
             usuarioValido.limpiarIntentosFallidosYBloqueo();
             this.repositorioUsuario.actualizarDatosLoginUsuario(usuarioValido);
@@ -87,13 +83,17 @@ public class ServicioLogin {
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);
     }
 
-    private void validarBloqueoTemporal(Usuario usuario, LocalDateTime fechaReferencia){
+    private void validarBloqueoTemporalYEstado(Usuario usuario, LocalDateTime fechaReferencia){
         LocalDateTime bloqueo = usuario.getBloqueadoHasta();
         if (bloqueo != null && bloqueo.isAfter(fechaReferencia)) {
             long minutosRestantes = ChronoUnit.MINUTES.between(fechaReferencia, bloqueo);
             throw new UsuarioBloqueadoException(
                     "Usuario Bloqueado. Intenta de Nuevo en " + minutosRestantes + " Minutos."
             );
+        }
+        if (!usuario.isActivo()){
+            throw new UsuarioInactivoException("Lo sentimos, NO puedes Ingresar porque NO estas Activo. " +
+                    "Para mas información habla con el Administrador");
         }
     }
 
@@ -119,7 +119,7 @@ public class ServicioLogin {
         });
     }
 
-    public void cambiarContrasenaDefinitiva(Long idUsuario, char[] nuevaContrasenaPlana) {
+    public void cambiarContrasenaDefinitiva(long idUsuario, char[] nuevaContrasenaPlana) {
         if (nuevaContrasenaPlana == null || nuevaContrasenaPlana.length < 8) {
             throw new IllegalArgumentException("La Nueva Contraseña debe tener al menos 8 Caracteres.");
         }
