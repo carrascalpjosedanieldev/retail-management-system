@@ -104,7 +104,9 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                 if (rs.next()){
                     return mapearServicioDesdeResultSet(rs);
                 }
-                throw new ServicioNoEncontradoException("Error de negocio: El Servicio con código -" + codigoServicio + "- no existe");
+                throw new ServicioNoEncontradoException(
+                        "El Servicio con código -" + codigoServicio + "- NO Existe"
+                );
 
             }
 
@@ -175,13 +177,16 @@ public class RepositorioServicioMySQL implements RepositorioServicio {
                 if (rs.next()){
                     boolean activo = rs.getBoolean("activo");
                     if (!activo) {
-                        throw new ServicioNoDisponibleException("El Servicio con Código -" + codigoServicio +
-                                "- NO esta Disponible");
+                        throw new ServicioNoDisponibleException(
+                                "El Servicio con Código -" + codigoServicio + "- NO esta Disponible"
+                        );
                     }
                     return mapearServicioDesdeResultSet(rs);
                 }
 
-                throw new ServicioNoEncontradoException("Error de negocio: El Servicio con código -" + codigoServicio + "- no existe");
+                throw new ServicioNoEncontradoException(
+                        "El Servicio con Código -" + codigoServicio + "- NO Existe"
+                );
 
             }
 
