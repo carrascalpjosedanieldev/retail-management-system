@@ -31,7 +31,7 @@ public class OrquestadorRoles {
 
     public List<RolDTO> obtenerTodosLosRoles(){
         return this.ensambladorDTORol.ensamblarDetalleRoles(
-                this.servicioRol.obtenerRoles()
+                this.servicioRol.obtenerTodosLosRoles()
         );
     }
 

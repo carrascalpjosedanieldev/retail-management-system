@@ -24,7 +24,7 @@ public class ServicioRol {
 
     //MÉTODOS:
 
-    public void registrarRol(String nombre, boolean activo, List<Permiso> permisos){
+    public void registrarRol(String nombre, boolean activo, List<Permiso> permisos) {
         Rol rolNuevo = Rol.crearNuevo(nombre, activo);
         for (Permiso permiso:permisos){
             rolNuevo.anadirPermiso(permiso);
@@ -34,18 +34,20 @@ public class ServicioRol {
         );
     }
 
-    public Rol actualzarDatosRol(int idRol, String nombreNuevo, boolean activo){
+    public Rol actualzarDatosRol(int idRol, String nombreNuevo, boolean activo) {
         return this.gestorTransaccional.ejecutarEnTransaccionConRetorno(()->{
             Rol rol = this.repositorioRol.obtenerRol(idRol);
             rol.cambiarNombre(nombreNuevo);
-            rol.cambiarEstado();
+            if (activo != rol.isActivo()){
+                rol.cambiarEstado();
+            }
             this.repositorioRol.actualizarDatosRol(rol);
             return rol;
         });
 
     }
 
-    public void actualizarPermisosRol(int idRol, List<Permiso> listaPermisosActualizada){
+    public void actualizarPermisosRol(int idRol, List<Permiso> listaPermisosActualizada) {
         this.gestorTransaccional.ejecutarEnTransaccion(()->{
             Rol rol = this.repositorioRol.obtenerRol(idRol);
             for (Permiso p:rol.getPermisos().stream().toList()){
@@ -58,13 +60,11 @@ public class ServicioRol {
         });
     }
 
-    public List<Rol> obtenerRoles(){
+    public List<Rol> obtenerTodosLosRoles() {
         return this.gestorTransaccional.ejecutarEnTransaccionDeLectura(
                 this.repositorioRol::obtenerTodosLosRoles
         );
     }
-
-
 
 }//===================================================================================================================//
 
