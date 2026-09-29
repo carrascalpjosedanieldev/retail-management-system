@@ -124,7 +124,7 @@ public class RepositorioUsuarioMySQL implements RepositorioUsuario {
         validarConexion(conn);
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_USUARIO_POR_EMAIL)) {
 
-            pstmt.setString(1, email);
+            pstmt.setString(1, email.trim());
 
             try (ResultSet rs = pstmt.executeQuery()) {
 

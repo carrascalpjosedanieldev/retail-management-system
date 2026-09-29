@@ -76,7 +76,7 @@ public class OrquestadorUsuarios {
 
     public UsuarioDTOCompleto obtenerDatosTotalesUsuario(Long idUsuario){
         return this.ensambladorDTOUsuario.ensamblarDTOUsuarioCompleto(
-                this.servicioUsuario.obtenerUsuario(idUsuario)
+                this.servicioUsuario.obtenerUsuarioPorId(idUsuario)
         );
     }
 
