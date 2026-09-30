@@ -1,6 +1,5 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
-import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoVencidoException;
@@ -26,8 +25,9 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
 
     private static final LocalDate FECHA_VENCIMIENTO_POR_DEFECTO = LocalDate.of(2028,11,19);
 
-    private final PoliticaVencimiento politicaVActiva =
-            PoliticaVencimiento.crearNuevo("Política", 3, new BigDecimal("15"), true);
+    private final PoliticaVencimiento politicaVActiva = PoliticaVencimiento.reconstruirDesdeBD(
+            1, "Política", 3, new BigDecimal("15"), true
+    );
 
     @Override
     protected TipoProducto getTipoProducto() {

@@ -6,6 +6,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioProductos;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
@@ -31,8 +32,9 @@ public class OrquestadorProductos {
     //MÉTODOS:
 
     public List<ProductoResumenDTO> obtenerResumenProductosDeInventario(int idInventario, LocalDate fecha){
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOProducto.ensamblarDetalleProductosResumen(
-                this.servicioProductos.obtenerTodosLosProductosDeInventario(idInventario), fecha
+                this.servicioProductos.obtenerTodosLosProductosDeInventario(idInventario), contextoEvaluacion
         );
     }
 
@@ -44,27 +46,32 @@ public class OrquestadorProductos {
     }
 
     public List<DatosTotalesProductoRopaDTO> obtenerProductosRopaDeInventario(int idInventario, LocalDate fecha){
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOProducto.ensamblarDetalleProductosRopa(
-                this.servicioProductos.obtenerTodosLosProductosRopaDeInventario(idInventario), fecha
+                this.servicioProductos.obtenerTodosLosProductosRopaDeInventario(idInventario), contextoEvaluacion
         );
     }
 
     public DatosTotalesProductoRopaDTO actualizarProductoRopaDeInventario(
             UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, String nombreNuevo,
-            BigDecimal valorCompra, BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento
+            BigDecimal valorCompra, BigDecimal porcentajeGanancia, int idImpuesto, int idDescuento, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOProducto.ensamblarDatosProductoRopa(
                 this.servicioProductos.actualizarProductoRopaDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
                         idImpuesto, idDescuento
-                ), LocalDate.now()
+                ), contextoEvaluacion
         );
     }
 
-    public List<DatosTotalesProductoPerecederoDTO> obtenerProductosPerecederosDeInventario(int idInventario){
+    public List<DatosTotalesProductoPerecederoDTO> obtenerProductosPerecederosDeInventario(
+            int idInventario, LocalDate fecha
+    ) {
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOProducto.ensamblarDetalleProductosPerecedero(
-                this.servicioProductos.obtenerTodosLosProductosPerecederoDeInventario(idInventario)
+                this.servicioProductos.obtenerTodosLosProductosPerecederoDeInventario(idInventario), contextoEvaluacion
         );
     }
 
@@ -74,11 +81,12 @@ public class OrquestadorProductos {
             int idPoliticaVencimiento, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOProducto.ensamblarDatosProductoPerecedero(
                 this.servicioProductos.actualizarProductoPerecederoDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
                         idImpuesto, idDescuento, idPoliticaVencimiento
-                ) , fecha
+                ) , contextoEvaluacion
         );
     }
 

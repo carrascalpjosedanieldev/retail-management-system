@@ -18,7 +18,7 @@ public class MatematicaFinanciera {
 
     //CONSTRUCTOR:
 
-    public MatematicaFinanciera() {}
+    public MatematicaFinanciera() { }
 
     //MÉTODOS:
 
@@ -27,7 +27,6 @@ public class MatematicaFinanciera {
     }
 
     public BigDecimal dividirEntreCien(BigDecimal porcentaje) {
-        if (porcentaje == null) return BigDecimal.ZERO.setScale(ESCALA_CALCULO, REDONDEO_ESTANDAR);
         return porcentaje.divide(CIEN, ESCALA_CALCULO, REDONDEO_ESTANDAR);
     }
 

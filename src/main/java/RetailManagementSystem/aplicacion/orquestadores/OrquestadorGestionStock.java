@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioGestionStock;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
@@ -33,8 +34,9 @@ public class OrquestadorGestionStock {
             UsuarioDTOCompleto usuario, int idInventario, Producto producto, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_PRODUCTOS);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         this.servicioGestionStock.registrarProductoEnInventario(idInventario, producto);
-        return this.ensambladorDTOProducto.ensamblarProductoResumen(producto, fecha);
+        return this.ensambladorDTOProducto.ensamblarProductoResumen(producto, contextoEvaluacion);
     }
 
     public ProductoResumenDTO validarEspacioInventarioYAumentarStockProducto(
@@ -42,10 +44,11 @@ public class OrquestadorGestionStock {
             LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_PRODUCTOS);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(
                 this.servicioGestionStock.aumentarStockDeProductoDeInventario(
                         idInventario, codigoProducto, cantidadAAumentarProducto
-                ) , fecha
+                ) , contextoEvaluacion
         );
     }
 
@@ -53,8 +56,10 @@ public class OrquestadorGestionStock {
             UsuarioDTOCompleto usuario, int idInventario, String codigoProducto, int cantidad, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MANEJAR_STOCK_PRODUCTO);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(
-                this.servicioGestionStock.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidad), fecha
+                this.servicioGestionStock.reducirStockDeProductoDeInventario(idInventario, codigoProducto, cantidad),
+                contextoEvaluacion
         );
     }
 

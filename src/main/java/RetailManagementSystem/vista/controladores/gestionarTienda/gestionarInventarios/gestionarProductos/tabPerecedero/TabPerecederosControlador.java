@@ -88,7 +88,7 @@ public class TabPerecederosControlador {
 
     private void cargarDatosTabla() {
         CompletableFuture.supplyAsync(()->
-                this.orquestadorProductos.obtenerProductosPerecederosDeInventario(this.idInventario)
+                this.orquestadorProductos.obtenerProductosPerecederosDeInventario(this.idInventario, LocalDate.now())
         ).thenAccept(listaPerecederos->
             Platform.runLater(()->{
                 listaMaestraPerecederos.clear();

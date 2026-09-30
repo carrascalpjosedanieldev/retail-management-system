@@ -22,6 +22,7 @@ import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -209,6 +210,7 @@ public class EditarRopaControlador {
             );
             return;
         }
+        LocalDate fecha = LocalDate.now();
         CompletableFuture.supplyAsync(()->
                 this.orquestadorProductos.actualizarProductoRopaDeInventario(
                 this.usuarioActual,
@@ -218,7 +220,8 @@ public class EditarRopaControlador {
                 valorCompra,
                 porcentajeGanancia,
                 impuestoSeleccionado.idImpuesto(),
-                descuentoSeleccionado.idDescuento()
+                descuentoSeleccionado.idDescuento(),
+                fecha
                 )
         ).thenAccept(ropaActualizada->
             Platform.runLater(()->{

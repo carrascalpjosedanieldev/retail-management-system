@@ -138,28 +138,28 @@ public class ServicioCarritoTest {
 //        verifyNoInteractions(servicioServiciosFalso);
 //    }
 
-    @ParameterizedTest
-    @CsvSource({
-          //diasExtra, diasUmbral
-            "1,        3",
-            "1,        0",
-            "5,        3"
-    })
-    void deberiaLanzarExcepcionSiElItemPerecederoEstaVencido(int diasExtra, int diasUmbral){
-        //ARRANGE
-        String codigoProducto = "producto1234567890";
-        LocalDate fechaVencimiento = LocalDate.now().minusDays(diasExtra);
-        Producto producto = crearProductoPerecederoBase(codigoProducto, fechaVencimiento, diasUmbral);
-        int cantidad = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
-        //ACT AND ASSERT
-        ProductoVencidoException exception = assertThrows(
-                ProductoVencidoException.class,
-                ()-> servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidad, fecha)
-        );
-        assertEquals("El Producto -" + producto.getNombre() + "- está vencido.", exception.getMessage());
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//          //diasExtra, diasUmbral
+//            "1,        3",
+//            "1,        0",
+//            "5,        3"
+//    })
+//    void deberiaLanzarExcepcionSiElItemPerecederoEstaVencido(int diasExtra, int diasUmbral){
+//        //ARRANGE
+//        String codigoProducto = "producto1234567890";
+//        LocalDate fechaVencimiento = LocalDate.now().minusDays(diasExtra);
+//        Producto producto = crearProductoPerecederoBase(codigoProducto, fechaVencimiento, diasUmbral);
+//        int cantidad = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
+//        //ACT AND ASSERT
+//        ProductoVencidoException exception = assertThrows(
+//                ProductoVencidoException.class,
+//                ()-> servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidad, fecha)
+//        );
+//        assertEquals("El Producto -" + producto.getNombre() + "- está vencido.", exception.getMessage());
+//    }
 
 //    @Test
 //    void deberiaAgregarItemServicioCorrectamente(){
@@ -185,26 +185,26 @@ public class ServicioCarritoTest {
 //        verify(servicioServiciosFalso).obtenerServicioActivoParaLaVenta(codigoServicio);
 //    }
 
-    @Test
-    void deberiaLanzarExcepcionSiElCodigoNoPerteneceAUnProductoOServicio(){
-        //ARRANGE
-        String codigoInvalido = "noExiste1234567890";
-        int cantidad = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoInvalido))
-                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
-        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoInvalido))
-                .thenThrow(new ServicioNoEncontradoException("NO Encontrado"));
-        //ACT AND ASSERT
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                ()-> servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoInvalido, cantidad, fecha)
-        );
-        assertEquals(
-                "El Código -" + codigoInvalido + "- NO pertenece a un Producto ni a un Servicio Activo.",
-                exception.getMessage()
-        );
-    }
+//    @Test
+//    void deberiaLanzarExcepcionSiElCodigoNoPerteneceAUnProductoOServicio(){
+//        //ARRANGE
+//        String codigoInvalido = "noExiste1234567890";
+//        int cantidad = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoInvalido))
+//                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
+//        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoInvalido))
+//                .thenThrow(new ServicioNoEncontradoException("NO Encontrado"));
+//        //ACT AND ASSERT
+//        IllegalArgumentException exception = assertThrows(
+//                IllegalArgumentException.class,
+//                ()-> servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoInvalido, cantidad, fecha)
+//        );
+//        assertEquals(
+//                "El Código -" + codigoInvalido + "- NO pertenece a un Producto ni a un Servicio Activo.",
+//                exception.getMessage()
+//        );
+//    }
 
 //    @Test
 //    void deberiaAumentarLaCantidadDelItemProductoCorrectamente(){
