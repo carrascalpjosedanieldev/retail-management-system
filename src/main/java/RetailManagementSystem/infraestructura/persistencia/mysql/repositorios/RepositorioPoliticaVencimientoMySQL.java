@@ -105,8 +105,9 @@ public class RepositorioPoliticaVencimientoMySQL implements RepositorioPoliticaV
                     return this.mapeadorPoliticasVencimiento.mapearPoliticaVencimiento(rs);
                 }
 
-                throw new PoliticaVencimientoNoEncontradaException("NO Existe una Política de Vencimiento con el ID: " +
-                        idPoliticaVencimiento);
+                throw new PoliticaVencimientoNoEncontradaException(
+                        "NO Existe una Política de Vencimiento con el ID: " + idPoliticaVencimiento
+                );
             }
 
         } catch (SQLException e) {
