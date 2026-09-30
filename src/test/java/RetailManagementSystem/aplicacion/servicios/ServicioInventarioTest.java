@@ -1,5 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioInventario;
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.InventarioNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioInventario;

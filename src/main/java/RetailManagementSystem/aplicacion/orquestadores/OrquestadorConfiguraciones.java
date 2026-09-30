@@ -3,7 +3,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.PoliticaDeBloqueoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioConfiguraciones;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 

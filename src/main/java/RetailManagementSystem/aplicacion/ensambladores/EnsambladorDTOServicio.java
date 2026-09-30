@@ -2,9 +2,11 @@ package RetailManagementSystem.aplicacion.ensambladores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +15,19 @@ public class EnsambladorDTOServicio {
 
     //ATRIBUTOS:
 
+    private final CalculadoraPrecios calculadoraPrecios;
+
     private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
+
     private final EnsambladorDTODescuento ensambladorDTODescuento;
 
     //CONSTRUCTOR:
 
     public EnsambladorDTOServicio(
-            EnsambladorDTOImpuesto ensambladorDTOImpuesto, EnsambladorDTODescuento ensambladorDTODescuento
+            CalculadoraPrecios calculadoraPrecios, EnsambladorDTOImpuesto ensambladorDTOImpuesto,
+            EnsambladorDTODescuento ensambladorDTODescuento
     ) {
+        this.calculadoraPrecios = calculadoraPrecios;
         this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
         this.ensambladorDTODescuento = ensambladorDTODescuento;
     }
@@ -33,9 +40,10 @@ public class EnsambladorDTOServicio {
         }
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(servicio.getImpuesto());
         DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(servicio.getDescuento());
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(servicio, fecha);
         return new ServicioDTO(
-                servicio.getCodigo(), servicio.getNombre(), servicio.getPrecioBase(),
-                servicio.getValorVenta(fecha), servicio.isActivo(), datosImpuesto, datosDescuento
+                servicio.getCodigo(), servicio.getNombre(), servicio.getPrecioBase(), valorVenta,
+                servicio.isActivo(), datosImpuesto, datosDescuento
         );
     }
 

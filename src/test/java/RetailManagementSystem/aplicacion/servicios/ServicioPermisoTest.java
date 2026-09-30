@@ -1,5 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioPermiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioPermiso;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;

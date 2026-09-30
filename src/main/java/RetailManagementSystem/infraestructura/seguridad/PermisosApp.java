@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.seguridad;
 
-import RetailManagementSystem.aplicacion.servicios.ServicioPermiso;
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioPermiso;
 import RetailManagementSystem.infraestructura.inyeccion.ContenedorDependencias;
 
 import java.util.List;

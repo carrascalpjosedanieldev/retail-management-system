@@ -3,6 +3,7 @@ package RetailManagementSystem.aplicacion.servicios;
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.PoliticaDeBloqueoDTO;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioConfiguraciones;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ConfiguracionDelsistemaNoEncontradaException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ValorConfiguracionNoEncontradaException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;

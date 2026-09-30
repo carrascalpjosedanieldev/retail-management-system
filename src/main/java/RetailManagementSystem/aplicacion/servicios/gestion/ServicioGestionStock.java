@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.servicios;
+package RetailManagementSystem.aplicacion.servicios.gestion;
 
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;

@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.servicios;
+package RetailManagementSystem.aplicacion.servicios.ventas;
 
 import RetailManagementSystem.aplicacion.dto.consultas.ReporteRecaudoDTO;
 import RetailManagementSystem.aplicacion.dto.consultas.ResumenVentaDiaDTO;

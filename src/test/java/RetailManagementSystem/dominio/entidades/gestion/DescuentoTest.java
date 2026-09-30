@@ -65,7 +65,7 @@ public class DescuentoTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "0, 0.00", "33.33333, 33.33", "100, 100.00" })
+    @CsvSource({ "0, 0.00", "33.333333, 33.333333", "100, 100.00" })
     void deberiaPermitirPorcentajesValidosYLimites(String porcentajeEntrada, String porcentajeSalida){
         //ARRANGE
         BigDecimal entrada = new BigDecimal(porcentajeEntrada);

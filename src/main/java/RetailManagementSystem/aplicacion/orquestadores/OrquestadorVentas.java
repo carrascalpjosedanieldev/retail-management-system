@@ -5,8 +5,10 @@ import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.VistaPreviaCarritoDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOCarrito;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOFactura;
-import RetailManagementSystem.aplicacion.servicios.ServicioCarrito;
-import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
+import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
+import RetailManagementSystem.aplicacion.servicios.ventas.ServicioCarrito;
+import RetailManagementSystem.aplicacion.servicios.ventas.ServicioFacturas;
+import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
 import RetailManagementSystem.dominio.entidades.ventas.*;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CarritoVacioException;
@@ -22,18 +24,24 @@ public class OrquestadorVentas {
 
     //ATRIBUTOS;
 
+    private final CalculadoraPrecios calculadoraPrecios;
+
     private final ServicioFacturas servicioFacturas;
+
     private final ServicioCarrito servicioCarrito;
 
     private final EnsambladorDTOFactura ensambladorDTOFactura;
+
     private final EnsambladorDTOCarrito ensambladorDTOCarrito;
 
     //CONSTRUCTOR:
 
     public OrquestadorVentas(
-            ServicioFacturas servicioFacturas, ServicioCarrito servicioCarrito,
-            EnsambladorDTOFactura ensambladorDTOFactura, EnsambladorDTOCarrito ensambladorDTOCarrito
+            CalculadoraPrecios calculadoraPrecios, ServicioFacturas servicioFacturas,
+            ServicioCarrito servicioCarrito, EnsambladorDTOFactura ensambladorDTOFactura,
+            EnsambladorDTOCarrito ensambladorDTOCarrito
     ) {
+        this.calculadoraPrecios = calculadoraPrecios;
         this.servicioFacturas = servicioFacturas;
         this.servicioCarrito = servicioCarrito;
         this.ensambladorDTOFactura = ensambladorDTOFactura;
@@ -106,12 +114,13 @@ public class OrquestadorVentas {
         }
         List<ItemVendido> itemsProcesadosConExito = new ArrayList<>();
         for (ItemCarrito item:carrito.getItems().values()){
-            BigDecimal porcentajeImpuesto = item.getItemFacturable().getImpuesto().isActivo() ?
+            ItemFacturable itemFacturable = item.getItemFacturable();
+            BigDecimal porcentajeImpuesto = itemFacturable.getImpuesto().isActivo() ?
                     item.getItemFacturable().getImpuesto().getPorcentaje() : BigDecimal.ZERO;
+            BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(itemFacturable, fecha);
             ItemVendido itemVendido = ItemVendido.crearNuevo(
-                    item.getItemFacturable().getTipoItem(), item.getItemFacturable().getCodigo(),
-                    item.getItemFacturable().getNombre(), item.getCantidad(),
-                    item.getItemFacturable().getValorVenta(fecha), porcentajeImpuesto
+                    itemFacturable.getTipoItem(), itemFacturable.getCodigo(), itemFacturable.getNombre(),
+                    item.getCantidad(), valorVenta, porcentajeImpuesto
             );
             itemsProcesadosConExito.add(itemVendido);
         }

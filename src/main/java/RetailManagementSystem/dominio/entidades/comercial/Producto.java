@@ -8,7 +8,6 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficie
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.PRODUCTO;
@@ -77,11 +76,6 @@ public abstract class Producto implements ItemFacturable, Stockeable {
 
     public int getStock() {
         return stock;
-    }
-
-    @Override
-    public BigDecimal getValorVenta(LocalDate fecha) {
-        return calcularValorVenta(fecha);
     }
 
     @Override
@@ -211,41 +205,9 @@ public abstract class Producto implements ItemFacturable, Stockeable {
         return valor.divide(CIEN, 6, RoundingMode.HALF_UP);
     }
 
-    protected BigDecimal getPrecioBase(){
+    public BigDecimal getPrecioBase(){
         return getValorCompra().multiply(
                 (BigDecimal.ONE).add(dividirEntreCien(getPorcentajeGanancia()))
-        )
-        .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public BigDecimal calcularDescuento(BigDecimal precioBase) {
-        BigDecimal porcentajeDescuento = this.descuento.isActivo() ? this.descuento.getPorcentaje() : BigDecimal.ZERO;
-        return precioBase.multiply(
-                dividirEntreCien(porcentajeDescuento)
-        )
-        .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto) {
-        BigDecimal porcentajeImpuesto = this.impuesto.isActivo() ? this.impuesto.getPorcentaje() : BigDecimal.ZERO;
-        return precioFinalSinImpuesto.multiply(
-                dividirEntreCien(porcentajeImpuesto)
-        )
-        .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
-        BigDecimal precioBase = getPrecioBase();
-        return precioBase.subtract(calcularDescuento(precioBase));
-    }
-
-    protected BigDecimal calcularValorVenta(LocalDate fecha){
-        BigDecimal valorFinalSinImpuesto = getValorFinalSinImpuesto(fecha);
-        return valorFinalSinImpuesto.add(
-                calcularImpuesto(valorFinalSinImpuesto)
         )
         .setScale(6, RoundingMode.HALF_UP);
     }

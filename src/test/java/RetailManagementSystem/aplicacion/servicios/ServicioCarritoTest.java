@@ -1,5 +1,8 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioProductos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioServicios;
+import RetailManagementSystem.aplicacion.servicios.ventas.ServicioCarrito;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;

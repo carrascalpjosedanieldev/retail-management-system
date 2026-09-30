@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.servicios;
+package RetailManagementSystem.aplicacion.servicios.gestion;
 
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioImpuestos;

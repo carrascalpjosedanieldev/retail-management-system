@@ -45,14 +45,14 @@ public class Carrito {
 
     //MÉTODOS:
 
-    public void agregarItem(ItemFacturable item, int cantidad){
+    public void agregarItem(ItemFacturable item, BigDecimal valorVentaUnidad, int cantidad){
         validarCantidad(cantidad);
         this.itemsCarrito.compute(item.getCodigo(), (codigo, existente) -> {
             if (existente != null) {
                 existente.aumentarCantidad(cantidad);
                 return existente;
             }
-            return ItemCarrito.crearNuevo(item, cantidad);
+            return ItemCarrito.crearNuevo(item, valorVentaUnidad, cantidad);
         });
     }
 
@@ -74,7 +74,7 @@ public class Carrito {
     public BigDecimal calcularTotal(LocalDate fecha) {
         BigDecimal total = BigDecimal.ZERO;
         for(ItemCarrito item : this.getItems().values()) {
-            BigDecimal valorItem = item.calcularSubtotal(fecha);
+            BigDecimal valorItem = item.calcularSubtotal();
             total = total.add(valorItem) ;
         }
         return total.setScale(6, RoundingMode.HALF_UP);

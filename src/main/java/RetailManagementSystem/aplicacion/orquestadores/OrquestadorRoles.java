@@ -4,7 +4,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTORol;
-import RetailManagementSystem.aplicacion.servicios.ServicioRol;
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioRol;
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;

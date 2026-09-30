@@ -3,7 +3,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTODescuento;
-import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioDescuentos;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;

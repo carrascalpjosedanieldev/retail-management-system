@@ -405,153 +405,153 @@ public class ServicioTest {
 
     //TEST CÁLCULOS
 
-    @ParameterizedTest
-    @CsvSource({
-            "11.592562, 36.21, 4.197667",
-            "16000, 50, 8000.000000",
-            "122345, 20, 24469.000000",
-            "32500, 0, 0.000000"
-    })
-    void deberiaCalcularElDescuentoCorrectamente(
-            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
-    ) {
-        //ARRANGE
-        Descuento descuento = crearDescuentoConPorcentaje(porcentajeSt);
-        BigDecimal precioBase = new BigDecimal(precioBaseSt);
-        Servicio servicio = Servicio.crearNuevo(
-                NOMBRE_POR_DEFECTO,
-                precioBase,
-                impuestoActivo,
-                descuento
-        );
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = servicio.calcularDescuento(precioBase);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//            "11.592562, 36.21, 4.197667",
+//            "16000, 50, 8000.000000",
+//            "122345, 20, 24469.000000",
+//            "32500, 0, 0.000000"
+//    })
+//    void deberiaCalcularElDescuentoCorrectamente(
+//            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
+//    ) {
+//        //ARRANGE
+//        Descuento descuento = crearDescuentoConPorcentaje(porcentajeSt);
+//        BigDecimal precioBase = new BigDecimal(precioBaseSt);
+//        Servicio servicio = Servicio.crearNuevo(
+//                NOMBRE_POR_DEFECTO,
+//                precioBase,
+//                impuestoActivo,
+//                descuento
+//        );
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = servicio.calcularDescuento(precioBase);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @Test
-    void deberiaCalcularElDescuentoAunqueEsteInactivo(){
-        //ARRANGE
-        String codigo = UUID.randomUUID().toString();
-        Descuento descuento = Descuento.crearNuevo("Inactivo", new BigDecimal("25"), false);
-        BigDecimal precioBase = new BigDecimal("15000");
-        Servicio servicio = Servicio.reconstruirDesdeBD(
-                codigo,
-                NOMBRE_POR_DEFECTO,
-                precioBase,
-                impuestoActivo,
-                descuento,
-                true
-        );
-        BigDecimal resultadoEsperado = new BigDecimal("0.000000");
-        //ACT
-        BigDecimal resultado = servicio.calcularDescuento(precioBase);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @Test
+//    void deberiaCalcularElDescuentoAunqueEsteInactivo(){
+//        //ARRANGE
+//        String codigo = UUID.randomUUID().toString();
+//        Descuento descuento = Descuento.crearNuevo("Inactivo", new BigDecimal("25"), false);
+//        BigDecimal precioBase = new BigDecimal("15000");
+//        Servicio servicio = Servicio.reconstruirDesdeBD(
+//                codigo,
+//                NOMBRE_POR_DEFECTO,
+//                precioBase,
+//                impuestoActivo,
+//                descuento,
+//                true
+//        );
+//        BigDecimal resultadoEsperado = new BigDecimal("0.000000");
+//        //ACT
+//        BigDecimal resultado = servicio.calcularDescuento(precioBase);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @ParameterizedTest
-    @CsvSource({
-            "45325.50, 19, 8611.845000",
-            "122345, 8, 9787.600000",
-            "32000, 0, 0.000000"
-    })
-    void deberiaCalcularElImpuestoCorrectamente(
-            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
-    ) {
-        //ARRANGE
-        Impuesto impuesto = crearImpuestoConPorcentaje(porcentajeSt);
-        BigDecimal precioBase = new BigDecimal(precioBaseSt);
-        Servicio servicio = Servicio.crearNuevo(
-                NOMBRE_POR_DEFECTO,
-                precioBase,
-                impuesto,
-                descuentoActivo
-        );
-        BigDecimal precioFinalSinImpuesto = new BigDecimal(precioBaseSt);
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = servicio.calcularImpuesto(precioFinalSinImpuesto);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//            "45325.50, 19, 8611.845000",
+//            "122345, 8, 9787.600000",
+//            "32000, 0, 0.000000"
+//    })
+//    void deberiaCalcularElImpuestoCorrectamente(
+//            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
+//    ) {
+//        //ARRANGE
+//        Impuesto impuesto = crearImpuestoConPorcentaje(porcentajeSt);
+//        BigDecimal precioBase = new BigDecimal(precioBaseSt);
+//        Servicio servicio = Servicio.crearNuevo(
+//                NOMBRE_POR_DEFECTO,
+//                precioBase,
+//                impuesto,
+//                descuentoActivo
+//        );
+//        BigDecimal precioFinalSinImpuesto = new BigDecimal(precioBaseSt);
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = servicio.calcularImpuesto(precioFinalSinImpuesto);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @Test
-    void deberiaCalcularElImpuestoAunqueEsteInactivo(){
-        //ARRANGE
-        String codigo = UUID.randomUUID().toString();
-        Impuesto impuesto = Impuesto.crearNuevo("Inactivo", new BigDecimal("25"), false);
-        BigDecimal precioBase = new BigDecimal("15000");
-        Servicio servicio = Servicio.reconstruirDesdeBD(
-                codigo,
-                NOMBRE_POR_DEFECTO,
-                precioBase,
-                impuesto,
-                descuentoActivo,
-                true
-        );
-        BigDecimal resultadoEsperado = new BigDecimal("0.000000");
-        //ACT
-        BigDecimal resultado = servicio.calcularImpuesto(precioBase);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @Test
+//    void deberiaCalcularElImpuestoAunqueEsteInactivo(){
+//        //ARRANGE
+//        String codigo = UUID.randomUUID().toString();
+//        Impuesto impuesto = Impuesto.crearNuevo("Inactivo", new BigDecimal("25"), false);
+//        BigDecimal precioBase = new BigDecimal("15000");
+//        Servicio servicio = Servicio.reconstruirDesdeBD(
+//                codigo,
+//                NOMBRE_POR_DEFECTO,
+//                precioBase,
+//                impuesto,
+//                descuentoActivo,
+//                true
+//        );
+//        BigDecimal resultadoEsperado = new BigDecimal("0.000000");
+//        //ACT
+//        BigDecimal resultado = servicio.calcularImpuesto(precioBase);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @ParameterizedTest
-    @CsvSource({
-          //precioBase      descuento    esperado        fecha
-            "1500000,       25.5,        1117500.000000, 2026-12-31",
-            "99900,         33.333333,   66600.033300,   2026-12-31",
-            "84033.613445,  10,          75630.252100,   2026-12-31"
-    })
-    void deberiaCalcularElValorFinalSinImpuestoCorrectamente(
-            String precioBaseSt, String descuentoSt, String resultadoEsperadoSt, LocalDate fecha
-    ) {
-        //ARRANGE
-        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
-        BigDecimal precioBase = new BigDecimal(precioBaseSt);
-        Servicio servicio = Servicio.crearNuevo(
-                NOMBRE_POR_DEFECTO,
-                precioBase,
-                impuestoActivo,
-                descuento
-        );
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = servicio.getValorFinalSinImpuesto(fecha);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//          //precioBase      descuento    esperado        fecha
+//            "1500000,       25.5,        1117500.000000, 2026-12-31",
+//            "99900,         33.333333,   66600.033300,   2026-12-31",
+//            "84033.613445,  10,          75630.252100,   2026-12-31"
+//    })
+//    void deberiaCalcularElValorFinalSinImpuestoCorrectamente(
+//            String precioBaseSt, String descuentoSt, String resultadoEsperadoSt, LocalDate fecha
+//    ) {
+//        //ARRANGE
+//        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
+//        BigDecimal precioBase = new BigDecimal(precioBaseSt);
+//        Servicio servicio = Servicio.crearNuevo(
+//                NOMBRE_POR_DEFECTO,
+//                precioBase,
+//                impuestoActivo,
+//                descuento
+//        );
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = servicio.getValorFinalSinImpuesto(fecha);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @ParameterizedTest
-    @CsvSource({
-          //precioBase       descuento   impuesto   esperado         fecha
-            "3500000,        17.55,      19,        3434042.500000,  2026-12-31",
-            "75546.218487,   0,          19,        89900.000000,    2026-12-31",
-            "3333.333344,    10,         5,         3150.000011,     2026-12-31",
-            "2999900,        5,          0,         2849905.000000,  2026-12-31"
-    })
-    void deberiaCalcularElValorVentaCorrectamente(
-            String precioBaseSt, String descuentoSt, String impuestoSt, String resultadoEsperadoSt, LocalDate fecha
-    ) {
-        //ARRANGE
-        Impuesto impuesto = crearImpuestoConPorcentaje(impuestoSt);
-        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
-        BigDecimal precioBase = new BigDecimal(precioBaseSt);
-        Servicio servicio = Servicio.crearNuevo(
-                NOMBRE_POR_DEFECTO,
-                precioBase,
-                impuesto,
-                descuento
-        );
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = servicio.getValorVenta(fecha);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//          //precioBase       descuento   impuesto   esperado         fecha
+//            "3500000,        17.55,      19,        3434042.500000,  2026-12-31",
+//            "75546.218487,   0,          19,        89900.000000,    2026-12-31",
+//            "3333.333344,    10,         5,         3150.000011,     2026-12-31",
+//            "2999900,        5,          0,         2849905.000000,  2026-12-31"
+//    })
+//    void deberiaCalcularElValorVentaCorrectamente(
+//            String precioBaseSt, String descuentoSt, String impuestoSt, String resultadoEsperadoSt, LocalDate fecha
+//    ) {
+//        //ARRANGE
+//        Impuesto impuesto = crearImpuestoConPorcentaje(impuestoSt);
+//        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
+//        BigDecimal precioBase = new BigDecimal(precioBaseSt);
+//        Servicio servicio = Servicio.crearNuevo(
+//                NOMBRE_POR_DEFECTO,
+//                precioBase,
+//                impuesto,
+//                descuento
+//        );
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = servicio.getValorVenta(fecha);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
 }//===================================================================================================================//
 

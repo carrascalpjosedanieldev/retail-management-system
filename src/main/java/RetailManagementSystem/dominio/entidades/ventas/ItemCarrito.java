@@ -14,6 +14,8 @@ public class ItemCarrito {
 
     private final ItemFacturable itemFacturable;
 
+    private final BigDecimal valorVentaUnidad;
+
     private int cantidad;
 
     //GETTERS Y SETTERS:
@@ -22,13 +24,17 @@ public class ItemCarrito {
         return itemFacturable;
     }
 
+    public BigDecimal getValorVentaUnidad() {
+        return valorVentaUnidad;
+    }
+
     public int getCantidad() {
         return cantidad;
     }
 
     //CONSTRUCTORES:
 
-    private ItemCarrito(ItemFacturable itemFacturable, int cantidad) {
+    private ItemCarrito(ItemFacturable itemFacturable, BigDecimal valorVentaUnidad, int cantidad) {
         if (itemFacturable == null){
             throw new IllegalArgumentException("Debe Haber un Item Valido para Agregar al Carrito");
         }
@@ -37,11 +43,12 @@ public class ItemCarrito {
         }
         this.itemFacturable = itemFacturable;
         verificarStockDisponible(cantidad);
+        this.valorVentaUnidad = valorVentaUnidad.setScale(6, RoundingMode.HALF_UP);
         this.cantidad = cantidad;
     }
 
-    public static ItemCarrito crearNuevo(ItemFacturable itemFacturable, int cantidad){
-        return new ItemCarrito(itemFacturable, cantidad);
+    public static ItemCarrito crearNuevo(ItemFacturable itemFacturable, BigDecimal valorVentaUnidad, int cantidad){
+        return new ItemCarrito(itemFacturable, valorVentaUnidad, cantidad);
     }
 
     //VALIDACIONES:
@@ -74,10 +81,9 @@ public class ItemCarrito {
         this.cantidad = cantidadTotal;
     }
 
-    public BigDecimal calcularSubtotal(LocalDate fecha) {
-        BigDecimal valorProducto = this.itemFacturable.getValorVenta(fecha);
-        valorProducto = valorProducto.multiply(new BigDecimal(this.cantidad));
-        return valorProducto.setScale(6, RoundingMode.HALF_UP);
+    public BigDecimal calcularSubtotal() {
+        return this.valorVentaUnidad.multiply(new BigDecimal(this.cantidad))
+                .setScale(6, RoundingMode.HALF_UP);
     }
 
 }//===================================================================================================================//

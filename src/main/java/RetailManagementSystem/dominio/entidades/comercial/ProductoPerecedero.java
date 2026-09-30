@@ -113,7 +113,7 @@ public final class ProductoPerecedero extends Producto{
         }
     }
 
-    private BigDecimal calcularDescuentoPolitica(BigDecimal precioBase, LocalDate fechaReferencia){
+    public BigDecimal calcularDescuentoPolitica(BigDecimal precioBase, LocalDate fechaReferencia){
         PoliticaVencimiento pol = getPoliticaVencimiento();
         long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, getFechaVencimiento());
         if (diasRestantes >= 0 && diasRestantes <= pol.getDiasUmbral()) {
@@ -124,17 +124,6 @@ public final class ProductoPerecedero extends Producto{
                     .setScale(6, RoundingMode.HALF_UP);
         }
         return BigDecimal.ZERO;
-    }
-
-    @Override
-    public BigDecimal getValorFinalSinImpuesto(LocalDate fechaReferencia) {
-        BigDecimal precioBase = getPrecioBase();
-        return precioBase.subtract(
-                calcularDescuentoPolitica(precioBase, fechaReferencia)
-        ).subtract(
-                calcularDescuento(precioBase)
-        )
-        .setScale(6, RoundingMode.HALF_UP);
     }
 
 }//===================================================================================================================//

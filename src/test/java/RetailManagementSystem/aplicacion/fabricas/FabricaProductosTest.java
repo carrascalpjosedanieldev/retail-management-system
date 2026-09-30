@@ -1,8 +1,8 @@
 package RetailManagementSystem.aplicacion.fabricas;
 
-import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
-import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
-import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioDescuentos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioImpuestos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioPoliticaVencimiento;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;

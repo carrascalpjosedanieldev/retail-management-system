@@ -5,7 +5,7 @@ import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaD
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
-import RetailManagementSystem.aplicacion.servicios.ServicioProductos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioProductos;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 

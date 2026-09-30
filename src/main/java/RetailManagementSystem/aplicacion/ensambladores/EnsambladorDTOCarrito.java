@@ -1,5 +1,6 @@
 package RetailManagementSystem.aplicacion.ensambladores;
 
+import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.ventas.Carrito;
 import RetailManagementSystem.dominio.entidades.ventas.ItemCarrito;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
@@ -13,22 +14,30 @@ import java.util.List;
 
 public class EnsambladorDTOCarrito {
 
+    //ATRIBUTOS:
+
+    private final CalculadoraPrecios calculadoraPrecios;
+
     //CONSTRUCTOR:
 
-    public EnsambladorDTOCarrito() { }
+    public EnsambladorDTOCarrito(CalculadoraPrecios calculadoraPrecios) {
+        this.calculadoraPrecios = calculadoraPrecios;
+    }
 
     //MÉTODOS:
 
     private ItemCarritoDTO ensamblarItemCarritoDTO(ItemCarrito itemCarrito, LocalDate fecha){
         ItemFacturable item = itemCarrito.getItemFacturable();
-        BigDecimal impuesto = item.calcularImpuesto(item.getValorFinalSinImpuesto(fecha));
+        BigDecimal valorFinalSinImpuesto = this.calculadoraPrecios.calcularValorFinalSinImpuesto(item, fecha);
+        BigDecimal impuesto = this.calculadoraPrecios.calcularImpuesto(valorFinalSinImpuesto, item.getImpuesto());
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, fecha);
         return new ItemCarritoDTO(
                 item.getCodigo(),
                 item.getTipoItem(),
                 item.getNombre(),
                 itemCarrito.getCantidad(),
-                item.getValorVenta(fecha),
-                itemCarrito.calcularSubtotal(fecha),
+                valorVenta,
+                itemCarrito.calcularSubtotal(),
                 impuesto
         );
     }

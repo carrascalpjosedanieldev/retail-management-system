@@ -1,5 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioDescuentos;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.DescuentoNoEncontradoException;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioDescuentos;

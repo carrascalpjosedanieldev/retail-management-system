@@ -438,98 +438,98 @@ public abstract class ProductoBaseTest<T extends Producto> {
         assertEquals(precioBaseEsperado, precioBase);
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "11.592562, 36.21, 4.197667",
-            "16000, 50, 8000.000000",
-            "122345, 20, 24469.000000",
-            "32500, 0, 0.000000"
-    })
-    void deberiaCalcularElDescuentoCorrectamente(
-            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
-    ) {
-        //ARRANGE
-        Descuento descuento = crearDescuentoConPorcentaje(porcentajeSt);
-        productoPrueba.cambiarDescuento(descuento);
-        BigDecimal precioBase = new BigDecimal(precioBaseSt);
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = productoPrueba.calcularDescuento(precioBase);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//            "11.592562, 36.21, 4.197667",
+//            "16000, 50, 8000.000000",
+//            "122345, 20, 24469.000000",
+//            "32500, 0, 0.000000"
+//    })
+//    void deberiaCalcularElDescuentoCorrectamente(
+//            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
+//    ) {
+//        //ARRANGE
+//        Descuento descuento = crearDescuentoConPorcentaje(porcentajeSt);
+//        productoPrueba.cambiarDescuento(descuento);
+//        BigDecimal precioBase = new BigDecimal(precioBaseSt);
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = productoPrueba.calcularDescuento(precioBase);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @ParameterizedTest
-    @CsvSource({
-            "45325.50, 19, 8611.845000",
-            "122345, 8, 9787.600000",
-            "32000, 0, 0.000000"
-    })
-    void deberiaCalcularElImpuestoCorrectamente(
-            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
-    ) {
-        //ARRANGE
-        Impuesto impuesto = crearImpuestoConPorcentaje(porcentajeSt);
-        productoPrueba.cambiarImpuesto(impuesto);
-        BigDecimal precioFinalSinImpuesto = new BigDecimal(precioBaseSt);
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = productoPrueba.calcularImpuesto(precioFinalSinImpuesto);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//            "45325.50, 19, 8611.845000",
+//            "122345, 8, 9787.600000",
+//            "32000, 0, 0.000000"
+//    })
+//    void deberiaCalcularElImpuestoCorrectamente(
+//            String precioBaseSt, String porcentajeSt, String resultadoEsperadoSt
+//    ) {
+//        //ARRANGE
+//        Impuesto impuesto = crearImpuestoConPorcentaje(porcentajeSt);
+//        productoPrueba.cambiarImpuesto(impuesto);
+//        BigDecimal precioFinalSinImpuesto = new BigDecimal(precioBaseSt);
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = productoPrueba.calcularImpuesto(precioFinalSinImpuesto);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @ParameterizedTest
-    @CsvSource({
-            // valorCompra, ganancia, descuento, esperado,      fecha
-            "85000,         30,       10,        99450.000000,   2026-12-31",
-            "125000,        20,       0,         150000.000000,  2026-10-15",
-            "67500,         25,       5,         80156.250000,   2026-11-20"
-    })
-    void deberiaCalcularElValorFinalSinImpuestoCorrectamente(
-            String valorCompraSt, String porcentajeGananciaSt, String descuentoSt, String resultadoEsperadoSt,
-            LocalDate fecha
-    ) {
-        //ARRANGE
-        BigDecimal valorCompra = new BigDecimal(valorCompraSt);
-        BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
-        productoPrueba.cambiarValorCompra(valorCompra);
-        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
-        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
-        productoPrueba.cambiarDescuento(descuento);
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fecha);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//            // valorCompra, ganancia, descuento, esperado,      fecha
+//            "85000,         30,       10,        99450.000000,   2026-12-31",
+//            "125000,        20,       0,         150000.000000,  2026-10-15",
+//            "67500,         25,       5,         80156.250000,   2026-11-20"
+//    })
+//    void deberiaCalcularElValorFinalSinImpuestoCorrectamente(
+//            String valorCompraSt, String porcentajeGananciaSt, String descuentoSt, String resultadoEsperadoSt,
+//            LocalDate fecha
+//    ) {
+//        //ARRANGE
+//        BigDecimal valorCompra = new BigDecimal(valorCompraSt);
+//        BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
+//        productoPrueba.cambiarValorCompra(valorCompra);
+//        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
+//        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
+//        productoPrueba.cambiarDescuento(descuento);
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fecha);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
-    @ParameterizedTest
-    @CsvSource({
-            // valorCompra,  ganancia,  descuento,  impuesto,  esperado,        fecha
-            "85000,          30,        10,         19,        118345.500000,   2026-12-31",
-            "125000,         20,        0,          19,        178500.000000,   2026-10-15",
-            "67500,          25,        5,          8,         86568.750000,    2026-11-20"
-    })
-    void deberiaCalcularElValorVentaCorrectamente(
-            String valorCompraSt, String porcentajeGananciaSt, String descuentoSt, String impuestoSt,
-            String resultadoEsperadoSt, LocalDate fecha
-    ) {
-        //ARRANGE
-        BigDecimal valorCompra = new BigDecimal(valorCompraSt);
-        BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
-        productoPrueba.cambiarValorCompra(valorCompra);
-        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
-        Impuesto impuesto = crearImpuestoConPorcentaje(impuestoSt);
-        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
-        productoPrueba.cambiarImpuesto(impuesto);
-        productoPrueba.cambiarDescuento(descuento);
-        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-        //ACT
-        BigDecimal resultado = productoPrueba.calcularValorVenta(fecha);
-        //ASSERT
-        assertEquals(resultadoEsperado, resultado);
-    }
+//    @ParameterizedTest
+//    @CsvSource({
+//            // valorCompra,  ganancia,  descuento,  impuesto,  esperado,        fecha
+//            "85000,          30,        10,         19,        118345.500000,   2026-12-31",
+//            "125000,         20,        0,          19,        178500.000000,   2026-10-15",
+//            "67500,          25,        5,          8,         86568.750000,    2026-11-20"
+//    })
+//    void deberiaCalcularElValorVentaCorrectamente(
+//            String valorCompraSt, String porcentajeGananciaSt, String descuentoSt, String impuestoSt,
+//            String resultadoEsperadoSt, LocalDate fecha
+//    ) {
+//        //ARRANGE
+//        BigDecimal valorCompra = new BigDecimal(valorCompraSt);
+//        BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
+//        productoPrueba.cambiarValorCompra(valorCompra);
+//        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
+//        Impuesto impuesto = crearImpuestoConPorcentaje(impuestoSt);
+//        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
+//        productoPrueba.cambiarImpuesto(impuesto);
+//        productoPrueba.cambiarDescuento(descuento);
+//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+//        //ACT
+//        BigDecimal resultado = productoPrueba.calcularValorVenta(fecha);
+//        //ASSERT
+//        assertEquals(resultadoEsperado, resultado);
+//    }
 
 }//===================================================================================================================//
 

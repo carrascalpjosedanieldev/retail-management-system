@@ -2,6 +2,7 @@ package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.aplicacion.dto.consultas.ReporteRecaudoDTO;
 import RetailManagementSystem.aplicacion.dto.consultas.ResumenVentaDiaDTO;
+import RetailManagementSystem.aplicacion.servicios.ventas.ServicioFacturas;
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;
 import RetailManagementSystem.dominio.enums.TipoItem;

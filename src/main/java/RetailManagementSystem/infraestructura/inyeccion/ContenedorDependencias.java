@@ -5,8 +5,23 @@ import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.*;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
-import RetailManagementSystem.aplicacion.servicios.*;
+import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
+import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaCalculoPrecios;
+import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaProductoPerecedero;
+import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaProductoRopa;
+import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaServicio;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioProductos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioServicios;
+import RetailManagementSystem.aplicacion.servicios.gestion.*;
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioLogin;
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioPermiso;
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioRol;
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioUsuario;
+import RetailManagementSystem.aplicacion.servicios.ventas.ServicioCarrito;
+import RetailManagementSystem.aplicacion.servicios.ventas.ServicioFacturas;
+import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.enums.TipoProducto;
+import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.puertos.repositorios.*;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguracionImpl;
@@ -41,9 +56,12 @@ public class ContenedorDependencias {
 
         //UTILIDADES:
 
+    private static MatematicaFinanciera matematicaFinanciera;
+    private static CalculadoraPrecios calculadoraPrecios;
     private static CodificadorContrasenas codificadorContrasenas;
     private static ProveedorConfiguracion proveedorConfiguracion;
     private static Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador;
+    private static Map<Class<? extends ItemFacturable>, EstrategiaCalculoPrecios<?>> estrategiasCalculoPrecios;
     private static GestorTransaccional gestorTransaccional;
 
         //MAPEADORES:
@@ -119,29 +137,34 @@ public class ContenedorDependencias {
     public static void inicializar() {
         if (inicializado) return;
 
+        //INSTANCIACIÓN DE UTILIDADES FINANCIERAS:
+
+        matematicaFinanciera = new MatematicaFinanciera();
+
+        estrategiasCalculoPrecios = new HashMap<>();
+        estrategiasCalculoPrecios.put(ProductoRopa.class, new EstrategiaProductoRopa(matematicaFinanciera));
+        estrategiasCalculoPrecios.put(ProductoPerecedero.class, new EstrategiaProductoPerecedero(matematicaFinanciera));
+        estrategiasCalculoPrecios.put(Servicio.class, new EstrategiaServicio(matematicaFinanciera));
+
+        calculadoraPrecios = new CalculadoraPrecios(matematicaFinanciera, estrategiasCalculoPrecios);
+
         //INSTANCIACIÓN DE ENSAMBLADORES:
 
-        ensambladorDTOCarrito = new EnsambladorDTOCarrito();
+        ensambladorDTOCarrito = new EnsambladorDTOCarrito(calculadoraPrecios);
         ensambladorDTODescuento = new EnsambladorDTODescuento();
         ensambladorDTOFactura = new EnsambladorDTOFactura();
         ensambladorDTOImpuesto = new EnsambladorDTOImpuesto();
         ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
         ensambladorDTOProducto = new EnsambladorDTOProducto(
-                ensambladorDTOImpuesto, ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento
+                calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento
         );
         ensambladorDTOInventario = new EnsambladorDTOInventario();
         ensambladorDTOServicio = new EnsambladorDTOServicio(
-                ensambladorDTOImpuesto, ensambladorDTODescuento
+                calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento
         );
         ensambladorDTOPermiso = new EnsambladorDTOPermiso();
         ensambladorDTORol = new EnsambladorDTORol(ensambladorDTOPermiso);
         ensambladorDTOUsuario = new EnsambladorDTOUsuario(ensambladorDTORol);
-
-        //INSTANCIACIÓN DE UTILIDADES:
-
-        codificadorContrasenas = new Argon2CodificadorAdapter();
-
-        gestorTransaccional = new GestorTransaccionalMySQL();
 
         //INSTANTIATION DE MAPEADORES:
 
@@ -155,7 +178,9 @@ public class ContenedorDependencias {
         mapeadorServicio = new MapeadorServicio();
         mapeadorUsuario = new MapeadorUsuario();
 
-        //INSTANTIATION DE ESTRATEGIAS:
+        //INSTANTIATION DE ESTRATEGIAS Y GESTOR TRANSACCIONAL:
+
+        gestorTransaccional = new GestorTransaccionalMySQL();
 
         despachador = new HashMap<>();
         despachador.put(TipoProducto.ROPA, new EstrategiaPersistenciaRopa());
@@ -177,9 +202,11 @@ public class ContenedorDependencias {
         repositorioRol = new RepositorioRolMySQL(mapeadorRol, mapeadorPermisos);
         repositorioUsuario = new RepositorioUsuarioMySQL(mapeadorUsuario, mapeadorRol, mapeadorPermisos);
 
-        //PROOVEDOR:
+        //PROOVEDOR Y CODIFICADOR:
 
         proveedorConfiguracion = new ProveedorConfiguracionImpl(gestorTransaccional, repositorioConfiguracion);
+
+        codificadorContrasenas = new Argon2CodificadorAdapter();
 
         //INSTANCIACIÓN DE SERVICIOS:
 
@@ -193,7 +220,7 @@ public class ContenedorDependencias {
         servicioServicios = new ServicioServicios(
                 repositorioImpuestos, repositorioDescuentos, repositorioServicio, gestorTransaccional
         );
-        servicioCarrito = new ServicioCarrito(servicioProductos, servicioServicios);
+        servicioCarrito = new ServicioCarrito(calculadoraPrecios, servicioProductos, servicioServicios);
         servicioConfiguraciones = new ServicioConfiguraciones(
                 repositorioConfiguracion, proveedorConfiguracion, gestorTransaccional
         );
@@ -237,7 +264,7 @@ public class ContenedorDependencias {
         );
         orquestadorUsuarios = new OrquestadorUsuarios(servicioUsuario, ensambladorDTOUsuario);
         orquestadorVentas = new OrquestadorVentas(
-                servicioFacturas, servicioCarrito, ensambladorDTOFactura, ensambladorDTOCarrito
+                calculadoraPrecios, servicioFacturas, servicioCarrito, ensambladorDTOFactura, ensambladorDTOCarrito
         );
 
         inicializado = true;

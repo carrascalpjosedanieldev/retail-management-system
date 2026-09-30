@@ -1,5 +1,8 @@
-package RetailManagementSystem.aplicacion.servicios;
+package RetailManagementSystem.aplicacion.servicios.ventas;
 
+import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioProductos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioServicios;
 import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.ventas.Carrito;
@@ -8,11 +11,14 @@ import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ServicioCarrito {
 
     //ATRIBUTOS:
+
+    private final CalculadoraPrecios calculadoraPrecios;
 
     private final ServicioProductos servicioProductos;
 
@@ -20,7 +26,11 @@ public class ServicioCarrito {
 
     //CONSTRUCTOR:
 
-    public ServicioCarrito(ServicioProductos servicioProductos, ServicioServicios servicioServicios) {
+    public ServicioCarrito(
+            CalculadoraPrecios calculadoraPrecios, ServicioProductos servicioProductos,
+            ServicioServicios servicioServicios
+    ) {
+        this.calculadoraPrecios = calculadoraPrecios;
         this.servicioProductos = servicioProductos;
         this.servicioServicios = servicioServicios;
     }
@@ -29,7 +39,8 @@ public class ServicioCarrito {
 
     public void agregarItemNuevoAlCarrito(Carrito carrito, String codigo, int cantidad, LocalDate fecha) {
         ItemFacturable item = resolverItemPorCodigo(codigo, fecha);
-        carrito.agregarItem(item, cantidad);
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, fecha);
+        carrito.agregarItem(item, valorVenta, cantidad);
     }
 
     private ItemFacturable resolverItemPorCodigo(String codigo, LocalDate fecha) {
@@ -58,7 +69,8 @@ public class ServicioCarrito {
             Carrito carrito, String codigo, int cantidad, TipoItem tipoItem, LocalDate fecha
     ){
         ItemFacturable item = obtenerItemValido(codigo, tipoItem, fecha);
-        carrito.agregarItem(item, cantidad);
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, fecha);
+        carrito.agregarItem(item, valorVenta, cantidad);
     }
 
     private ItemFacturable obtenerItemValido(String codigo, TipoItem tipo, LocalDate fecha) {

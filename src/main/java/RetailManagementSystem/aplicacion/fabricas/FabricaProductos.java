@@ -5,9 +5,9 @@ import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.Talla;
-import RetailManagementSystem.aplicacion.servicios.ServicioDescuentos;
-import RetailManagementSystem.aplicacion.servicios.ServicioImpuestos;
-import RetailManagementSystem.aplicacion.servicios.ServicioPoliticaVencimiento;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioDescuentos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioImpuestos;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioPoliticaVencimiento;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

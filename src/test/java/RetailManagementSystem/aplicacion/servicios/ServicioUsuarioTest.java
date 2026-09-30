@@ -1,6 +1,7 @@
 package RetailManagementSystem.aplicacion.servicios;
 
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioUsuario;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.excepciones.conflictos.EmailDuplicadoException;

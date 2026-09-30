@@ -2,7 +2,7 @@ package RetailManagementSystem.vista.controladores.menuPrincipal;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.servicios.ServicioConfiguraciones;
+import RetailManagementSystem.aplicacion.servicios.gestion.ServicioConfiguraciones;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;

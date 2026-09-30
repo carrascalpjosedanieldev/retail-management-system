@@ -6,14 +6,11 @@ import RetailManagementSystem.dominio.enums.TipoItem;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.SERVICIO;
 
 public class Servicio implements ItemFacturable {
-
-    private static final BigDecimal CIEN = new BigDecimal("100");
 
     //ATRIBUTOS:
 
@@ -56,6 +53,7 @@ public class Servicio implements ItemFacturable {
         this.precioBase = precioBase.setScale(6, RoundingMode.HALF_UP);
     }
 
+    @Override
     public Impuesto getImpuesto(){
         return this.impuesto;
     }
@@ -155,49 +153,6 @@ public class Servicio implements ItemFacturable {
     }
 
     //MÉTODOS:
-
-    private BigDecimal dividirEntreCien(BigDecimal valor){
-        return valor.divide(CIEN, 6, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public BigDecimal calcularImpuesto(BigDecimal precioFinalSinImpuesto) {
-        BigDecimal porcentajeImpuesto = this.impuesto.isActivo() ? this.impuesto.getPorcentaje() : BigDecimal.ZERO;
-        return precioFinalSinImpuesto.multiply(
-                dividirEntreCien(porcentajeImpuesto)
-        )
-        .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public BigDecimal calcularDescuento(BigDecimal precioBase) {
-        BigDecimal porcentajeDescuento = this.descuento.isActivo() ? this.descuento.getPorcentaje() : BigDecimal.ZERO;
-        return precioBase.multiply(
-                dividirEntreCien(porcentajeDescuento)
-        )
-        .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public BigDecimal getValorFinalSinImpuesto(LocalDate fecha) {
-        return getPrecioBase().subtract(
-                calcularDescuento(
-                        getPrecioBase()
-                )
-        )
-        .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    @Override
-    public BigDecimal getValorVenta(LocalDate fecha) {
-        BigDecimal precioFinalSinImpuesto = getValorFinalSinImpuesto(fecha);
-        return precioFinalSinImpuesto.add(
-                calcularImpuesto(precioFinalSinImpuesto)
-        )
-        .setScale(6, RoundingMode.HALF_UP);
-    }
-
-    //MÉTODOS MODIFICAR SERVICIO:
 
     public void cambiarNombreServicio(String nombreServicio){
         validarNombre(nombreServicio);

@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.servicios;
+package RetailManagementSystem.aplicacion.servicios.seguridad;
 
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;

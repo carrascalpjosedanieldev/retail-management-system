@@ -5,10 +5,12 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
+import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
 public class EnsambladorDTOProducto {
 
     //ATRIBUTOS:
+
+    private final CalculadoraPrecios calculadoraPrecios;
 
     private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
 
@@ -26,32 +30,26 @@ public class EnsambladorDTOProducto {
     //CONSTRUCTOR:
 
     public EnsambladorDTOProducto(
-            EnsambladorDTOImpuesto ensambladorDTOImpuesto, EnsambladorDTODescuento ensambladorDTODescuento,
+            CalculadoraPrecios calculadoraPrecios, EnsambladorDTOImpuesto ensambladorDTOImpuesto,
+            EnsambladorDTODescuento ensambladorDTODescuento,
             EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento
     ) {
+        this.calculadoraPrecios = calculadoraPrecios;
         this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
         this.ensambladorDTODescuento = ensambladorDTODescuento;
         this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
     }
 
-    //VALIDACIONES:
-
-    private void validarProducto(Producto producto){
-        if (producto == null){
-            throw new IllegalArgumentException("NO puedes ensamblar un DTO de un Producto Vacío.");
-        }
-    }
-
     //MÉTODOS:
 
     private DatosTotalesProductoDTO ensamblarDatosTotalesProducto(Producto producto, LocalDate fecha){
-        validarProducto(producto);
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(producto.getImpuesto());
         DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(producto.getDescuento());
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, fecha);
         if (producto instanceof ProductoRopa ropa){
             return new DatosTotalesProductoRopaDTO(
                     ropa.getCodigo(), ropa.getNombre(), ropa.getValorCompra(), ropa.getPorcentajeGanancia(),
-                    ropa.getValorVenta(fecha), ropa.getStock(), datosImpuesto, datosDescuento, ropa.getTalla(),
+                    valorVenta, ropa.getStock(), datosImpuesto, datosDescuento, ropa.getTalla(),
                     ropa.isActivo()
             );
         } else if (producto instanceof ProductoPerecedero perecedero){
@@ -61,8 +59,8 @@ public class EnsambladorDTOProducto {
                     );
             return new DatosTotalesProductoPerecederoDTO(
                     perecedero.getCodigo(), perecedero.getNombre(), perecedero.getValorCompra(),
-                    perecedero.getPorcentajeGanancia(), perecedero.getValorVenta(fecha), perecedero.getStock(),
-                    datosImpuesto, datosDescuento, perecedero.getFechaVencimiento(), datosPoliticaVencimiento,
+                    perecedero.getPorcentajeGanancia(), valorVenta, perecedero.getStock(), datosImpuesto,
+                    datosDescuento, perecedero.getFechaVencimiento(), datosPoliticaVencimiento,
                     perecedero.estaVencido(fecha), perecedero.isActivo()
             );
         } else {
@@ -71,7 +69,6 @@ public class EnsambladorDTOProducto {
     }
 
     public DatosTotalesProductoRopaDTO ensamblarDatosProductoRopa(Producto producto, LocalDate fecha) {
-        validarProducto(producto);
         return (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, fecha);
     }
 
@@ -90,7 +87,6 @@ public class EnsambladorDTOProducto {
     public DatosTotalesProductoPerecederoDTO ensamblarDatosProductoPerecedero(
             ProductoPerecedero perecedero, LocalDate fecha
     ) {
-        validarProducto(perecedero);
         return (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(perecedero, fecha);
     }
 
@@ -106,10 +102,9 @@ public class EnsambladorDTOProducto {
     }
 
     public ProductoResumenDTO ensamblarProductoResumen(Producto producto, LocalDate fecha){
-        validarProducto(producto);
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, fecha);
         return new ProductoResumenDTO(
-                producto.getCodigo(), producto.getNombre(), producto.getValorVenta(fecha),
-                producto.getStock(), producto.isActivo()
+                producto.getCodigo(), producto.getNombre(), valorVenta, producto.getStock(), producto.isActivo()
         );
     }
 

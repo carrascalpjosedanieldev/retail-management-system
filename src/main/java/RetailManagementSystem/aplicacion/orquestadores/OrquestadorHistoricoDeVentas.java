@@ -3,7 +3,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.consultas.ReporteRecaudoDTO;
 import RetailManagementSystem.aplicacion.dto.consultas.ResumenVentaDiaDTO;
-import RetailManagementSystem.aplicacion.servicios.ServicioFacturas;
+import RetailManagementSystem.aplicacion.servicios.ventas.ServicioFacturas;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 

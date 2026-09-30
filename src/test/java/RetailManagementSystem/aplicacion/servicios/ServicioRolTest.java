@@ -1,5 +1,6 @@
 package RetailManagementSystem.aplicacion.servicios;
 
+import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioRol;
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.dominio.entidades.seguridad.Rol;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.RolNoEncontradoException;
