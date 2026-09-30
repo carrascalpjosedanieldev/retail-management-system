@@ -10,7 +10,7 @@ public abstract class EstrategiaProductoBase<T extends Producto> implements Estr
 
     //ATRIBUTOS:
 
-    private final MatematicaFinanciera matematicaFinanciera;
+    protected final MatematicaFinanciera matematicaFinanciera;
 
     //CONSTRUCTOR:
 

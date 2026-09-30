@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public abstract class EstrategiaProductoBaseAbstractaTest<T extends Producto> {
 
     @Mock
-    protected MatematicaFinanciera matematicaFinanciera;
+    protected MatematicaFinanciera matematicaFinancieraFalso;
 
     protected EstrategiaProductoBase<T> estrategia;
 
@@ -30,7 +30,7 @@ public abstract class EstrategiaProductoBaseAbstractaTest<T extends Producto> {
 
     @BeforeEach
     void setUp() {
-        this.estrategia = instanciarEstrategia(matematicaFinanciera);
+        this.estrategia = instanciarEstrategia(matematicaFinancieraFalso);
     }
 
     //TESTS
@@ -42,20 +42,20 @@ public abstract class EstrategiaProductoBaseAbstractaTest<T extends Producto> {
         ContextoEvaluacion contexto = mock(ContextoEvaluacion.class);
         Descuento descuento = mock(Descuento.class);
         BigDecimal precioBase = new BigDecimal("100000");
-        BigDecimal montoDescuento = new BigDecimal("15000");
-        BigDecimal valorSinImpuesto = new BigDecimal("85000");
-        BigDecimal valorEsperadoConEscala = new BigDecimal("85000.000000");
         when(producto.getPrecioBase()).thenReturn(precioBase);
         when(producto.getDescuento()).thenReturn(descuento);
-        when(matematicaFinanciera.calcularMontoDescuento(precioBase, descuento)).thenReturn(montoDescuento);
-        when(matematicaFinanciera.aplicarEscala(valorSinImpuesto)).thenReturn(valorEsperadoConEscala);
+        BigDecimal montoDescuento = new BigDecimal("15000");
+        when(matematicaFinancieraFalso.calcularMontoDescuento(precioBase, descuento)).thenReturn(montoDescuento);
+        BigDecimal valorSinImpuesto = new BigDecimal("85000");
+        BigDecimal valorEsperadoConEscala = new BigDecimal("85000.000000");
+        when(matematicaFinancieraFalso.aplicarEscala(valorSinImpuesto)).thenReturn(valorEsperadoConEscala);
         // ACT
         BigDecimal resultado = estrategia.calcularValorFinalSinImpuesto(producto, contexto);
         // ASSERT
         assertEquals(valorEsperadoConEscala, resultado);
-        verify(matematicaFinanciera).calcularMontoDescuento(precioBase, descuento);
-        verify(matematicaFinanciera).aplicarEscala(valorSinImpuesto);
-        verifyNoMoreInteractions(matematicaFinanciera);
+        verify(matematicaFinancieraFalso).calcularMontoDescuento(precioBase, descuento);
+        verify(matematicaFinancieraFalso).aplicarEscala(valorSinImpuesto);
+        verifyNoMoreInteractions(matematicaFinancieraFalso);
     }
 
     @Test
@@ -66,23 +66,29 @@ public abstract class EstrategiaProductoBaseAbstractaTest<T extends Producto> {
         Descuento descuento = mock(Descuento.class);
         Impuesto impuesto = mock(Impuesto.class);
         BigDecimal precioBase = new BigDecimal("100000");
-        BigDecimal montoDescuento = new BigDecimal("15000");
-        BigDecimal valorSinImpuestoPuro = new BigDecimal("85000");
-        BigDecimal valorSinImpuestoConEscala = new BigDecimal("85000.000000");
-        BigDecimal montoImpuesto = new BigDecimal("16150.000000");
-        BigDecimal valorVentaPuro = new BigDecimal("101150.000000");
-        BigDecimal valorVentaConEscala = new BigDecimal("101150.000000");
         when(producto.getPrecioBase()).thenReturn(precioBase);
         when(producto.getDescuento()).thenReturn(descuento);
         when(producto.getImpuesto()).thenReturn(impuesto);
-        when(matematicaFinanciera.calcularMontoDescuento(precioBase, descuento)).thenReturn(montoDescuento);
-        when(matematicaFinanciera.aplicarEscala(valorSinImpuestoPuro)).thenReturn(valorSinImpuestoConEscala);
-        when(matematicaFinanciera.calcularMontoImpuesto(valorSinImpuestoConEscala, impuesto)).thenReturn(montoImpuesto);
-        when(matematicaFinanciera.aplicarEscala(valorVentaPuro)).thenReturn(valorVentaConEscala);
+        BigDecimal montoDescuento = new BigDecimal("15000");
+        when(matematicaFinancieraFalso.calcularMontoDescuento(precioBase, descuento)).thenReturn(montoDescuento);
+        BigDecimal valorSinImpuestoPuro = new BigDecimal("85000");
+        BigDecimal valorSinImpuestoConEscala = new BigDecimal("85000.000000");
+        when(matematicaFinancieraFalso.aplicarEscala(valorSinImpuestoPuro)).thenReturn(valorSinImpuestoConEscala);
+        BigDecimal montoImpuesto = new BigDecimal("16150.000000");
+        when(matematicaFinancieraFalso.calcularMontoImpuesto(valorSinImpuestoConEscala, impuesto))
+                .thenReturn(montoImpuesto);
+        BigDecimal valorVentaPuro = new BigDecimal("101150.000000");
+        BigDecimal valorVentaConEscala = new BigDecimal("101150.000000");
+        when(matematicaFinancieraFalso.aplicarEscala(valorVentaPuro)).thenReturn(valorVentaConEscala);
         // ACT
         BigDecimal resultado = estrategia.calcularValorVenta(producto, contexto);
         // ASSERT
         assertEquals(valorVentaConEscala, resultado);
+        verify(matematicaFinancieraFalso).calcularMontoDescuento(precioBase, descuento);
+        verify(matematicaFinancieraFalso).aplicarEscala(valorSinImpuestoPuro);
+        verify(matematicaFinancieraFalso).calcularMontoImpuesto(valorSinImpuestoConEscala, impuesto);
+        verify(matematicaFinancieraFalso).aplicarEscala(valorVentaPuro);
+        verifyNoMoreInteractions(matematicaFinancieraFalso);
     }
 
 }//===================================================================================================================//

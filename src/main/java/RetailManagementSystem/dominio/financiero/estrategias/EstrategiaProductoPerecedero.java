@@ -6,16 +6,12 @@ import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 
 import java.math.BigDecimal;
 
-public class EstrategiaProductoPerecedero implements EstrategiaCalculoPrecios<ProductoPerecedero> {
-
-    //ATRIBUTOS:
-
-    private final MatematicaFinanciera matematicaFinanciera;
+public class EstrategiaProductoPerecedero extends EstrategiaProductoBase<ProductoPerecedero> implements EstrategiaCalculoPrecios<ProductoPerecedero> {
 
     //CONSTRUCTOR:
 
     public EstrategiaProductoPerecedero(MatematicaFinanciera matematicaFinanciera) {
-        this.matematicaFinanciera = matematicaFinanciera;
+        super(matematicaFinanciera);
     }
 
     //MÉTODOS:
@@ -34,15 +30,6 @@ public class EstrategiaProductoPerecedero implements EstrategiaCalculoPrecios<Pr
                 this.matematicaFinanciera.calcularMontoDescuento(precioBase, itemFacturable.getDescuento())
         );
         return this.matematicaFinanciera.aplicarEscala(valorFinalSinImpuesto);
-    }
-
-    @Override
-    public BigDecimal calcularValorVenta(ProductoPerecedero itemFacturable, ContextoEvaluacion contextoEvaluacion) {
-        BigDecimal valorFinalSinImpuesto = calcularValorFinalSinImpuesto(itemFacturable, contextoEvaluacion);
-        BigDecimal valorVenta = valorFinalSinImpuesto.add(
-                this.matematicaFinanciera.calcularMontoImpuesto(valorFinalSinImpuesto, itemFacturable.getImpuesto())
-        );
-        return this.matematicaFinanciera.aplicarEscala(valorVenta);
     }
 
 }//===================================================================================================================//
