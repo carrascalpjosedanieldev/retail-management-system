@@ -17,8 +17,12 @@ public class ContextoEvaluacion {
 
     //CONSTRUCTOR:
 
-    public ContextoEvaluacion(LocalDate fechaEvaluacion) {
+    private ContextoEvaluacion(LocalDate fechaEvaluacion) {
         this.fechaEvaluacion = fechaEvaluacion;
+    }
+
+    public static ContextoEvaluacion crearNuevo(LocalDate fechaEvaluacion){
+        return new ContextoEvaluacion(fechaEvaluacion);
     }
 
 }//===================================================================================================================//

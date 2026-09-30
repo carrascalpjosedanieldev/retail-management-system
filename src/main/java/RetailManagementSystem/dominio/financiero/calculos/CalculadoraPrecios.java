@@ -45,13 +45,13 @@ public class CalculadoraPrecios {
         return this.matematicaFinanciera.calcularMontoImpuesto(valorFinalSinImpuesto, impuesto);
     }
 
-    public BigDecimal calcularValorFinalSinImpuesto(ItemFacturable itemFacturable, LocalDate fecha){
-        ContextoEvaluacion contextoEvaluacion = new ContextoEvaluacion(fecha);
+    public BigDecimal calcularValorFinalSinImpuesto(
+            ItemFacturable itemFacturable, ContextoEvaluacion contextoEvaluacion
+    ){
         return obtenerEstrategia(itemFacturable).calcularValorFinalSinImpuesto(itemFacturable, contextoEvaluacion);
     }
 
-    public BigDecimal calcularValorVenta(ItemFacturable itemFacturable, LocalDate fecha){
-        ContextoEvaluacion contextoEvaluacion = new ContextoEvaluacion(fecha);
+    public BigDecimal calcularValorVenta(ItemFacturable itemFacturable, ContextoEvaluacion contextoEvaluacion){
         return obtenerEstrategia(itemFacturable).calcularValorVenta(itemFacturable, contextoEvaluacion);
     }
 

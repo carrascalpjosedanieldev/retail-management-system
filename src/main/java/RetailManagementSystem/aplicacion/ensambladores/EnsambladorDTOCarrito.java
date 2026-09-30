@@ -6,9 +6,9 @@ import RetailManagementSystem.dominio.entidades.ventas.ItemCarrito;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.VistaPreviaCarritoDTO;
 import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +26,12 @@ public class EnsambladorDTOCarrito {
 
     //MÉTODOS:
 
-    private ItemCarritoDTO ensamblarItemCarritoDTO(ItemCarrito itemCarrito, LocalDate fecha){
+    private ItemCarritoDTO ensamblarItemCarritoDTO(ItemCarrito itemCarrito, ContextoEvaluacion contextoEvaluacion){
         ItemFacturable item = itemCarrito.getItemFacturable();
-        BigDecimal valorFinalSinImpuesto = this.calculadoraPrecios.calcularValorFinalSinImpuesto(item, fecha);
+        BigDecimal valorFinalSinImpuesto =
+                this.calculadoraPrecios.calcularValorFinalSinImpuesto(item, contextoEvaluacion);
         BigDecimal impuesto = this.calculadoraPrecios.calcularImpuesto(valorFinalSinImpuesto, item.getImpuesto());
-        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, fecha);
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, contextoEvaluacion);
         return new ItemCarritoDTO(
                 item.getCodigo(),
                 item.getTipoItem(),
@@ -42,13 +43,15 @@ public class EnsambladorDTOCarrito {
         );
     }
 
-    public VistaPreviaCarritoDTO ensamblarVistaPreviaCarritoDTO(Carrito carrito, LocalDate fecha){
+    public VistaPreviaCarritoDTO ensamblarVistaPreviaCarritoDTO(
+            Carrito carrito, ContextoEvaluacion contextoEvaluacion
+    ){
         List<ItemCarritoDTO> itemsCarrito = new ArrayList<>();
         carrito.getItems().values().forEach(itemCarrito -> {
-            ItemCarritoDTO itemCarritoDTO = ensamblarItemCarritoDTO(itemCarrito, fecha);
+            ItemCarritoDTO itemCarritoDTO = ensamblarItemCarritoDTO(itemCarrito, contextoEvaluacion);
             itemsCarrito.add(itemCarritoDTO);
         });
-        return new VistaPreviaCarritoDTO(itemsCarrito, carrito.calcularTotal(fecha));
+        return new VistaPreviaCarritoDTO(itemsCarrito, carrito.calcularTotal());
     }
 
 }//===================================================================================================================//

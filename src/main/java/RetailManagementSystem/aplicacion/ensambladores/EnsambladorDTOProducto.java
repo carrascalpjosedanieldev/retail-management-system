@@ -9,9 +9,9 @@ import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +42,12 @@ public class EnsambladorDTOProducto {
 
     //MÉTODOS:
 
-    private DatosTotalesProductoDTO ensamblarDatosTotalesProducto(Producto producto, LocalDate fecha){
+    private DatosTotalesProductoDTO ensamblarDatosTotalesProducto(
+            Producto producto, ContextoEvaluacion contextoEvaluacion
+    ) {
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(producto.getImpuesto());
         DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(producto.getDescuento());
-        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, fecha);
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, contextoEvaluacion);
         if (producto instanceof ProductoRopa ropa){
             return new DatosTotalesProductoRopaDTO(
                     ropa.getCodigo(), ropa.getNombre(), ropa.getValorCompra(), ropa.getPorcentajeGanancia(),
@@ -57,61 +59,68 @@ public class EnsambladorDTOProducto {
                     this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
                             perecedero.getPoliticaVencimiento()
                     );
+            if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
+                throw new IllegalStateException("Se Requiere una Fecha para Calcular el Valor del Producto");
+            }
             return new DatosTotalesProductoPerecederoDTO(
                     perecedero.getCodigo(), perecedero.getNombre(), perecedero.getValorCompra(),
                     perecedero.getPorcentajeGanancia(), valorVenta, perecedero.getStock(), datosImpuesto,
                     datosDescuento, perecedero.getFechaVencimiento(), datosPoliticaVencimiento,
-                    perecedero.estaVencido(fecha), perecedero.isActivo()
+                    perecedero.estaVencido(contextoEvaluacion.getFechaEvaluacion().get()), perecedero.isActivo()
             );
         } else {
             throw new IllegalStateException("Tipo de Producto no soportado por el Sistema");
         }
     }
 
-    public DatosTotalesProductoRopaDTO ensamblarDatosProductoRopa(Producto producto, LocalDate fecha) {
-        return (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, fecha);
+    public DatosTotalesProductoRopaDTO ensamblarDatosProductoRopa(
+            Producto producto, ContextoEvaluacion contextoEvaluacion) {
+        return (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
     }
 
     public List<DatosTotalesProductoRopaDTO> ensamblarDetalleProductosRopa(
-            List<Producto> productosRopa, LocalDate fecha
+            List<Producto> productosRopa, ContextoEvaluacion contextoEvaluacion
     ) {
         List<DatosTotalesProductoRopaDTO> datosProductosRopa = new ArrayList<>();
         for (Producto producto:productosRopa){
             DatosTotalesProductoRopaDTO productoResumen =
-                    (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, fecha);
+                    (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
             datosProductosRopa.add(productoResumen);
         }
         return datosProductosRopa;
     }
 
     public DatosTotalesProductoPerecederoDTO ensamblarDatosProductoPerecedero(
-            ProductoPerecedero perecedero, LocalDate fecha
+            ProductoPerecedero perecedero, ContextoEvaluacion contextoEvaluacion
     ) {
-        return (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(perecedero, fecha);
+        return (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(perecedero, contextoEvaluacion);
     }
 
-    public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(List<Producto> productosRopa){
-        LocalDate fecha = LocalDate.now();
+    public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(
+            List<Producto> productosRopa, ContextoEvaluacion contextoEvaluacion
+    ) {
         List<DatosTotalesProductoPerecederoDTO> datosProductosRopa = new ArrayList<>();
         for (Producto producto:productosRopa){
             DatosTotalesProductoPerecederoDTO productoResumen =
-                    (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(producto, fecha);
+                    (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
             datosProductosRopa.add(productoResumen);
         }
         return datosProductosRopa;
     }
 
-    public ProductoResumenDTO ensamblarProductoResumen(Producto producto, LocalDate fecha){
-        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, fecha);
+    public ProductoResumenDTO ensamblarProductoResumen(Producto producto, ContextoEvaluacion contextoEvaluacion){
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, contextoEvaluacion);
         return new ProductoResumenDTO(
                 producto.getCodigo(), producto.getNombre(), valorVenta, producto.getStock(), producto.isActivo()
         );
     }
 
-    public List<ProductoResumenDTO> ensamblarDetalleProductosResumen(List<Producto> productos, LocalDate fecha){
+    public List<ProductoResumenDTO> ensamblarDetalleProductosResumen(
+            List<Producto> productos, ContextoEvaluacion contextoEvaluacion
+    ) {
         List<ProductoResumenDTO> resumenProductos = new ArrayList<>();
         for (Producto producto:productos){
-            ProductoResumenDTO productoResumen = ensamblarProductoResumen(producto, fecha);
+            ProductoResumenDTO productoResumen = ensamblarProductoResumen(producto, contextoEvaluacion);
             resumenProductos.add(productoResumen);
         }
         return resumenProductos;

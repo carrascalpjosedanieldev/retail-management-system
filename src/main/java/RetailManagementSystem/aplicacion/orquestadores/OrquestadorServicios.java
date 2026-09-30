@@ -4,6 +4,7 @@ import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOServicio;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioServicios;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
@@ -31,8 +32,9 @@ public class OrquestadorServicios {
     //MÉTODOS:
 
     public List<ServicioDTO> obtenerTodosLosServicios(LocalDate fecha){
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOServicio.ensamblarDatosCatalogoServicios(
-                this.servicioServicios.obtenerTodosLosServicios(), fecha
+                this.servicioServicios.obtenerTodosLosServicios(), contextoEvaluacion
         );
     }
 
@@ -41,10 +43,11 @@ public class OrquestadorServicios {
             LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_SERVICIOS);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOServicio.ensamblarServicio(
                 this.servicioServicios.registrarServicioNuevo(
                         nombre, precioBase, idImpuesto, idDescuento
-                ), fecha
+                ), contextoEvaluacion
         );
     }
 
@@ -53,10 +56,11 @@ public class OrquestadorServicios {
             int idImpuesto, int idDescuento, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.MODIFICAR_SERVICIOS);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         return this.ensambladorDTOServicio.ensamblarServicio(
                 this.servicioServicios.actualizarServicio(
                         codigoServicio, nuevoNombre, nuevoPrecioBase, idImpuesto, idDescuento
-                ), fecha
+                ), contextoEvaluacion
         );
     }
 

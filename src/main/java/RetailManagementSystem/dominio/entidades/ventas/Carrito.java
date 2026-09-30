@@ -4,7 +4,6 @@ import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.util.*;
 
 public class Carrito {
@@ -71,7 +70,7 @@ public class Carrito {
         this.itemsCarrito.remove(codigo);
     }
 
-    public BigDecimal calcularTotal(LocalDate fecha) {
+    public BigDecimal calcularTotal() {
         BigDecimal total = BigDecimal.ZERO;
         for(ItemCarrito item : this.getItems().values()) {
             BigDecimal valorItem = item.calcularSubtotal();

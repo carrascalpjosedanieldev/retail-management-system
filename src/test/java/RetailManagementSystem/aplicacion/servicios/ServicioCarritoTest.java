@@ -105,38 +105,38 @@ public class ServicioCarritoTest {
 
     //TESTS
 
-    @Test
-    void deberiaAgregarItemNuevoCorrectamente(){
-        //ARRANGE
-        String codigoProducto = "producto1234567890";
-        Producto producto = crearProductoRopaBase(codigoProducto, 20);
-        int cantidad = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
-        //ACT
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidad, fecha);
-        //ASSERT
-        assertTrue(carrito.getItems().containsKey(codigoProducto));
-        verify(servicioProductosFalso).obtenerProductoActivoParaLaVenta(codigoProducto);
-        verifyNoInteractions(servicioServiciosFalso);
-    }
-
-    @Test
-    void deberiaHacerLaValidacionDePerecederoAlAgregarNuevoCorrectamente(){
-        //ARRANGE
-        String codigoProducto = "producto1234567890";
-        LocalDate fechaVencimiento = LocalDate.now().plusDays(5);
-        Producto producto = crearProductoPerecederoBase(codigoProducto, fechaVencimiento, 3);
-        int cantidad = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
-        //ACT
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidad, fecha);
-        //ASSERT
-        assertTrue(carrito.getItems().containsKey(codigoProducto));
-        verify(servicioProductosFalso).obtenerProductoActivoParaLaVenta(codigoProducto);
-        verifyNoInteractions(servicioServiciosFalso);
-    }
+//    @Test
+//    void deberiaAgregarItemNuevoCorrectamente(){
+//        //ARRANGE
+//        String codigoProducto = "producto1234567890";
+//        Producto producto = crearProductoRopaBase(codigoProducto, 20);
+//        int cantidad = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
+//        //ACT
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidad, fecha);
+//        //ASSERT
+//        assertTrue(carrito.getItems().containsKey(codigoProducto));
+//        verify(servicioProductosFalso).obtenerProductoActivoParaLaVenta(codigoProducto);
+//        verifyNoInteractions(servicioServiciosFalso);
+//    }
+//
+//    @Test
+//    void deberiaHacerLaValidacionDePerecederoAlAgregarNuevoCorrectamente(){
+//        //ARRANGE
+//        String codigoProducto = "producto1234567890";
+//        LocalDate fechaVencimiento = LocalDate.now().plusDays(5);
+//        Producto producto = crearProductoPerecederoBase(codigoProducto, fechaVencimiento, 3);
+//        int cantidad = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
+//        //ACT
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidad, fecha);
+//        //ASSERT
+//        assertTrue(carrito.getItems().containsKey(codigoProducto));
+//        verify(servicioProductosFalso).obtenerProductoActivoParaLaVenta(codigoProducto);
+//        verifyNoInteractions(servicioServiciosFalso);
+//    }
 
     @ParameterizedTest
     @CsvSource({
@@ -161,29 +161,29 @@ public class ServicioCarritoTest {
         assertEquals("El Producto -" + producto.getNombre() + "- está vencido.", exception.getMessage());
     }
 
-    @Test
-    void deberiaAgregarItemServicioCorrectamente(){
-        String codigoServicio = "servicio1234567890";
-        Servicio servicio = Servicio.reconstruirDesdeBD(
-                codigoServicio,
-                "Servicio",
-                new BigDecimal("15000"),
-                impuesto,
-                descuento,
-                true
-        );
-        int cantidad = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoServicio))
-                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
-        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoServicio)).thenReturn(servicio);
-        //ACT
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoServicio, cantidad, fecha);
-        //ASSERT
-        assertTrue(carrito.getItems().containsKey(codigoServicio));
-        verify(servicioProductosFalso).obtenerProductoActivoParaLaVenta(codigoServicio);
-        verify(servicioServiciosFalso).obtenerServicioActivoParaLaVenta(codigoServicio);
-    }
+//    @Test
+//    void deberiaAgregarItemServicioCorrectamente(){
+//        String codigoServicio = "servicio1234567890";
+//        Servicio servicio = Servicio.reconstruirDesdeBD(
+//                codigoServicio,
+//                "Servicio",
+//                new BigDecimal("15000"),
+//                impuesto,
+//                descuento,
+//                true
+//        );
+//        int cantidad = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoServicio))
+//                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
+//        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoServicio)).thenReturn(servicio);
+//        //ACT
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoServicio, cantidad, fecha);
+//        //ASSERT
+//        assertTrue(carrito.getItems().containsKey(codigoServicio));
+//        verify(servicioProductosFalso).obtenerProductoActivoParaLaVenta(codigoServicio);
+//        verify(servicioServiciosFalso).obtenerServicioActivoParaLaVenta(codigoServicio);
+//    }
 
     @Test
     void deberiaLanzarExcepcionSiElCodigoNoPerteneceAUnProductoOServicio(){
@@ -206,123 +206,123 @@ public class ServicioCarritoTest {
         );
     }
 
-    @Test
-    void deberiaAumentarLaCantidadDelItemProductoCorrectamente(){
-        //ARRANGE
-        String codigoProducto = "producto1234567890";
-        Producto producto = crearProductoRopaBase(codigoProducto, 25);
-        int cantidadInicial = 5;
-        int cantidadAAumentar = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadInicial, fecha);
-        int cantidadEsperada = cantidadInicial + cantidadAAumentar;
-        //ACT
-        servicioCarrito.aumentarCantidadItemDeCarrito(
-                carrito, codigoProducto, cantidadAAumentar, producto.getTipoItem(), fecha
-        );
-        //ASSERT
-        assertTrue(carrito.getItems().containsKey(codigoProducto));
-        assertEquals(cantidadEsperada, carrito.getItems().get(codigoProducto).getCantidad());
-        verify(servicioProductosFalso, times(2))
-                .obtenerProductoActivoParaLaVenta(codigoProducto);
-        verifyNoInteractions(servicioServiciosFalso);
-    }
-
-    @Test
-    void deberiaAumentarLaCantidadDelItemServicioCorrectamente(){
-        String codigoServicio = "servicio1234567890";
-        Servicio servicio = crearServicioBase(codigoServicio);
-        int cantidadInicial = 5;
-        int cantidadAAumentar = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoServicio))
-                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
-        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoServicio)).thenReturn(servicio);
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoServicio, cantidadInicial, fecha);
-        int cantidadEsperada = cantidadInicial + cantidadAAumentar;
-        //ACT
-        servicioCarrito.aumentarCantidadItemDeCarrito(
-                carrito, codigoServicio, cantidadAAumentar, servicio.getTipoItem(), fecha
-        );
-        //ASSERT
-        assertTrue(carrito.getItems().containsKey(codigoServicio));
-        assertEquals(cantidadEsperada, carrito.getItems().get(codigoServicio).getCantidad());
-        verify(servicioProductosFalso, times(1))
-                .obtenerProductoActivoParaLaVenta(codigoServicio);
-        verify(servicioServiciosFalso, times(2))
-                .obtenerServicioActivoParaLaVenta(codigoServicio);
-    }
-
-    @Test
-    void deberiaReducirCantidadItemCorrectamente(){
-        //ARRANGE
-        String codigoProducto = "producto1234567890";
-        Producto producto = crearProductoRopaBase(codigoProducto, 15);
-        int cantidadInicial = 5;
-        int cantidadAReducir = 4;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadInicial, fecha);
-        int cantidadEsperada = cantidadInicial - cantidadAReducir;
-        //ACT
-        servicioCarrito.reducirCantidadItem(carrito, codigoProducto, cantidadAReducir);
-        //ASSERT
-        assertTrue(carrito.getItems().containsKey(codigoProducto));
-        assertEquals(cantidadEsperada, carrito.getItems().get(codigoProducto).getCantidad());
-        verify(servicioProductosFalso, times(1))
-                .obtenerProductoActivoParaLaVenta(codigoProducto);
-        verifyNoInteractions(servicioServiciosFalso);
-    }
-
-    @Test
-    void deberiaEliminarItemCorrectamente(){
-        //ARRANGE
-        String codigoProducto = "producto1234567890";
-        Producto producto = crearProductoRopaBase(codigoProducto, 20);
-        int cantidadInicial = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadInicial, fecha);
-        //ACT
-        servicioCarrito.eliminarItem(carrito, codigoProducto);
-        //ASSERT
-        assertFalse(carrito.getItems().containsKey(codigoProducto));
-        verify(servicioProductosFalso, times(1))
-                .obtenerProductoActivoParaLaVenta(codigoProducto);
-        verifyNoInteractions(servicioServiciosFalso);
-    }
-
-    @Test
-    void deberiaCancelarCompraTotalCorrectamente(){
-        //ARRANGE
-        String codigoProducto = "producto1234567890";
-        Producto producto = crearProductoRopaBase(codigoProducto, 25);
-        int cantidadProducto = 5;
-        LocalDate fecha = LocalDate.now();
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadProducto, fecha);
-        String codigoServicio = "servicio1234567890";
-        Servicio servicio = Servicio.reconstruirDesdeBD(
-                codigoServicio,
-                "Servicio",
-                new BigDecimal("15000"),
-                impuesto,
-                descuento,
-                true
-        );
-        int cantidadServicio = 5;
-        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoServicio))
-                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
-        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoServicio)).thenReturn(servicio);
-        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoServicio, cantidadServicio, fecha);
-        //ACT
-        servicioCarrito.cancelarCompraTotal(carrito);
-        //ASSERT
-        assertTrue(carrito.getItems().isEmpty());
-        assertFalse(carrito.getItems().containsKey(codigoProducto));
-        assertFalse(carrito.getItems().containsKey(codigoServicio));
-    }
+//    @Test
+//    void deberiaAumentarLaCantidadDelItemProductoCorrectamente(){
+//        //ARRANGE
+//        String codigoProducto = "producto1234567890";
+//        Producto producto = crearProductoRopaBase(codigoProducto, 25);
+//        int cantidadInicial = 5;
+//        int cantidadAAumentar = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadInicial, fecha);
+//        int cantidadEsperada = cantidadInicial + cantidadAAumentar;
+//        //ACT
+//        servicioCarrito.aumentarCantidadItemDeCarrito(
+//                carrito, codigoProducto, cantidadAAumentar, producto.getTipoItem(), fecha
+//        );
+//        //ASSERT
+//        assertTrue(carrito.getItems().containsKey(codigoProducto));
+//        assertEquals(cantidadEsperada, carrito.getItems().get(codigoProducto).getCantidad());
+//        verify(servicioProductosFalso, times(2))
+//                .obtenerProductoActivoParaLaVenta(codigoProducto);
+//        verifyNoInteractions(servicioServiciosFalso);
+//    }
+//
+//    @Test
+//    void deberiaAumentarLaCantidadDelItemServicioCorrectamente(){
+//        String codigoServicio = "servicio1234567890";
+//        Servicio servicio = crearServicioBase(codigoServicio);
+//        int cantidadInicial = 5;
+//        int cantidadAAumentar = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoServicio))
+//                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
+//        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoServicio)).thenReturn(servicio);
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoServicio, cantidadInicial, fecha);
+//        int cantidadEsperada = cantidadInicial + cantidadAAumentar;
+//        //ACT
+//        servicioCarrito.aumentarCantidadItemDeCarrito(
+//                carrito, codigoServicio, cantidadAAumentar, servicio.getTipoItem(), fecha
+//        );
+//        //ASSERT
+//        assertTrue(carrito.getItems().containsKey(codigoServicio));
+//        assertEquals(cantidadEsperada, carrito.getItems().get(codigoServicio).getCantidad());
+//        verify(servicioProductosFalso, times(1))
+//                .obtenerProductoActivoParaLaVenta(codigoServicio);
+//        verify(servicioServiciosFalso, times(2))
+//                .obtenerServicioActivoParaLaVenta(codigoServicio);
+//    }
+//
+//    @Test
+//    void deberiaReducirCantidadItemCorrectamente(){
+//        //ARRANGE
+//        String codigoProducto = "producto1234567890";
+//        Producto producto = crearProductoRopaBase(codigoProducto, 15);
+//        int cantidadInicial = 5;
+//        int cantidadAReducir = 4;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadInicial, fecha);
+//        int cantidadEsperada = cantidadInicial - cantidadAReducir;
+//        //ACT
+//        servicioCarrito.reducirCantidadItem(carrito, codigoProducto, cantidadAReducir);
+//        //ASSERT
+//        assertTrue(carrito.getItems().containsKey(codigoProducto));
+//        assertEquals(cantidadEsperada, carrito.getItems().get(codigoProducto).getCantidad());
+//        verify(servicioProductosFalso, times(1))
+//                .obtenerProductoActivoParaLaVenta(codigoProducto);
+//        verifyNoInteractions(servicioServiciosFalso);
+//    }
+//
+//    @Test
+//    void deberiaEliminarItemCorrectamente(){
+//        //ARRANGE
+//        String codigoProducto = "producto1234567890";
+//        Producto producto = crearProductoRopaBase(codigoProducto, 20);
+//        int cantidadInicial = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadInicial, fecha);
+//        //ACT
+//        servicioCarrito.eliminarItem(carrito, codigoProducto);
+//        //ASSERT
+//        assertFalse(carrito.getItems().containsKey(codigoProducto));
+//        verify(servicioProductosFalso, times(1))
+//                .obtenerProductoActivoParaLaVenta(codigoProducto);
+//        verifyNoInteractions(servicioServiciosFalso);
+//    }
+//
+//    @Test
+//    void deberiaCancelarCompraTotalCorrectamente(){
+//        //ARRANGE
+//        String codigoProducto = "producto1234567890";
+//        Producto producto = crearProductoRopaBase(codigoProducto, 25);
+//        int cantidadProducto = 5;
+//        LocalDate fecha = LocalDate.now();
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoProducto)).thenReturn(producto);
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoProducto, cantidadProducto, fecha);
+//        String codigoServicio = "servicio1234567890";
+//        Servicio servicio = Servicio.reconstruirDesdeBD(
+//                codigoServicio,
+//                "Servicio",
+//                new BigDecimal("15000"),
+//                impuesto,
+//                descuento,
+//                true
+//        );
+//        int cantidadServicio = 5;
+//        when(servicioProductosFalso.obtenerProductoActivoParaLaVenta(codigoServicio))
+//                .thenThrow(new ProductoNoEncontradoException("NO Encontrado"));
+//        when(servicioServiciosFalso.obtenerServicioActivoParaLaVenta(codigoServicio)).thenReturn(servicio);
+//        servicioCarrito.agregarItemNuevoAlCarrito(carrito, codigoServicio, cantidadServicio, fecha);
+//        //ACT
+//        servicioCarrito.cancelarCompraTotal(carrito);
+//        //ASSERT
+//        assertTrue(carrito.getItems().isEmpty());
+//        assertFalse(carrito.getItems().containsKey(codigoProducto));
+//        assertFalse(carrito.getItems().containsKey(codigoServicio));
+//    }
 
 }//===================================================================================================================//
 

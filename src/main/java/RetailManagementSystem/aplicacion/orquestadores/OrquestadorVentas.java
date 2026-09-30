@@ -12,6 +12,7 @@ import RetailManagementSystem.dominio.entidades.comercial.ItemFacturable;
 import RetailManagementSystem.dominio.entidades.ventas.*;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CarritoVacioException;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 
@@ -55,16 +56,18 @@ public class OrquestadorVentas {
     }
 
     public VistaPreviaCarritoDTO obtenerVistaPreviaCarrito(SesionVenta sesionVenta, LocalDate fecha){
-        return this.ensambladorDTOCarrito.ensamblarVistaPreviaCarritoDTO(
-                sesionVenta.getCarrito(), fecha
-        );
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        return this.ensambladorDTOCarrito.ensamblarVistaPreviaCarritoDTO(sesionVenta.getCarrito(), contextoEvaluacion);
     }
 
     public VistaPreviaCarritoDTO agregarItemAlCarrito(
             UsuarioDTOCompleto usuario, SesionVenta sesionVenta, String codigoItem, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
-        this.servicioCarrito.agregarItemNuevoAlCarrito(sesionVenta.getCarrito(), codigoItem, 1, fecha);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        this.servicioCarrito.agregarItemNuevoAlCarrito(
+                sesionVenta.getCarrito(), codigoItem, 1, contextoEvaluacion
+        );
         return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
 
@@ -73,8 +76,9 @@ public class OrquestadorVentas {
             TipoItem tipoItem, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         this.servicioCarrito.aumentarCantidadItemDeCarrito(
-                sesionVenta.getCarrito(), codigoItem, cantidad, tipoItem, fecha
+                sesionVenta.getCarrito(), codigoItem, cantidad, tipoItem, contextoEvaluacion
         );
         return obtenerVistaPreviaCarrito(sesionVenta, fecha);
     }
@@ -108,6 +112,7 @@ public class OrquestadorVentas {
             UsuarioDTOCompleto usuario, SesionVenta sesionVenta, LocalDate fecha
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.PROCESAR_VENTA);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
         Carrito carrito = sesionVenta.getCarrito();
         if (carrito.getItems().isEmpty()){
             throw new CarritoVacioException("No se puede Procesar una Venta con un Carrito Vacío");
@@ -117,7 +122,7 @@ public class OrquestadorVentas {
             ItemFacturable itemFacturable = item.getItemFacturable();
             BigDecimal porcentajeImpuesto = itemFacturable.getImpuesto().isActivo() ?
                     item.getItemFacturable().getImpuesto().getPorcentaje() : BigDecimal.ZERO;
-            BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(itemFacturable, fecha);
+            BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(itemFacturable, contextoEvaluacion);
             ItemVendido itemVendido = ItemVendido.crearNuevo(
                     itemFacturable.getTipoItem(), itemFacturable.getCodigo(), itemFacturable.getNombre(),
                     item.getCantidad(), valorVenta, porcentajeImpuesto

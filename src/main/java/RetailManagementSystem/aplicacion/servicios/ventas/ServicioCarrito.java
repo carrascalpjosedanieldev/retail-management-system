@@ -10,6 +10,7 @@ import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ProductoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ServicioNoEncontradoException;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -37,9 +38,14 @@ public class ServicioCarrito {
 
     //MÉTODOS:
 
-    public void agregarItemNuevoAlCarrito(Carrito carrito, String codigo, int cantidad, LocalDate fecha) {
-        ItemFacturable item = resolverItemPorCodigo(codigo, fecha);
-        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, fecha);
+    public void agregarItemNuevoAlCarrito(
+            Carrito carrito, String codigo, int cantidad, ContextoEvaluacion contextoEvaluacion
+    ) {
+        if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
+            throw new IllegalStateException("Se Requiere una Fecha para Calcular el Valor del Producto");
+        }
+        ItemFacturable item = resolverItemPorCodigo(codigo, contextoEvaluacion.getFechaEvaluacion().get());
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, contextoEvaluacion);
         carrito.agregarItem(item, valorVenta, cantidad);
     }
 
@@ -66,10 +72,13 @@ public class ServicioCarrito {
     }
 
     public void aumentarCantidadItemDeCarrito(
-            Carrito carrito, String codigo, int cantidad, TipoItem tipoItem, LocalDate fecha
+            Carrito carrito, String codigo, int cantidad, TipoItem tipoItem, ContextoEvaluacion contextoEvaluacion
     ){
-        ItemFacturable item = obtenerItemValido(codigo, tipoItem, fecha);
-        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, fecha);
+        if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
+            throw new IllegalStateException("Se Requiere una Fecha para Calcular el Valor del Producto");
+        }
+        ItemFacturable item = obtenerItemValido(codigo, tipoItem, contextoEvaluacion.getFechaEvaluacion().get());
+        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(item, contextoEvaluacion);
         carrito.agregarItem(item, valorVenta, cantidad);
     }
 
