@@ -15,8 +15,7 @@ public class EnsambladorDTOCarrito {
 
     //CONSTRUCTOR:
 
-    public EnsambladorDTOCarrito() {
-    }
+    public EnsambladorDTOCarrito() { }
 
     //MÉTODOS:
 
@@ -36,10 +35,10 @@ public class EnsambladorDTOCarrito {
 
     public VistaPreviaCarritoDTO ensamblarVistaPreviaCarritoDTO(Carrito carrito, LocalDate fecha){
         List<ItemCarritoDTO> itemsCarrito = new ArrayList<>();
-        for (ItemCarrito itemCarrito:carrito.getItems().values()){
+        carrito.getItems().values().forEach(itemCarrito -> {
             ItemCarritoDTO itemCarritoDTO = ensamblarItemCarritoDTO(itemCarrito, fecha);
             itemsCarrito.add(itemCarritoDTO);
-        }
+        });
         return new VistaPreviaCarritoDTO(itemsCarrito, carrito.calcularTotal(fecha));
     }
 
