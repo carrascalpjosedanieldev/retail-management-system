@@ -40,6 +40,5 @@ public abstract class EstrategiaProductoBase<T extends Producto> implements Estr
         return this.matematicaFinanciera.aplicarEscala(valorVenta);
     }
 
-
 }//===================================================================================================================//
 
