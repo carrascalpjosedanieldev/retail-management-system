@@ -5,9 +5,9 @@ import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoVencidoException;
+import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -103,13 +103,13 @@ public final class ProductoPerecedero extends Producto{
     }
 
     public boolean estaVencido(LocalDate fechaReferencia) {
-        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, this.fechaVencimiento);
+        long diasRestantes = ChronoUnit.DAYS.between(fechaReferencia, getFechaVencimiento());
         return diasRestantes < 0;
     }
 
     public void validarEstadoParaVenta(LocalDate fechaReferencia){
         if (estaVencido(fechaReferencia)) {
-            throw new ProductoVencidoException("El Producto -" + this.getNombre() + "- está vencido.");
+            throw new ProductoVencidoException("El Producto -" + getNombre() + "- está vencido.");
         }
     }
 
@@ -121,9 +121,9 @@ public final class ProductoPerecedero extends Producto{
             return precioBase.multiply(
                             dividirEntreCien(porcentajePolitica)
                     )
-                    .setScale(6, RoundingMode.HALF_UP);
+                    .setScale(MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR);
         }
-        return BigDecimal.ZERO;
+        return BigDecimal.ZERO.setScale(MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR);
     }
 
 }//===================================================================================================================//

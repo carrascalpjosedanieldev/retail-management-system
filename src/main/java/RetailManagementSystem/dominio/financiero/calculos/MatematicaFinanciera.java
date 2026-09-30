@@ -14,7 +14,7 @@ public class MatematicaFinanciera {
 
     public static final RoundingMode REDONDEO_ESTANDAR = RoundingMode.HALF_UP;
 
-    private static final BigDecimal CIEN = new BigDecimal("100");
+    public static final BigDecimal CIEN = new BigDecimal("100");
 
     //CONSTRUCTOR:
 

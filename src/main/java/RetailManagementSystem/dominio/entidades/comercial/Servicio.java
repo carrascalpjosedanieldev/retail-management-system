@@ -3,9 +3,9 @@ package RetailManagementSystem.dominio.entidades.comercial;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.enums.TipoItem;
+import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.SERVICIO;
@@ -50,7 +50,9 @@ public class Servicio implements ItemFacturable {
         return this.precioBase;
     }
     private void setPrecioBase(BigDecimal precioBase) {
-        this.precioBase = precioBase.setScale(6, RoundingMode.HALF_UP);
+        this.precioBase = precioBase.setScale(
+                MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR
+        );
     }
 
     @Override

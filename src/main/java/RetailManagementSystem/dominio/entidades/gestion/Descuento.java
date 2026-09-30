@@ -1,12 +1,11 @@
 package RetailManagementSystem.dominio.entidades.gestion;
 
+import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Descuento {
-
-    private static final BigDecimal CIEN = new BigDecimal("100");
 
     //ATRIBUTOS:
 
@@ -31,7 +30,9 @@ public class Descuento {
         return porcentaje;
     }
     public void setPorcentaje(BigDecimal porcentaje) {
-        this.porcentaje = porcentaje.setScale(6, RoundingMode.HALF_UP);
+        this.porcentaje = porcentaje.setScale(
+                MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR
+        );
     }
 
     public boolean isActivo() {
@@ -50,7 +51,7 @@ public class Descuento {
         if (porcentaje == null){
             throw new IllegalArgumentException("El Porcentaje del Descuento NO puede ser Nulo");
         }
-        if (porcentaje.compareTo(BigDecimal.ZERO) < 0 || porcentaje.compareTo(CIEN) > 0) {
+        if (porcentaje.compareTo(BigDecimal.ZERO) < 0 || porcentaje.compareTo(MatematicaFinanciera.CIEN) > 0) {
             throw new IllegalArgumentException("Porcentaje de Descuento Invalido:  " + porcentaje + "%");
         }
     }

@@ -1,12 +1,11 @@
 package RetailManagementSystem.dominio.entidades.gestion;
 
+import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 public class PoliticaVencimiento {
-
-    private static final BigDecimal CIEN = new BigDecimal("100");
 
     //ATRIBUTOS:
 
@@ -41,7 +40,9 @@ public class PoliticaVencimiento {
         return porcentajeDescuento;
     }
     private void setPorcentajeDescuento(BigDecimal porcentajeDescuento) {
-        this.porcentajeDescuento = porcentajeDescuento.setScale(6, RoundingMode.HALF_UP);
+        this.porcentajeDescuento = porcentajeDescuento.setScale(
+                MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR
+        );
     }
 
     public boolean isActiva() { return activa; }
@@ -64,8 +65,10 @@ public class PoliticaVencimiento {
         if (porcentaje == null){
             throw new IllegalArgumentException("El Porcentaje de la Política de Vencimiento NO puede ser Nulo");
         }
-        if (porcentaje.compareTo(BigDecimal.ZERO) < 0 || porcentaje.compareTo(CIEN) > 0) {
-            throw new IllegalArgumentException("Porcentaje de Descuento de Política de Vencimiento Invalido:  " + porcentaje + "%");
+        if (porcentaje.compareTo(BigDecimal.ZERO) < 0 || porcentaje.compareTo(MatematicaFinanciera.CIEN) > 0) {
+            throw new IllegalArgumentException(
+                    "Porcentaje de Descuento de Política de Vencimiento Invalido:  " + porcentaje + "%"
+            );
         }
     }
 

@@ -5,16 +5,14 @@ import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.dominio.enums.TipoItem;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.StockInsuficienteException;
+import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.UUID;
 
 import static RetailManagementSystem.dominio.enums.TipoItem.PRODUCTO;
 
 public abstract class Producto implements ItemFacturable, Stockeable {
-
-    protected static final BigDecimal CIEN = new BigDecimal("100");
 
     //ATRIBUTOS:
 
@@ -64,14 +62,18 @@ public abstract class Producto implements ItemFacturable, Stockeable {
         return valorCompra;
     }
     protected void setValorCompra(BigDecimal valorCompra) {
-        this.valorCompra = valorCompra.setScale(6, RoundingMode.HALF_UP);
+        this.valorCompra = valorCompra.setScale(
+                MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR
+        );
     }
 
     public BigDecimal getPorcentajeGanancia() {
         return porcentajeGanancia;
     }
     protected void setPorcentajeGanancia(BigDecimal porcentajeGanancia) {
-        this.porcentajeGanancia = porcentajeGanancia.setScale(2, RoundingMode.HALF_UP);
+        this.porcentajeGanancia = porcentajeGanancia.setScale(
+                MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR
+        );
     }
 
     public int getStock() {
@@ -121,8 +123,11 @@ public abstract class Producto implements ItemFacturable, Stockeable {
     }
 
     private void validarPorcentajeGanancia(BigDecimal porcentajeGanancia){
-        if (porcentajeGanancia == null ||
-                porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0  || porcentajeGanancia.compareTo(CIEN) > 0){
+        if (
+            porcentajeGanancia == null ||
+            porcentajeGanancia.compareTo(BigDecimal.ZERO) <= 0  ||
+            porcentajeGanancia.compareTo(MatematicaFinanciera.CIEN) > 0)
+        {
             throw new IllegalArgumentException("Porcentaje de Ganancia del Producto Invalido");
         }
     }
@@ -202,14 +207,16 @@ public abstract class Producto implements ItemFacturable, Stockeable {
     //MÉTODOS:
 
     protected BigDecimal dividirEntreCien(BigDecimal valor){
-        return valor.divide(CIEN, 6, RoundingMode.HALF_UP);
+        return valor.divide(
+                MatematicaFinanciera.CIEN, MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR
+        );
     }
 
     public BigDecimal getPrecioBase(){
         return getValorCompra().multiply(
                 (BigDecimal.ONE).add(dividirEntreCien(getPorcentajeGanancia()))
         )
-        .setScale(6, RoundingMode.HALF_UP);
+        .setScale(MatematicaFinanciera.ESCALA_CALCULO, MatematicaFinanciera.REDONDEO_ESTANDAR);
     }
 
     //MÉTODOS MODIFICAR PRODUCTO:
@@ -267,9 +274,9 @@ public abstract class Producto implements ItemFacturable, Stockeable {
 
     @Override
     public void validarStockDisponible(int cantidadSolicitada) {
-        if (cantidadSolicitada > this.stock) {
-            throw new StockInsuficienteException("Stock del Producto -" + this.nombre + "- Insuficiente\n" +
-                    "Cantidad Solicitada:  " + cantidadSolicitada + ", Cantidad Existente:  " + this.stock);
+        if (cantidadSolicitada > getStock()) {
+            throw new StockInsuficienteException("Stock del Producto -" + getNombre() + "- Insuficiente\n" +
+                    "Cantidad Solicitada:  " + cantidadSolicitada + ", Cantidad Existente:  " + getStock());
         }
     }
 
