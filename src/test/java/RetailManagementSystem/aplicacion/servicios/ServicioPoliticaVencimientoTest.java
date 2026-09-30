@@ -36,6 +36,8 @@ public class ServicioPoliticaVencimientoTest {
 
     private PoliticaVencimiento politicaVPrueba;
 
+    private static final int ID_POR_DEFECTO = 1;
+
     private static final String NOMBRE_POR_DEFECTO = "Política General";
 
     private static final Integer DIAS_UMBRAL_POR_DEFECTO = 3;
@@ -45,7 +47,7 @@ public class ServicioPoliticaVencimientoTest {
     @BeforeEach
     void setUp() {
         politicaVPrueba = PoliticaVencimiento.reconstruirDesdeBD(
-                1,
+                ID_POR_DEFECTO,
                 NOMBRE_POR_DEFECTO,
                 DIAS_UMBRAL_POR_DEFECTO,
                 PORCENTAJE_POR_DEFECTO,
@@ -89,21 +91,22 @@ public class ServicioPoliticaVencimientoTest {
         assertEquals(0, politicaVCapturada.getPorcentajeDescuento().compareTo(PORCENTAJE_POR_DEFECTO));
         assertTrue(politicaVCapturada.isActiva());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
     @Test
     void deberiaObtenerPoliticaDeVencimientoCorrectamente(){
         //ARRANGE
-        int idExistente = 1;
-        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(idExistente)).thenReturn(politicaVPrueba);
+        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(ID_POR_DEFECTO)).thenReturn(politicaVPrueba);
         //ACT
-        PoliticaVencimiento resultado = servicioPoliticaVencimiento.obtenerPoliticaVencimiento(idExistente);
+        PoliticaVencimiento resultado = servicioPoliticaVencimiento.obtenerPoliticaVencimiento(ID_POR_DEFECTO);
         //ASSERT
         assertNotNull(resultado);
         assertEquals(politicaVPrueba.getIdPolitica(), resultado.getIdPolitica());
         assertEquals(politicaVPrueba.getNombre(), resultado.getNombre());
-        verify(repoPoliticaVFalso).obtenerPoliticaVencimiento(idExistente);
+        verify(repoPoliticaVFalso).obtenerPoliticaVencimiento(ID_POR_DEFECTO);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -120,6 +123,7 @@ public class ServicioPoliticaVencimientoTest {
         );
         assertEquals(mensajeEsperado, exception.getMessage());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -128,30 +132,34 @@ public class ServicioPoliticaVencimientoTest {
         String nombreNuevo = "Nombre Nuevo";
         int diasUmbralNuevo = 5;
         BigDecimal porcentajeNuevo = new BigDecimal("25");
-        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(1)).thenReturn(politicaVPrueba);
+        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(ID_POR_DEFECTO)).thenReturn(politicaVPrueba);
         //ACT
-        servicioPoliticaVencimiento.actualizarPoliticaVencimiento(1, nombreNuevo, diasUmbralNuevo, porcentajeNuevo);
+        servicioPoliticaVencimiento.actualizarPoliticaVencimiento(
+                ID_POR_DEFECTO, nombreNuevo, diasUmbralNuevo, porcentajeNuevo
+        );
         //ASSERT
         ArgumentCaptor<PoliticaVencimiento> captor = ArgumentCaptor.forClass(PoliticaVencimiento.class);
         verify(repoPoliticaVFalso).actualizarPoliticaVencimiento(captor.capture());
         PoliticaVencimiento politicaVCapturada = captor.getValue();
-        assertEquals(1, politicaVCapturada.getIdPolitica());
+        assertEquals(ID_POR_DEFECTO, politicaVCapturada.getIdPolitica());
         assertEquals(nombreNuevo, politicaVCapturada.getNombre());
         assertEquals(diasUmbralNuevo, politicaVCapturada.getDiasUmbral());
         assertEquals(0, politicaVCapturada.getPorcentajeDescuento().compareTo(porcentajeNuevo));
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
     @Test
     void deberiaCambiarEstadoCorrectamente(){
         // ARRANGE
-        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(1)).thenReturn(politicaVPrueba);
+        when(repoPoliticaVFalso.obtenerPoliticaVencimiento(ID_POR_DEFECTO)).thenReturn(politicaVPrueba);
         // ACT
-        servicioPoliticaVencimiento.cambiarEstadoPoliticaDeVencimiento(1);
+        servicioPoliticaVencimiento.cambiarEstadoPoliticaDeVencimiento(ID_POR_DEFECTO);
         // ASSERT
         assertFalse(politicaVPrueba.isActiva());
         verify(repoPoliticaVFalso).actualizarPoliticaVencimiento(politicaVPrueba);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -170,6 +178,7 @@ public class ServicioPoliticaVencimientoTest {
         verify(repoPoliticaVFalso).obtenerPoliticaVencimiento(99);
         verifyNoMoreInteractions(repoPoliticaVFalso);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -184,6 +193,7 @@ public class ServicioPoliticaVencimientoTest {
         assertEquals(listaEsperada, listaRecibida);
         verify(repoPoliticaVFalso).obtenerPoliticasVencimientoActivas();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -198,6 +208,7 @@ public class ServicioPoliticaVencimientoTest {
         assertEquals(listaEsperada, listaRecibida);
         verify(repoPoliticaVFalso).obtenerTodasLasPoliticasDeVencimiento();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoPoliticaVFalso, gestorTransaccionalFalso);
     }
 
 }//===================================================================================================================//

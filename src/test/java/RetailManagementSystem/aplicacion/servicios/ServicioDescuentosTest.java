@@ -36,13 +36,17 @@ public class ServicioDescuentosTest {
 
     private Descuento descuentoPrueba;
 
+    private static final int ID_POR_DEFECTO = 1;
+
     private static final String NOMBRE_POR_DEFECTO = "Navidad";
 
     private static final BigDecimal PORCENTAJE_POR_DEFECTO = new BigDecimal("20");
 
     @BeforeEach
     void setUp() {
-        descuentoPrueba = Descuento.reconstruirDesdeBD(1, NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, true);
+        descuentoPrueba = Descuento.reconstruirDesdeBD(
+                ID_POR_DEFECTO, NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, true
+        );
         lenient().when(gestorTransaccionalFalso.ejecutarEnTransaccionConRetorno(any()))
                 .thenAnswer(invocation -> {
                     OperacionTransaccionalConRetorno<?> operacion = invocation.getArgument(0);
@@ -71,7 +75,7 @@ public class ServicioDescuentosTest {
                 servicioDescuentos.registrarDescuento(NOMBRE_POR_DEFECTO, PORCENTAJE_POR_DEFECTO, true);
         // ASSERT
         assertNotNull(resultado);
-        assertEquals(1, resultado.getId());
+        assertEquals(ID_POR_DEFECTO, resultado.getId());
         ArgumentCaptor<Descuento> captor = ArgumentCaptor.forClass(Descuento.class);
         verify(repoDescuentosFalso).insertarDescuento(captor.capture());
         Descuento descuentoCapturado = captor.getValue();
@@ -79,22 +83,23 @@ public class ServicioDescuentosTest {
         assertEquals(0, descuentoCapturado.getPorcentaje().compareTo(PORCENTAJE_POR_DEFECTO));
         assertTrue(descuentoCapturado.isActivo());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoDescuentosFalso, gestorTransaccionalFalso);
     }
 
 
     @Test
     void deberiaObtenerDescuentoCorrectamenteCuandoExiste(){
         // ARRANGE
-        int idExistente = 1;
-        when(repoDescuentosFalso.obtenerDescuento(idExistente)).thenReturn(descuentoPrueba);
+        when(repoDescuentosFalso.obtenerDescuento(ID_POR_DEFECTO)).thenReturn(descuentoPrueba);
         // ACT
-        Descuento resultado = servicioDescuentos.obtenerDescuento(idExistente);
+        Descuento resultado = servicioDescuentos.obtenerDescuento(ID_POR_DEFECTO);
         // ASSERT
         assertNotNull(resultado);
         assertEquals(descuentoPrueba.getId(), resultado.getId());
         assertEquals(descuentoPrueba.getNombre(), resultado.getNombre());
-        verify(repoDescuentosFalso).obtenerDescuento(idExistente);
+        verify(repoDescuentosFalso).obtenerDescuento(ID_POR_DEFECTO);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoDescuentosFalso, gestorTransaccionalFalso);
     }
 
 
@@ -113,6 +118,7 @@ public class ServicioDescuentosTest {
         assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoDescuentosFalso).obtenerDescuento(idInexistente);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoDescuentosFalso, gestorTransaccionalFalso);
     }
 
 
@@ -121,10 +127,11 @@ public class ServicioDescuentosTest {
         // ARRANGE
         String nombreNuevo = "Nombre Nuevo";
         BigDecimal porcentajeNuevo = new BigDecimal("25");
-        when(repoDescuentosFalso.obtenerDescuento(1)).thenReturn(descuentoPrueba);
+        when(repoDescuentosFalso.obtenerDescuento(ID_POR_DEFECTO)).thenReturn(descuentoPrueba);
         // ACT
-        servicioDescuentos.actualizarDescuento(1, nombreNuevo, porcentajeNuevo);
+        servicioDescuentos.actualizarDescuento(ID_POR_DEFECTO, nombreNuevo, porcentajeNuevo);
         // ASSERT
+        verify(repoDescuentosFalso).obtenerDescuento(ID_POR_DEFECTO);
         ArgumentCaptor<Descuento> captor = ArgumentCaptor.forClass(Descuento.class);
         verify(repoDescuentosFalso).actualizarDescuento(captor.capture());
         Descuento descuentoCapturado = captor.getValue();
@@ -144,6 +151,7 @@ public class ServicioDescuentosTest {
         servicioDescuentos.cambiarEstadoDescuento(1);
         // ASSERT
         assertFalse(descuentoPrueba.isActivo());
+        verify(repoDescuentosFalso).obtenerDescuento(ID_POR_DEFECTO);
         verify(repoDescuentosFalso).actualizarDescuento(descuentoPrueba);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
@@ -163,7 +171,6 @@ public class ServicioDescuentosTest {
         );
         assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoDescuentosFalso).obtenerDescuento(idInexistente);
-        verifyNoMoreInteractions(repoDescuentosFalso);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccion(any());
     }
 
@@ -180,6 +187,7 @@ public class ServicioDescuentosTest {
         assertEquals(listaEsperada, listaRecibida);
         verify(repoDescuentosFalso).obtenerDescuentosActivos();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoDescuentosFalso, gestorTransaccionalFalso);
     }
 
 
@@ -195,6 +203,7 @@ public class ServicioDescuentosTest {
         assertEquals(listaEsperada, listaRecibida);
         verify(repoDescuentosFalso).obtenerTodosLosDescuentos();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoDescuentosFalso, gestorTransaccionalFalso);
     }
 
 

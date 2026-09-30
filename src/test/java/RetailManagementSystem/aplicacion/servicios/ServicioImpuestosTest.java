@@ -40,6 +40,8 @@ public class ServicioImpuestosTest {
 
     private Impuesto impuestoPrueba;
 
+    private static final int ID_POR_DEFECTO = 1;
+
     private static final String NOMBRE_POR_DEFECTO = "IVA 2026";
 
     private static final BigDecimal PORCENTAJE_POR_DEFECTO = new BigDecimal("19");
@@ -47,7 +49,7 @@ public class ServicioImpuestosTest {
     @BeforeEach
     void setUp() {
         impuestoPrueba = Impuesto.reconstruirDesdeBD(
-                1,
+                ID_POR_DEFECTO,
                 NOMBRE_POR_DEFECTO,
                 PORCENTAJE_POR_DEFECTO,
                 true
@@ -87,21 +89,22 @@ public class ServicioImpuestosTest {
         assertEquals(0, impuestoCapturado.getPorcentaje().compareTo(PORCENTAJE_POR_DEFECTO));
         assertTrue(impuestoCapturado.isActivo());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoImpuestosFalso, gestorTransaccionalFalso);
     }
 
     @Test
     void deberiaObtenerImpuestoCorrectamente(){
         //ARRANGE
-        int idExistente = 1;
-        when(repoImpuestosFalso.obtenerImpuesto(idExistente)).thenReturn(impuestoPrueba);
+        when(repoImpuestosFalso.obtenerImpuesto(ID_POR_DEFECTO)).thenReturn(impuestoPrueba);
         //ACT
-        Impuesto resultado = servicioImpuestos.obtenerImpuesto(idExistente);
+        Impuesto resultado = servicioImpuestos.obtenerImpuesto(ID_POR_DEFECTO);
         //ASSERT
         assertNotNull(resultado);
         assertEquals(impuestoPrueba.getId(), resultado.getId());
         assertEquals(impuestoPrueba.getNombre(), resultado.getNombre());
-        verify(repoImpuestosFalso).obtenerImpuesto(idExistente);
+        verify(repoImpuestosFalso).obtenerImpuesto(ID_POR_DEFECTO);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoImpuestosFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -119,6 +122,7 @@ public class ServicioImpuestosTest {
         assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoImpuestosFalso).obtenerImpuesto(idInexistente);
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoImpuestosFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -126,14 +130,14 @@ public class ServicioImpuestosTest {
         // ARRANGE
         String nombreNuevo = "Nombre Nuevo";
         BigDecimal porcentajeNuevo = new BigDecimal("25");
-        when(repoImpuestosFalso.obtenerImpuesto(1)).thenReturn(impuestoPrueba);
+        when(repoImpuestosFalso.obtenerImpuesto(ID_POR_DEFECTO)).thenReturn(impuestoPrueba);
         // ACT
-        servicioImpuestos.actualizarImpuesto(1, nombreNuevo, porcentajeNuevo);
+        servicioImpuestos.actualizarImpuesto(ID_POR_DEFECTO, nombreNuevo, porcentajeNuevo);
         // ASSERT
         ArgumentCaptor<Impuesto> captor = ArgumentCaptor.forClass(Impuesto.class);
         verify(repoImpuestosFalso).actualizarImpuesto(captor.capture());
         Impuesto impuestoCapturado = captor.getValue();
-        assertEquals(1, impuestoCapturado.getId());
+        assertEquals(ID_POR_DEFECTO, impuestoCapturado.getId());
         assertEquals(nombreNuevo, impuestoCapturado.getNombre());
         assertEquals(0, impuestoCapturado.getPorcentaje().compareTo(porcentajeNuevo));
         assertTrue(impuestoCapturado.isActivo());
@@ -143,9 +147,9 @@ public class ServicioImpuestosTest {
     @Test
     void deberiaCambiarEstadoCorrectamente(){
         // ARRANGE
-        when(repoImpuestosFalso.obtenerImpuesto(1)).thenReturn(impuestoPrueba);
+        when(repoImpuestosFalso.obtenerImpuesto(ID_POR_DEFECTO)).thenReturn(impuestoPrueba);
         // ACT
-        servicioImpuestos.cambiarEstadoImpuesto(1);
+        servicioImpuestos.cambiarEstadoImpuesto(ID_POR_DEFECTO);
         // ASSERT
         assertFalse(impuestoPrueba.isActivo());
         verify(repoImpuestosFalso).actualizarImpuesto(impuestoPrueba);
@@ -183,7 +187,7 @@ public class ServicioImpuestosTest {
         assertEquals(listaEsperada, listaRecibida);
         verify(repoImpuestosFalso).obtenerImpuestosActivos();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
-
+        verifyNoMoreInteractions(repoImpuestosFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -198,6 +202,7 @@ public class ServicioImpuestosTest {
         assertEquals(listaEsperada, listaRecibida);
         verify(repoImpuestosFalso).obtenerTodosLosImpuestos();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoImpuestosFalso, gestorTransaccionalFalso);
     }
 
 }//===================================================================================================================//

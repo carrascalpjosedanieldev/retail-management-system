@@ -36,13 +36,16 @@ public class ServicioInventarioTest {
 
     private Inventario inventarioPrueba;
 
+    private static final int ID_POR_DEFECTO = 1;
+
     private static final String NOMBRE_POR_DEFECTO = "Inventario Estándar";
+
     private static final int CAPACIDAD_MAXIMA_POR_DEFECTO = 500;
 
     @BeforeEach
     void setUp(){
         inventarioPrueba = Inventario.reconstruirDesdeBD(
-                1,
+                ID_POR_DEFECTO,
                 NOMBRE_POR_DEFECTO,
                 CAPACIDAD_MAXIMA_POR_DEFECTO,
                 250
@@ -82,22 +85,24 @@ public class ServicioInventarioTest {
         assertEquals(CAPACIDAD_MAXIMA_POR_DEFECTO, inventarioCapturado.getCapacidadMaxima());
         assertEquals(0, inventarioCapturado.getCapacidadOcupada());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @Test
     void deberiaActualizarInventarioCorrectamente(){
         //ARRANGE
         String nombreNuevo = "Modificado";
-        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        when(repoInventarioFalso.obtenerInventario(ID_POR_DEFECTO)).thenReturn(inventarioPrueba);
         //ACT
-        servicioInventario.actualizarInventario(1, nombreNuevo);
+        servicioInventario.actualizarInventario(ID_POR_DEFECTO, nombreNuevo);
         //ASSERT
         ArgumentCaptor<Inventario> captor = ArgumentCaptor.forClass(Inventario.class);
         verify(repoInventarioFalso).actualizarInventario(captor.capture());
         Inventario inventarioCapturado = captor.getValue();
-        assertEquals(1, inventarioCapturado.getIdInventario());
+        assertEquals(ID_POR_DEFECTO, inventarioCapturado.getIdInventario());
         assertEquals(nombreNuevo, inventarioCapturado.getNombre());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -115,19 +120,21 @@ public class ServicioInventarioTest {
         assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoInventarioFalso, never()).actualizarInventario(any());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @ParameterizedTest
     @CsvSource( value = {"null", "''", "'   '"} , nullValues = "null")
     void noDeberiaActualizarNiPersistirSiElNombreNuevoEsInvalido(String nombreInvalido) {
         // ARRANGE
-        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        when(repoInventarioFalso.obtenerInventario(ID_POR_DEFECTO)).thenReturn(inventarioPrueba);
         // ACT & ASSERT
         assertThrows(
                 IllegalArgumentException.class,
-                () -> servicioInventario.actualizarInventario(1, nombreInvalido)
+                () -> servicioInventario.actualizarInventario(ID_POR_DEFECTO, nombreInvalido)
         );
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -142,6 +149,7 @@ public class ServicioInventarioTest {
         assertEquals(listaEsperada.size(), listaRecibida.size());
         verify(repoInventarioFalso).obtenerTodosInventariosConCapacidadOcupada();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -154,35 +162,38 @@ public class ServicioInventarioTest {
         assertTrue(resultado.isEmpty());
         verify(repoInventarioFalso).obtenerTodosInventariosConCapacidadOcupada();
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionDeLectura(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @Test
     void deberiaAumentarLaCapacidadMaximaDelInventarioCorrectamente(){
         //ARRANGE
-        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        when(repoInventarioFalso.obtenerInventario(ID_POR_DEFECTO)).thenReturn(inventarioPrueba);
         //ACT
-        servicioInventario.aumentarCapacidadMaximaInventario(1, 50);
+        servicioInventario.aumentarCapacidadMaximaInventario(ID_POR_DEFECTO, 50);
         //ASSERT
         ArgumentCaptor<Inventario> captor = ArgumentCaptor.forClass(Inventario.class);
         verify(repoInventarioFalso).actualizarInventario(captor.capture());
         Inventario inventarioCapturado = captor.getValue();
-        assertEquals(1, inventarioCapturado.getIdInventario());
+        assertEquals(ID_POR_DEFECTO, inventarioCapturado.getIdInventario());
         assertEquals(550, inventarioCapturado.getCapacidadMaxima());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @ParameterizedTest
     @CsvSource(value = {"0", "-5", "-100", "null"} , nullValues = "null")
     void noDeberiaPersistirSiLaCantidadAAumentarEsInvalida(Integer cantidadInvalida) {
         //ARRANGE
-        when(repoInventarioFalso.obtenerInventario(1)).thenReturn(inventarioPrueba);
+        when(repoInventarioFalso.obtenerInventario(ID_POR_DEFECTO)).thenReturn(inventarioPrueba);
         //ACT AND ASSERT
         assertThrows(
                 IllegalArgumentException.class,
-                () -> servicioInventario.aumentarCapacidadMaximaInventario(1, cantidadInvalida)
+                () -> servicioInventario.aumentarCapacidadMaximaInventario(ID_POR_DEFECTO, cantidadInvalida)
         );
         verify(repoInventarioFalso, never()).actualizarInventario(any());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
     @Test
@@ -200,6 +211,7 @@ public class ServicioInventarioTest {
         assertEquals(mensajeEsperado, exception.getMessage());
         verify(repoInventarioFalso, never()).actualizarInventario(any());
         verify(gestorTransaccionalFalso).ejecutarEnTransaccionConRetorno(any());
+        verifyNoMoreInteractions(repoInventarioFalso, gestorTransaccionalFalso);
     }
 
 }//===================================================================================================================//
