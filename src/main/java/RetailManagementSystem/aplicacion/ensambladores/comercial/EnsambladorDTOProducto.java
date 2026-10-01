@@ -39,7 +39,6 @@ public class EnsambladorDTOProducto {
     ) {
         EstrategiaEnsambladoDTOProducto<T> estrategia =
                 (EstrategiaEnsambladoDTOProducto<T>) this.estrategiasEnsamblado.get(producto.getTipoProducto());
-
         if (estrategia == null) {
             throw new IllegalStateException(
                     "No existe una estrategia de ensamblado registrada para: " + producto.getTipoProducto()
@@ -48,21 +47,23 @@ public class EnsambladorDTOProducto {
         return estrategia.ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
     }
 
-    public <T extends DatosTotalesProductoDTO> List<T> ensamblarDetalleProductos(
-            List<Producto> listaProductos, ContextoEvaluacion contextoEvaluacion
+    public <T extends Producto, R extends DatosTotalesProductoDTO> List<R> ensamblarDetalleProductos(
+            List<T> listaProductos, ContextoEvaluacion contextoEvaluacion
     ) {
         if (listaProductos.isEmpty()){
             return new ArrayList<>();
         }
-        List<T> datosProductos = new ArrayList<>();
-        for (Producto producto:listaProductos){
-            T productoResumen = ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
+        List<R> datosProductos = new ArrayList<>();
+        for (T producto:listaProductos){
+            R productoResumen = ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
             datosProductos.add(productoResumen);
         }
         return datosProductos;
     }
 
-    public ProductoResumenDTO ensamblarProductoResumen(Producto producto, ContextoEvaluacion contextoEvaluacion){
+    public ProductoResumenDTO ensamblarProductoResumen(
+            Producto producto, ContextoEvaluacion contextoEvaluacion
+    ) {
         BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, contextoEvaluacion);
         return new ProductoResumenDTO(
                 producto.getCodigo(), producto.getNombre(), valorVenta, producto.getStock(), producto.isActivo()
