@@ -3,6 +3,7 @@ package RetailManagementSystem.aplicacion.ensambladores;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +11,15 @@ public class EnsambladorDTOPoliticaVencimiento {
 
     //CONSTRUCTOR:
 
-    public EnsambladorDTOPoliticaVencimiento() {
-    }
+    public EnsambladorDTOPoliticaVencimiento() { }
 
     //MÉTODOS:
 
     public PoliticaVencimientoDTO ensamblarDatosPoliticaVencimiento(PoliticaVencimiento politicaVencimiento){
-        if (politicaVencimiento == null){
-            throw new IllegalArgumentException("NO puedes ensamblar un DTO de una Política de Vencimiento Vacía.");
-        }
         return new PoliticaVencimientoDTO(
                 politicaVencimiento.getIdPolitica(), politicaVencimiento.getNombre(),
-                politicaVencimiento.getDiasUmbral(), politicaVencimiento.getPorcentajeDescuento(),
+                politicaVencimiento.getDiasUmbral(),
+                politicaVencimiento.getPorcentajeDescuento().setScale(2, RoundingMode.HALF_UP),
                 politicaVencimiento.isActiva()
         );
     }

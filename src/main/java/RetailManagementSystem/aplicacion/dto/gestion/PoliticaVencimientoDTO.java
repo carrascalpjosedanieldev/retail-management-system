@@ -2,7 +2,8 @@ package RetailManagementSystem.aplicacion.dto.gestion;
 
 import java.math.BigDecimal;
 
-public record PoliticaVencimientoDTO(int idPoliticaVencimiento, String nombrePolitica, int diasUmbral,
-                                     BigDecimal porcentajeDescuento, boolean activo) {
-}
+public record PoliticaVencimientoDTO(
+        int idPoliticaVencimiento, String nombrePolitica, int diasUmbral, BigDecimal porcentajeDescuento,
+        boolean activo
+) { }
 
