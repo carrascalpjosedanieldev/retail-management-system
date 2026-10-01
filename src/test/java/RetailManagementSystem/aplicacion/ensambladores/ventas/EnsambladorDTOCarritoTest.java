@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.ventas;
 
 import RetailManagementSystem.aplicacion.dto.ventas.ItemCarritoDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.VistaPreviaCarritoDTO;

@@ -4,7 +4,7 @@ import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerec
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioProductos;
 import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
@@ -58,7 +58,7 @@ public class OrquestadorProductos {
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
         ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
-        return this.ensambladorDTOProducto.ensamblarDatosProductoRopa(
+        return (DatosTotalesProductoRopaDTO) this.ensambladorDTOProducto.ensamblarDatosTotalesProducto(
                 this.servicioProductos.actualizarProductoRopaDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
                         idImpuesto, idDescuento
@@ -82,7 +82,7 @@ public class OrquestadorProductos {
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
         ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
-        return this.ensambladorDTOProducto.ensamblarDatosProductoPerecedero(
+        return (DatosTotalesProductoPerecederoDTO) this.ensambladorDTOProducto.ensamblarDatosTotalesProducto(
                 this.servicioProductos.actualizarProductoPerecederoDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
                         idImpuesto, idDescuento, idPoliticaVencimiento

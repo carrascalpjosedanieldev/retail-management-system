@@ -3,7 +3,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 import RetailManagementSystem.aplicacion.dto.seguridad.PermisoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTORol;
+import RetailManagementSystem.aplicacion.ensambladores.seguridad.EnsambladorDTORol;
 import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioRol;
 import RetailManagementSystem.dominio.entidades.seguridad.Permiso;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;

@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.gestion;
 
 import RetailManagementSystem.dominio.entidades.gestion.Inventario;
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;

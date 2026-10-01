@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.gestion;
 
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;

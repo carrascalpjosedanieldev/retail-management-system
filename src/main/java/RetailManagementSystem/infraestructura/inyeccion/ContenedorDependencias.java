@@ -1,6 +1,16 @@
 package RetailManagementSystem.infraestructura.inyeccion;
 
-import RetailManagementSystem.aplicacion.ensambladores.*;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOProducto;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOServicio;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTODescuento;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOImpuesto;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOInventario;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOPoliticaVencimiento;
+import RetailManagementSystem.aplicacion.ensambladores.seguridad.EnsambladorDTOPermiso;
+import RetailManagementSystem.aplicacion.ensambladores.seguridad.EnsambladorDTORol;
+import RetailManagementSystem.aplicacion.ensambladores.seguridad.EnsambladorDTOUsuario;
+import RetailManagementSystem.aplicacion.ensambladores.ventas.EnsambladorDTOCarrito;
+import RetailManagementSystem.aplicacion.ensambladores.ventas.EnsambladorDTOFactura;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.*;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;

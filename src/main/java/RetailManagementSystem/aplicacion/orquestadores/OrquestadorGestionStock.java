@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOProducto;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioGestionStock;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;

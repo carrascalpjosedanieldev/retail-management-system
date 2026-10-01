@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.ventas;
 
 import RetailManagementSystem.dominio.entidades.ventas.Factura;
 import RetailManagementSystem.dominio.entidades.ventas.ItemVendido;

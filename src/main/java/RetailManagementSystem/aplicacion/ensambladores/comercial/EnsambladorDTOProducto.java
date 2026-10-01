@@ -1,10 +1,13 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.comercial;
 
 import RetailManagementSystem.aplicacion.dto.comercial.*;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTODescuento;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOImpuesto;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOPoliticaVencimiento;
 import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
@@ -42,7 +45,7 @@ public class EnsambladorDTOProducto {
 
     //MÉTODOS:
 
-    private DatosTotalesProductoDTO ensamblarDatosTotalesProducto(
+    public DatosTotalesProductoDTO ensamblarDatosTotalesProducto(
             Producto producto, ContextoEvaluacion contextoEvaluacion
     ) {
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(producto.getImpuesto());
@@ -73,11 +76,6 @@ public class EnsambladorDTOProducto {
         }
     }
 
-    public DatosTotalesProductoRopaDTO ensamblarDatosProductoRopa(
-            Producto producto, ContextoEvaluacion contextoEvaluacion) {
-        return (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
-    }
-
     public List<DatosTotalesProductoRopaDTO> ensamblarDetalleProductosRopa(
             List<Producto> productosRopa, ContextoEvaluacion contextoEvaluacion
     ) {
@@ -90,17 +88,11 @@ public class EnsambladorDTOProducto {
         return datosProductosRopa;
     }
 
-    public DatosTotalesProductoPerecederoDTO ensamblarDatosProductoPerecedero(
-            ProductoPerecedero perecedero, ContextoEvaluacion contextoEvaluacion
-    ) {
-        return (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(perecedero, contextoEvaluacion);
-    }
-
     public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(
-            List<Producto> productosRopa, ContextoEvaluacion contextoEvaluacion
+            List<Producto> productosPerecederos, ContextoEvaluacion contextoEvaluacion
     ) {
         List<DatosTotalesProductoPerecederoDTO> datosProductosRopa = new ArrayList<>();
-        for (Producto producto:productosRopa){
+        for (Producto producto: productosPerecederos){
             DatosTotalesProductoPerecederoDTO productoResumen =
                     (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
             datosProductosRopa.add(productoResumen);

@@ -1,7 +1,9 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.comercial;
 
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTODescuento;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOImpuesto;
 import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.aplicacion.dto.comercial.ServicioDTO;
@@ -35,9 +37,6 @@ public class EnsambladorDTOServicio {
     //MÉTODOS:
 
     public ServicioDTO ensamblarServicio(Servicio servicio, ContextoEvaluacion contextoEvaluacion){
-        if (servicio == null){
-            throw new IllegalArgumentException("NO puedes ensamblar un DTO de un Servicio Vacío.");
-        }
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(servicio.getImpuesto());
         DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(servicio.getDescuento());
         BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(servicio, contextoEvaluacion);

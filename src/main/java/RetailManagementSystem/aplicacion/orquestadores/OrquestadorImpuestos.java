@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOImpuesto;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOImpuesto;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioImpuestos;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;

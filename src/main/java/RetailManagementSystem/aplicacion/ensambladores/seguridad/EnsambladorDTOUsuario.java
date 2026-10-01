@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.seguridad;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.ResultadoRegistroDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;

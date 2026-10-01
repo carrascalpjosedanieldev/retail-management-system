@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOInventario;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioInventario;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;

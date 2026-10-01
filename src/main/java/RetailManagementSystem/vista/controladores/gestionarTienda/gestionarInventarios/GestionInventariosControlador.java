@@ -3,7 +3,7 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioInventario;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOInventario;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOInventario;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;

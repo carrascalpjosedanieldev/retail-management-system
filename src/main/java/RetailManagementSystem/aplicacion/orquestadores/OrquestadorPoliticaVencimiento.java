@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOPoliticaVencimiento;
+import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOPoliticaVencimiento;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioPoliticaVencimiento;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;

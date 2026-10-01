@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.gestion;
 
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;

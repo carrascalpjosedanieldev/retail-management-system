@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.ensambladores;
+package RetailManagementSystem.aplicacion.ensambladores.ventas;
 
 import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.ventas.Carrito;

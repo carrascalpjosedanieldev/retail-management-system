@@ -1,7 +1,7 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.ensambladores.EnsambladorDTOUsuario;
+import RetailManagementSystem.aplicacion.ensambladores.seguridad.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioLogin;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
