@@ -47,10 +47,10 @@ public class EnsambladorDTOCarrito {
             Carrito carrito, ContextoEvaluacion contextoEvaluacion
     ){
         List<ItemCarritoDTO> itemsCarrito = new ArrayList<>();
-        carrito.getItems().values().forEach(itemCarrito -> {
+        for (ItemCarrito itemCarrito:carrito.getItems().values()){
             ItemCarritoDTO itemCarritoDTO = ensamblarItemCarritoDTO(itemCarrito, contextoEvaluacion);
             itemsCarrito.add(itemCarritoDTO);
-        });
+        }
         return new VistaPreviaCarritoDTO(itemsCarrito, carrito.calcularTotal());
     }
 
