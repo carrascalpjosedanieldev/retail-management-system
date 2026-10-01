@@ -6,11 +6,11 @@ import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 
 import java.math.BigDecimal;
 
-public class EstrategiaProductoPerecedero extends EstrategiaProductoBase<ProductoPerecedero> implements EstrategiaCalculoPrecios<ProductoPerecedero> {
+public class EstrategiaCalculoPreciosProductoPerecedero extends EstrategiaCalculoPreciosProductoBase<ProductoPerecedero> implements EstrategiaCalculoPrecios<ProductoPerecedero> {
 
     //CONSTRUCTOR:
 
-    public EstrategiaProductoPerecedero(MatematicaFinanciera matematicaFinanciera) {
+    public EstrategiaCalculoPreciosProductoPerecedero(MatematicaFinanciera matematicaFinanciera) {
         super(matematicaFinanciera);
     }
 

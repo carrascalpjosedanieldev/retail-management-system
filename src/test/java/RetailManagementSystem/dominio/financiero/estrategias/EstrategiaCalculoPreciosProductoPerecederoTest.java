@@ -21,16 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EstrategiaProductoPerecederoTest extends EstrategiaProductoBaseAbstractaTest<ProductoPerecedero> {
+public class EstrategiaCalculoPreciosProductoPerecederoTest extends EstrategiaCalculoPreciosProductoBaseAbstractaTest<ProductoPerecedero> {
 
     @InjectMocks
-    private EstrategiaProductoPerecedero estrategiaProductoPerecedero;
+    private EstrategiaCalculoPreciosProductoPerecedero estrategiaProductoPerecedero;
 
     //TESTS
 
     @Override
-    protected EstrategiaProductoBase<ProductoPerecedero> instanciarEstrategia(MatematicaFinanciera matematicaFinanciera) {
-        return new EstrategiaProductoPerecedero(matematicaFinanciera);
+    protected EstrategiaCalculoPreciosProductoBase<ProductoPerecedero> instanciarEstrategia(MatematicaFinanciera matematicaFinanciera) {
+        return new EstrategiaCalculoPreciosProductoPerecedero(matematicaFinanciera);
     }
 
     @Override

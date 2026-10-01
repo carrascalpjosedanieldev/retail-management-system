@@ -4,11 +4,11 @@ import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 import org.mockito.Mockito;
 
-public class EstrategiaProductoRopaTest extends EstrategiaProductoBaseAbstractaTest<ProductoRopa> {
+public class EstrategiaCalculoPreciosProductoRopaTest extends EstrategiaCalculoPreciosProductoBaseAbstractaTest<ProductoRopa> {
 
     @Override
-    protected EstrategiaProductoBase<ProductoRopa> instanciarEstrategia(MatematicaFinanciera matematicaFinanciera) {
-        return new EstrategiaProductoRopa(matematicaFinanciera);
+    protected EstrategiaCalculoPreciosProductoBase<ProductoRopa> instanciarEstrategia(MatematicaFinanciera matematicaFinanciera) {
+        return new EstrategiaCalculoPreciosProductoRopa(matematicaFinanciera);
     }
 
     @Override

@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public abstract class EstrategiaProductoBaseAbstractaTest<T extends Producto> {
+public abstract class EstrategiaCalculoPreciosProductoBaseAbstractaTest<T extends Producto> {
 
     @Mock
     protected MatematicaFinanciera matematicaFinancieraFalso;
 
-    protected EstrategiaProductoBase<T> estrategia;
+    protected EstrategiaCalculoPreciosProductoBase<T> estrategia;
 
-    protected abstract EstrategiaProductoBase<T> instanciarEstrategia(MatematicaFinanciera matematicaFinanciera);
+    protected abstract EstrategiaCalculoPreciosProductoBase<T> instanciarEstrategia(MatematicaFinanciera matematicaFinanciera);
 
     protected abstract T mockearProducto();
 

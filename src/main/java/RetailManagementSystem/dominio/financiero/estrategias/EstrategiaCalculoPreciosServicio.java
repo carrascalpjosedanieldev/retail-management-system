@@ -1,29 +1,27 @@
 package RetailManagementSystem.dominio.financiero.estrategias;
 
 import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
-import RetailManagementSystem.dominio.entidades.comercial.Producto;
+import RetailManagementSystem.dominio.entidades.comercial.Servicio;
 import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 
 import java.math.BigDecimal;
 
-public abstract class EstrategiaProductoBase<T extends Producto> implements EstrategiaCalculoPrecios<T>{
+public class EstrategiaCalculoPreciosServicio implements EstrategiaCalculoPrecios<Servicio> {
 
     //ATRIBUTOS:
 
-    protected final MatematicaFinanciera matematicaFinanciera;
+    private final MatematicaFinanciera matematicaFinanciera;
 
     //CONSTRUCTOR:
 
-    public EstrategiaProductoBase(MatematicaFinanciera matematicaFinanciera) {
+    public EstrategiaCalculoPreciosServicio(MatematicaFinanciera matematicaFinanciera) {
         this.matematicaFinanciera = matematicaFinanciera;
     }
 
     //MÉTODOS:
 
     @Override
-    public BigDecimal calcularValorFinalSinImpuesto(
-            T itemFacturable, ContextoEvaluacion contextoEvaluacion
-    ) {
+    public BigDecimal calcularValorFinalSinImpuesto(Servicio itemFacturable, ContextoEvaluacion contextoEvaluacion) {
         BigDecimal precioBase = itemFacturable.getPrecioBase();
         BigDecimal valorFinalSinImpuesto = precioBase.subtract(
                 this.matematicaFinanciera.calcularMontoDescuento(precioBase, itemFacturable.getDescuento())
@@ -32,10 +30,10 @@ public abstract class EstrategiaProductoBase<T extends Producto> implements Estr
     }
 
     @Override
-    public BigDecimal calcularValorVenta(T itemFacturable, ContextoEvaluacion contextoEvaluacion) {
-        BigDecimal valorFinalSinImpuesto = calcularValorFinalSinImpuesto(itemFacturable, contextoEvaluacion);
-        BigDecimal valorVenta = valorFinalSinImpuesto.add(
-                this.matematicaFinanciera.calcularMontoImpuesto(valorFinalSinImpuesto, itemFacturable.getImpuesto())
+    public BigDecimal calcularValorVenta(Servicio itemFacturable, ContextoEvaluacion contextoEvaluacion) {
+        BigDecimal precioFinalSinImpuesto = calcularValorFinalSinImpuesto(itemFacturable, contextoEvaluacion);
+        BigDecimal valorVenta = precioFinalSinImpuesto.add(
+                this.matematicaFinanciera.calcularMontoImpuesto(precioFinalSinImpuesto, itemFacturable.getImpuesto())
         );
         return this.matematicaFinanciera.aplicarEscala(valorVenta);
     }

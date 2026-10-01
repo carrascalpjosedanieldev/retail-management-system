@@ -3,11 +3,11 @@ package RetailManagementSystem.dominio.financiero.estrategias;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 
-public class EstrategiaProductoRopa extends EstrategiaProductoBase<ProductoRopa> implements EstrategiaCalculoPrecios<ProductoRopa> {
+public class EstrategiaCalculoPreciosProductoRopa extends EstrategiaCalculoPreciosProductoBase<ProductoRopa> implements EstrategiaCalculoPrecios<ProductoRopa> {
 
     //CONSTRUCTOR:
 
-    public EstrategiaProductoRopa(MatematicaFinanciera matematicaFinanciera) {
+    public EstrategiaCalculoPreciosProductoRopa(MatematicaFinanciera matematicaFinanciera) {
         super(matematicaFinanciera);
     }
 

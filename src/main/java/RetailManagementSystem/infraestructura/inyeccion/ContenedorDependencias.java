@@ -7,9 +7,9 @@ import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
 import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaCalculoPrecios;
-import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaProductoPerecedero;
-import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaProductoRopa;
-import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaServicio;
+import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaCalculoPreciosProductoPerecedero;
+import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaCalculoPreciosProductoRopa;
+import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaCalculoPreciosServicio;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioProductos;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioServicios;
 import RetailManagementSystem.aplicacion.servicios.gestion.*;
@@ -142,9 +142,9 @@ public class ContenedorDependencias {
         matematicaFinanciera = new MatematicaFinanciera();
 
         estrategiasCalculoPrecios = new HashMap<>();
-        estrategiasCalculoPrecios.put(ProductoRopa.class, new EstrategiaProductoRopa(matematicaFinanciera));
-        estrategiasCalculoPrecios.put(ProductoPerecedero.class, new EstrategiaProductoPerecedero(matematicaFinanciera));
-        estrategiasCalculoPrecios.put(Servicio.class, new EstrategiaServicio(matematicaFinanciera));
+        estrategiasCalculoPrecios.put(ProductoRopa.class, new EstrategiaCalculoPreciosProductoRopa(matematicaFinanciera));
+        estrategiasCalculoPrecios.put(ProductoPerecedero.class, new EstrategiaCalculoPreciosProductoPerecedero(matematicaFinanciera));
+        estrategiasCalculoPrecios.put(Servicio.class, new EstrategiaCalculoPreciosServicio(matematicaFinanciera));
 
         calculadoraPrecios = new CalculadoraPrecios(matematicaFinanciera, estrategiasCalculoPrecios);
 
