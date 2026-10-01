@@ -51,7 +51,8 @@ public class EnsambladorDTOServicio {
     ) {
         List<ServicioDTO> listaServicios = new ArrayList<>();
         for (Servicio servicio: servicios){
-            listaServicios.add(this.ensamblarServicio(servicio, contextoEvaluacion));
+            ServicioDTO servicioDTO = ensamblarServicio(servicio, contextoEvaluacion);
+            listaServicios.add(servicioDTO);
         }
         return listaServicios;
     }
