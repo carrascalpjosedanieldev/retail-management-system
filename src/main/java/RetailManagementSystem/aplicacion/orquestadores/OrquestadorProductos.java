@@ -47,7 +47,7 @@ public class OrquestadorProductos {
 
     public List<DatosTotalesProductoRopaDTO> obtenerProductosRopaDeInventario(int idInventario, LocalDate fecha){
         ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
-        return this.ensambladorDTOProducto.ensamblarDetalleProductosRopa(
+        return this.ensambladorDTOProducto.ensamblarDetalleProductos(
                 this.servicioProductos.obtenerTodosLosProductosRopaDeInventario(idInventario), contextoEvaluacion
         );
     }
@@ -58,7 +58,7 @@ public class OrquestadorProductos {
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
         ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
-        return (DatosTotalesProductoRopaDTO) this.ensambladorDTOProducto.ensamblarDatosTotalesProducto(
+        return this.ensambladorDTOProducto.ensamblarDatosTotalesProducto(
                 this.servicioProductos.actualizarProductoRopaDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
                         idImpuesto, idDescuento
@@ -70,7 +70,7 @@ public class OrquestadorProductos {
             int idInventario, LocalDate fecha
     ) {
         ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
-        return this.ensambladorDTOProducto.ensamblarDetalleProductosPerecedero(
+        return this.ensambladorDTOProducto.ensamblarDetalleProductos(
                 this.servicioProductos.obtenerTodosLosProductosPerecederoDeInventario(idInventario), contextoEvaluacion
         );
     }
@@ -82,7 +82,7 @@ public class OrquestadorProductos {
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.EDITAR_PRODUCTO);
         ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
-        return (DatosTotalesProductoPerecederoDTO) this.ensambladorDTOProducto.ensamblarDatosTotalesProducto(
+        return this.ensambladorDTOProducto.ensamblarDatosTotalesProducto(
                 this.servicioProductos.actualizarProductoPerecederoDeInventario(
                         idInventario, codigoProducto, nombreNuevo, valorCompra, porcentajeGanancia,
                         idImpuesto, idDescuento, idPoliticaVencimiento

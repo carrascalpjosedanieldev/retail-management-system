@@ -1,18 +1,11 @@
 package RetailManagementSystem.aplicacion.ensambladores.comercial;
 
 import RetailManagementSystem.aplicacion.dto.comercial.*;
-import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
-import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
-import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.comercial.estrategias.EstrategiaEnsambladoDTOProducto;
-import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTODescuento;
-import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOImpuesto;
-import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOPoliticaVencimiento;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
-import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
-import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 
 import java.math.BigDecimal;
@@ -24,84 +17,49 @@ public class EnsambladorDTOProducto {
 
     //ATRIBUTOS:
 
-    private Map<Class<? extends Producto>, EstrategiaEnsambladoDTOProducto<?>> estrategiasEnsamblado;
+    private final Map<TipoProducto, EstrategiaEnsambladoDTOProducto<?>> estrategiasEnsamblado;
 
     private final CalculadoraPrecios calculadoraPrecios;
-
-    private final EnsambladorDTOImpuesto ensambladorDTOImpuesto;
-
-    private final EnsambladorDTODescuento ensambladorDTODescuento;
-
-    private final EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
 
     //CONSTRUCTOR:
 
     public EnsambladorDTOProducto(
-            CalculadoraPrecios calculadoraPrecios, EnsambladorDTOImpuesto ensambladorDTOImpuesto,
-            EnsambladorDTODescuento ensambladorDTODescuento,
-            EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento
+            Map<TipoProducto, EstrategiaEnsambladoDTOProducto<?>> estrategiasEnsamblado,
+            CalculadoraPrecios calculadoraPrecios
     ) {
+        this.estrategiasEnsamblado = estrategiasEnsamblado;
         this.calculadoraPrecios = calculadoraPrecios;
-        this.ensambladorDTOImpuesto = ensambladorDTOImpuesto;
-        this.ensambladorDTODescuento = ensambladorDTODescuento;
-        this.ensambladorDTOPoliticaVencimiento = ensambladorDTOPoliticaVencimiento;
     }
 
     //MÉTODOS:
 
-    public DatosTotalesProductoDTO ensamblarDatosTotalesProducto(
+    @SuppressWarnings("unchecked")
+    public <T extends DatosTotalesProductoDTO> T ensamblarDatosTotalesProducto(
             Producto producto, ContextoEvaluacion contextoEvaluacion
     ) {
-        ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(producto.getImpuesto());
-        DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(producto.getDescuento());
-        BigDecimal valorVenta = this.calculadoraPrecios.calcularValorVenta(producto, contextoEvaluacion);
-        if (producto instanceof ProductoRopa ropa){
-            return new DatosTotalesProductoRopaDTO(
-                    ropa.getCodigo(), ropa.getNombre(), ropa.getValorCompra(), ropa.getPorcentajeGanancia(),
-                    valorVenta, ropa.getStock(), datosImpuesto, datosDescuento, ropa.getTalla(),
-                    ropa.isActivo()
+        EstrategiaEnsambladoDTOProducto<T> estrategia =
+                (EstrategiaEnsambladoDTOProducto<T>) this.estrategiasEnsamblado.get(producto.getTipoProducto());
+
+        if (estrategia == null) {
+            throw new IllegalStateException(
+                    "No existe una estrategia de ensamblado registrada para: " + producto.getTipoProducto()
             );
-        } else if (producto instanceof ProductoPerecedero perecedero){
-            PoliticaVencimientoDTO datosPoliticaVencimiento =
-                    this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
-                            perecedero.getPoliticaVencimiento()
-                    );
-            if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
-                throw new IllegalStateException("Se Requiere una Fecha para Calcular el Valor del Producto");
-            }
-            return new DatosTotalesProductoPerecederoDTO(
-                    perecedero.getCodigo(), perecedero.getNombre(), perecedero.getValorCompra(),
-                    perecedero.getPorcentajeGanancia(), valorVenta, perecedero.getStock(), datosImpuesto,
-                    datosDescuento, perecedero.getFechaVencimiento(), datosPoliticaVencimiento,
-                    perecedero.estaVencido(contextoEvaluacion.getFechaEvaluacion().get()), perecedero.isActivo()
-            );
-        } else {
-            throw new IllegalStateException("Tipo de Producto no soportado por el Sistema");
         }
+        return estrategia.ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
     }
 
-    public List<DatosTotalesProductoRopaDTO> ensamblarDetalleProductosRopa(
-            List<Producto> productosRopa, ContextoEvaluacion contextoEvaluacion
+    public <T extends DatosTotalesProductoDTO> List<T> ensamblarDetalleProductos(
+            List<Producto> listaProductos, ContextoEvaluacion contextoEvaluacion
     ) {
-        List<DatosTotalesProductoRopaDTO> datosProductosRopa = new ArrayList<>();
-        for (Producto producto:productosRopa){
-            DatosTotalesProductoRopaDTO productoResumen =
-                    (DatosTotalesProductoRopaDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
-            datosProductosRopa.add(productoResumen);
+        if (listaProductos.isEmpty()){
+            return new ArrayList<>();
         }
-        return datosProductosRopa;
-    }
-
-    public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(
-            List<Producto> productosPerecederos, ContextoEvaluacion contextoEvaluacion
-    ) {
-        List<DatosTotalesProductoPerecederoDTO> datosProductosPerecedero = new ArrayList<>();
-        for (Producto producto: productosPerecederos){
-            DatosTotalesProductoPerecederoDTO productoResumen =
-                    (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
-            datosProductosPerecedero.add(productoResumen);
+        List<T> datosProductos = new ArrayList<>();
+        for (Producto producto:listaProductos){
+            T productoResumen = ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
+            datosProductos.add(productoResumen);
         }
-        return datosProductosPerecedero;
+        return datosProductos;
     }
 
     public ProductoResumenDTO ensamblarProductoResumen(Producto producto, ContextoEvaluacion contextoEvaluacion){

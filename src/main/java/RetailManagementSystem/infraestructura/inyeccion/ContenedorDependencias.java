@@ -2,6 +2,9 @@ package RetailManagementSystem.infraestructura.inyeccion;
 
 import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOProducto;
 import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOServicio;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.estrategias.EstrategiaEnsambladoDTOPerecedero;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.estrategias.EstrategiaEnsambladoDTOProducto;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.estrategias.EstrategiaEnsambladoDTORopa;
 import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTODescuento;
 import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOImpuesto;
 import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOInventario;
@@ -49,6 +52,13 @@ import java.util.Map;
 public class ContenedorDependencias {
 
     //DEPENDENCIAS:
+
+        //ESTRATEGIAS DE ENSAMBLADO:
+
+    private static Map<TipoProducto, EstrategiaEnsambladoDTOProducto<?>> estrategiasEnsamblado;
+
+    private static EstrategiaEnsambladoDTORopa estrategiaEnsambladoDTORopa;
+    private static EstrategiaEnsambladoDTOPerecedero estrategiaEnsambladoDTOPerecedero;
 
         //ENSAMBLADORES:
 
@@ -158,16 +168,27 @@ public class ContenedorDependencias {
 
         calculadoraPrecios = new CalculadoraPrecios(matematicaFinanciera, estrategiasCalculoPrecios);
 
-        //INSTANCIACIÓN DE ENSAMBLADORES:
+        //ENSAMBLADORES:
 
-        ensambladorDTOCarrito = new EnsambladorDTOCarrito(calculadoraPrecios);
-        ensambladorDTODescuento = new EnsambladorDTODescuento();
-        ensambladorDTOFactura = new EnsambladorDTOFactura();
         ensambladorDTOImpuesto = new EnsambladorDTOImpuesto();
+        ensambladorDTODescuento = new EnsambladorDTODescuento();
         ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
-        ensambladorDTOProducto = new EnsambladorDTOProducto(
+
+        estrategiaEnsambladoDTORopa = new EstrategiaEnsambladoDTORopa(
+                calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento
+        );
+
+        estrategiaEnsambladoDTOPerecedero = new EstrategiaEnsambladoDTOPerecedero(
                 calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento
         );
+
+        estrategiasEnsamblado = new HashMap<>();
+        estrategiasEnsamblado.put(TipoProducto.ROPA, estrategiaEnsambladoDTORopa);
+        estrategiasEnsamblado.put(TipoProducto.PERECEDERO, estrategiaEnsambladoDTOPerecedero);
+
+        ensambladorDTOCarrito = new EnsambladorDTOCarrito(calculadoraPrecios);
+        ensambladorDTOFactura = new EnsambladorDTOFactura();
+        ensambladorDTOProducto = new EnsambladorDTOProducto(estrategiasEnsamblado, calculadoraPrecios);
         ensambladorDTOInventario = new EnsambladorDTOInventario();
         ensambladorDTOServicio = new EnsambladorDTOServicio(
                 calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento

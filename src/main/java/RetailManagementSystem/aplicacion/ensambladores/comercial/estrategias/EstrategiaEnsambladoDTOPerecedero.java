@@ -17,7 +17,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EstrategiaEnsambladoDTOPerecedero implements EstrategiaEnsambladoDTOProducto<DatosTotalesProductoPerecederoDTO> {
+public class EstrategiaEnsambladoDTOPerecedero
+        implements EstrategiaEnsambladoDTOProducto<DatosTotalesProductoPerecederoDTO> {
 
     //ATRIBUTOS:
 
@@ -69,7 +70,9 @@ public class EstrategiaEnsambladoDTOPerecedero implements EstrategiaEnsambladoDT
     }
 
     @Override
-    public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductos(List<Producto> listaProductos, ContextoEvaluacion contextoEvaluacion) {
+    public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductos(
+            List<Producto> listaProductos, ContextoEvaluacion contextoEvaluacion
+    ) {
         List<DatosTotalesProductoPerecederoDTO> datosProductosPerecedero = new ArrayList<>();
         for (Producto producto: listaProductos){
             DatosTotalesProductoPerecederoDTO productoResumen =

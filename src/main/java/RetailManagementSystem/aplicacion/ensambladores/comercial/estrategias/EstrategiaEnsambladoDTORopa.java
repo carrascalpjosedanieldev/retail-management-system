@@ -14,7 +14,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EstrategiaEnsambladoDTORopa implements EstrategiaEnsambladoDTOProducto<DatosTotalesProductoRopaDTO> {
+public class EstrategiaEnsambladoDTORopa
+        implements EstrategiaEnsambladoDTOProducto<DatosTotalesProductoRopaDTO> {
 
     //ATRIBUTOS:
 
