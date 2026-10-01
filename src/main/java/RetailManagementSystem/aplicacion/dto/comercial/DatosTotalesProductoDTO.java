@@ -1,5 +1,4 @@
 package RetailManagementSystem.aplicacion.dto.comercial;
 
-public interface DatosTotalesProductoDTO {
-}
+public interface DatosTotalesProductoDTO { }
 

@@ -12,5 +12,5 @@ public record DatosTotalesProductoPerecederoDTO(
         BigDecimal valorVentaFinal, int stock, ImpuestoDTO datosImpuesto, DescuentoDTO datosDescuento,
         LocalDate fechaVencimiento, PoliticaVencimientoDTO datosPoliticaVencimiento, boolean estaVencido,
         boolean activo
-) implements DatosTotalesProductoDTO{ }
+) implements DatosTotalesProductoDTO { }
 

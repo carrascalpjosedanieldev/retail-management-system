@@ -5,6 +5,7 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
+import RetailManagementSystem.aplicacion.ensambladores.comercial.estrategias.EstrategiaEnsambladoDTOProducto;
 import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTODescuento;
 import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOImpuesto;
 import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOPoliticaVencimiento;
@@ -17,10 +18,13 @@ import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EnsambladorDTOProducto {
 
     //ATRIBUTOS:
+
+    private Map<Class<? extends Producto>, EstrategiaEnsambladoDTOProducto<?>> estrategiasEnsamblado;
 
     private final CalculadoraPrecios calculadoraPrecios;
 
@@ -91,13 +95,13 @@ public class EnsambladorDTOProducto {
     public List<DatosTotalesProductoPerecederoDTO> ensamblarDetalleProductosPerecedero(
             List<Producto> productosPerecederos, ContextoEvaluacion contextoEvaluacion
     ) {
-        List<DatosTotalesProductoPerecederoDTO> datosProductosRopa = new ArrayList<>();
+        List<DatosTotalesProductoPerecederoDTO> datosProductosPerecedero = new ArrayList<>();
         for (Producto producto: productosPerecederos){
             DatosTotalesProductoPerecederoDTO productoResumen =
                     (DatosTotalesProductoPerecederoDTO) ensamblarDatosTotalesProducto(producto, contextoEvaluacion);
-            datosProductosRopa.add(productoResumen);
+            datosProductosPerecedero.add(productoResumen);
         }
-        return datosProductosRopa;
+        return datosProductosPerecedero;
     }
 
     public ProductoResumenDTO ensamblarProductoResumen(Producto producto, ContextoEvaluacion contextoEvaluacion){

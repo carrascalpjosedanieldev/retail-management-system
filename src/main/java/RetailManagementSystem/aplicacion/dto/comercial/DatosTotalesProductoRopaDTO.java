@@ -10,5 +10,5 @@ public record DatosTotalesProductoRopaDTO(
         String codigo, String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia,
         BigDecimal valorVentaFinal, int stock, ImpuestoDTO datosImpuesto, DescuentoDTO datosDescuento,
         Talla talla, boolean activo
-) implements DatosTotalesProductoDTO{ }
+) implements DatosTotalesProductoDTO { }
 
