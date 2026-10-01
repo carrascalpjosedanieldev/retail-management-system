@@ -49,6 +49,9 @@ public class EstrategiaEnsambladoDTOPerecedero
     public DatosTotalesProductoPerecederoDTO ensamblarDatosTotalesProducto(
             Producto producto, ContextoEvaluacion contextoEvaluacion
     ) {
+        if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
+            throw new IllegalStateException("Se Requiere una Fecha para Calcular el Valor del Producto");
+        }
         ProductoPerecedero perecedero = (ProductoPerecedero) producto;
         ImpuestoDTO datosImpuesto = this.ensambladorDTOImpuesto.ensamblarDatosImpuesto(perecedero.getImpuesto());
         DescuentoDTO datosDescuento = this.ensambladorDTODescuento.ensamblarDatosDescuento(perecedero.getDescuento());
@@ -57,9 +60,6 @@ public class EstrategiaEnsambladoDTOPerecedero
                 this.ensambladorDTOPoliticaVencimiento.ensamblarDatosPoliticaVencimiento(
                         perecedero.getPoliticaVencimiento()
                 );
-        if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
-            throw new IllegalStateException("Se Requiere una Fecha para Calcular el Valor del Producto");
-        }
         LocalDate fecha = contextoEvaluacion.getFechaEvaluacion().get();
         return new DatosTotalesProductoPerecederoDTO(
                 perecedero.getCodigo(), perecedero.getNombre(), perecedero.getValorCompra(),
