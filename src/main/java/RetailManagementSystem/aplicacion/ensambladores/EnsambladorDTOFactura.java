@@ -12,15 +12,11 @@ public class EnsambladorDTOFactura {
 
     //CONSTRUCTOR:
 
-    public EnsambladorDTOFactura(){
-    }
+    public EnsambladorDTOFactura() { }
 
     //MÉTODOS:
 
     public FacturaDTO ensamblarFactura(Factura factura){
-        if (factura == null){
-            throw new IllegalArgumentException("NO puedes ensamblar un DTO de una Factura Vacía.");
-        }
         List<ItemVendidoFacturaDTO> datosItemsFactura = new ArrayList<>();
         for (ItemVendido itemVendido : factura.getItemsFinales()){
             ItemVendidoFacturaDTO datosItem = new ItemVendidoFacturaDTO(
