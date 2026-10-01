@@ -1,5 +1,6 @@
 package RetailManagementSystem.dominio.entidades.comercial;
 
+import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.ProductoVencidoException;
@@ -89,8 +90,9 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
     @Test
     void deberiaLanzarExcepcionSiLaPoliticaDeVencimientoEstaInactivaAlCrearNuevo(){
         //ARRANGE
-        PoliticaVencimiento politicaVInactiva =
-                PoliticaVencimiento.crearNuevo("Inactiva", 3, new BigDecimal("15"), false);
+        PoliticaVencimiento politicaVInactiva = PoliticaVencimiento.reconstruirDesdeBD(
+                1, "Inactiva", 3, new BigDecimal("15"), false
+        );
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
@@ -219,78 +221,55 @@ public class ProductoPerecederoTest extends ProductoBaseTest<ProductoPerecedero>
         assertDoesNotThrow(()-> perecedero.validarEstadoParaVenta(fechaReferencia));
     }
 
-//    @Test
-//    void noDeberiaAplicarDescuentoDePoliticaSiEstaFueraDelUmbral() {
-//        // ARRANGE
-//        productoPrueba.cambiarValorCompra(new BigDecimal("5000"));
-//        productoPrueba.cambiarPorcentajeGanancia(new BigDecimal("100"));
-//        int diasUmbralPreparado = 10;
-//        PoliticaVencimiento politicaVencimiento =
-//                PoliticaVencimiento.crearNuevo("Política", diasUmbralPreparado, BigDecimal.ZERO, true);
-//        Descuento descuento = crearDescuentoConPorcentaje("0");
-//        productoPrueba.cambiarPoliticaVencimiento(politicaVencimiento);
-//        productoPrueba.cambiarDescuento(descuento);
-//            // Simulamos que faltan 11 días (Fuera del umbral) calculándolo dinámicamente
-//        LocalDate fechaReferencia = productoPrueba.getFechaVencimiento().minusDays(diasUmbralPreparado + 1);
-//        // ACT
-//        BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fechaReferencia);
-//        // ASSERT
-//        assertEquals(0, new BigDecimal("10000.000000").compareTo(resultado));
-//    }
+    @Test
+    void noDeberiaAplicarDescuentoDePoliticaSiEstaFueraDelUmbral() {
+        // ARRANGE
+        productoPrueba.cambiarValorCompra(new BigDecimal("5000"));
+        productoPrueba.cambiarPorcentajeGanancia(new BigDecimal("100"));
+        int diasUmbralPreparado = 10;
+        PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
+                1, "Política", diasUmbralPreparado, BigDecimal.ZERO, true
+        );
+        Descuento descuento = Descuento.reconstruirDesdeBD(
+                1, "Descuento", new BigDecimal("0"), true
+        );
+        productoPrueba.cambiarPoliticaVencimiento(politicaVencimiento);
+        productoPrueba.cambiarDescuento(descuento);
+            // Simulamos que faltan 11 días (Fuera del umbral) calculándolo dinámicamente
+        LocalDate fechaReferencia = productoPrueba.getFechaVencimiento().minusDays(diasUmbralPreparado + 1);
+        // ACT
+        BigDecimal resultado =
+                productoPrueba.calcularDescuentoPolitica(productoPrueba.getPrecioBase(), fechaReferencia);
+        // ASSERT
+        assertEquals(0, new BigDecimal("0.000000").compareTo(resultado));
+    }
 
-//    @ParameterizedTest
-//    @CsvSource({
-//          // compra,   ganancia, umbralPol, porcPolVen, diasRestantes, esperado
-//            "5000,     100,      5,         20,         4,             8000.000000",
-//            "2000,     50,       10,        50,         0,             1500.000000"
-//    })
-//    void deberiaAplicarDescuentoDePoliticaSiEstaDentroDelUmbral(
-//            String valorCompraSt, String porcentajeGananciaSt, int diasUmbral,
-//            String porcentajePoliticaSt, int diasRestantes, String resultadoEsperadoSt
-//    ) {
-//        // ARRANGE
-//        productoPrueba.cambiarValorCompra(new BigDecimal(valorCompraSt));
-//        productoPrueba.cambiarPorcentajeGanancia(new BigDecimal(porcentajeGananciaSt));
-//        Descuento descuento = crearDescuentoConPorcentaje("0");
-//        PoliticaVencimiento politicaVencimiento =
-//                PoliticaVencimiento.crearNuevo("Política", diasUmbral, new BigDecimal(porcentajePoliticaSt), true);
-//        productoPrueba.cambiarDescuento(descuento);
-//        productoPrueba.cambiarPoliticaVencimiento(politicaVencimiento);
-//            //Calculamos dinámicamente la fecha de referencia restando diasRestantes
-//        LocalDate fechaReferencia = productoPrueba.getFechaVencimiento().minusDays(diasRestantes);
-//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-//        // ACT
-//        BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fechaReferencia);
-//        // ASSERT
-//        assertEquals(0, resultadoEsperado.compareTo(resultado));
-//    }
-
-//    @Override
-//    @ParameterizedTest
-//    @CsvSource({
-//          // valorCompra,   ganancia, descuento, esperado,      fechaReferencia
-//            "85000,         30,       10,        99450.000000,   2026-12-31",
-//            "125000,        20,       0,         150000.000000,  2026-10-15",
-//            "67500,         25,       5,         80156.250000,   2026-11-20"
-//    })
-//    void deberiaCalcularElValorFinalSinImpuestoCorrectamente(
-//            String valorCompraSt, String porcentajeGananciaSt, String descuentoSt, String resultadoEsperadoSt,
-//            LocalDate fechaReferencia
-//    ) {
-//        // ARRANGE
-//        BigDecimal valorCompra = new BigDecimal(valorCompraSt);
-//        BigDecimal porcentajeGanancia = new BigDecimal(porcentajeGananciaSt);
-//        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
-//        productoPrueba.cambiarValorCompra(valorCompra);
-//        productoPrueba.cambiarPorcentajeGanancia(porcentajeGanancia);
-//        Descuento descuento = crearDescuentoConPorcentaje(descuentoSt);
-//        productoPrueba.cambiarDescuento(descuento);
-//        // ACT
-//        BigDecimal resultado = productoPrueba.getValorFinalSinImpuesto(fechaReferencia);
-//        // ASSERT
-//        assertEquals(0, resultadoEsperado.compareTo(resultado),
-//                "El cálculo base falló al anular la política de vencimiento");
-//    }
+    @ParameterizedTest
+    @CsvSource({
+          // compra,   ganancia, umbralPol, porcPolVen, diasRestantes, esperado
+            "5000,     100,      5,         20,         4,             2000.000000",
+            "2000,     50,       10,        50,         0,             1500.000000"
+    })
+    void deberiaAplicarDescuentoDePoliticaSiEstaDentroDelUmbral(
+            String valorCompraSt, String porcentajeGananciaSt, int diasUmbral,
+            String porcentajePoliticaSt, int diasRestantes, String resultadoEsperadoSt
+    ) {
+        // ARRANGE
+        productoPrueba.cambiarValorCompra(new BigDecimal(valorCompraSt));
+        productoPrueba.cambiarPorcentajeGanancia(new BigDecimal(porcentajeGananciaSt));
+        PoliticaVencimiento politicaVencimiento = PoliticaVencimiento.reconstruirDesdeBD(
+                1, "Política", diasUmbral, new BigDecimal(porcentajePoliticaSt), true
+        );
+        productoPrueba.cambiarPoliticaVencimiento(politicaVencimiento);
+            //Calculamos dinámicamente la fecha de referencia restando diasRestantes
+        LocalDate fechaReferencia = productoPrueba.getFechaVencimiento().minusDays(diasRestantes);
+        BigDecimal resultadoEsperado = new BigDecimal(resultadoEsperadoSt);
+        // ACT
+        BigDecimal resultado =
+                productoPrueba.calcularDescuentoPolitica(productoPrueba.getPrecioBase(), fechaReferencia);
+        // ASSERT
+        assertEquals(0, resultadoEsperado.compareTo(resultado));
+    }
 
 }//===================================================================================================================//
 
