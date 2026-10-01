@@ -10,15 +10,11 @@ public class EnsambladorDTOInventario {
 
     //CONSTRUCTOR:
 
-    public EnsambladorDTOInventario() {
-    }
+    public EnsambladorDTOInventario() { }
 
     //MÉTODOS:
 
-    public InventarioDTO ensamblarDatosInventario(Inventario inventario){
-        if (inventario == null){
-            throw new IllegalArgumentException("NO puedes ensamblar un DTO de un Inventario Vacío.");
-        }
+    public InventarioDTO ensamblarDatosInventario(Inventario inventario) {
         return new InventarioDTO(
                 inventario.getIdInventario(),
                 inventario.getNombre(),
@@ -28,10 +24,11 @@ public class EnsambladorDTOInventario {
         );
     }
 
-    public List<InventarioDTO> ensamblarDetalleInventarioGeneral(List<Inventario> inventarios){
+    public List<InventarioDTO> ensamblarDetalleInventarioGeneral(List<Inventario> inventarios) {
         List<InventarioDTO> inventarioGeneral = new ArrayList<>();
         for (Inventario inventario:inventarios){
-            inventarioGeneral.add(this.ensamblarDatosInventario(inventario));
+            InventarioDTO inventarioDTO = ensamblarDatosInventario(inventario);
+            inventarioGeneral.add(inventarioDTO);
         }
         return inventarioGeneral;
     }
