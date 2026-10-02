@@ -23,23 +23,16 @@ public class EnsambladorDTOUsuario {
 
     //MÉTODOS:
 
-    private void validarUsuario(Usuario usuario){
-        if (usuario == null){
-            throw new IllegalArgumentException("NO puedes ensamblar un Usuario Nulo.");
-        }
-    }
-
     public UsuarioDTOCompleto ensamblarDTOUsuarioCompleto(Usuario usuario){
-        validarUsuario(usuario);
         List<RolDTO> rolesUsuario = this.ensambladorDTORol.ensamblarDetalleRoles(usuario.getRoles());
         return new UsuarioDTOCompleto(
                 usuario.getIdUsuario(), usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
                 usuario.isActivo(), usuario.isDebeCambiarContrasena(), rolesUsuario,
-                usuario.getPermisosCacheados().stream().toList());
+                usuario.getPermisosCacheados().stream().toList()
+        );
     }
 
     public UsuarioDTOBasico ensamblarDTOUsuarioBasico(Usuario usuario){
-        validarUsuario(usuario);
         return new UsuarioDTOBasico(
                 usuario.getIdUsuario(), usuario.getNombre(), usuario.getApellido(), usuario.getEmail(),
                 usuario.isActivo(), usuario.isDebeCambiarContrasena()
