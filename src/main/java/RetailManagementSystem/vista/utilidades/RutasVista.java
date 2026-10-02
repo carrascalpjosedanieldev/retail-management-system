@@ -136,8 +136,18 @@ public class RutasVista {
 
                 //TAB GENERAL:
 
+                    //CREAR PRODUCTO:
+
     public static final String CREAR_PRODUCTO_VIEW =
-            "/vista/gestionarTienda/gestionProductos/tabGeneral/crearProducto.fxml";
+            "/vista/gestionarTienda/gestionProductos/tabGeneral/crearProducto/crearProducto.fxml";
+
+    public static final String FORMULARIO_PERECEDERO_VIEW =
+            "/vista/gestionarTienda/gestionProductos/tabGeneral/crearProducto/FormularioPerecedero.fxml";
+
+    public static final String FORMULARIO_ROPA_VIEW =
+            "/vista/gestionarTienda/gestionProductos/tabGeneral/crearProducto/FormularioRopa.fxml";
+
+
 
     public static final String MANEJAR_STOCK_PRODUCTO_VIEW =
             "/vista/gestionarTienda/gestionProductos/tabGeneral/manejarStock.fxml";
@@ -146,9 +156,9 @@ public class RutasVista {
             "/vista/gestionarTienda/gestionProductos/tabGeneral/moverProductoAOtroInventario.fxml";
 
 
-
     public static final String GESTIONAR_PRODUCTOS_VIEW =
             "/vista/gestionarTienda/gestionProductos/GestionProductos.fxml";
+
 
 
     public static final String EDITAR_ROPA_VIEW =

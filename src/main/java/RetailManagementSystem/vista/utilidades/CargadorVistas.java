@@ -4,6 +4,7 @@ import RetailManagementSystem.infraestructura.inyeccion.FabricaControladores;
 import RetailManagementSystem.vista.excepciones.CargarVistaException;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -163,6 +164,26 @@ public class CargadorVistas {
             );
         }
     }
+
+
+    public static <T> VistaCargada<T> cargarFragmentoConInyeccion(
+            String rutaFxml, Consumer<T> inicializadorControlador
+    ) {
+        try {
+            FXMLLoader loader = obtenerLoaderConfigurado(rutaFxml);
+            Node nodoRoot = loader.load();
+            T controlador = loader.getController();
+            if (inicializadorControlador != null) {
+                inicializadorControlador.accept(controlador);
+            }
+            return new VistaCargada<>(nodoRoot, controlador);
+        } catch (IOException e) {
+            throw new CargarVistaException(rutaFxml, "Error al Inyectar y Cargar el Fragmento FXML.", e);
+        }
+    }
+
+
+    public record VistaCargada<T>(Node nodo, T controlador) { }
 
 
 }//===================================================================================================================//
