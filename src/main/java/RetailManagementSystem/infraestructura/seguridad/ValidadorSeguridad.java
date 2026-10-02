@@ -7,10 +7,20 @@ import java.util.List;
 
 public class ValidadorSeguridad {
 
-    public static void exigirPermiso(UsuarioDTOCompleto usuario, String permisoRequerido) {
+    //CONSTRUCTOR:
+
+    private ValidadorSeguridad() { }
+
+    //MÉTODOS:
+
+    private static void validarUsuario(UsuarioDTOCompleto usuario){
         if (usuario == null) {
             throw new AccesoDenegadoException("NO hay una Sesión de Usuario Activa.");
         }
+    }
+
+    public static void exigirPermiso(UsuarioDTOCompleto usuario, String permisoRequerido) {
+        validarUsuario(usuario);
         if (!usuario.tienePermiso(permisoRequerido.toUpperCase())) {
             throw new AccesoDenegadoException(
                     "Acceso Denegado: Se Requiere el Permiso [" + permisoRequerido + "] Para esta Acción."
@@ -19,13 +29,11 @@ public class ValidadorSeguridad {
     }
 
     public static void exigirAlgunPermiso(UsuarioDTOCompleto usuario, List<String> permisosValidos) {
-        if (usuario == null) {
-            throw new AccesoDenegadoException("No hay una sesión de usuario activa.");
-        }
+        validarUsuario(usuario);
         boolean tieneAcceso = permisosValidos.stream()
                 .anyMatch(p -> usuario.tienePermiso(p.toUpperCase()));
         if (!tieneAcceso) {
-            throw new AccesoDenegadoException("Acceso Denegado: No tienes los privilegios necesarios.");
+            throw new AccesoDenegadoException("Acceso Denegado: NO tienes los Privilegios Necesarios.");
         }
     }
 

@@ -139,7 +139,5 @@ public class PermisosApp {
     public static final String VER_PERMISOS = "VER PERMISOS";
     public static final String GESTIONAR_PERMISOS = "GESTIONAR PERMISOS";
 
-
-
 }//===================================================================================================================//
 
