@@ -22,11 +22,9 @@ public class EnsambladorDTORol {
     //MÉTODOS:
 
     public RolDTO ensamblarDatosRol(Rol rol){
-        if (rol == null){
-            throw new IllegalArgumentException("NO puedes ensamblar un DTO con un Rol Vacío.");
-        }
-        List<PermisoDTO> datosPermisos =
-                this.ensambladorDTOPermiso.ensamblarDetallePermisos(rol.getPermisos().stream().toList());
+        List<PermisoDTO> datosPermisos = this.ensambladorDTOPermiso.ensamblarDetallePermisos(
+                rol.getPermisos().stream().toList()
+        );
         return new RolDTO(
                 rol.getIdRol(),
                 rol.getNombre(),
@@ -38,7 +36,7 @@ public class EnsambladorDTORol {
     public List<RolDTO> ensamblarDetalleRoles(List<Rol> roles){
         List<RolDTO> detalleRoles = new ArrayList<>();
         for (Rol rol:roles){
-            RolDTO datosRol = this.ensamblarDatosRol(rol);
+            RolDTO datosRol = ensamblarDatosRol(rol);
             detalleRoles.add(datosRol);
         }
         return detalleRoles;
