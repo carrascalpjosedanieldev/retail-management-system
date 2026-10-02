@@ -32,6 +32,10 @@ public class OrquestadorPermisos {
         );
     }
 
+    public List<String> obtenerTodosLosNombresDeLosPermisos(){
+        return this.servicioPermiso.obtenerTodosLosNombresPermisos();
+    }
+
     public List<PermisoDTO> obtenerPermisosActivos(){
         return this.ensambladorDTOPermiso.ensamblarDetallePermisos(
                 this.servicioPermiso.obtenerPermisosActivos()

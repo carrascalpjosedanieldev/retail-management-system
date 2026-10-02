@@ -8,7 +8,7 @@ public class InformacionAplicacion {
 
     //VERSION DEL PROYECTO:
 
-    public static final String VERSION = cargarVersion();
+    private static final String VERSION = cargarVersion();
 
     private static String cargarVersion() {
         Properties propiedades = new Properties();

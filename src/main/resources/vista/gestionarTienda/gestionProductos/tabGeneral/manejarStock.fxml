@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="450.0" styleClass="fondo-panel" stylesheets="@../../../../../css/gestionarTienda/gestionarInventarios/gestionarProductos/tabGeneral/estilosCssManejarStock.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.ManejarStockControlador">
+<VBox prefWidth="450.0" styleClass="fondo-panel" stylesheets="@../../../../css/gestionarTienda/gestionarProductos/tabGeneral/estilosCssManejarStock.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.ManejarStockControlador">
     <VBox alignment="CENTER_LEFT" styleClass="panel-encabezado">
         <HBox>
             <Label styleClass="titulo-principal" text="Stock Actual: " />

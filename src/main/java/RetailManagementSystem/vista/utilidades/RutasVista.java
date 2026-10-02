@@ -137,25 +137,25 @@ public class RutasVista {
                 //TAB GENERAL:
 
     public static final String CREAR_PRODUCTO_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/crearProducto.fxml";
+            "/vista/gestionarTienda/gestionProductos/tabGeneral/crearProducto.fxml";
 
     public static final String MANEJAR_STOCK_PRODUCTO_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/manejarStock.fxml";
+            "/vista/gestionarTienda/gestionProductos/tabGeneral/manejarStock.fxml";
 
     public static final String MOVER_PRODUCTO_INVENTARIO_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabGeneral/moverProductoAOtroInventario.fxml";
+            "/vista/gestionarTienda/gestionProductos/tabGeneral/moverProductoAOtroInventario.fxml";
 
 
 
     public static final String GESTIONAR_PRODUCTOS_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/GestionProductos.fxml";
+            "/vista/gestionarTienda/gestionProductos/GestionProductos.fxml";
 
 
     public static final String EDITAR_ROPA_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabRopa/editarRopa.fxml";
+            "/vista/gestionarTienda/gestionProductos/tabRopa/editarRopa.fxml";
 
     public static final String EDITAR_PERECEDERO_VIEW =
-            "/vista/gestionarTienda/gestionarInventarios/gestionProductos/tabPerecedero/editarPerecedero.fxml";
+            "/vista/gestionarTienda/gestionProductos/tabPerecedero/editarPerecedero.fxml";
 
 
     //GESTIONAR USUARIOS:

@@ -9,14 +9,14 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarDescu
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.CrearImpuestoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.EditarImpuestoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarImpuestos.GestionImpuestosControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.CrearProductoControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.ManejarStockControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.MoverProductoAOtroInventarioControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.TabGeneralProductosControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabPerecedero.EditarPerecederoControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabPerecedero.TabPerecederosControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabRopa.EditarRopaControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabRopa.TabRopaControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.CrearProductoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.ManejarStockControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.MoverProductoAOtroInventarioControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.TabGeneralProductosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabPerecedero.EditarPerecederoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabPerecedero.TabPerecederosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabRopa.EditarRopaControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabRopa.TabRopaControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.CrearPoliticaVencimiento;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.EditarPoliticaVencimientoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarPoliticasV.GestionPoliticasVencimientoControlador;
@@ -40,7 +40,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
     public Object call(Class<?> claseControlador) {
         if (claseControlador == MenuPrincipalControlador.class) {
             return new MenuPrincipalControlador(
-                    ContenedorDependencias.getServicioConfiguraciones()
+                    ContenedorDependencias.getOrquestadorConfiguraciones()
             );
         }
         if (claseControlador == CrearProductoControlador.class) {
@@ -48,7 +48,6 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorDependencias.getOrquestadorImpuestos(),
                     ContenedorDependencias.getOrquestadorDescuentos(),
                     ContenedorDependencias.getOrquestadorPoliticaVencimiento(),
-                    ContenedorDependencias.getFabricaProductos(),
                     ContenedorDependencias.getOrquestadorGestionStock()
             );
         }
@@ -84,8 +83,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == GestionInventariosControlador.class){
             return new GestionInventariosControlador(
-                    ContenedorDependencias.getServicioInventario(),
-                    ContenedorDependencias.getEnsambladorDTOInventario()
+                    ContenedorDependencias.getOrquestadorInventarios()
             );
         }
         if (claseControlador == GestionServiciosControlador.class) {
@@ -127,7 +125,7 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         }
         if (claseControlador == FacturaGeneradaControlador.class){
             return new FacturaGeneradaControlador(
-                    ContenedorDependencias.getServicioConfiguraciones()
+                    ContenedorDependencias.getOrquestadorConfiguraciones()
             );
         }
         if (claseControlador == EdicionTiendaControlador.class){

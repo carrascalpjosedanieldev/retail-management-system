@@ -1,4 +1,4 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabRopa;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabRopa;
 
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;

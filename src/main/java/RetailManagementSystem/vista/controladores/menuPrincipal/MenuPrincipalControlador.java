@@ -2,7 +2,7 @@ package RetailManagementSystem.vista.controladores.menuPrincipal;
 
 import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.servicios.gestion.ServicioConfiguraciones;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorConfiguraciones;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
@@ -44,12 +44,12 @@ public class MenuPrincipalControlador {
 
     private UsuarioDTOCompleto usuarioActual;
 
-    private final ServicioConfiguraciones servicioConfiguraciones;
+    private final OrquestadorConfiguraciones orquestadorConfiguraciones;
 
     //CONSTRUCTOR:
 
-    public MenuPrincipalControlador(ServicioConfiguraciones servicioConfiguraciones) {
-        this.servicioConfiguraciones = servicioConfiguraciones;
+    public MenuPrincipalControlador(OrquestadorConfiguraciones orquestadorConfiguraciones) {
+        this.orquestadorConfiguraciones = orquestadorConfiguraciones;
     }
 
     //MÉTODOS:
@@ -158,9 +158,10 @@ public class MenuPrincipalControlador {
     private void cargarNombreTienda() {
         lblNombreTienda.setText("Cargando...");
         CompletableFuture.supplyAsync(
-                this.servicioConfiguraciones::obtenerNombreTienda
-        ).thenAccept(nombreTienda -> {
+                this.orquestadorConfiguraciones::obtenerDatosTienda
+        ).thenAccept(datosTienda -> {
             Platform.runLater(() -> {
+                String nombreTienda = datosTienda.valor();
                 if (nombreTienda != null && !nombreTienda.isBlank()) {
                     lblNombreTienda.setText(nombreTienda);
                 } else {

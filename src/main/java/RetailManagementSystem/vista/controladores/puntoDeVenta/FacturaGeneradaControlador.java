@@ -2,7 +2,7 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 
 import RetailManagementSystem.aplicacion.dto.ventas.FacturaDTO;
 import RetailManagementSystem.aplicacion.dto.ventas.ItemVendidoFacturaDTO;
-import RetailManagementSystem.aplicacion.servicios.gestion.ServicioConfiguraciones;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorConfiguraciones;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.utilidades.FormateadorNumeros;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
@@ -41,12 +41,12 @@ public class FacturaGeneradaControlador {
 
     private static final DateTimeFormatter FORMATO_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-    private final ServicioConfiguraciones servicioConfiguraciones;
+    private final OrquestadorConfiguraciones orquestadorConfiguraciones;
 
     //CONSTRUCTOR:
 
-    public FacturaGeneradaControlador(ServicioConfiguraciones servicioConfiguraciones) {
-        this.servicioConfiguraciones = servicioConfiguraciones;
+    public FacturaGeneradaControlador(OrquestadorConfiguraciones orquestadorConfiguraciones) {
+        this.orquestadorConfiguraciones = orquestadorConfiguraciones;
     }
 
     //MÉTODOS:
@@ -108,9 +108,10 @@ public class FacturaGeneradaControlador {
     private void cargarNombreTienda() {
         lblNombreTienda.setText("Cargando...");
         CompletableFuture.supplyAsync(
-                this.servicioConfiguraciones::obtenerNombreTienda
-        ).thenAccept(nombreTienda ->
+                this.orquestadorConfiguraciones::obtenerDatosTienda
+        ).thenAccept(datosTienda ->
             Platform.runLater(() -> {
+                String nombreTienda = datosTienda.valor();
                 if (nombreTienda != null && !nombreTienda.isBlank()) {
                     lblNombreTienda.setText(nombreTienda);
                 } else {

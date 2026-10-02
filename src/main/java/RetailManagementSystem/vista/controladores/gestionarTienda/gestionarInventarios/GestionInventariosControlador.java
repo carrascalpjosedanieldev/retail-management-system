@@ -2,14 +2,13 @@ package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInve
 
 import RetailManagementSystem.aplicacion.dto.gestion.InventarioDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.servicios.gestion.ServicioInventario;
-import RetailManagementSystem.aplicacion.ensambladores.gestion.EnsambladorDTOInventario;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorInventarios;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.GestionProductosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.GestionProductosControlador;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -44,9 +43,7 @@ public class GestionInventariosControlador {
     @FXML private Button btnVerOEditarProductos;
 
 
-    private final ServicioInventario servicioInventario;
-
-    private final EnsambladorDTOInventario ensambladorDTOInventario;
+    private final OrquestadorInventarios orquestadorInventarios;
 
     private final ObservableList<InventarioDTO> listaObservable = FXCollections.observableArrayList();
 
@@ -54,11 +51,8 @@ public class GestionInventariosControlador {
 
     //CONSTRUCTOR:
 
-    public GestionInventariosControlador(
-            ServicioInventario servicioInventario, EnsambladorDTOInventario ensambladorDTOInventario
-    ) {
-        this.servicioInventario = servicioInventario;
-        this.ensambladorDTOInventario = ensambladorDTOInventario;
+    public GestionInventariosControlador(OrquestadorInventarios orquestadorInventarios) {
+        this.orquestadorInventarios = orquestadorInventarios;
     }
 
     //MÉTODOS:
@@ -180,10 +174,8 @@ public class GestionInventariosControlador {
     }
 
     private void cargarDatosTabla() {
-        CompletableFuture.supplyAsync(() ->
-            this.ensambladorDTOInventario.ensamblarDetalleInventarioGeneral(
-                    this.servicioInventario.obtenerTodosLosInventarios()
-            )
+        CompletableFuture.supplyAsync(
+                orquestadorInventarios::obtenerTodosLosInventarios
         ).thenAcceptAsync(
                 listaObservable::setAll, Platform::runLater
         ).exceptionally(ex -> {

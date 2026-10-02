@@ -1,11 +1,11 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabRopa;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabPerecedero;
 
-import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
-import RetailManagementSystem.dominio.enums.Talla;
-import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
+import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerecederoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
+import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorProductos;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
@@ -14,7 +14,6 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInven
 import RetailManagementSystem.vista.utilidades.*;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -35,40 +34,47 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class TabRopaControlador {
+public class TabPerecederosControlador {
 
     //ATRIBUTOS:
 
     @FXML private TextField txtBuscar;
-    @FXML private TableView<DatosTotalesProductoRopaDTO> tablaRopa;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, String> colCodigo;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, String> colNombre;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, Talla> colTalla;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colCompra;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colGanancia;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, ImpuestoDTO> colImpuesto;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, DescuentoDTO> colDescuento;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, BigDecimal> colVentaFinal;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, Integer> colStock;
-    @FXML private TableColumn<DatosTotalesProductoRopaDTO, String> colEstado;
+    @FXML private TableView<DatosTotalesProductoPerecederoDTO> tablaPerecederos;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colCodigo;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colNombre;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, LocalDate> colFechaVencimiento;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colPoliticaVencimiento;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colEstaVencido;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colCompra;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colGanancia;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colImpuesto;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colDescuento;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> colVentaFinal;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, Integer> colStock;
+    @FXML private TableColumn<DatosTotalesProductoPerecederoDTO, String> colDisponible;
 
     private int idInventario;
 
     private final OrquestadorProductos orquestadorProductos;
 
-    private final ObservableList<DatosTotalesProductoRopaDTO> listaObservable = FXCollections.observableArrayList();
+    private final ObservableList<DatosTotalesProductoPerecederoDTO> listaMaestraPerecederos = FXCollections.observableArrayList();
 
-    private FilteredList<DatosTotalesProductoRopaDTO> listaFiltrada;
+    private FilteredList<DatosTotalesProductoPerecederoDTO> listaFiltrada;
 
     private UsuarioDTOCompleto usuarioActual;
 
     //CONSTRUCTOR:
 
-    public TabRopaControlador(OrquestadorProductos orquestadorProductos) {
+    public TabPerecederosControlador(OrquestadorProductos orquestadorProductos) {
         this.orquestadorProductos = orquestadorProductos;
     }
 
     //MÉTODOS:
+
+    private Window getVentana(){
+        return tablaPerecederos.getScene() != null ? tablaPerecederos.getScene().getWindow() : null;
+    }
+
 
     public void recibirIdInventarioYUsuario(UsuarioDTOCompleto usuarioActual, int idInventario) {
         ValidadorSeguridad.exigirAlgunPermiso(usuarioActual, List.of(
@@ -80,28 +86,25 @@ public class TabRopaControlador {
         cargarDatosTabla();
     }
 
-    private Window getVentana(){
-        return tablaRopa.getScene() != null ? tablaRopa.getScene().getWindow() : null;
-    }
-
-
     private void cargarDatosTabla() {
         CompletableFuture.supplyAsync(()->
-                this.orquestadorProductos.obtenerProductosRopaDeInventario(this.idInventario, LocalDate.now())
-        ).thenAccept(listaRopa->
+                this.orquestadorProductos.obtenerProductosPerecederosDeInventario(this.idInventario, LocalDate.now())
+        ).thenAccept(listaPerecederos->
             Platform.runLater(()->{
-                listaObservable.clear();
-                listaObservable.setAll(listaRopa);
+                listaMaestraPerecederos.clear();
+                if (listaPerecederos != null && !listaPerecederos.isEmpty()) {
+                    listaMaestraPerecederos.addAll(listaPerecederos);
+                }
             })
         ).exceptionally(ex->{
             Platform.runLater(()->{
                 Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
                 GestorAlertas.mostrarAlertaError(
                         getVentana(), "Error Crítico de Carga",
-                        "NO se pudieron Cargar los Datos del Inventario.",
-                        "Ocurrió un Error al Cargar los Productos Ropa. La Ventana se Cerrará por Seguridad.\n" +
+                        "No se pudieron cargar los datos del inventario.",
+                        "Ocurrió un Error al cargar los Productos Perecederos. La Ventana se Cerrará por Seguridad.\n" +
                                 "Verifica tu Conexión y Notificale este Error al Administrador:\n" +
-                                causa.getMessage()
+                                causa.getMessage() + ex.getMessage()
                 );
                 try {
                     CargadorVistas.cambiarPantallaInyectada(
@@ -114,6 +117,7 @@ public class TabRopaControlador {
                 } catch (AccesoDenegadoException exc){
                     GestorAlertas.mostrarAlertaAccesoDenegado(getVentana(), exc);
                 }
+
             });
             return null;
         });
@@ -127,8 +131,8 @@ public class TabRopaControlador {
     }
 
     private void configurarColumnas() {
-        colCodigo.setCellValueFactory(celda -> new SimpleStringProperty(
-                celda.getValue().codigo())
+        colCodigo.setCellValueFactory(cellData -> new SimpleStringProperty(
+                cellData.getValue().codigo())
         );
         colCodigo.setCellFactory(columna -> new TableCell<>() {
             private final Tooltip tooltipFlotante = new Tooltip();
@@ -159,63 +163,39 @@ public class TabRopaControlador {
                 }
             }
         });
-        colNombre.setCellValueFactory(celda -> new SimpleStringProperty(
-                celda.getValue().nombre())
+        colNombre.setCellValueFactory(cellData -> new SimpleStringProperty(
+                cellData.getValue().nombre())
         );
-        colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(
-                celda.getValue().stock()).asObject()
-        );
-        colTalla.setCellValueFactory(celda -> new SimpleObjectProperty<>(
-                celda.getValue().talla())
-        );
-        colTalla.setCellFactory(col -> new TableCell<>() {
+        colEstaVencido.setCellValueFactory(cellData -> {
+            boolean estaVencido = cellData.getValue().estaVencido();
+            String estado = estaVencido ? "Vencido" : "Vigente";
+            return new SimpleStringProperty(estado);
+        });
+        colEstaVencido.setCellFactory(col -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
             }
             @Override
-            protected void updateItem(Talla talla, boolean empty) {
-                super.updateItem(talla, empty);
-                setText((empty || talla == null) ? null : talla.name());
+            protected void updateItem(String estadoVencido, boolean empty) {
+                super.updateItem(estadoVencido, empty);
+                getStyleClass().removeAll("estado-vencido", "estado-al-dia");
+                if (empty || estadoVencido == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(estadoVencido);
+                    boolean esVencido = estadoVencido.equalsIgnoreCase("Vencido");
+                    if (esVencido) {
+                        getStyleClass().add("estado-vencido");
+                    } else {
+                        getStyleClass().add("estado-al-dia");
+                    }
+                }
             }
         });
-        colCompra.setCellValueFactory(celda -> new SimpleObjectProperty<>(
-                celda.getValue().valorCompra())
+        colStock.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().stock())
         );
-        colCompra.setCellFactory(col -> crearCeldaMoneda());
-        colVentaFinal.setCellValueFactory(celda -> new SimpleObjectProperty<>(
-                celda.getValue().valorVentaFinal())
-        );
-        colVentaFinal.setCellFactory(col -> crearCeldaMoneda());
-        colGanancia.setCellValueFactory(celda -> new SimpleObjectProperty<>(
-                celda.getValue().porcentajeGanancia())
-        );
-        colGanancia.setCellFactory(col -> new TableCell<>() {
-            {
-                setAlignment(Pos.CENTER);
-            }
-            @Override
-            protected void updateItem(BigDecimal ganancia, boolean empty) {
-                super.updateItem(ganancia, empty);
-                setText((empty || ganancia == null) ? null : ganancia.toPlainString() + "%");
-            }
-        });
-        colImpuesto.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().datosImpuesto()));
-        colImpuesto.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(ImpuestoDTO imp, boolean empty) {
-                super.updateItem(imp, empty);
-                setText((empty || imp == null) ? null : imp.nombre() + " (" + imp.porcentaje() + "%)");
-            }
-        });
-        colDescuento.setCellValueFactory(celda -> new SimpleObjectProperty<>(celda.getValue().datosDescuento()));
-        colDescuento.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(DescuentoDTO desc, boolean empty) {
-                super.updateItem(desc, empty);
-                setText((empty || desc == null) ? null : desc.nombre() + " (" + desc.porcentaje() + "%)");
-            }
-        });
-        colStock.setCellValueFactory(celda -> new SimpleIntegerProperty(celda.getValue().stock()).asObject());
         colStock.setCellFactory(columna -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
@@ -238,12 +218,12 @@ public class TabRopaControlador {
                 }
             }
         });
-        colEstado.setCellValueFactory(celda -> {
-            boolean esActivo = celda.getValue().activo();
-            String estado = esActivo ? "Disponible" : "NO Disponible";
-            return new SimpleStringProperty(estado);
+        colDisponible.setCellValueFactory(cellData -> {
+            boolean esActivo = cellData.getValue().activo();
+            String disponible = esActivo ? "Disponible" : "NO Disponible";
+            return new SimpleStringProperty(disponible);
         });
-        colEstado.setCellFactory(columna -> new TableCell<>() {
+        colDisponible.setCellFactory(columna -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
             }
@@ -263,54 +243,96 @@ public class TabRopaControlador {
                 }
             }
         });
-    }
-
-    private TableCell<DatosTotalesProductoRopaDTO, BigDecimal> crearCeldaMoneda() {
-        return new TableCell<>() {
+        colFechaVencimiento.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().fechaVencimiento())
+        );
+        colPoliticaVencimiento.setCellValueFactory(cellData -> {
+            PoliticaVencimientoDTO politica = cellData.getValue().datosPoliticaVencimiento();
+            return new SimpleStringProperty(politica.nombrePolitica());
+        });
+        colImpuesto.setCellValueFactory(cellData -> {
+            ImpuestoDTO impuesto = cellData.getValue().datosImpuesto();
+            return new SimpleStringProperty(impuesto.nombre() + " (" + impuesto.porcentaje() + "%)");
+        });
+        colDescuento.setCellValueFactory(cellData -> {
+            DescuentoDTO descuento = cellData.getValue().datosDescuento();
+            return new SimpleStringProperty(descuento.nombre() + " (" + descuento.porcentaje() + "%)");
+        });
+        colCompra.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().valorCompra())
+        );
+        colGanancia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().porcentajeGanancia())
+        );
+        colVentaFinal.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().valorVentaFinal())
+        );
+        formatearColumnaMoneda(colCompra);
+        formatearColumnaMoneda(colVentaFinal);
+        colGanancia.setCellValueFactory(cellData -> new SimpleObjectProperty<>(
+                cellData.getValue().porcentajeGanancia())
+        );
+        colGanancia.setCellFactory(col -> new TableCell<>() {
             {
                 setAlignment(Pos.CENTER);
             }
             @Override
+            protected void updateItem(BigDecimal ganancia, boolean empty) {
+                super.updateItem(ganancia, empty);
+                setText((empty || ganancia == null) ? null : ganancia.toPlainString() + "%");
+            }
+        });
+    }
+
+    private void formatearColumnaMoneda(TableColumn<DatosTotalesProductoPerecederoDTO, BigDecimal> columna) {
+        columna.setCellFactory(tc -> new TableCell<>() {
+            @Override
             protected void updateItem(BigDecimal precio, boolean empty) {
                 super.updateItem(precio, empty);
-                setText((empty || precio == null) ? null : FormateadorNumeros.formatoMoneda(precio));
+                if (empty || precio == null) {
+                    setText(null);
+                } else {
+                    setText(FormateadorNumeros.formatoMoneda(precio));
+                }
             }
-        };
+        });
     }
 
     private void configurarFiltro() {
-        listaFiltrada = new FilteredList<>(listaObservable, b -> true);
-        txtBuscar.textProperty().addListener((obs, oldVal, newVal) -> {
-            listaFiltrada.setPredicate(ropa -> {
-                if (newVal == null || newVal.isBlank()) return true;
-                String filtro = newVal.toLowerCase().trim();
-                return ropa.nombre().toLowerCase().contains(filtro) ||
-                        ropa.codigo().toLowerCase().contains(filtro) ||
-                        ropa.talla().name().toLowerCase().contains(filtro);
+        listaFiltrada = new FilteredList<>(listaMaestraPerecederos, p -> true);
+        txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
+            listaFiltrada.setPredicate(producto -> {
+                if (newValue == null || newValue.trim().isEmpty()) {
+                    return true;
+                }
+                String textoBusqueda = newValue.toLowerCase().trim();
+                boolean coincideCodigo = producto.codigo() != null && producto.codigo().toLowerCase().contains(textoBusqueda);
+                boolean coincideNombre = producto.nombre() != null && producto.nombre().toLowerCase().contains(textoBusqueda);
+                return coincideCodigo || coincideNombre;
             });
         });
-        SortedList<DatosTotalesProductoRopaDTO> listaOrdenada = new SortedList<>(listaFiltrada);
-        listaOrdenada.comparatorProperty().bind(tablaRopa.comparatorProperty());
-        tablaRopa.setItems(listaOrdenada);
+        SortedList<DatosTotalesProductoPerecederoDTO> listaOrdenada = new SortedList<>(listaFiltrada);
+        listaOrdenada.comparatorProperty().bind(tablaPerecederos.comparatorProperty());
+        tablaPerecederos.setItems(listaOrdenada);
     }
 
 
     @FXML
-    private void abrirEditorRopa(ActionEvent event) {
-        DatosTotalesProductoRopaDTO productoSeleccionado = tablaRopa.getSelectionModel().getSelectedItem();
+    private void abrirEditorPerecedero(ActionEvent event) {
+        DatosTotalesProductoPerecederoDTO productoSeleccionado = tablaPerecederos.getSelectionModel().getSelectedItem();
         if (productoSeleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
-                    getVentana(), "Selección requerida", null,
-                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Editarla."
+                    getVentana(), "Selección Requerida", null,
+                    "Por favor, Seleccione un Producto Perecedero en la Tabla para Editarlo."
             );
             return;
         }
         try {
             CargadorVistas.abrirModalConInyeccion(
-                    RutasVista.EDITAR_ROPA_VIEW,
-                    "Editar Prenda de Ropa", getVentana(),
-                    (EditarRopaControlador c)->{
-                        c.cargarDatosProducto(this.usuarioActual, productoSeleccionado, this.idInventario, listaObservable);
+                    RutasVista.EDITAR_PERECEDERO_VIEW,
+                    "Editar Producto Perecedero", getVentana(),
+                    (EditarPerecederoControlador c)->{
+                        c.cargarDatos(this.usuarioActual, productoSeleccionado, this.idInventario, listaMaestraPerecederos);
                     }
             );
         } catch (AccesoDenegadoException ex){
@@ -325,11 +347,11 @@ public class TabRopaControlador {
     }
 
     private void cambiarEstadoProducto(){
-        DatosTotalesProductoRopaDTO seleccionado = tablaRopa.getSelectionModel().getSelectedItem();
+        DatosTotalesProductoPerecederoDTO seleccionado = this.tablaPerecederos.getSelectionModel().getSelectedItem();
         if (seleccionado == null) {
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Selección Requerida", null,
-                    "Por favor, Seleccione una Prenda de Ropa en la Tabla para Cambiar su Estado."
+                    "Por favor, Seleccione un Producto Perecedero de la Tabla para Cambiar su Estado."
             );
             return;
         }
@@ -346,7 +368,7 @@ public class TabRopaControlador {
                 )
         ).thenRun(()->
             Platform.runLater(()->{
-                DatosTotalesProductoRopaDTO actualizado = new DatosTotalesProductoRopaDTO(
+                DatosTotalesProductoPerecederoDTO actualizado = new DatosTotalesProductoPerecederoDTO(
                         seleccionado.codigo(),
                         seleccionado.nombre(),
                         seleccionado.valorCompra(),
@@ -355,11 +377,13 @@ public class TabRopaControlador {
                         seleccionado.stock(),
                         seleccionado.datosImpuesto(),
                         seleccionado.datosDescuento(),
-                        seleccionado.talla(),
+                        seleccionado.fechaVencimiento(),
+                        seleccionado.datosPoliticaVencimiento(),
+                        seleccionado.estaVencido(),
                         !seleccionado.activo()
                 );
                 UtilidadesLista.reemplazarPorIdentidad(
-                        listaObservable,
+                        listaMaestraPerecederos,
                         actualizado,
                         item-> item.codigo().equals(actualizado.codigo())
                 );

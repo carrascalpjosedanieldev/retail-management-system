@@ -1,6 +1,6 @@
 package RetailManagementSystem.infraestructura.seguridad;
 
-import RetailManagementSystem.aplicacion.servicios.seguridad.ServicioPermiso;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPermisos;
 import RetailManagementSystem.infraestructura.inyeccion.ContenedorDependencias;
 
 import java.util.List;
@@ -14,9 +14,9 @@ public class PermisosApp {
     public static void inicializarYValidarSincronizacionPermisos(){
         if (inicializado) return;
 
-        ServicioPermiso servicioPermiso = ContenedorDependencias.getServicioPermiso();
+        OrquestadorPermisos orquestadorPermisos = ContenedorDependencias.getOrquestadorPermisos();
 
-        List<String> permisosBD = servicioPermiso.obtenerTodosLosNombresPermisos();
+        List<String> permisosBD = orquestadorPermisos.obtenerTodosLosNombresDeLosPermisos();
 
         List<String> permisosCodigo = List.of(
                 PermisosApp.PROCESAR_VENTA,

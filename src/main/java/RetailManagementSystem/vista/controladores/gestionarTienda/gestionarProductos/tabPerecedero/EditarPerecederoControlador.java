@@ -1,4 +1,4 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabPerecedero;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabPerecedero;
 
 import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoPerecederoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;

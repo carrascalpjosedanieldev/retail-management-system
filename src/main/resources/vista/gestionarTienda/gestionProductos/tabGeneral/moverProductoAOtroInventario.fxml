@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="480.0" styleClass="fondo-panel" stylesheets="@../../../../../css/gestionarTienda/gestionarInventarios/gestionarProductos/tabGeneral/estilosCssMoverProductoAOtroInventario.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral.MoverProductoAOtroInventarioControlador">
+<VBox prefWidth="480.0" styleClass="fondo-panel" stylesheets="@../../../../css/gestionarTienda/gestionarProductos/tabGeneral/estilosCssMoverProductoAOtroInventario.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.MoverProductoAOtroInventarioControlador">
     <VBox alignment="CENTER_LEFT" styleClass="panel-encabezado">
         <HBox>
             <Label styleClass="titulo-principal" text="Mover: " />

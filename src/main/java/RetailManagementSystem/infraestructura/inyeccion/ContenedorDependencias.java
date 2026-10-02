@@ -53,86 +53,6 @@ public class ContenedorDependencias {
 
     //DEPENDENCIAS:
 
-        //ESTRATEGIAS DE ENSAMBLADO:
-
-    private static Map<TipoProducto, EstrategiaEnsambladoDTOProducto<?>> estrategiasEnsamblado;
-
-    private static EstrategiaEnsambladoDTORopa estrategiaEnsambladoDTORopa;
-    private static EstrategiaEnsambladoDTOPerecedero estrategiaEnsambladoDTOPerecedero;
-
-        //ENSAMBLADORES:
-
-    private static EnsambladorDTOCarrito ensambladorDTOCarrito;
-    private static EnsambladorDTODescuento ensambladorDTODescuento;
-    private static EnsambladorDTOFactura ensambladorDTOFactura;
-    private static EnsambladorDTOImpuesto ensambladorDTOImpuesto;
-    private static EnsambladorDTOInventario ensambladorDTOInventario;
-    private static EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento;
-    private static EnsambladorDTOProducto ensambladorDTOProducto;
-    private static EnsambladorDTOServicio ensambladorDTOServicio;
-    private static EnsambladorDTOPermiso ensambladorDTOPermiso;
-    private static EnsambladorDTORol ensambladorDTORol;
-    private static EnsambladorDTOUsuario ensambladorDTOUsuario;
-
-        //UTILIDADES:
-
-    private static MatematicaFinanciera matematicaFinanciera;
-    private static CalculadoraPrecios calculadoraPrecios;
-    private static CodificadorContrasenas codificadorContrasenas;
-    private static ProveedorConfiguracion proveedorConfiguracion;
-    private static Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador;
-    private static Map<Class<? extends ItemFacturable>, EstrategiaCalculoPrecios<?>> estrategiasCalculoPrecios;
-    private static GestorTransaccional gestorTransaccional;
-
-        //MAPEADORES:
-
-    private static MapeadorImpuestos mapeadorImpuestos;
-    private static MapeadorDescuentos mapeadorDescuentos;
-    private static MapeadorProductoBase mapeadorProductoBase;
-    private static MapeadorPoliticasVencimiento mapeadorPoliticasVencimiento;
-    private static MapeadorInventario mapeadorInventario;
-    private static MapeadorPermisos mapeadorPermisos;
-    private static MapeadorRol mapeadorRol;
-    private static MapeadorServicio mapeadorServicio;
-    private static MapeadorUsuario mapeadorUsuario;
-
-        //REPOSITORIOS:
-
-    private static RepositorioConfiguracion repositorioConfiguracion;
-    private static RepositorioDescuentos repositorioDescuentos;
-    private static RepositorioFacturas repositorioFacturas;
-    private static RepositorioImpuestos repositorioImpuestos;
-    private static RepositorioInventario repositorioInventario;
-    private static RepositorioPoliticaVencimiento repositorioPoliticaVencimiento;
-    private static RepositorioProducto repositorioProducto;
-    private static RepositorioServicio repositorioServicio;
-    private static RepositorioPermiso repositorioPermiso;
-    private static RepositorioRol repositorioRol;
-    private static RepositorioUsuario repositorioUsuario;
-
-        //SERVICIOS:
-
-    private static ServicioCarrito servicioCarrito;
-    private static ServicioConfiguraciones servicioConfiguraciones;
-    private static ServicioDescuentos servicioDescuentos;
-    private static ServicioFacturas servicioFacturas;
-    private static ServicioImpuestos servicioImpuestos;
-    private static ServicioInventario servicioInventario;
-    private static ServicioLogin servicioLogin;
-    private static ServicioPoliticaVencimiento servicioPoliticaVencimiento;
-    private static ServicioProductos servicioProductos;
-    private static ServicioGestionStock servicioGestionStock;
-    private static ServicioServicios servicioServicios;
-    private static ServicioPermiso servicioPermiso;
-    private static ServicioRol servicioRol;
-    private static ServicioUsuario servicioUsuario;
-
-        //FABRICAS:
-
-    private static FabricaProductos fabricaProductos;
-
-        //ORQUESTADORES:
-
     private static OrquestadorConfiguraciones orquestadorConfiguraciones;
     private static OrquestadorDescuentos orquestadorDescuentos;
     private static OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
@@ -159,121 +79,136 @@ public class ContenedorDependencias {
 
         //INSTANCIACIÓN DE UTILIDADES FINANCIERAS:
 
-        matematicaFinanciera = new MatematicaFinanciera();
+        MatematicaFinanciera matematicaFinanciera = new MatematicaFinanciera();
 
-        estrategiasCalculoPrecios = new HashMap<>();
-        estrategiasCalculoPrecios.put(ProductoRopa.class, new EstrategiaCalculoPreciosProductoRopa(matematicaFinanciera));
-        estrategiasCalculoPrecios.put(ProductoPerecedero.class, new EstrategiaCalculoPreciosProductoPerecedero(matematicaFinanciera));
-        estrategiasCalculoPrecios.put(Servicio.class, new EstrategiaCalculoPreciosServicio(matematicaFinanciera));
+        Map<Class<? extends ItemFacturable>, EstrategiaCalculoPrecios<?>> estrategiasCalculoPrecios = new HashMap<>();
+        estrategiasCalculoPrecios.put(
+                ProductoRopa.class, new EstrategiaCalculoPreciosProductoRopa(matematicaFinanciera)
+        );
+        estrategiasCalculoPrecios.put(
+                ProductoPerecedero.class, new EstrategiaCalculoPreciosProductoPerecedero(matematicaFinanciera)
+        );
+        estrategiasCalculoPrecios.put(
+                Servicio.class, new EstrategiaCalculoPreciosServicio(matematicaFinanciera)
+        );
 
-        calculadoraPrecios = new CalculadoraPrecios(matematicaFinanciera, estrategiasCalculoPrecios);
+        CalculadoraPrecios calculadoraPrecios = new CalculadoraPrecios(matematicaFinanciera, estrategiasCalculoPrecios);
 
         //ENSAMBLADORES:
 
-        ensambladorDTOImpuesto = new EnsambladorDTOImpuesto();
-        ensambladorDTODescuento = new EnsambladorDTODescuento();
-        ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
+        EnsambladorDTOImpuesto ensambladorDTOImpuesto = new EnsambladorDTOImpuesto();
+        EnsambladorDTODescuento ensambladorDTODescuento = new EnsambladorDTODescuento();
+        EnsambladorDTOPoliticaVencimiento ensambladorDTOPoliticaVencimiento = new EnsambladorDTOPoliticaVencimiento();
 
-        estrategiaEnsambladoDTORopa = new EstrategiaEnsambladoDTORopa(
+        EstrategiaEnsambladoDTORopa estrategiaEnsambladoDTORopa = new EstrategiaEnsambladoDTORopa(
                 calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento
         );
 
-        estrategiaEnsambladoDTOPerecedero = new EstrategiaEnsambladoDTOPerecedero(
+        EstrategiaEnsambladoDTOPerecedero estrategiaEnsambladoDTOPerecedero = new EstrategiaEnsambladoDTOPerecedero(
                 calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento, ensambladorDTOPoliticaVencimiento
         );
 
-        estrategiasEnsamblado = new HashMap<>();
+        Map<TipoProducto, EstrategiaEnsambladoDTOProducto<?>> estrategiasEnsamblado = new HashMap<>();
         estrategiasEnsamblado.put(TipoProducto.ROPA, estrategiaEnsambladoDTORopa);
         estrategiasEnsamblado.put(TipoProducto.PERECEDERO, estrategiaEnsambladoDTOPerecedero);
 
-        ensambladorDTOCarrito = new EnsambladorDTOCarrito(calculadoraPrecios);
-        ensambladorDTOFactura = new EnsambladorDTOFactura();
-        ensambladorDTOProducto = new EnsambladorDTOProducto(estrategiasEnsamblado, calculadoraPrecios);
-        ensambladorDTOInventario = new EnsambladorDTOInventario();
-        ensambladorDTOServicio = new EnsambladorDTOServicio(
+        EnsambladorDTOCarrito ensambladorDTOCarrito = new EnsambladorDTOCarrito(calculadoraPrecios);
+        EnsambladorDTOFactura ensambladorDTOFactura = new EnsambladorDTOFactura();
+        EnsambladorDTOProducto ensambladorDTOProducto = new EnsambladorDTOProducto(estrategiasEnsamblado, calculadoraPrecios);
+        EnsambladorDTOInventario ensambladorDTOInventario = new EnsambladorDTOInventario();
+        EnsambladorDTOServicio ensambladorDTOServicio = new EnsambladorDTOServicio(
                 calculadoraPrecios, ensambladorDTOImpuesto, ensambladorDTODescuento
         );
-        ensambladorDTOPermiso = new EnsambladorDTOPermiso();
-        ensambladorDTORol = new EnsambladorDTORol(ensambladorDTOPermiso);
-        ensambladorDTOUsuario = new EnsambladorDTOUsuario(ensambladorDTORol);
+        EnsambladorDTOPermiso ensambladorDTOPermiso = new EnsambladorDTOPermiso();
+        EnsambladorDTORol ensambladorDTORol = new EnsambladorDTORol(ensambladorDTOPermiso);
+        EnsambladorDTOUsuario ensambladorDTOUsuario = new EnsambladorDTOUsuario(ensambladorDTORol);
 
         //INSTANTIATION DE MAPEADORES:
 
-        mapeadorImpuestos = new MapeadorImpuestos();
-        mapeadorDescuentos = new MapeadorDescuentos();
-        mapeadorProductoBase = new MapeadorProductoBase();
-        mapeadorPoliticasVencimiento = new MapeadorPoliticasVencimiento();
-        mapeadorInventario = new MapeadorInventario();
-        mapeadorPermisos = new MapeadorPermisos();
-        mapeadorRol = new MapeadorRol();
-        mapeadorServicio = new MapeadorServicio();
-        mapeadorUsuario = new MapeadorUsuario();
+        MapeadorImpuestos mapeadorImpuestos = new MapeadorImpuestos();
+        MapeadorDescuentos mapeadorDescuentos = new MapeadorDescuentos();
+        MapeadorProductoBase mapeadorProductoBase = new MapeadorProductoBase();
+        MapeadorPoliticasVencimiento mapeadorPoliticasVencimiento = new MapeadorPoliticasVencimiento();
+        MapeadorInventario mapeadorInventario = new MapeadorInventario();
+        MapeadorPermisos mapeadorPermisos = new MapeadorPermisos();
+        MapeadorRol mapeadorRol = new MapeadorRol();
+        MapeadorServicio mapeadorServicio = new MapeadorServicio();
+        MapeadorUsuario mapeadorUsuario = new MapeadorUsuario();
 
         //INSTANTIATION DE ESTRATEGIAS Y GESTOR TRANSACCIONAL:
 
-        gestorTransaccional = new GestorTransaccionalMySQL();
+        GestorTransaccional gestorTransaccional = new GestorTransaccionalMySQL();
 
-        despachador = new HashMap<>();
+        Map<TipoProducto, EstrategiaPersistenciaProducto<?>> despachador = new HashMap<>();
         despachador.put(TipoProducto.ROPA, new EstrategiaPersistenciaRopa());
         despachador.put(TipoProducto.PERECEDERO, new EstrategiaPersistenciaPerecedero(mapeadorPoliticasVencimiento));
 
         //INSTANCIACIÓN DE REPOSITORIOS:
 
-        repositorioConfiguracion = new RepositorioConfiguracionMySQL();
-        repositorioDescuentos = new RepositorioDescuentosMySQL(mapeadorDescuentos);
-        repositorioFacturas = new RepositorioFacturasMySQL();
-        repositorioImpuestos = new RepositorioImpuestosMySQL(mapeadorImpuestos);
-        repositorioInventario = new RepositorioInventarioMySQL(mapeadorInventario);
-        repositorioPoliticaVencimiento = new RepositorioPoliticaVencimientoMySQL(mapeadorPoliticasVencimiento);
-        repositorioProducto = new RepositorioProductoMySQL(
+        RepositorioConfiguracion repositorioConfiguracion = new RepositorioConfiguracionMySQL();
+        RepositorioDescuentos repositorioDescuentos = new RepositorioDescuentosMySQL(mapeadorDescuentos);
+        RepositorioFacturas repositorioFacturas = new RepositorioFacturasMySQL();
+        RepositorioImpuestos repositorioImpuestos = new RepositorioImpuestosMySQL(mapeadorImpuestos);
+        RepositorioInventario repositorioInventario = new RepositorioInventarioMySQL(mapeadorInventario);
+        RepositorioPoliticaVencimiento repositorioPoliticaVencimiento =
+                new RepositorioPoliticaVencimientoMySQL(mapeadorPoliticasVencimiento);
+        RepositorioProducto repositorioProducto = new RepositorioProductoMySQL(
                 despachador, mapeadorImpuestos, mapeadorDescuentos, mapeadorProductoBase
         );
-        repositorioServicio = new RepositorioServicioMySQL(mapeadorServicio, mapeadorImpuestos, mapeadorDescuentos);
-        repositorioPermiso = new RepositorioPermisoMySQL(mapeadorPermisos);
-        repositorioRol = new RepositorioRolMySQL(mapeadorRol, mapeadorPermisos);
-        repositorioUsuario = new RepositorioUsuarioMySQL(mapeadorUsuario, mapeadorRol, mapeadorPermisos);
+        RepositorioServicio repositorioServicio = new RepositorioServicioMySQL(
+                mapeadorServicio, mapeadorImpuestos, mapeadorDescuentos
+        );
+        RepositorioPermiso repositorioPermiso = new RepositorioPermisoMySQL(mapeadorPermisos);
+        RepositorioRol repositorioRol = new RepositorioRolMySQL(mapeadorRol, mapeadorPermisos);
+        RepositorioUsuario repositorioUsuario = new RepositorioUsuarioMySQL(
+                mapeadorUsuario, mapeadorRol, mapeadorPermisos
+        );
 
         //PROOVEDOR Y CODIFICADOR:
 
-        proveedorConfiguracion = new ProveedorConfiguracionImpl(gestorTransaccional, repositorioConfiguracion);
+        ProveedorConfiguracion proveedorConfiguracion = new ProveedorConfiguracionImpl(
+                gestorTransaccional, repositorioConfiguracion
+        );
 
-        codificadorContrasenas = new Argon2CodificadorAdapter();
+        CodificadorContrasenas codificadorContrasenas = new Argon2CodificadorAdapter();
 
         //INSTANCIACIÓN DE SERVICIOS:
 
-        servicioProductos = new ServicioProductos(
+        ServicioProductos servicioProductos = new ServicioProductos(
                 repositorioProducto, repositorioImpuestos, repositorioDescuentos, repositorioPoliticaVencimiento,
                 gestorTransaccional
         );
-        servicioGestionStock = new ServicioGestionStock(
+        ServicioGestionStock servicioGestionStock = new ServicioGestionStock(
                 repositorioProducto, repositorioInventario, gestorTransaccional
         );
-        servicioServicios = new ServicioServicios(
+        ServicioServicios servicioServicios = new ServicioServicios(
                 repositorioImpuestos, repositorioDescuentos, repositorioServicio, gestorTransaccional
         );
-        servicioCarrito = new ServicioCarrito(calculadoraPrecios, servicioProductos, servicioServicios);
-        servicioConfiguraciones = new ServicioConfiguraciones(
+        ServicioCarrito servicioCarrito = new ServicioCarrito(calculadoraPrecios, servicioProductos, servicioServicios);
+        ServicioConfiguraciones servicioConfiguraciones = new ServicioConfiguraciones(
                 repositorioConfiguracion, proveedorConfiguracion, gestorTransaccional
         );
-        servicioDescuentos = new ServicioDescuentos(repositorioDescuentos, gestorTransaccional);
-        servicioFacturas = new ServicioFacturas(repositorioFacturas, gestorTransaccional);
-        servicioImpuestos = new ServicioImpuestos(repositorioImpuestos, gestorTransaccional);
-        servicioInventario = new ServicioInventario(repositorioInventario, gestorTransaccional);
-        servicioLogin = new ServicioLogin(
+        ServicioDescuentos servicioDescuentos = new ServicioDescuentos(repositorioDescuentos, gestorTransaccional);
+        ServicioFacturas servicioFacturas = new ServicioFacturas(repositorioFacturas, gestorTransaccional);
+        ServicioImpuestos servicioImpuestos = new ServicioImpuestos(repositorioImpuestos, gestorTransaccional);
+        ServicioInventario servicioInventario = new ServicioInventario(repositorioInventario, gestorTransaccional);
+        ServicioLogin servicioLogin = new ServicioLogin(
                 repositorioUsuario, codificadorContrasenas, proveedorConfiguracion, gestorTransaccional
         );
-        servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(
+        ServicioPoliticaVencimiento servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(
                 repositorioPoliticaVencimiento, gestorTransaccional
         );
-        servicioPermiso = new ServicioPermiso(repositorioPermiso, gestorTransaccional);
-        servicioRol = new ServicioRol(repositorioRol, gestorTransaccional);
-        servicioUsuario = new ServicioUsuario(
+        ServicioPermiso servicioPermiso = new ServicioPermiso(repositorioPermiso, gestorTransaccional);
+        ServicioRol servicioRol = new ServicioRol(repositorioRol, gestorTransaccional);
+        ServicioUsuario servicioUsuario = new ServicioUsuario(
                 repositorioUsuario, codificadorContrasenas, gestorTransaccional
         );
 
         //INSTANCIACIÓN DE ORQUESTADORES:
 
-        fabricaProductos = new FabricaProductos(servicioImpuestos, servicioDescuentos, servicioPoliticaVencimiento);
+        FabricaProductos fabricaProductos = new FabricaProductos(
+                servicioImpuestos, servicioDescuentos, servicioPoliticaVencimiento
+        );
 
         //INSTANCIACIÓN DE ORQUESTADORES:
 
@@ -288,7 +223,9 @@ public class ContenedorDependencias {
                 servicioPoliticaVencimiento, ensambladorDTOPoliticaVencimiento
         );
         orquestadorProductos = new OrquestadorProductos(ensambladorDTOProducto, servicioProductos);
-        orquestadorGestionStock = new OrquestadorGestionStock(servicioGestionStock, ensambladorDTOProducto);
+        orquestadorGestionStock = new OrquestadorGestionStock(
+                servicioGestionStock, ensambladorDTOProducto, fabricaProductos
+        );
         orquestadorRoles = new OrquestadorRoles(servicioRol, ensambladorDTORol);
         orquestadorServicios = new OrquestadorServicios(
                 servicioServicios, ensambladorDTOServicio
@@ -305,33 +242,8 @@ public class ContenedorDependencias {
 
     private static void validarInicializado(){
         if (!inicializado) {
-            throw new IllegalStateException("El Contenedor NO ha sido Inicializado.");
+            throw new IllegalStateException("El Contenedor de Dependencias NO ha sido Inicializado.");
         }
-    }
-
-    public static EnsambladorDTOInventario getEnsambladorDTOInventario() {
-        validarInicializado();
-        return ensambladorDTOInventario;
-    }
-
-    public static ServicioConfiguraciones getServicioConfiguraciones() {
-        validarInicializado();
-        return servicioConfiguraciones;
-    }
-
-    public static ServicioInventario getServicioInventario() {
-        validarInicializado();
-        return servicioInventario;
-    }
-
-    public static ServicioPermiso getServicioPermiso() {
-        validarInicializado();
-        return servicioPermiso;
-    }
-
-    public static FabricaProductos getFabricaProductos() {
-        validarInicializado();
-        return fabricaProductos;
     }
 
     public static OrquestadorConfiguraciones getOrquestadorConfiguraciones() {

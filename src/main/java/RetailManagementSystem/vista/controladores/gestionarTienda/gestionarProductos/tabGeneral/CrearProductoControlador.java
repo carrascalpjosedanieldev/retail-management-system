@@ -1,5 +1,6 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarInventarios.gestionarProductos.tabGeneral;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral;
 
+import RetailManagementSystem.aplicacion.dto.comercial.DatosTotalesProductoRopaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
@@ -12,7 +13,6 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
-import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorGestionStock;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
@@ -63,8 +63,6 @@ public class CrearProductoControlador {
 
     private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
 
-    private final FabricaProductos fabricaProductos;
-
     private final OrquestadorGestionStock orquestadorGestionStock;
 
     private UsuarioDTOCompleto usuarioActual;
@@ -73,13 +71,12 @@ public class CrearProductoControlador {
 
     public CrearProductoControlador(
             OrquestadorImpuestos orquestadorImpuestos, OrquestadorDescuentos orquestadorDescuentos,
-            OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento, FabricaProductos fabricaProductos,
+            OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento,
             OrquestadorGestionStock orquestadorGestionStock
     ) {
         this.orquestadorImpuestos = orquestadorImpuestos;
         this.orquestadorDescuentos = orquestadorDescuentos;
         this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
-        this.fabricaProductos = fabricaProductos;
         this.orquestadorGestionStock = orquestadorGestionStock;
     }
 

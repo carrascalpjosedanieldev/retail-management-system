@@ -3,6 +3,7 @@ package RetailManagementSystem.aplicacion.orquestadores;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOProducto;
+import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioGestionStock;
 import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
@@ -19,13 +20,17 @@ public class OrquestadorGestionStock {
 
     private final EnsambladorDTOProducto ensambladorDTOProducto;
 
+    private final FabricaProductos fabricaProductos;
+
     //CONSTRUCTOR:
 
     public OrquestadorGestionStock(
-            ServicioGestionStock servicioGestionStock, EnsambladorDTOProducto ensambladorDTOProducto
+            ServicioGestionStock servicioGestionStock, EnsambladorDTOProducto ensambladorDTOProducto,
+            FabricaProductos fabricaProductos
     ) {
         this.servicioGestionStock = servicioGestionStock;
         this.ensambladorDTOProducto = ensambladorDTOProducto;
+        this.fabricaProductos = fabricaProductos;
     }
 
     //MÉTODOS:
@@ -35,6 +40,8 @@ public class OrquestadorGestionStock {
     ) {
         ValidadorSeguridad.exigirPermiso(usuario, PermisosApp.REGISTRAR_PRODUCTOS);
         ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+
+
         this.servicioGestionStock.registrarProductoEnInventario(idInventario, producto);
         return this.ensambladorDTOProducto.ensamblarProductoResumen(producto, contextoEvaluacion);
     }
