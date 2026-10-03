@@ -43,10 +43,6 @@ public class ServicioConfiguraciones {
 
     //MÉTODOS ESPECÍFICOS:
 
-    public String obtenerNombreTienda(){
-        return obtenerValorConfiguracion(ClaveConfiguracion.DATOS_TIENDA.getClaveBD());
-    }
-
     public ConfiguracionSistemaDTO obtenerDatosTienda(){
         return obtenerConfiguracionSistema(ClaveConfiguracion.DATOS_TIENDA.getClaveBD());
     }
