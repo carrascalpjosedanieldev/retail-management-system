@@ -59,8 +59,8 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         Connection conn = VinculadorTransaccion.getConnection();
         validarConexion(conn);
         try {
-
-            insertarDatosGenerales(conn, producto, idInventario);
+            int idTipo = obtenerIdTipoProducto(conn, producto.getTipoProducto());
+            insertarDatosGenerales(conn, producto, idInventario, idTipo);
             ejecutarEstrategiaInsertar(conn, producto);
 
         } catch (SQLIntegrityConstraintViolationException e) {
@@ -73,6 +73,29 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
         }
     }
 
+    private static final String SQL_OBTENER_ID_TIPO_PRODUCTO =
+            "SELECT id_tipo FROM tipo_producto WHERE nombre = ?";
+
+    private int obtenerIdTipoProducto(Connection conn, TipoProducto tipoProducto){
+        try (PreparedStatement pstmt = conn.prepareStatement(SQL_OBTENER_ID_TIPO_PRODUCTO)) {
+
+            pstmt.setString(1, tipoProducto.name());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id_tipo");
+                }
+
+                throw new IllegalArgumentException(
+                        "El Tipo " + tipoProducto.name() + " NO Existe en la Base de Datos."
+                );
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al obtener el Id del Tipo de Producto: " + tipoProducto.name() , e);
+        }
+    }
+
     private static final String SQL_INSERTAR_DATOS_PRODUCTO =
             "INSERT INTO productos (" +
             "codigo_producto, id_inventario, id_impuesto, id_descuento, nombre, " +
@@ -80,7 +103,9 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             ") " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    private void insertarDatosGenerales(Connection conn, Producto producto, int idInventario) throws SQLException{
+    private void insertarDatosGenerales(
+            Connection conn, Producto producto, int idInventario, int idTipo
+    ) throws SQLException {
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_PRODUCTO)) {
             pstmt.setString(1, producto.getCodigo());
             pstmt.setInt(2, idInventario);
@@ -91,10 +116,7 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             pstmt.setBigDecimal(7, producto.getPorcentajeGanancia());
             pstmt.setInt(8, producto.getStock());
             pstmt.setBoolean(9, producto.isActivo());
-            switch (producto.getTipoProducto()){
-                case TipoProducto.ROPA -> pstmt.setInt(10, 1);
-                case TipoProducto.PERECEDERO -> pstmt.setInt(10, 2);
-            }
+            pstmt.setInt(10, idTipo);
             pstmt.executeUpdate();
         }
     }
