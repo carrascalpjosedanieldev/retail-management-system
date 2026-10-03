@@ -1,9 +1,9 @@
 package RetailManagementSystem.aplicacion.fabricas;
 
-import RetailManagementSystem.aplicacion.dto.consultas.DatosGeneralesCreacionProductoDTO;
-import RetailManagementSystem.aplicacion.dto.consultas.DetallePerecederoDTO;
-import RetailManagementSystem.aplicacion.dto.consultas.DetalleRopaDTO;
-import RetailManagementSystem.aplicacion.dto.consultas.FormularioProductoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DatosGeneralesCreacionProductoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DetallePerecederoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DetalleRopaDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.FormularioProductoDTO;
 import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;

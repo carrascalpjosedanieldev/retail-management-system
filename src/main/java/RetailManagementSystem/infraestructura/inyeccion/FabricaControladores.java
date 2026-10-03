@@ -13,6 +13,7 @@ import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProdu
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.ManejarStockControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.MoverProductoAOtroInventarioControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.TabGeneralProductosControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto.FormularioPerecederoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabPerecedero.EditarPerecederoControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabPerecedero.TabPerecederosControlador;
 import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabRopa.EditarRopaControlador;
@@ -48,7 +49,6 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
                     ContenedorDependencias.getEstrategiasCreacionDetalle(),
                     ContenedorDependencias.getOrquestadorImpuestos(),
                     ContenedorDependencias.getOrquestadorDescuentos(),
-                    ContenedorDependencias.getOrquestadorPoliticaVencimiento(),
                     ContenedorDependencias.getOrquestadorGestionStock()
             );
         }
@@ -275,6 +275,11 @@ public class FabricaControladores implements Callback<Class<?>, Object> {
         if (claseControlador == EditarDescripcionPermisoControlador.class){
             return new EditarDescripcionPermisoControlador(
                     ContenedorDependencias.getOrquestadorPermisos()
+            );
+        }
+        if (claseControlador == FormularioPerecederoControlador.class){
+            return new FormularioPerecederoControlador(
+                    ContenedorDependencias.getOrquestadorPoliticaVencimiento()
             );
         }
         try {

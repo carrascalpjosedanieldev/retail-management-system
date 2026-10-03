@@ -1,13 +1,12 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto;
 
-import RetailManagementSystem.aplicacion.dto.consultas.DatosGeneralesCreacionProductoDTO;
-import RetailManagementSystem.aplicacion.dto.consultas.DetalleCreacionProductoDTO;
-import RetailManagementSystem.aplicacion.dto.consultas.FormularioProductoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DatosGeneralesCreacionProductoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DetalleCreacionProductoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.FormularioProductoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorImpuestos;
-import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
@@ -17,7 +16,7 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInven
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
-import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetalleProducto;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto.estrategias.EstrategiaCreacionDetalleProducto;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
 import RetailManagementSystem.vista.utilidades.RutasVista;
@@ -46,14 +45,13 @@ public class CrearProductoControlador {
     @FXML private TextField txtStock;
     @FXML private ComboBox<ImpuestoDTO> cbImpuesto;
     @FXML private ComboBox<DescuentoDTO> cbDescuento;
-
     @FXML private StackPane panelAtributosEspecificos;
 
     private FormularioEspecificoControlador controladorHijoActual;
 
     private List<PoliticaVencimientoDTO> politicasCache;
 
-    private final Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> estrategiasCreacion;
+    private final Map<TipoProducto, EstrategiaCreacionDetalleProducto<?, ?>> estrategiasCreacion;
 
     private int idInventario;
 
@@ -65,22 +63,18 @@ public class CrearProductoControlador {
 
     private final OrquestadorDescuentos orquestadorDescuentos;
 
-    private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
-
     private final OrquestadorGestionStock orquestadorGestionStock;
 
     //CONSTRUCTOR:
 
     public CrearProductoControlador(
-            Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> estrategiasCreacion,
+            Map<TipoProducto, EstrategiaCreacionDetalleProducto<?, ?>> estrategiasCreacion,
             OrquestadorImpuestos orquestadorImpuestos, OrquestadorDescuentos orquestadorDescuentos,
-            OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento,
             OrquestadorGestionStock orquestadorGestionStock
     ) {
         this.estrategiasCreacion = estrategiasCreacion;
         this.orquestadorImpuestos = orquestadorImpuestos;
         this.orquestadorDescuentos = orquestadorDescuentos;
-        this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
         this.orquestadorGestionStock = orquestadorGestionStock;
     }
 
@@ -95,7 +89,7 @@ public class CrearProductoControlador {
     ) {
         ValidadorSeguridad.exigirPermiso(usuarioActual, PermisosApp.REGISTRAR_PRODUCTOS);
         this.usuarioActual = usuarioActual;
-        if (idInventario <=0 ){
+        if (idInventario <= 0 ){
             throw new IllegalArgumentException("El ID recibido NO es Valido.");
         }
         this.idInventario = idInventario;
@@ -122,7 +116,7 @@ public class CrearProductoControlador {
     }
 
     private void configurarComboBoxTipoProducto() {
-        cbTipoProducto.getItems().addAll(TipoProducto.ROPA, TipoProducto.PERECEDERO);
+        cbTipoProducto.getItems().addAll(TipoProducto.values());
         cbTipoProducto.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -143,9 +137,26 @@ public class CrearProductoControlador {
         }
         CargadorVistas.VistaCargada<FormularioEspecificoControlador> vistaCargada =
                 CargadorVistas.cargarFragmentoConInyeccion(rutaFxml, controlador -> {
-                    if (controlador instanceof FormularioPerecederoControlador ctrlPerecedero
-                            && politicasCache != null) {
-                        ctrlPerecedero.cargarPoliticas(politicasCache);
+                    if (controlador instanceof FormularioPerecederoControlador ctrlPerecedero) {
+                        if (politicasCache != null) {
+                            ctrlPerecedero.cargarPoliticas(politicasCache);
+                        } else {
+                            ctrlPerecedero.cargarPoliticas().thenAccept(lista -> {
+                                this.politicasCache = lista;
+                            }).exceptionally(ex -> {
+                                Platform.runLater(() -> {
+                                    Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
+                                    GestorAlertas.mostrarAlertaError(
+                                            getVentana(),
+                                            "Error al Cargar las Políticas de Vencimiento", null,
+                                            "NO se pudieron Cargar las Políticas de Vencimiento.\n" +
+                                                    causa.getMessage()
+                                    );
+                                    cbTipoProducto.getSelectionModel().select(TipoProducto.ROPA);
+                                });
+                                return null;
+                            });
+                        }
                     }
                 });
         this.controladorHijoActual = vistaCargada.controlador();
@@ -172,24 +183,17 @@ public class CrearProductoControlador {
                 CompletableFuture.supplyAsync(this.orquestadorImpuestos::obtenerImpuestosActivos);
         CompletableFuture<List<DescuentoDTO>> futureDescuentos =
                 CompletableFuture.supplyAsync(this.orquestadorDescuentos::obtenerDescuentosActivos);
-        CompletableFuture<List<PoliticaVencimientoDTO>> futurePoliticasV =
-                CompletableFuture.supplyAsync(this.orquestadorPoliticaVencimiento::obtenerPoliticasVActivas);
         CompletableFuture.allOf(
-                futureImpuestos, futureDescuentos, futurePoliticasV
+                futureImpuestos, futureDescuentos
         ).thenAccept(v -> {
             List<ImpuestoDTO> impuestos = futureImpuestos.join();
             List<DescuentoDTO> descuentos = futureDescuentos.join();
-            List<PoliticaVencimientoDTO> politicas = futurePoliticasV.join();
             Platform.runLater(() -> {
                 if (!impuestos.isEmpty()) {
                     cbImpuesto.getItems().setAll(impuestos);
                 }
                 if (!descuentos.isEmpty()) {
                     cbDescuento.getItems().setAll(descuentos);
-                }
-                this.politicasCache = politicas;
-                if (controladorHijoActual instanceof FormularioPerecederoControlador ctrlPerecedero) {
-                    ctrlPerecedero.cargarPoliticas(politicasCache);
                 }
             });
         }).exceptionally(ex -> {
@@ -238,7 +242,8 @@ public class CrearProductoControlador {
         } catch (NumberFormatException e) {
             GestorAlertas.mostrarAlertaWarning(
                     getVentana(), "Error de Formato en los Números", null,
-                    "Verifica que los Campos Numéricos (Valor, Ganancia, Stock) Contengan Solo números Válidos y sin Espacios."
+                    "Verifica que los Campos Numéricos (Valor, Ganancia, Stock) " +
+                            "Contengan Solo números Válidos y sin Espacios."
             );
             return;
         } catch (IllegalArgumentException e) {
@@ -262,8 +267,18 @@ public class CrearProductoControlador {
                 tipoProducto, nombre, valorCompra, ganancia, stock, impuestoSel.idImpuesto(),
                 descuentoSel.idDescuento()
         );
-        EstrategiaCreacionDetalleProducto<?> estrategiaCreacion = obtenerEstrategia(tipoProducto);
-        DetalleCreacionProductoDTO detalle = estrategiaCreacion.crearDetalle(controladorHijoActual);
+        DetalleCreacionProductoDTO detalle;
+        try {
+            EstrategiaCreacionDetalleProducto<DetalleCreacionProductoDTO, FormularioEspecificoControlador>
+                    estrategiaCreacion = obtenerEstrategia(tipoProducto);
+            detalle = estrategiaCreacion.crearDetalle(controladorHijoActual);
+        } catch (IllegalStateException e) {
+            GestorAlertas.mostrarAlertaWarning(
+                    getVentana(), "Faltan Atributos Específicos", null,
+                    e.getMessage()
+            );
+            return;
+        }
         FormularioProductoDTO formularioProducto = new FormularioProductoDTO(datosGenerales, detalle);
         LocalDate fecha = LocalDate.now();
         CompletableFuture.supplyAsync(()->
@@ -316,12 +331,10 @@ public class CrearProductoControlador {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DetalleCreacionProductoDTO>
-    EstrategiaCreacionDetalleProducto<T> obtenerEstrategia(
-            TipoProducto tipoProducto
-    ) {
-        EstrategiaCreacionDetalleProducto<T> estrategia =
-                (EstrategiaCreacionDetalleProducto<T>) estrategiasCreacion.get(tipoProducto);
+    private <T extends DetalleCreacionProductoDTO, C extends FormularioEspecificoControlador>
+    EstrategiaCreacionDetalleProducto<T, C> obtenerEstrategia(TipoProducto tipoProducto) {
+        EstrategiaCreacionDetalleProducto<T, C> estrategia =
+                (EstrategiaCreacionDetalleProducto<T, C>) estrategiasCreacion.get(tipoProducto);
         if (estrategia == null){
             throw new IllegalStateException(
                     "NO Existe una Estrategia de Creación de Detalle para el Producto: " + tipoProducto

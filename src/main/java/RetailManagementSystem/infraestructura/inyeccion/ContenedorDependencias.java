@@ -45,9 +45,9 @@ import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.Gest
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.*;
 import RetailManagementSystem.infraestructura.persistencia.mysql.repositorios.*;
 import RetailManagementSystem.infraestructura.seguridad.Argon2CodificadorAdapter;
-import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetallePerecedero;
-import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetalleProducto;
-import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetalleRopa;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto.estrategias.EstrategiaCreacionDetallePerecedero;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto.estrategias.EstrategiaCreacionDetalleProducto;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto.estrategias.EstrategiaCreacionDetalleRopa;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +56,7 @@ public class ContenedorDependencias {
 
     //DEPENDENCIAS:
 
-    private static Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> estrategiasCreacionDetalle;
+    private static Map<TipoProducto, EstrategiaCreacionDetalleProducto<?, ?>> estrategiasCreacionDetalle;
 
 
 
@@ -262,7 +262,7 @@ public class ContenedorDependencias {
         }
     }
 
-    public static Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> getEstrategiasCreacionDetalle() {
+    public static Map<TipoProducto, EstrategiaCreacionDetalleProducto<?, ?>> getEstrategiasCreacionDetalle() {
         validarInicializado();
         return estrategiasCreacionDetalle;
     }

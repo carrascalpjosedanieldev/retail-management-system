@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.dto.consultas;
+package RetailManagementSystem.aplicacion.dto.creacion;
 
 public record FormularioProductoDTO(DatosGeneralesCreacionProductoDTO datosGenerales, DetalleCreacionProductoDTO detalle) { }
 

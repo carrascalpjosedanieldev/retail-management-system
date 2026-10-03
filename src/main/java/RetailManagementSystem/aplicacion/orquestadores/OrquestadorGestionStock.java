@@ -1,6 +1,6 @@
 package RetailManagementSystem.aplicacion.orquestadores;
 
-import RetailManagementSystem.aplicacion.dto.consultas.FormularioProductoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.FormularioProductoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.ensambladores.comercial.EnsambladorDTOProducto;

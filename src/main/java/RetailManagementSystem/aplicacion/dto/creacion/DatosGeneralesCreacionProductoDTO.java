@@ -1,4 +1,4 @@
-package RetailManagementSystem.aplicacion.dto.consultas;
+package RetailManagementSystem.aplicacion.dto.creacion;
 
 import RetailManagementSystem.dominio.enums.TipoProducto;
 

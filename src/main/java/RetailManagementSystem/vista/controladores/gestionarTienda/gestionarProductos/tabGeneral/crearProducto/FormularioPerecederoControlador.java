@@ -1,7 +1,9 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
+import RetailManagementSystem.aplicacion.orquestadores.OrquestadorPoliticaVencimiento;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
@@ -10,6 +12,7 @@ import javafx.util.StringConverter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class FormularioPerecederoControlador implements FormularioEspecificoControlador{
 
@@ -17,6 +20,14 @@ public class FormularioPerecederoControlador implements FormularioEspecificoCont
 
     @FXML private DatePicker dpFechaVencimiento;
     @FXML private ComboBox<PoliticaVencimientoDTO> cbPolitica;
+
+    private final OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento;
+
+    //CONSTRUCTOR:
+
+    public FormularioPerecederoControlador(OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento) {
+        this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
+    }
 
     //MÉTODOS:
 
@@ -29,7 +40,6 @@ public class FormularioPerecederoControlador implements FormularioEspecificoCont
                 setDisable(empty || date.isBefore(LocalDate.now()));
             }
         });
-
         cbPolitica.setConverter(new StringConverter<>() {
             @Override
             public String toString(PoliticaVencimientoDTO dto) {
@@ -44,6 +54,15 @@ public class FormularioPerecederoControlador implements FormularioEspecificoCont
         if (politicas != null && !politicas.isEmpty()) {
             cbPolitica.getItems().setAll(politicas);
         }
+    }
+
+    public CompletableFuture<List<PoliticaVencimientoDTO>> cargarPoliticas(){
+        return CompletableFuture.supplyAsync(
+                this.orquestadorPoliticaVencimiento::obtenerPoliticasVActivas
+        ).thenApply(listaPoliticas -> {
+            Platform.runLater(() -> cbPolitica.getItems().setAll(listaPoliticas));
+            return listaPoliticas;
+        });
     }
 
     public LocalDate getFechaSeleccionada() {
