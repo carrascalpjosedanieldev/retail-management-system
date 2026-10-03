@@ -61,8 +61,6 @@ public class ContenedorDependencias {
 
     private static Map<TipoProducto, EstrategiaCreacionDetalleProducto<?, ?>> estrategiasCreacionDetalle;
 
-
-
     private static OrquestadorConfiguraciones orquestadorConfiguraciones;
     private static OrquestadorDescuentos orquestadorDescuentos;
     private static OrquestadorHistoricoDeVentas orquestadorHistoricoDeVentas;
@@ -87,7 +85,7 @@ public class ContenedorDependencias {
     public static void inicializar() {
         if (inicializado) return;
 
-        //INSTANCIACIÓN DE UTILIDADES FINANCIERAS:
+        //UTILIDADES FINANCIERAS:
 
         MatematicaFinanciera matematicaFinanciera = new MatematicaFinanciera();
 
@@ -133,7 +131,7 @@ public class ContenedorDependencias {
         EnsambladorDTORol ensambladorDTORol = new EnsambladorDTORol(ensambladorDTOPermiso);
         EnsambladorDTOUsuario ensambladorDTOUsuario = new EnsambladorDTOUsuario(ensambladorDTORol);
 
-        //INSTANTIATION DE MAPEADORES:
+        //MAPEADORES:
 
         MapeadorImpuestos mapeadorImpuestos = new MapeadorImpuestos();
         MapeadorDescuentos mapeadorDescuentos = new MapeadorDescuentos();
@@ -145,7 +143,7 @@ public class ContenedorDependencias {
         MapeadorServicio mapeadorServicio = new MapeadorServicio();
         MapeadorUsuario mapeadorUsuario = new MapeadorUsuario();
 
-        //INSTANTIATION DE ESTRATEGIAS Y GESTOR TRANSACCIONAL:
+        //ESTRATEGIAS PERSISTENCIA Y GESTOR TRANSACCIONAL:
 
         GestorTransaccional gestorTransaccional = new GestorTransaccionalMySQL();
 
@@ -153,7 +151,7 @@ public class ContenedorDependencias {
         despachador.put(TipoProducto.ROPA, new EstrategiaPersistenciaRopa());
         despachador.put(TipoProducto.PERECEDERO, new EstrategiaPersistenciaPerecedero(mapeadorPoliticasVencimiento));
 
-        //INSTANCIACIÓN DE REPOSITORIOS:
+        //REPOSITORIOS:
 
         RepositorioConfiguracion repositorioConfiguracion = new RepositorioConfiguracionMySQL();
         RepositorioDescuentos repositorioDescuentos = new RepositorioDescuentosMySQL(mapeadorDescuentos);
@@ -182,7 +180,7 @@ public class ContenedorDependencias {
 
         CodificadorContrasenas codificadorContrasenas = new Argon2CodificadorAdapter();
 
-        //INSTANCIACIÓN DE SERVICIOS:
+        //SERVICIOS:
 
         ServicioProductos servicioProductos = new ServicioProductos(
                 repositorioProducto, repositorioImpuestos, repositorioDescuentos, repositorioPoliticaVencimiento,
@@ -214,7 +212,7 @@ public class ContenedorDependencias {
                 repositorioUsuario, codificadorContrasenas, gestorTransaccional
         );
 
-        //INSTANCIACIÓN DE FABRICAS:
+        //FABRICAS:
 
         EstrategiaFabricarRopa fabricarRopa = new EstrategiaFabricarRopa();
         EstrategiaFabricarPerecedero fabricarPerecedero = new EstrategiaFabricarPerecedero(servicioPoliticaVencimiento);
@@ -236,7 +234,7 @@ public class ContenedorDependencias {
         estrategiasCreacionDetalle.put(TipoProducto.ROPA, creacionDetalleRopa);
         estrategiasCreacionDetalle.put(TipoProducto.PERECEDERO, creacionDetallePerecedero);
 
-        //INSTANCIACIÓN DE ORQUESTADORES:
+        //ORQUESTADORES:
 
         orquestadorConfiguraciones = new OrquestadorConfiguraciones(servicioConfiguraciones);
         orquestadorDescuentos = new OrquestadorDescuentos(servicioDescuentos, ensambladorDTODescuento);
