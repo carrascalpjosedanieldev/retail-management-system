@@ -14,6 +14,9 @@ import RetailManagementSystem.aplicacion.ensambladores.seguridad.EnsambladorDTOR
 import RetailManagementSystem.aplicacion.ensambladores.seguridad.EnsambladorDTOUsuario;
 import RetailManagementSystem.aplicacion.ensambladores.ventas.EnsambladorDTOCarrito;
 import RetailManagementSystem.aplicacion.ensambladores.ventas.EnsambladorDTOFactura;
+import RetailManagementSystem.aplicacion.fabricas.EstrategiaFabricarPerecedero;
+import RetailManagementSystem.aplicacion.fabricas.EstrategiaFabricarProducto;
+import RetailManagementSystem.aplicacion.fabricas.EstrategiaFabricarRopa;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.*;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
@@ -213,8 +216,15 @@ public class ContenedorDependencias {
 
         //INSTANCIACIÓN DE FABRICAS:
 
+        EstrategiaFabricarRopa fabricarRopa = new EstrategiaFabricarRopa();
+        EstrategiaFabricarPerecedero fabricarPerecedero = new EstrategiaFabricarPerecedero(servicioPoliticaVencimiento);
+
+        Map<TipoProducto, EstrategiaFabricarProducto<?, ?>> estrategiasFabricar = new HashMap<>();
+        estrategiasFabricar.put(TipoProducto.ROPA, fabricarRopa);
+        estrategiasFabricar.put(TipoProducto.PERECEDERO, fabricarPerecedero);
+
         FabricaProductos fabricaProductos = new FabricaProductos(
-                servicioImpuestos, servicioDescuentos, servicioPoliticaVencimiento
+                estrategiasFabricar, servicioImpuestos, servicioDescuentos
         );
 
         //ESTRATEGIAS VISTA:

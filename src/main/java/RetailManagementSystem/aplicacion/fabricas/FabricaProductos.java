@@ -1,43 +1,38 @@
 package RetailManagementSystem.aplicacion.fabricas;
 
-import RetailManagementSystem.aplicacion.dto.creacion.DatosGeneralesCreacionProductoDTO;
-import RetailManagementSystem.aplicacion.dto.creacion.DetallePerecederoDTO;
-import RetailManagementSystem.aplicacion.dto.creacion.DetalleRopaDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DetalleCreacionProductoDTO;
 import RetailManagementSystem.aplicacion.dto.creacion.FormularioProductoDTO;
 import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
-import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
-import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioImpuestos;
-import RetailManagementSystem.aplicacion.servicios.gestion.ServicioPoliticaVencimiento;
+import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Map;
 
 public class FabricaProductos {
 
     //ATRIBUTOS:
 
+    private final Map<TipoProducto, EstrategiaFabricarProducto<?, ?>> estrategiasFabricacion;
+
     private final ServicioImpuestos servicioImpuestos;
 
     private final ServicioDescuentos servicioDescuentos;
 
-    private final ServicioPoliticaVencimiento servicioPoliticaVencimiento;
-
-    private record ComponentesComunes(Impuesto impuesto, Descuento descuento) {}
+    private record ComponentesComunes(Impuesto impuesto, Descuento descuento) { }
 
     //CONSTRUCTORES:
 
     public FabricaProductos(
-            ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos,
-            ServicioPoliticaVencimiento servicioPoliticaVencimiento
+            Map<TipoProducto, EstrategiaFabricarProducto<?, ?>> estrategiasFabricacion,
+            ServicioImpuestos servicioImpuestos, ServicioDescuentos servicioDescuentos
     ) {
+        this.estrategiasFabricacion = estrategiasFabricacion;
         this.servicioImpuestos = servicioImpuestos;
         this.servicioDescuentos = servicioDescuentos;
-        this.servicioPoliticaVencimiento = servicioPoliticaVencimiento;
     }
 
     //MÉTODOS:
@@ -59,60 +54,28 @@ public class FabricaProductos {
     }
 
     public Producto fabricarProducto(FormularioProductoDTO datosProducto, ContextoEvaluacion contextoEvaluacion) {
-        DatosGeneralesCreacionProductoDTO general = datosProducto.datosGenerales();
-        switch (general.tipoProducto()){
-            case ROPA -> {
-                DetalleRopaDTO dto = (DetalleRopaDTO) datosProducto.detalle();
-                return fabricarProductoRopa(
-                        general.nombre(), general.valorCompra(), general.ganancia(), general.stock(),
-                        general.idImpuesto(), general.idDescuento(), dto.talla()
-                );
-            }
-            case PERECEDERO -> {
-                DetallePerecederoDTO dto = (DetallePerecederoDTO) datosProducto.detalle();
-                return fabricarProductoPerecedero(
-                        general.nombre(), general.valorCompra(), general.ganancia(), general.stock(),
-                        general.idImpuesto(), general.idDescuento(), dto.fechaVencimiento(),
-                        dto.idPoliticaVencimiento(), contextoEvaluacion
-                );
-            }
-            default -> throw new IllegalArgumentException("Tipo de Producto NO Soportado");
-        }
-    }
-
-    private ProductoRopa fabricarProductoRopa(
-            String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto,
-            int idDescuento, Talla talla
-    ) {
-        ComponentesComunes componentes = obtenerYValidarComponentes(idImpuesto, idDescuento);
-        return ProductoRopa.crearNuevo(
-                nombre, valorCompra, porcentajeGanancia, stock, componentes.impuesto(), componentes.descuento(), talla
+        EstrategiaFabricarProducto<Producto, DetalleCreacionProductoDTO> estrategia =
+                obtenerEstrategia(datosProducto.datosGenerales().tipoProducto());
+        ComponentesComunes componentes = obtenerYValidarComponentes(
+                datosProducto.datosGenerales().idImpuesto(), datosProducto.datosGenerales().idDescuento()
+        );
+        return estrategia.fabricarProducto(
+                datosProducto.datosGenerales(), datosProducto.detalle(), contextoEvaluacion,
+                componentes.impuesto, componentes.descuento
         );
     }
 
-    private ProductoPerecedero fabricarProductoPerecedero(
-            String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto,
-            int idDescuento, LocalDate fechaVencimiento, int idPolitica, ContextoEvaluacion contextoEvaluacion
-    ) {
-        if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
-            throw new IllegalArgumentException("Se Requiere la Fecha Actual para Fabricar el Producto");
-        }
-        if (fechaVencimiento.isBefore(contextoEvaluacion.getFechaEvaluacion().get())){
-            throw new IllegalArgumentException("NO se puede Registrar el Producto porque ya está Vencido");
-        }
-        ComponentesComunes componentes = obtenerYValidarComponentes(idImpuesto, idDescuento);
-        PoliticaVencimiento politicaVencimiento =
-                this.servicioPoliticaVencimiento.obtenerPoliticaVencimiento(idPolitica);
-        if (!politicaVencimiento.isActiva()){
-            throw new IllegalArgumentException(
-                    "NO se puede Asignar la Política de Vencimiento -" + politicaVencimiento.getNombre() +
-                            "- Porque se Encuentra Inactiva."
+    @SuppressWarnings("unchecked")
+    private <T extends Producto, D extends DetalleCreacionProductoDTO> EstrategiaFabricarProducto<T, D>
+    obtenerEstrategia(TipoProducto tipoProducto) {
+        EstrategiaFabricarProducto<T, D> estrategia =
+                (EstrategiaFabricarProducto<T, D>) estrategiasFabricacion.get(tipoProducto);
+        if (estrategia == null){
+            throw new IllegalStateException(
+                    "NO Existe una Estrategia de Fabricación de Producto para el Tipo: " + tipoProducto
             );
         }
-        return ProductoPerecedero.crearNuevo(
-                nombre, valorCompra, porcentajeGanancia, stock, componentes.impuesto(), componentes.descuento(),
-                fechaVencimiento, politicaVencimiento
-        );
+        return estrategia;
     }
 
 }//===================================================================================================================//
