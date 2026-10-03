@@ -1,4 +1,4 @@
-package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto;
 
 import RetailManagementSystem.aplicacion.dto.consultas.DatosGeneralesCreacionProductoDTO;
 import RetailManagementSystem.aplicacion.dto.consultas.DetalleCreacionProductoDTO;
@@ -17,10 +17,6 @@ import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInven
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral
-        .crearProducto.FormularioEspecificoControlador;
-import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral
-        .crearProducto.FormularioPerecederoControlador;
 import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetalleProducto;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;

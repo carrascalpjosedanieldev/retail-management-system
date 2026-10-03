@@ -67,10 +67,10 @@ public class FabricaProductosTest {
         BigDecimal valorCompra = new BigDecimal("35000");
         BigDecimal porcentajeGanancia = new BigDecimal("85");
         int stock = 25;
-        String tallaString = "m";
+        Talla talla = Talla.M;
         //ACT
         ProductoRopa productoRopa = fabricaProductos.fabricarProductoRopa(
-                nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, tallaString
+                nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
         );
         //ASSERT
         assertNotNull(productoRopa.getCodigo());
@@ -100,12 +100,12 @@ public class FabricaProductosTest {
         BigDecimal valorCompra = new BigDecimal("35000");
         BigDecimal porcentajeGanancia = new BigDecimal("85");
         int stock = 25;
-        String tallaString = "m";
+        Talla talla = Talla.M;
         //ACT AND ASSERT
         ImpuestoNoEncontradoException exception = assertThrows(
                 ImpuestoNoEncontradoException.class,
                 ()-> fabricaProductos.fabricarProductoRopa(
-                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, tallaString
+                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
                 )
         );
         assertEquals(mensajeEsperado, exception.getMessage());
@@ -127,14 +127,14 @@ public class FabricaProductosTest {
         BigDecimal valorCompra = new BigDecimal("35000");
         BigDecimal porcentajeGanancia = new BigDecimal("85");
         int stock = 25;
-        String tallaString = "m";
+        Talla talla = Talla.M;
         String mensajeEsperado = "NO se puede Asignar el Impuesto -" + impuestoInactivo.getNombre() +
                 "- Porque se Encuentra Inactivo.";
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 ()-> fabricaProductos.fabricarProductoRopa(
-                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, tallaString
+                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
                 )
         );
         assertEquals(mensajeEsperado, exception.getMessage());
@@ -156,12 +156,12 @@ public class FabricaProductosTest {
         BigDecimal valorCompra = new BigDecimal("35000");
         BigDecimal porcentajeGanancia = new BigDecimal("85");
         int stock = 25;
-        String tallaString = "m";
+        Talla talla = Talla.M;
         //ACT AND ASSERT
         DescuentoNoEncontradoException exception = assertThrows(
                 DescuentoNoEncontradoException.class,
                 ()-> fabricaProductos.fabricarProductoRopa(
-                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, tallaString
+                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
                 )
         );
         assertEquals(mensajeEsperado, exception.getMessage());
@@ -185,41 +185,14 @@ public class FabricaProductosTest {
         BigDecimal valorCompra = new BigDecimal("35000");
         BigDecimal porcentajeGanancia = new BigDecimal("85");
         int stock = 25;
-        String tallaString = "m";
+        Talla talla = Talla.M;
         String mensajeEsperado = "NO se puede Asignar el Descuento -" + descuentoInactivo.getNombre() +
                 "- Porque se Encuentra Inactivo.";
         //ACT AND ASSERT
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 ()-> fabricaProductos.fabricarProductoRopa(
-                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, tallaString
-                )
-        );
-        assertEquals(mensajeEsperado, exception.getMessage());
-        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-        verify(servicioDescuentosFalso).obtenerDescuento(idDescuento);
-        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso);
-        verifyNoInteractions(servicioPoliticaVencimientoFalso);
-    }
-
-    @Test
-    void deberiaLanzarExcepcionSiLaTallaNoExisteAlFabricarProductoRopa(){
-        //ARRANGE
-        int idImpuesto = 1;
-        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoPruebas);
-        int idDescuento = 1;
-        when(servicioDescuentosFalso.obtenerDescuento(idDescuento)).thenReturn(descuentoPruebas);
-        String nombre = "  Ropa  ";
-        BigDecimal valorCompra = new BigDecimal("35000");
-        BigDecimal porcentajeGanancia = new BigDecimal("85");
-        int stock = 25;
-        String tallaStringInvalida = "no existe";
-        String mensajeEsperado = "La Talla Ingresada NO está entre las Opciones (Usa S, M, L, XL etc).";
-        //ACT AND ASSERT
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                ()-> fabricaProductos.fabricarProductoRopa(
-                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, tallaStringInvalida
+                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
                 )
         );
         assertEquals(mensajeEsperado, exception.getMessage());

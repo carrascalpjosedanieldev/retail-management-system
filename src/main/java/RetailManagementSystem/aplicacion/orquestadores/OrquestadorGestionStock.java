@@ -59,7 +59,7 @@ public class OrquestadorGestionStock {
                 DetalleRopaDTO dto = (DetalleRopaDTO) datosProducto.detalle();
                 return this.fabricaProductos.fabricarProductoRopa(
                         general.nombre(), general.valorCompra(), general.ganancia(), general.stock(),
-                        general.idImpuesto(), general.idDescuento(), dto.talla().name()
+                        general.idImpuesto(), general.idDescuento(), dto.talla()
                 );
             }
             case TipoProducto.PERECEDERO -> {

@@ -56,15 +56,9 @@ public class FabricaProductos {
 
     public ProductoRopa fabricarProductoRopa(
             String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto,
-            int idDescuento, String tallaString
+            int idDescuento, Talla talla
     ) {
         ComponentesComunes componentes = obtenerYValidarComponentes(idImpuesto, idDescuento);
-        Talla talla;
-        try {
-            talla = Talla.valueOf(tallaString.toUpperCase().trim());
-        } catch (IllegalArgumentException e){
-            throw new IllegalArgumentException("La Talla Ingresada NO está entre las Opciones (Usa S, M, L, XL etc).");
-        }
         return ProductoRopa.crearNuevo(
                 nombre, valorCompra, porcentajeGanancia, stock, componentes.impuesto(), componentes.descuento(), talla
         );

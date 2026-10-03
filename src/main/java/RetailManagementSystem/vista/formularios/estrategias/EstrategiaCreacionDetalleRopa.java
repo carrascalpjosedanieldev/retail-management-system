@@ -11,17 +11,11 @@ public class EstrategiaCreacionDetalleRopa implements EstrategiaCreacionDetalleP
     @Override
     public DetalleRopaDTO crearDetalle(FormularioEspecificoControlador controlador) {
         FormularioRopaControlador ropaControlador = (FormularioRopaControlador) controlador;
-        String tallaSt = ropaControlador.getTallaSeleccionada();
-        if (tallaSt == null){
+        Talla talla = ropaControlador.getTallaSeleccionada();
+        if (talla == null){
             throw new IllegalStateException("Talla NO Seleccionada, Debes Seleccionar una Talla");
         }
-        try {
-
-            Talla talla = Talla.valueOf(tallaSt);
-            return new DetalleRopaDTO(talla);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("");
-        }
+        return new DetalleRopaDTO(talla);
     }
 
 }//===================================================================================================================//
