@@ -1,5 +1,9 @@
 package RetailManagementSystem.aplicacion.fabricas;
 
+import RetailManagementSystem.aplicacion.dto.consultas.DatosGeneralesCreacionProductoDTO;
+import RetailManagementSystem.aplicacion.dto.consultas.DetallePerecederoDTO;
+import RetailManagementSystem.aplicacion.dto.consultas.DetalleRopaDTO;
+import RetailManagementSystem.aplicacion.dto.consultas.FormularioProductoDTO;
 import RetailManagementSystem.dominio.entidades.comercial.*;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
@@ -54,7 +58,29 @@ public class FabricaProductos {
         return new ComponentesComunes(impuesto, descuento);
     }
 
-    public ProductoRopa fabricarProductoRopa(
+    public Producto fabricarProducto(FormularioProductoDTO datosProducto, ContextoEvaluacion contextoEvaluacion) {
+        DatosGeneralesCreacionProductoDTO general = datosProducto.datosGenerales();
+        switch (general.tipoProducto()){
+            case ROPA -> {
+                DetalleRopaDTO dto = (DetalleRopaDTO) datosProducto.detalle();
+                return fabricarProductoRopa(
+                        general.nombre(), general.valorCompra(), general.ganancia(), general.stock(),
+                        general.idImpuesto(), general.idDescuento(), dto.talla()
+                );
+            }
+            case PERECEDERO -> {
+                DetallePerecederoDTO dto = (DetallePerecederoDTO) datosProducto.detalle();
+                return fabricarProductoPerecedero(
+                        general.nombre(), general.valorCompra(), general.ganancia(), general.stock(),
+                        general.idImpuesto(), general.idDescuento(), dto.fechaVencimiento(),
+                        dto.idPoliticaVencimiento(), contextoEvaluacion
+                );
+            }
+            default -> throw new IllegalArgumentException("Tipo de Producto NO Soportado");
+        }
+    }
+
+    private ProductoRopa fabricarProductoRopa(
             String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto,
             int idDescuento, Talla talla
     ) {
@@ -64,7 +90,7 @@ public class FabricaProductos {
         );
     }
 
-    public ProductoPerecedero fabricarProductoPerecedero(
+    private ProductoPerecedero fabricarProductoPerecedero(
             String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto,
             int idDescuento, LocalDate fechaVencimiento, int idPolitica, ContextoEvaluacion contextoEvaluacion
     ) {

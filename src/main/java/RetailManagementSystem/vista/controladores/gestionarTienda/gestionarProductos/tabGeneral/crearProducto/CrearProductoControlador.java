@@ -133,8 +133,14 @@ public class CrearProductoControlador {
     }
 
     private void cargarFragmentoEspecifico(TipoProducto tipo) {
-        String rutaFxml = (tipo == TipoProducto.ROPA) ?
-                RutasVista.FORMULARIO_ROPA_VIEW : RutasVista.FORMULARIO_PERECEDERO_VIEW;
+        String rutaFxml;
+        switch (tipo){
+            case ROPA -> rutaFxml = RutasVista.FORMULARIO_ROPA_VIEW;
+            case PERECEDERO -> rutaFxml = RutasVista.FORMULARIO_PERECEDERO_VIEW;
+            default -> throw new IllegalStateException(
+                    "NO hay un Formulario Especifico para el Tipo de Producto: " + tipo.name()
+            );
+        }
         CargadorVistas.VistaCargada<FormularioEspecificoControlador> vistaCargada =
                 CargadorVistas.cargarFragmentoConInyeccion(rutaFxml, controlador -> {
                     if (controlador instanceof FormularioPerecederoControlador ctrlPerecedero
@@ -175,8 +181,12 @@ public class CrearProductoControlador {
             List<DescuentoDTO> descuentos = futureDescuentos.join();
             List<PoliticaVencimientoDTO> politicas = futurePoliticasV.join();
             Platform.runLater(() -> {
-                if (!impuestos.isEmpty()) cbImpuesto.getItems().setAll(impuestos);
-                if (!descuentos.isEmpty()) cbDescuento.getItems().setAll(descuentos);
+                if (!impuestos.isEmpty()) {
+                    cbImpuesto.getItems().setAll(impuestos);
+                }
+                if (!descuentos.isEmpty()) {
+                    cbDescuento.getItems().setAll(descuentos);
+                }
                 this.politicasCache = politicas;
                 if (controladorHijoActual instanceof FormularioPerecederoControlador ctrlPerecedero) {
                     ctrlPerecedero.cargarPoliticas(politicasCache);
