@@ -1,5 +1,8 @@
 package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral;
 
+import RetailManagementSystem.aplicacion.dto.consultas.DatosGeneralesCreacionProductoDTO;
+import RetailManagementSystem.aplicacion.dto.consultas.DetalleCreacionProductoDTO;
+import RetailManagementSystem.aplicacion.dto.consultas.FormularioProductoDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.dto.ventas.ProductoResumenDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorDescuentos;
@@ -10,15 +13,19 @@ import RetailManagementSystem.aplicacion.dto.gestion.DescuentoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.ImpuestoDTO;
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorGestionStock;
+import RetailManagementSystem.dominio.excepciones.reglasDeNegocio.CapacidadInventarioExcedidaException;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
-import RetailManagementSystem.vista.formularios.crearProducto.FormularioEspecificoControlador;
-import RetailManagementSystem.vista.formularios.crearProducto.FormularioPerecederoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral
+        .crearProducto.FormularioEspecificoControlador;
+import RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral
+        .crearProducto.FormularioPerecederoControlador;
+import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetalleProducto;
 import RetailManagementSystem.vista.utilidades.CargadorVistas;
 import RetailManagementSystem.vista.utilidades.GestorAlertas;
-
 import RetailManagementSystem.vista.utilidades.RutasVista;
+
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,7 +36,9 @@ import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class CrearProductoControlador {
@@ -48,6 +57,8 @@ public class CrearProductoControlador {
 
     private List<PoliticaVencimientoDTO> politicasCache;
 
+    private final Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> estrategiasCreacion;
+
     private int idInventario;
 
     private ObservableList<ProductoResumenDTO> listaObservable;
@@ -65,10 +76,12 @@ public class CrearProductoControlador {
     //CONSTRUCTOR:
 
     public CrearProductoControlador(
+            Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> estrategiasCreacion,
             OrquestadorImpuestos orquestadorImpuestos, OrquestadorDescuentos orquestadorDescuentos,
             OrquestadorPoliticaVencimiento orquestadorPoliticaVencimiento,
             OrquestadorGestionStock orquestadorGestionStock
     ) {
+        this.estrategiasCreacion = estrategiasCreacion;
         this.orquestadorImpuestos = orquestadorImpuestos;
         this.orquestadorDescuentos = orquestadorDescuentos;
         this.orquestadorPoliticaVencimiento = orquestadorPoliticaVencimiento;
@@ -159,14 +172,12 @@ public class CrearProductoControlador {
                 CompletableFuture.supplyAsync(this.orquestadorDescuentos::obtenerDescuentosActivos);
         CompletableFuture<List<PoliticaVencimientoDTO>> futurePoliticasV =
                 CompletableFuture.supplyAsync(this.orquestadorPoliticaVencimiento::obtenerPoliticasVActivas);
-
         CompletableFuture.allOf(
                 futureImpuestos, futureDescuentos, futurePoliticasV
         ).thenAccept(v -> {
             List<ImpuestoDTO> impuestos = futureImpuestos.join();
             List<DescuentoDTO> descuentos = futureDescuentos.join();
             List<PoliticaVencimientoDTO> politicas = futurePoliticasV.join();
-
             Platform.runLater(() -> {
                 if (!impuestos.isEmpty()) cbImpuesto.getItems().setAll(impuestos);
                 if (!descuentos.isEmpty()) cbDescuento.getItems().setAll(descuentos);
@@ -240,93 +251,78 @@ public class CrearProductoControlador {
             );
             return;
         }
-        //TipoProducto tipoSeleccionado = (TipoProducto) grupoTipo.getSelectedToggle().getUserData();
-//        Producto producto = crearProductoDesdeFormulario(
-//                tipoSeleccionado, nombre, valorCompra, ganancia, stock, impuestoSel.idImpuesto(),
-//                descuentoSel.idDescuento()
-//        );
-//        if (producto == null){
-//            return;
-//        }
-//        CompletableFuture.supplyAsync(()->
-//                this.orquestadorGestionStock.validarEspacioInventarioYGuardarProducto(
-//                        this.usuarioActual, this.idInventario, producto, LocalDate.now()
-//                )
-//        ).thenAccept(productoRegistrado->
-//            Platform.runLater(()->{
-//                listaObservable.add(productoRegistrado);
-//                GestorAlertas.mostrarAlertaInformacion(
-//                        getVentana(), "Éxito", null,
-//                        "Producto Creado Correctamente."
-//                );
-//                cerrarVentana();
-//            })
-//        ).exceptionally(ex->{
-//            Platform.runLater(()->{
-//                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
-//                if (causa instanceof IllegalArgumentException ||
-//                    causa instanceof IllegalStateException){
-//                    GestorAlertas.mostrarAlertaError(
-//                            getVentana(), "Error en los Datos Ingresados", null,
-//                            "Verifica los Datos que Ingresaste, Detalle del Error:\n" +
-//                                    causa.getMessage()
-//                    );
-//                } else if (causa instanceof CapacidadInventarioExcedidaException){
-//                    GestorAlertas.mostrarAlertaError(
-//                            getVentana(),"Capacidad del Inventario Excedida", null,
-//                            causa.getMessage()
-//                    );
-//                } else {
-//                    GestorAlertas.mostrarAlertaError(
-//                            getVentana(), "Error Critico", null,
-//                            "Verifica tu Conexión y Notificale este Error al Administrador:\n"
-//                                    + causa.getMessage()
-//                    );
-//                }
-//            });
-//            return null;
-//        });
+        TipoProducto tipoProducto = cbTipoProducto.getValue();
+        DatosGeneralesCreacionProductoDTO datosGenerales = empaquetarDatosGenerales(
+                tipoProducto, nombre, valorCompra, ganancia, stock, impuestoSel.idImpuesto(),
+                descuentoSel.idDescuento()
+        );
+        EstrategiaCreacionDetalleProducto<?> estrategiaCreacion = obtenerEstrategia(tipoProducto);
+        DetalleCreacionProductoDTO detalle = estrategiaCreacion.crearDetalle(controladorHijoActual);
+        FormularioProductoDTO formularioProducto = new FormularioProductoDTO(datosGenerales, detalle);
+        LocalDate fecha = LocalDate.now();
+        CompletableFuture.supplyAsync(()->
+                this.orquestadorGestionStock.validarEspacioInventarioYGuardarProducto(
+                        this.usuarioActual, this.idInventario, formularioProducto, fecha
+                )
+        ).thenAccept(productoRegistrado->
+            Platform.runLater(()->{
+                listaObservable.add(productoRegistrado);
+                GestorAlertas.mostrarAlertaInformacion(
+                        getVentana(), "Éxito", null,
+                        "Producto Creado Correctamente."
+                );
+                cerrarVentana();
+            })
+        ).exceptionally(ex->{
+            Platform.runLater(()->{
+                Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);
+                if (causa instanceof IllegalArgumentException ||
+                    causa instanceof IllegalStateException){
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error en los Datos Ingresados", null,
+                            "Verifica los Datos que Ingresaste, Detalle del Error:\n" +
+                                    causa.getMessage()
+                    );
+                } else if (causa instanceof CapacidadInventarioExcedidaException){
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(),"Capacidad del Inventario Excedida", null,
+                            causa.getMessage()
+                    );
+                } else {
+                    GestorAlertas.mostrarAlertaError(
+                            getVentana(), "Error Critico", null,
+                            "Verifica tu Conexión y Notificale este Error al Administrador:\n"
+                                    + causa.getMessage()
+                    );
+                }
+            });
+            return null;
+        });
     }
 
-//    private Producto crearProductoDesdeFormulario(
-//            TipoProducto tipoSeleccionado, String nombre, BigDecimal valorCompra, BigDecimal ganancia,
-//            int stock, int idImpuesto, int idDescuento
-//    ) {
-//        if (tipoSeleccionado == TipoProducto.ROPA) {
-//            String tallaSel = cbTalla.getValue();
-//            if (tallaSel == null) {
-//                GestorAlertas.mostrarAlertaWarning(
-//                        getVentana(), "Talla NO Seleccionada", null,
-//                        "Debes Seleccionar una Talla."
-//                );
-//                return null;
-//            }
-//            return fabricaProductos.fabricarProductoRopa(
-//                    nombre, valorCompra, ganancia, stock,
-//                    idImpuesto, idDescuento, tallaSel
-//            );
-//        } else if (tipoSeleccionado == TipoProducto.PERECEDERO) {
-//            LocalDate fechaVenc = dpFechaVencimiento.getValue();
-//            PoliticaVencimientoDTO politicaSel = cbPolitica.getValue();
-//            if (fechaVenc == null || politicaSel == null) {
-//                GestorAlertas.mostrarAlertaWarning(
-//                        getVentana(), "Campos NO Seleccionados", null,
-//                        "Debes seleccionar Fecha y Política de Vencimiento."
-//                );
-//                return null;
-//            }
-//            return fabricaProductos.fabricarProductoPerecedero(
-//                    nombre, valorCompra, ganancia, stock,
-//                    idImpuesto, idDescuento, fechaVenc,
-//                    politicaSel.idPoliticaVencimiento(), LocalDate.now()
-//            );
-//        } else {
-//            GestorAlertas.mostrarAlertaWarning(
-//                    getVentana(), "Error", null,
-//                    "Tipo Invalido");
-//            return null;
-//        }
-//    }
+    private DatosGeneralesCreacionProductoDTO empaquetarDatosGenerales(
+            TipoProducto tipoProducto, String nombre, BigDecimal valorCompra, BigDecimal ganancia, int stock,
+            int idImpuesto, int idDescuento
+    ){
+        return new DatosGeneralesCreacionProductoDTO(
+                tipoProducto, nombre, valorCompra, ganancia, stock, idImpuesto, idDescuento
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends DetalleCreacionProductoDTO>
+    EstrategiaCreacionDetalleProducto<T> obtenerEstrategia(
+            TipoProducto tipoProducto
+    ) {
+        EstrategiaCreacionDetalleProducto<T> estrategia =
+                (EstrategiaCreacionDetalleProducto<T>) estrategiasCreacion.get(tipoProducto);
+        if (estrategia == null){
+            throw new IllegalStateException(
+                    "NO Existe una Estrategia de Creación de Detalle para el Producto: " + tipoProducto
+            );
+        }
+        return estrategia;
+    }
 
 
     @FXML

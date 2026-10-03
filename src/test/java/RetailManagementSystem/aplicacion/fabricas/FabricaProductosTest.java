@@ -14,6 +14,7 @@ import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.DescuentoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ImpuestoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PoliticaVencimientoNoEncontradaException;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -242,11 +243,12 @@ public class FabricaProductosTest {
         BigDecimal porcentajeGanancia = new BigDecimal("100");
         int stock = 25;
         LocalDate fechaActual = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
         LocalDate fechaVencimiento = fechaActual.plusDays(5);
         //ACT
         ProductoPerecedero productoPerecedero = fabricaProductos.fabricarProductoPerecedero(
                 nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-                idPoliticaV, fechaActual
+                idPoliticaV, contextoEvaluacion
         );
         //ASSERT
         assertNotNull(productoPerecedero.getCodigo());
@@ -276,6 +278,7 @@ public class FabricaProductosTest {
         BigDecimal porcentajeGanancia = new BigDecimal("100");
         int stock = 25;
         LocalDate fechaActual = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
         LocalDate fechaVencimiento = fechaActual.minusDays(1);
         String mensajeEsperado = "NO se puede Registrar el Producto porque ya está Vencido";
         //ACT AND ASSERT
@@ -283,7 +286,7 @@ public class FabricaProductosTest {
                 IllegalArgumentException.class,
                 ()-> fabricaProductos.fabricarProductoPerecedero(
                         nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-                        idPoliticaV, fechaActual
+                        idPoliticaV, contextoEvaluacion
                 )
         );
         assertEquals(mensajeEsperado, exception.getMessage());
@@ -306,13 +309,14 @@ public class FabricaProductosTest {
         BigDecimal porcentajeGanancia = new BigDecimal("100");
         int stock = 25;
         LocalDate fechaActual = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
         LocalDate fechaVencimiento = fechaActual.plusDays(5);
         //ACT AND ASSERT
         PoliticaVencimientoNoEncontradaException exception = assertThrows(
                 PoliticaVencimientoNoEncontradaException.class,
                 ()-> fabricaProductos.fabricarProductoPerecedero(
                         nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-                        idPoliticaV, fechaActual
+                        idPoliticaV, contextoEvaluacion
                 )
         );
         assertEquals(mensajeEsperado, exception.getMessage());
@@ -339,6 +343,7 @@ public class FabricaProductosTest {
         BigDecimal porcentajeGanancia = new BigDecimal("100");
         int stock = 25;
         LocalDate fechaActual = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
         LocalDate fechaVencimiento = fechaActual.plusDays(5);
         String mensajeEsperado = "NO se puede Asignar la Política de Vencimiento -" + politicaVInactiva.getNombre() +
                 "- Porque se Encuentra Inactiva.";
@@ -347,7 +352,7 @@ public class FabricaProductosTest {
                 IllegalArgumentException.class,
                 ()-> fabricaProductos.fabricarProductoPerecedero(
                         nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-                        idPoliticaV, fechaActual
+                        idPoliticaV, contextoEvaluacion
                 )
         );
         assertEquals(mensajeEsperado, exception.getMessage());

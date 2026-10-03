@@ -2,7 +2,7 @@ package RetailManagementSystem.aplicacion.dto.consultas;
 
 import RetailManagementSystem.dominio.enums.Talla;
 
-public record DetalleRopaDTO(
+public record DetalleRopaDTO (
         Talla talla
 ) implements DetalleCreacionProductoDTO { }
 

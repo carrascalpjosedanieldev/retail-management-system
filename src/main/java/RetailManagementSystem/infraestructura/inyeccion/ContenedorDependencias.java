@@ -45,6 +45,9 @@ import RetailManagementSystem.infraestructura.persistencia.mysql.conexiones.Gest
 import RetailManagementSystem.infraestructura.persistencia.mysql.mappers.*;
 import RetailManagementSystem.infraestructura.persistencia.mysql.repositorios.*;
 import RetailManagementSystem.infraestructura.seguridad.Argon2CodificadorAdapter;
+import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetallePerecedero;
+import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetalleProducto;
+import RetailManagementSystem.vista.formularios.estrategias.EstrategiaCreacionDetalleRopa;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +55,10 @@ import java.util.Map;
 public class ContenedorDependencias {
 
     //DEPENDENCIAS:
+
+    private static Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> estrategiasCreacionDetalle;
+
+
 
     private static OrquestadorConfiguraciones orquestadorConfiguraciones;
     private static OrquestadorDescuentos orquestadorDescuentos;
@@ -204,11 +211,20 @@ public class ContenedorDependencias {
                 repositorioUsuario, codificadorContrasenas, gestorTransaccional
         );
 
-        //INSTANCIACIÓN DE ORQUESTADORES:
+        //INSTANCIACIÓN DE FABRICAS:
 
         FabricaProductos fabricaProductos = new FabricaProductos(
                 servicioImpuestos, servicioDescuentos, servicioPoliticaVencimiento
         );
+
+        //ESTRATEGIAS VISTA:
+
+        EstrategiaCreacionDetalleRopa creacionDetalleRopa = new EstrategiaCreacionDetalleRopa();
+        EstrategiaCreacionDetallePerecedero creacionDetallePerecedero = new EstrategiaCreacionDetallePerecedero();
+
+        estrategiasCreacionDetalle = new HashMap<>();
+        estrategiasCreacionDetalle.put(TipoProducto.ROPA, creacionDetalleRopa);
+        estrategiasCreacionDetalle.put(TipoProducto.PERECEDERO, creacionDetallePerecedero);
 
         //INSTANCIACIÓN DE ORQUESTADORES:
 
@@ -244,6 +260,11 @@ public class ContenedorDependencias {
         if (!inicializado) {
             throw new IllegalStateException("El Contenedor de Dependencias NO ha sido Inicializado.");
         }
+    }
+
+    public static Map<TipoProducto, EstrategiaCreacionDetalleProducto<?>> getEstrategiasCreacionDetalle() {
+        validarInicializado();
+        return estrategiasCreacionDetalle;
     }
 
     public static OrquestadorConfiguraciones getOrquestadorConfiguraciones() {

@@ -1,4 +1,4 @@
-package RetailManagementSystem.vista.formularios.crearProducto;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto;
 
 import RetailManagementSystem.aplicacion.dto.gestion.PoliticaVencimientoDTO;
 
@@ -13,11 +13,12 @@ import java.util.List;
 
 public class FormularioPerecederoControlador implements FormularioEspecificoControlador{
 
-    @FXML
-    private DatePicker dpFechaVencimiento;
+    //ATRIBUTOS:
 
-    @FXML
-    private ComboBox<PoliticaVencimientoDTO> cbPolitica;
+    @FXML private DatePicker dpFechaVencimiento;
+    @FXML private ComboBox<PoliticaVencimientoDTO> cbPolitica;
+
+    //MÉTODOS:
 
     @FXML
     public void initialize() {
@@ -42,32 +43,6 @@ public class FormularioPerecederoControlador implements FormularioEspecificoCont
     public void cargarPoliticas(List<PoliticaVencimientoDTO> politicas) {
         if (politicas != null && !politicas.isEmpty()) {
             cbPolitica.getItems().setAll(politicas);
-        }
-    }
-
-    @Override
-    public boolean esValido() {
-        boolean fechaValida = dpFechaVencimiento.getValue() != null && !dpFechaVencimiento.getValue().isBefore(LocalDate.now());
-        boolean politicaValida = cbPolitica.getValue() != null;
-        return fechaValida && politicaValida;
-    }
-
-    @Override
-    public void mostrarErrores() {
-        if (dpFechaVencimiento.getValue() == null || dpFechaVencimiento.getValue().isBefore(LocalDate.now())) {
-            if (!dpFechaVencimiento.getStyleClass().contains("campo-error")) {
-                dpFechaVencimiento.getStyleClass().add("campo-error");
-            }
-        } else {
-            dpFechaVencimiento.getStyleClass().remove("campo-error");
-        }
-
-        if (cbPolitica.getValue() == null) {
-            if (!cbPolitica.getStyleClass().contains("campo-error")) {
-                cbPolitica.getStyleClass().add("campo-error");
-            }
-        } else {
-            cbPolitica.getStyleClass().remove("campo-error");
         }
     }
 

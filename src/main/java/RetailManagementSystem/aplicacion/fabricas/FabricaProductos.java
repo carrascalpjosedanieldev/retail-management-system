@@ -8,6 +8,7 @@ import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioImpuestos;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioPoliticaVencimiento;
+import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -71,9 +72,12 @@ public class FabricaProductos {
 
     public ProductoPerecedero fabricarProductoPerecedero(
             String nombre, BigDecimal valorCompra, BigDecimal porcentajeGanancia, int stock, int idImpuesto,
-            int idDescuento, LocalDate fechaVencimiento, int idPolitica, LocalDate fechaActual
+            int idDescuento, LocalDate fechaVencimiento, int idPolitica, ContextoEvaluacion contextoEvaluacion
     ) {
-        if (fechaVencimiento.isBefore(fechaActual)){
+        if (contextoEvaluacion.getFechaEvaluacion().isEmpty()){
+            throw new IllegalArgumentException("Se Requiere la Fecha Actual para Fabricar el Producto");
+        }
+        if (fechaVencimiento.isBefore(contextoEvaluacion.getFechaEvaluacion().get())){
             throw new IllegalArgumentException("NO se puede Registrar el Producto porque ya está Vencido");
         }
         ComponentesComunes componentes = obtenerYValidarComponentes(idImpuesto, idDescuento);

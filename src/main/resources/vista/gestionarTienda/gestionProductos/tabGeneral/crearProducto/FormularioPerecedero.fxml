@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="96.0" prefWidth="634.0" spacing="15.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../../../../../css/gestionarTienda/gestionarProductos/tabGeneral/estilosCssCrearProductos.css" fx:controller="RetailManagementSystem.vista.formularios.crearProducto.FormularioPerecederoControlador">
+<HBox prefHeight="96.0" prefWidth="634.0" spacing="15.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../../../../../css/gestionarTienda/gestionarProductos/tabGeneral/estilosCssCrearProductos.css" fx:controller="RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto.FormularioPerecederoControlador">
     <VBox prefWidth="200.0" spacing="5.0">
         <Label text="Fecha Vencimiento:" />
         <DatePicker fx:id="dpFechaVencimiento" prefHeight="50.0" prefWidth="200.0" />

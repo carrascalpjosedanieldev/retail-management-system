@@ -74,8 +74,11 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
     }
 
     private static final String SQL_INSERTAR_DATOS_PRODUCTO =
-            "INSERT INTO productos (codigo_producto, id_inventario, id_impuesto, id_descuento, nombre, " +
-                    "valor_compra, porcentaje_ganancia, stock, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "INSERT INTO productos (" +
+            "codigo_producto, id_inventario, id_impuesto, id_descuento, nombre, " +
+            "valor_compra, porcentaje_ganancia, stock, activo, id_tipo_producto" +
+            ") " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private void insertarDatosGenerales(Connection conn, Producto producto, int idInventario) throws SQLException{
         try (PreparedStatement pstmt = conn.prepareStatement(SQL_INSERTAR_DATOS_PRODUCTO)) {
@@ -88,6 +91,10 @@ public class RepositorioProductoMySQL implements RepositorioProducto {
             pstmt.setBigDecimal(7, producto.getPorcentajeGanancia());
             pstmt.setInt(8, producto.getStock());
             pstmt.setBoolean(9, producto.isActivo());
+            switch (producto.getTipoProducto()){
+                case TipoProducto.ROPA -> pstmt.setInt(10, 1);
+                case TipoProducto.PERECEDERO -> pstmt.setInt(10, 2);
+            }
             pstmt.executeUpdate();
         }
     }

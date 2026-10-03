@@ -1,4 +1,4 @@
-package RetailManagementSystem.vista.formularios.crearProducto;
+package RetailManagementSystem.vista.controladores.gestionarTienda.gestionarProductos.tabGeneral.crearProducto;
 
 import RetailManagementSystem.dominio.enums.Talla;
 
@@ -9,10 +9,13 @@ import javafx.scene.control.ComboBox;
 import java.util.Arrays;
 import java.util.List;
 
-public class FormularioRopaControlador implements FormularioEspecificoControlador{
+public class FormularioRopaControlador implements FormularioEspecificoControlador {
 
-    @FXML
-    private ComboBox<String> cbTalla;
+    //ATRIBUTOS:
+
+    @FXML private ComboBox<String> cbTalla;
+
+    //MÉTODOS:
 
     @FXML
     public void initialize() {
@@ -20,22 +23,6 @@ public class FormularioRopaControlador implements FormularioEspecificoControlado
                 .map(Enum::name)
                 .toList();
         cbTalla.setItems(FXCollections.observableArrayList(listaTallas));
-    }
-
-    @Override
-    public boolean esValido() {
-        return cbTalla.getValue() != null;
-    }
-
-    @Override
-    public void mostrarErrores() {
-        if (cbTalla.getValue() == null) {
-            if (!cbTalla.getStyleClass().contains("campo-error")) {
-                cbTalla.getStyleClass().add("campo-error");
-            }
-        } else {
-            cbTalla.getStyleClass().remove("campo-error");
-        }
     }
 
     public String getTallaSeleccionada() {
