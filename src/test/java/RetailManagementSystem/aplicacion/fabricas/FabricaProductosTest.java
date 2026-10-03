@@ -1,30 +1,34 @@
 package RetailManagementSystem.aplicacion.fabricas;
 
+import RetailManagementSystem.aplicacion.dto.creacion.DatosGeneralesCreacionProductoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DetallePerecederoDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.DetalleRopaDTO;
+import RetailManagementSystem.aplicacion.dto.creacion.FormularioProductoDTO;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioDescuentos;
 import RetailManagementSystem.aplicacion.servicios.gestion.ServicioImpuestos;
-import RetailManagementSystem.aplicacion.servicios.gestion.ServicioPoliticaVencimiento;
-import RetailManagementSystem.dominio.entidades.comercial.ProductoPerecedero;
+import RetailManagementSystem.dominio.entidades.comercial.Producto;
 import RetailManagementSystem.dominio.entidades.comercial.ProductoRopa;
 import RetailManagementSystem.dominio.entidades.gestion.Descuento;
 import RetailManagementSystem.dominio.entidades.gestion.Impuesto;
-import RetailManagementSystem.dominio.entidades.gestion.PoliticaVencimiento;
+
 import RetailManagementSystem.dominio.enums.Talla;
 import RetailManagementSystem.dominio.enums.TipoProducto;
-
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.DescuentoNoEncontradoException;
 import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.ImpuestoNoEncontradoException;
-import RetailManagementSystem.dominio.excepciones.recursosNoEncontrados.PoliticaVencimientoNoEncontradaException;
 import RetailManagementSystem.dominio.financiero.calculos.ContextoEvaluacion;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,9 +42,20 @@ public class FabricaProductosTest {
             1, "Descuento", new BigDecimal("10"), true
     );
 
-    private final PoliticaVencimiento politicaVPruebas = PoliticaVencimiento.reconstruirDesdeBD(
-            1, "Política", 3, new BigDecimal("15"), true
+    private final ProductoRopa productoPruebas = ProductoRopa.reconstruirDesdeBD(
+            "Ropa01234567890",
+            "Ropa",
+            new BigDecimal("50000"),
+            new BigDecimal("100"),
+            25,
+            impuestoPruebas,
+            descuentoPruebas,
+            true,
+            Talla.M
     );
+
+    @Mock
+    private EstrategiaFabricarRopa estrategiaFabricarRopaFalsa;
 
     @Mock
     private ServicioImpuestos servicioImpuestosFalso;
@@ -48,317 +63,185 @@ public class FabricaProductosTest {
     @Mock
     private ServicioDescuentos servicioDescuentosFalso;
 
-    @Mock
-    private ServicioPoliticaVencimiento servicioPoliticaVencimientoFalso;
-
-    @InjectMocks
     private FabricaProductos fabricaProductos;
+
+    @BeforeEach
+    void setUp(){
+        Map<TipoProducto, EstrategiaFabricarProducto<?, ?>> estrategiasFabricacion = new HashMap<>();
+        estrategiasFabricacion.put(TipoProducto.ROPA, estrategiaFabricarRopaFalsa);
+        fabricaProductos = new FabricaProductos(
+                estrategiasFabricacion, servicioImpuestosFalso, servicioDescuentosFalso
+        );
+    }
 
     //TESTS
 
-//    @Test
-//    void deberiaFabricarProductoRopaCorrectamente(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoPruebas);
-//        int idDescuento = 1;
-//        when(servicioDescuentosFalso.obtenerDescuento(idDescuento)).thenReturn(descuentoPruebas);
-//        String nombre = "  Ropa  ";
-//        BigDecimal valorCompra = new BigDecimal("35000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("85");
-//        int stock = 25;
-//        Talla talla = Talla.M;
-//        //ACT
-//        ProductoRopa productoRopa = fabricaProductos.fabricarProductoRopa(
-//                nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
-//        );
-//        //ASSERT
-//        assertNotNull(productoRopa.getCodigo());
-//        assertEquals(TipoProducto.ROPA, productoRopa.getTipoProducto());
-//        assertEquals("Ropa", productoRopa.getNombre());
-//        assertEquals(0, valorCompra.compareTo(productoRopa.getValorCompra()));
-//        assertEquals(0, porcentajeGanancia.compareTo(productoRopa.getPorcentajeGanancia()));
-//        assertEquals(stock, productoRopa.getStock());
-//        assertEquals(impuestoPruebas, productoRopa.getImpuesto());
-//        assertEquals(descuentoPruebas, productoRopa.getDescuento());
-//        assertEquals(Talla.M, productoRopa.getTalla());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verify(servicioDescuentosFalso).obtenerDescuento(idDescuento);
-//        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso);
-//        verifyNoInteractions(servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiNoExisteImpuestoAlFabricarProductoRopa(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        String mensajeEsperado = "No existe un Impuesto con el ID: " + idImpuesto;
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto))
-//                .thenThrow(new ImpuestoNoEncontradoException(mensajeEsperado));
-//        int idDescuento = 1;
-//        String nombre = "  Ropa  ";
-//        BigDecimal valorCompra = new BigDecimal("35000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("85");
-//        int stock = 25;
-//        Talla talla = Talla.M;
-//        //ACT AND ASSERT
-//        ImpuestoNoEncontradoException exception = assertThrows(
-//                ImpuestoNoEncontradoException.class,
-//                ()-> fabricaProductos.fabricarProductoRopa(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verifyNoMoreInteractions(servicioImpuestosFalso);
-//        verifyNoInteractions(servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiElImpuestoNoEstaActivoAlFabricarProductoRopa(){
-//        //ARRANGE
-//        int idImpuesto = 2;
-//        Impuesto impuestoInactivo = Impuesto.reconstruirDesdeBD(
-//                idImpuesto, "Inactivo", new BigDecimal("5"), false
-//        );
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoInactivo);
-//        int idDescuento = 1;
-//        String nombre = "  Ropa  ";
-//        BigDecimal valorCompra = new BigDecimal("35000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("85");
-//        int stock = 25;
-//        Talla talla = Talla.M;
-//        String mensajeEsperado = "NO se puede Asignar el Impuesto -" + impuestoInactivo.getNombre() +
-//                "- Porque se Encuentra Inactivo.";
-//        //ACT AND ASSERT
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                ()-> fabricaProductos.fabricarProductoRopa(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verifyNoMoreInteractions(servicioImpuestosFalso);
-//        verifyNoInteractions(servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiNoExisteDescuentoAlFabricarProductoRopa(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoPruebas);
-//        int idDescuento = 1;
-//        String mensajeEsperado = "NO existe un Descuento con el ID: " + idDescuento;
-//        when(servicioDescuentosFalso.obtenerDescuento(idDescuento))
-//                .thenThrow(new DescuentoNoEncontradoException(mensajeEsperado));
-//        String nombre = "  Ropa  ";
-//        BigDecimal valorCompra = new BigDecimal("35000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("85");
-//        int stock = 25;
-//        Talla talla = Talla.M;
-//        //ACT AND ASSERT
-//        DescuentoNoEncontradoException exception = assertThrows(
-//                DescuentoNoEncontradoException.class,
-//                ()-> fabricaProductos.fabricarProductoRopa(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verify(servicioDescuentosFalso).obtenerDescuento(idDescuento);
-//        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso);
-//        verifyNoInteractions(servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiElDescuentoNoEstaActivoAlFabricarProductoRopa(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoPruebas);
-//        int idDescuento = 2;
-//        Descuento descuentoInactivo = Descuento.reconstruirDesdeBD(
-//                idDescuento, "Inactivo", new BigDecimal("15"), false
-//        );
-//        when(servicioDescuentosFalso.obtenerDescuento(idDescuento)).thenReturn(descuentoInactivo);
-//        String nombre = "  Ropa  ";
-//        BigDecimal valorCompra = new BigDecimal("35000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("85");
-//        int stock = 25;
-//        Talla talla = Talla.M;
-//        String mensajeEsperado = "NO se puede Asignar el Descuento -" + descuentoInactivo.getNombre() +
-//                "- Porque se Encuentra Inactivo.";
-//        //ACT AND ASSERT
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                ()-> fabricaProductos.fabricarProductoRopa(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, talla
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verify(servicioDescuentosFalso).obtenerDescuento(idDescuento);
-//        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso);
-//        verifyNoInteractions(servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaFabricarProductoPerecederoCorrectamente(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoPruebas);
-//        int idDescuento = 1;
-//        when(servicioDescuentosFalso.obtenerDescuento(idDescuento)).thenReturn(descuentoPruebas);
-//        int idPoliticaV = 1;
-//        when(servicioPoliticaVencimientoFalso.obtenerPoliticaVencimiento(idPoliticaV)).thenReturn(politicaVPruebas);
-//        String nombre = "  Perecedero  ";
-//        BigDecimal valorCompra = new BigDecimal("3000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("100");
-//        int stock = 25;
-//        LocalDate fechaActual = LocalDate.now();
-//        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
-//        LocalDate fechaVencimiento = fechaActual.plusDays(5);
-//        //ACT
-//        ProductoPerecedero productoPerecedero = fabricaProductos.fabricarProductoPerecedero(
-//                nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-//                idPoliticaV, contextoEvaluacion
-//        );
-//        //ASSERT
-//        assertNotNull(productoPerecedero.getCodigo());
-//        assertEquals(TipoProducto.PERECEDERO, productoPerecedero.getTipoProducto());
-//        assertEquals("Perecedero", productoPerecedero.getNombre());
-//        assertEquals(0, valorCompra.compareTo(productoPerecedero.getValorCompra()));
-//        assertEquals(0, porcentajeGanancia.compareTo(productoPerecedero.getPorcentajeGanancia()));
-//        assertEquals(stock, productoPerecedero.getStock());
-//        assertEquals(impuestoPruebas, productoPerecedero.getImpuesto());
-//        assertEquals(descuentoPruebas, productoPerecedero.getDescuento());
-//        assertEquals(fechaVencimiento, productoPerecedero.getFechaVencimiento());
-//        assertEquals(politicaVPruebas, productoPerecedero.getPoliticaVencimiento());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verify(servicioDescuentosFalso).obtenerDescuento(idDescuento);
-//        verify(servicioPoliticaVencimientoFalso).obtenerPoliticaVencimiento(idPoliticaV);
-//        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiNoHayFechaParaValidarVencimientoALFabricarProductoPerecedero(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        int idDescuento = 1;
-//        int idPoliticaV = 1;
-//        String nombre = "  Perecedero  ";
-//        BigDecimal valorCompra = new BigDecimal("3000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("100");
-//        int stock = 25;
-//        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(null);
-//        LocalDate fechaVencimiento = LocalDate.now();
-//        String mensajeEsperado = "Se Requiere la Fecha Actual para Fabricar el Producto";
-//        //ACT AND ASSERT
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                ()-> fabricaProductos.fabricarProductoPerecedero(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-//                        idPoliticaV, contextoEvaluacion
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verifyNoInteractions(servicioImpuestosFalso, servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiElProductoYaEstaVencidoAlFabricarProductoPerecedero(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        int idDescuento = 1;
-//        int idPoliticaV = 1;
-//        String nombre = "  Perecedero  ";
-//        BigDecimal valorCompra = new BigDecimal("3000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("100");
-//        int stock = 25;
-//        LocalDate fechaActual = LocalDate.now();
-//        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
-//        LocalDate fechaVencimiento = fechaActual.minusDays(1);
-//        String mensajeEsperado = "NO se puede Registrar el Producto porque ya está Vencido";
-//        //ACT AND ASSERT
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                ()-> fabricaProductos.fabricarProductoPerecedero(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-//                        idPoliticaV, contextoEvaluacion
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verifyNoInteractions(servicioImpuestosFalso, servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiLaPoliticaDeVencimientoNoExisteAlFabricarProductoPerecedero(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoPruebas);
-//        int idDescuento = 1;
-//        when(servicioDescuentosFalso.obtenerDescuento(idDescuento)).thenReturn(descuentoPruebas);
-//        int idPoliticaV = 1;
-//        String mensajeEsperado = "NO Existe una Política de Vencimiento con el ID: " + idPoliticaV;
-//        when(servicioPoliticaVencimientoFalso.obtenerPoliticaVencimiento(idPoliticaV))
-//                .thenThrow(new PoliticaVencimientoNoEncontradaException(mensajeEsperado));
-//        String nombre = "  Perecedero  ";
-//        BigDecimal valorCompra = new BigDecimal("3000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("100");
-//        int stock = 25;
-//        LocalDate fechaActual = LocalDate.now();
-//        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
-//        LocalDate fechaVencimiento = fechaActual.plusDays(5);
-//        //ACT AND ASSERT
-//        PoliticaVencimientoNoEncontradaException exception = assertThrows(
-//                PoliticaVencimientoNoEncontradaException.class,
-//                ()-> fabricaProductos.fabricarProductoPerecedero(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-//                        idPoliticaV, contextoEvaluacion
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verify(servicioDescuentosFalso).obtenerDescuento(idDescuento);
-//        verify(servicioPoliticaVencimientoFalso).obtenerPoliticaVencimiento(idPoliticaV);
-//        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
-//    }
-//
-//    @Test
-//    void deberiaLanzarExcepcionSiLaPoliticaDeVencimientoEstaInactivaAlFabricarProductoPerecedero(){
-//        //ARRANGE
-//        int idImpuesto = 1;
-//        when(servicioImpuestosFalso.obtenerImpuesto(idImpuesto)).thenReturn(impuestoPruebas);
-//        int idDescuento = 1;
-//        when(servicioDescuentosFalso.obtenerDescuento(idDescuento)).thenReturn(descuentoPruebas);
-//        int idPoliticaV = 2;
-//        PoliticaVencimiento politicaVInactiva = PoliticaVencimiento.reconstruirDesdeBD(
-//                idPoliticaV, "Inactiva", 5, new BigDecimal("25"), false
-//        );
-//        when(servicioPoliticaVencimientoFalso.obtenerPoliticaVencimiento(idPoliticaV)).thenReturn(politicaVInactiva);
-//        String nombre = "  Perecedero  ";
-//        BigDecimal valorCompra = new BigDecimal("3000");
-//        BigDecimal porcentajeGanancia = new BigDecimal("100");
-//        int stock = 25;
-//        LocalDate fechaActual = LocalDate.now();
-//        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fechaActual);
-//        LocalDate fechaVencimiento = fechaActual.plusDays(5);
-//        String mensajeEsperado = "NO se puede Asignar la Política de Vencimiento -" + politicaVInactiva.getNombre() +
-//                "- Porque se Encuentra Inactiva.";
-//        //ACT AND ASSERT
-//        IllegalArgumentException exception = assertThrows(
-//                IllegalArgumentException.class,
-//                ()-> fabricaProductos.fabricarProductoPerecedero(
-//                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
-//                        idPoliticaV, contextoEvaluacion
-//                )
-//        );
-//        assertEquals(mensajeEsperado, exception.getMessage());
-//        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuesto);
-//        verify(servicioDescuentosFalso).obtenerDescuento(idDescuento);
-//        verify(servicioPoliticaVencimientoFalso).obtenerPoliticaVencimiento(idPoliticaV);
-//        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
-//    }
+    @Test
+    void deberiaRetornarElProductoCreadoConLaEstrategiaExistenteAlFabricarProducto() {
+        //ARRANGE
+        DatosGeneralesCreacionProductoDTO datosGenerales = new DatosGeneralesCreacionProductoDTO(
+                TipoProducto.ROPA, "Ropa", new BigDecimal("50000"), new BigDecimal("100"),
+                25, 1, 1
+        );
+        DetalleRopaDTO detalle = new DetalleRopaDTO(Talla.M);
+        FormularioProductoDTO datosProducto = new FormularioProductoDTO(datosGenerales, detalle);
+        LocalDate fecha = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        when(servicioImpuestosFalso.obtenerImpuesto(1)).thenReturn(impuestoPruebas);
+        when(servicioDescuentosFalso.obtenerDescuento(1)).thenReturn(descuentoPruebas);
+        when(estrategiaFabricarRopaFalsa.fabricarProducto(
+                datosGenerales, detalle, contextoEvaluacion, impuestoPruebas, descuentoPruebas
+        )).thenReturn(productoPruebas);
+        //ACT
+        Producto resultado = fabricaProductos.fabricarProducto(datosProducto, contextoEvaluacion);
+        //ASSERT
+        assertEquals(productoPruebas, resultado);
+        verify(servicioImpuestosFalso).obtenerImpuesto(1);
+        verify(servicioDescuentosFalso).obtenerDescuento(1);
+        verify(estrategiaFabricarRopaFalsa).fabricarProducto(
+                datosGenerales, detalle, contextoEvaluacion, impuestoPruebas, descuentoPruebas
+        );
+        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso, estrategiaFabricarRopaFalsa);
+    }
+
+    @Test
+    void deberiaLanzarExcepcionCuandoLaEstrategiaNoExisteAlFabricarProducto() {
+        //ARRANGE
+        DatosGeneralesCreacionProductoDTO datosGenerales = new DatosGeneralesCreacionProductoDTO(
+                TipoProducto.PERECEDERO, "Perecedero", new BigDecimal("50000"), new BigDecimal("100"),
+                25, 1, 1
+        );
+        LocalDate fecha = LocalDate.now();
+        DetallePerecederoDTO detalle = new DetallePerecederoDTO(fecha, 1);
+        FormularioProductoDTO datosProducto = new FormularioProductoDTO(datosGenerales, detalle);
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        //ACT AND ASSERT
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                ()-> fabricaProductos.fabricarProducto(datosProducto, contextoEvaluacion)
+        );
+        assertEquals(
+                "NO Existe una Estrategia de Fabricación de Producto para el Tipo: " + TipoProducto.PERECEDERO,
+                exception.getMessage()
+        );
+        verifyNoInteractions(estrategiaFabricarRopaFalsa, servicioImpuestosFalso, servicioDescuentosFalso);
+    }
+
+    @Test
+    void deberiaLanzarExcepcionCuandoElImpuestoEstaInactivoAlFabricarProducto() {
+        //ARRANGE
+        int idImpuestoInactivo = 2;
+        DatosGeneralesCreacionProductoDTO datosGenerales = new DatosGeneralesCreacionProductoDTO(
+                TipoProducto.ROPA, "Ropa", new BigDecimal("50000"), new BigDecimal("100"),
+                25, idImpuestoInactivo, 1
+        );
+        DetalleRopaDTO detalle = new DetalleRopaDTO(Talla.M);
+        FormularioProductoDTO datosProducto = new FormularioProductoDTO(datosGenerales, detalle);
+        LocalDate fecha = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        Impuesto inactivo = Impuesto.reconstruirDesdeBD(
+                idImpuestoInactivo, "Inactivo", new BigDecimal("5"), false
+        );
+        when(servicioImpuestosFalso.obtenerImpuesto(idImpuestoInactivo)).thenReturn(inactivo);
+        //ACT AND ASSERT
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                ()-> fabricaProductos.fabricarProducto(datosProducto, contextoEvaluacion)
+        );
+        assertEquals(
+                "NO se puede Asignar el Impuesto -" + inactivo.getNombre() + "- Porque se Encuentra Inactivo.",
+                exception.getMessage()
+        );
+        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuestoInactivo);
+        verifyNoMoreInteractions(servicioImpuestosFalso);
+        verifyNoInteractions(servicioDescuentosFalso, estrategiaFabricarRopaFalsa);
+    }
+
+    @Test
+    void deberiaLanzarExcepcionCuandoElImpuestoNoExisteAlFabricarProducto() {
+        //ARRANGE
+        int idImpuestoInexistente = 99;
+        DatosGeneralesCreacionProductoDTO datosGenerales = new DatosGeneralesCreacionProductoDTO(
+                TipoProducto.ROPA, "Ropa", new BigDecimal("50000"), new BigDecimal("100"),
+                25, idImpuestoInexistente, 1
+        );
+        DetalleRopaDTO detalle = new DetalleRopaDTO(Talla.M);
+        FormularioProductoDTO datosProducto = new FormularioProductoDTO(datosGenerales, detalle);
+        LocalDate fecha = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        String mensajeEsperado = "No existe un Impuesto con el ID: " + idImpuestoInexistente;
+        when(servicioImpuestosFalso.obtenerImpuesto(idImpuestoInexistente))
+                .thenThrow(new ImpuestoNoEncontradoException(mensajeEsperado));
+        //ACT AND ASSERT
+        ImpuestoNoEncontradoException exception = assertThrows(
+                ImpuestoNoEncontradoException.class,
+                ()-> fabricaProductos.fabricarProducto(datosProducto, contextoEvaluacion)
+        );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verify(servicioImpuestosFalso).obtenerImpuesto(idImpuestoInexistente);
+        verifyNoMoreInteractions(servicioImpuestosFalso);
+        verifyNoInteractions(servicioDescuentosFalso, estrategiaFabricarRopaFalsa);
+    }
+
+    @Test
+    void deberiaLanzarExcepcionCuandoElDescuentoEstaInactivoAlFabricarProducto() {
+        //ARRANGE
+        int idDescuentoInactivo = 2;
+        DatosGeneralesCreacionProductoDTO datosGenerales = new DatosGeneralesCreacionProductoDTO(
+                TipoProducto.ROPA, "Ropa", new BigDecimal("50000"), new BigDecimal("100"),
+                25, 1, idDescuentoInactivo
+        );
+        DetalleRopaDTO detalle = new DetalleRopaDTO(Talla.M);
+        FormularioProductoDTO datosProducto = new FormularioProductoDTO(datosGenerales, detalle);
+        LocalDate fecha = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        when(servicioImpuestosFalso.obtenerImpuesto(1)).thenReturn(impuestoPruebas);
+        Descuento inactivo = Descuento.reconstruirDesdeBD(
+                idDescuentoInactivo, "Inactivo", new BigDecimal("10"), false
+        );
+        when(servicioDescuentosFalso.obtenerDescuento(idDescuentoInactivo)).thenReturn(inactivo);
+        //ACT
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                ()-> fabricaProductos.fabricarProducto(datosProducto, contextoEvaluacion)
+        );
+        assertEquals(
+                "NO se puede Asignar el Descuento -" + inactivo.getNombre() + "- Porque se Encuentra Inactivo.",
+                exception.getMessage()
+        );
+        verify(servicioImpuestosFalso).obtenerImpuesto(1);
+        verify(servicioDescuentosFalso).obtenerDescuento(idDescuentoInactivo);
+        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso);
+        verifyNoInteractions(estrategiaFabricarRopaFalsa);
+    }
+
+    @Test
+    void deberiaLanzarExcepcionCuandoElDescuentoNoExisteAlFabricarProducto() {
+        //ARRANGE
+        int idDescuentoInexistente = 99;
+        DatosGeneralesCreacionProductoDTO datosGenerales = new DatosGeneralesCreacionProductoDTO(
+                TipoProducto.ROPA, "Ropa", new BigDecimal("50000"), new BigDecimal("100"),
+                25, 1, idDescuentoInexistente
+        );
+        DetalleRopaDTO detalle = new DetalleRopaDTO(Talla.M);
+        FormularioProductoDTO datosProducto = new FormularioProductoDTO(datosGenerales, detalle);
+        LocalDate fecha = LocalDate.now();
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(fecha);
+        when(servicioImpuestosFalso.obtenerImpuesto(1)).thenReturn(impuestoPruebas);
+        String mensajeEsperado = "NO existe un Descuento con el ID: " + idDescuentoInexistente;
+        when(servicioDescuentosFalso.obtenerDescuento(idDescuentoInexistente))
+                .thenThrow(new DescuentoNoEncontradoException(mensajeEsperado));
+        //ACT
+        DescuentoNoEncontradoException exception = assertThrows(
+                DescuentoNoEncontradoException.class,
+                ()-> fabricaProductos.fabricarProducto(datosProducto, contextoEvaluacion)
+        );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verify(servicioImpuestosFalso).obtenerImpuesto(1);
+        verify(servicioDescuentosFalso).obtenerDescuento(idDescuentoInexistente);
+        verifyNoMoreInteractions(servicioImpuestosFalso, servicioDescuentosFalso);
+        verifyNoInteractions(estrategiaFabricarRopaFalsa);
+    }
 
 }//===================================================================================================================//
 
