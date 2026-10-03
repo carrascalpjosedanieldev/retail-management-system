@@ -1,8 +1,6 @@
 package RetailManagementSystem;
 
-// PARA EXPORTAR EL PROYECTO FÁCILMENTE:
-// Get-ChildItem -Recurse -Filter *.java | Get-Content | Out-File proyecto_completo.txt
-
+import RetailManagementSystem.infraestructura.configuracion.ContextoAplicacion;
 import RetailManagementSystem.infraestructura.inyeccion.ContenedorDependencias;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
@@ -29,6 +27,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stagePrincipal){
+        ContextoAplicacion.inicializar("application.properties");
         ConfiguradorExcepciones.inicializarManejadorGlobal(stagePrincipal);
         ContenedorDependencias.inicializar();
         PermisosApp.inicializarYValidarSincronizacionPermisos();

@@ -6,20 +6,24 @@ import java.util.Properties;
 
 public class InformacionAplicacion {
 
-    //VERSION DEL PROYECTO:
+    //VERSION DE LA APLICACIÓN:
 
-    private static final String VERSION = cargarVersion();
+    private final String version;
 
-    private static String cargarVersion() {
+    public InformacionAplicacion(String rutaProperties) {
+        this.version = cargarVersion(rutaProperties);
+    }
+
+    private String cargarVersion(String rutaProperties) {
         Properties propiedades = new Properties();
-        try (InputStream input = InformacionAplicacion.class.getClassLoader().getResourceAsStream("application.properties")) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(rutaProperties)) {
             if (input == null) {
-                throw new IllegalStateException("NO se encontró el archivo version.properties en el classpath.");
+                throw new IllegalStateException("NO se encontró el archivo " + rutaProperties + " en el classpath.");
             }
             propiedades.load(input);
             String version = propiedades.getProperty("version");
             if (version == null || version.trim().isEmpty()) {
-                throw new IllegalStateException("El archivo version.properties no contiene la propiedad 'version'.");
+                throw new IllegalStateException("El archivo " + rutaProperties + " no contiene la propiedad 'version'.");
             }
             return version;
         } catch (IOException e) {
@@ -27,10 +31,9 @@ public class InformacionAplicacion {
         }
     }
 
-    public static String obtenerVersion() {
-        return VERSION;
+    public String obtenerVersion() {
+        return version;
     }
-
 
 }//===================================================================================================================//
 

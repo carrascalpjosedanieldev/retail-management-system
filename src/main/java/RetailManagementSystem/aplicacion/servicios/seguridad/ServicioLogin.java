@@ -1,12 +1,12 @@
 package RetailManagementSystem.aplicacion.servicios.seguridad;
 
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
-import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.entidades.seguridad.Usuario;
 import RetailManagementSystem.dominio.enums.ClaveConfiguracion;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.CredencialesInvalidasException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioBloqueadoException;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.UsuarioInactivoException;
+import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioUsuario;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
 
@@ -26,7 +26,7 @@ public class ServicioLogin {
 
     private final CodificadorContrasenas codificadorContrasenas;
 
-    private final ProveedorConfiguracion proveedorConfiguracion;
+    private final RepositorioConfiguracion repositorioConfiguracion;
 
     private final GestorTransaccional gestorTransaccional;
 
@@ -34,11 +34,11 @@ public class ServicioLogin {
 
     public ServicioLogin(
             RepositorioUsuario repositorioUsuario, CodificadorContrasenas codificadorContrasenas,
-            ProveedorConfiguracion proveedorConfiguracion, GestorTransaccional gestorTransaccional
+            RepositorioConfiguracion repositorioConfiguracion, GestorTransaccional gestorTransaccional
     ) {
         this.repositorioUsuario = repositorioUsuario;
         this.codificadorContrasenas = codificadorContrasenas;
-        this.proveedorConfiguracion = proveedorConfiguracion;
+        this.repositorioConfiguracion = repositorioConfiguracion;
         this.gestorTransaccional = gestorTransaccional;
     }
 
@@ -74,10 +74,10 @@ public class ServicioLogin {
 
     private void registrarFalloYPosibleBloqueo(Usuario usuario, LocalDateTime fechaReferencia){
         int maxIntentos = Integer.parseInt(
-              this.proveedorConfiguracion.obtenerValorConfiguracion(ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD())
+              this.repositorioConfiguracion.obtenerValorConfiguracion(ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD())
         );
         int minutosBloqueo = Integer.parseInt(
-              this.proveedorConfiguracion.obtenerValorConfiguracion(ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD())
+              this.repositorioConfiguracion.obtenerValorConfiguracion(ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD())
         );
         usuario.registrarIntentoFallido(maxIntentos, minutosBloqueo, fechaReferencia);
         this.repositorioUsuario.actualizarDatosLoginUsuario(usuario);

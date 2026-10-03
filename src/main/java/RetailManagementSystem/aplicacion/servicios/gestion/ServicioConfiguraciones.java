@@ -2,7 +2,6 @@ package RetailManagementSystem.aplicacion.servicios.gestion;
 
 import RetailManagementSystem.aplicacion.dto.consultas.ConfiguracionSistemaDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.PoliticaDeBloqueoDTO;
-import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.enums.ClaveConfiguracion;
 import RetailManagementSystem.dominio.puertos.repositorios.RepositorioConfiguracion;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
@@ -13,18 +12,14 @@ public class ServicioConfiguraciones {
 
     private final RepositorioConfiguracion repositorioConfiguracion;
 
-    private final ProveedorConfiguracion proveedorConfiguracion;
-
     private final GestorTransaccional gestorTransaccional;
 
     //CONSTRUCTOR:
 
     public ServicioConfiguraciones(
-            RepositorioConfiguracion repositorioConfiguracion, ProveedorConfiguracion proveedorConfiguracion,
-            GestorTransaccional gestorTransaccional
+            RepositorioConfiguracion repositorioConfiguracion, GestorTransaccional gestorTransaccional
     ) {
         this.repositorioConfiguracion = repositorioConfiguracion;
-        this.proveedorConfiguracion = proveedorConfiguracion;
         this.gestorTransaccional = gestorTransaccional;
     }
 
@@ -68,7 +63,6 @@ public class ServicioConfiguraciones {
                         ClaveConfiguracion.DATOS_TIENDA.getClaveBD(), nombreNuevo.trim(), descripcion.trim()
                 )
         );
-        this.proveedorConfiguracion.invalidarCache(ClaveConfiguracion.DATOS_TIENDA.getClaveBD());
     }
 
     public PoliticaDeBloqueoDTO obtenerPoliticaDeBloqueo(){
@@ -88,7 +82,6 @@ public class ServicioConfiguraciones {
                         ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD(), String.valueOf(nuevoMaximo)
                 )
         );
-        this.proveedorConfiguracion.invalidarCache(ClaveConfiguracion.MAX_INTENTOS_LOGIN.getClaveBD());
     }
 
     public void actualizarMaxMinutosBloqueos(int nuevosMinutosBloqueo) {
@@ -100,7 +93,6 @@ public class ServicioConfiguraciones {
                         ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD(), String.valueOf(nuevosMinutosBloqueo)
                 )
         );
-        this.proveedorConfiguracion.invalidarCache(ClaveConfiguracion.MINUTOS_BLOQUEO.getClaveBD());
     }
 
 }//===================================================================================================================//

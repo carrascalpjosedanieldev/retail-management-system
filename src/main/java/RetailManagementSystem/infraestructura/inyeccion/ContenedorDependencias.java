@@ -20,7 +20,6 @@ import RetailManagementSystem.aplicacion.fabricas.EstrategiaFabricarRopa;
 import RetailManagementSystem.aplicacion.fabricas.FabricaProductos;
 import RetailManagementSystem.aplicacion.orquestadores.*;
 import RetailManagementSystem.aplicacion.puertos.CodificadorContrasenas;
-import RetailManagementSystem.aplicacion.puertos.ProveedorConfiguracion;
 import RetailManagementSystem.dominio.financiero.calculos.MatematicaFinanciera;
 import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaCalculoPrecios;
 import RetailManagementSystem.dominio.financiero.estrategias.EstrategiaCalculoPreciosProductoPerecedero;
@@ -40,7 +39,6 @@ import RetailManagementSystem.dominio.enums.TipoProducto;
 import RetailManagementSystem.dominio.financiero.calculos.CalculadoraPrecios;
 import RetailManagementSystem.dominio.puertos.repositorios.*;
 import RetailManagementSystem.dominio.puertos.transacciones.GestorTransaccional;
-import RetailManagementSystem.infraestructura.configuracion.ProveedorConfiguracionImpl;
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaPerecedero;
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaProducto;
 import RetailManagementSystem.infraestructura.persistencia.mysql.estrategias.EstrategiaPersistenciaRopa;
@@ -154,6 +152,9 @@ public class ContenedorDependencias {
         //REPOSITORIOS:
 
         RepositorioConfiguracion repositorioConfiguracion = new RepositorioConfiguracionMySQL();
+        RepositorioConfiguracion repositorioConfiguracionCacheado =
+                new RepositorioConfiguracionCacheado(repositorioConfiguracion);
+
         RepositorioDescuentos repositorioDescuentos = new RepositorioDescuentosMySQL(mapeadorDescuentos);
         RepositorioFacturas repositorioFacturas = new RepositorioFacturasMySQL();
         RepositorioImpuestos repositorioImpuestos = new RepositorioImpuestosMySQL(mapeadorImpuestos);
@@ -172,11 +173,7 @@ public class ContenedorDependencias {
                 mapeadorUsuario, mapeadorRol, mapeadorPermisos
         );
 
-        //PROOVEDOR Y CODIFICADOR:
-
-        ProveedorConfiguracion proveedorConfiguracion = new ProveedorConfiguracionImpl(
-                gestorTransaccional, repositorioConfiguracion
-        );
+        //CODIFICADOR:
 
         CodificadorContrasenas codificadorContrasenas = new Argon2CodificadorAdapter();
 
@@ -194,14 +191,14 @@ public class ContenedorDependencias {
         );
         ServicioCarrito servicioCarrito = new ServicioCarrito(calculadoraPrecios, servicioProductos, servicioServicios);
         ServicioConfiguraciones servicioConfiguraciones = new ServicioConfiguraciones(
-                repositorioConfiguracion, proveedorConfiguracion, gestorTransaccional
+                repositorioConfiguracionCacheado, gestorTransaccional
         );
         ServicioDescuentos servicioDescuentos = new ServicioDescuentos(repositorioDescuentos, gestorTransaccional);
         ServicioFacturas servicioFacturas = new ServicioFacturas(repositorioFacturas, gestorTransaccional);
         ServicioImpuestos servicioImpuestos = new ServicioImpuestos(repositorioImpuestos, gestorTransaccional);
         ServicioInventario servicioInventario = new ServicioInventario(repositorioInventario, gestorTransaccional);
         ServicioLogin servicioLogin = new ServicioLogin(
-                repositorioUsuario, codificadorContrasenas, proveedorConfiguracion, gestorTransaccional
+                repositorioUsuario, codificadorContrasenas, repositorioConfiguracionCacheado, gestorTransaccional
         );
         ServicioPoliticaVencimiento servicioPoliticaVencimiento = new ServicioPoliticaVencimiento(
                 repositorioPoliticaVencimiento, gestorTransaccional

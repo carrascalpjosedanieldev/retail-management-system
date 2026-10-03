@@ -4,7 +4,7 @@ import RetailManagementSystem.aplicacion.dto.seguridad.RolDTO;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorConfiguraciones;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
-import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
+import RetailManagementSystem.infraestructura.configuracion.ContextoAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
 import RetailManagementSystem.vista.controladores.gestionarTienda.GestionarTiendaControlador;
@@ -123,13 +123,13 @@ public class MenuPrincipalControlador {
 
     private void cargarVersionTienda(){
         lblVersion.setText("Cargando...");
-        CompletableFuture.supplyAsync(
-                InformacionAplicacion::obtenerVersion
-        ).thenAccept(version->{
-            Platform.runLater(()->{
-                lblVersion.setText("Mi Tienda " + version);
-            });
-        }).exceptionally(ex->{
+        CompletableFuture.supplyAsync(()->
+                ContextoAplicacion.getInformacionAplicacion().obtenerVersion()
+        ).thenAccept(version->
+            Platform.runLater(()->
+                lblVersion.setText("Mi Tienda " + version)
+            )
+        ).exceptionally(ex->{
             Platform.runLater(() -> {
                 lblVersion.setText("Versión --");
                 Throwable causa = ConfiguradorExcepciones.obtenerCausaRaiz(ex);

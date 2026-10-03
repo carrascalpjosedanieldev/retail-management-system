@@ -3,7 +3,7 @@ package RetailManagementSystem.vista.controladores.puntoDeVenta;
 import RetailManagementSystem.aplicacion.dto.seguridad.UsuarioDTOCompleto;
 import RetailManagementSystem.aplicacion.orquestadores.OrquestadorHistoricoDeVentas;
 import RetailManagementSystem.dominio.excepciones.autenticacionYSeguridad.AccesoDenegadoException;
-import RetailManagementSystem.infraestructura.configuracion.InformacionAplicacion;
+import RetailManagementSystem.infraestructura.configuracion.ContextoAplicacion;
 import RetailManagementSystem.infraestructura.seguridad.PermisosApp;
 import RetailManagementSystem.infraestructura.seguridad.ValidadorSeguridad;
 import RetailManagementSystem.vista.configuracion.ConfiguradorExcepciones;
@@ -131,8 +131,8 @@ public class PanelDeControlControlador {
 
     private void cargarVersionTienda(){
         lblVersion.setText("Cargando...");
-        CompletableFuture.supplyAsync(
-                InformacionAplicacion::obtenerVersion
+        CompletableFuture.supplyAsync(()->
+                ContextoAplicacion.getInformacionAplicacion().obtenerVersion()
         ).thenAccept(version->
             Platform.runLater(()->
                 lblVersion.setText("Mi Tienda " + version)
