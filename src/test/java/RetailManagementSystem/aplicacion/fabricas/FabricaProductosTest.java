@@ -268,6 +268,31 @@ public class FabricaProductosTest {
     }
 
     @Test
+    void deberiaLanzarExcepcionSiNoHayFechaParaValidarVencimientoALFabricarProductoPerecedero(){
+        //ARRANGE
+        int idImpuesto = 1;
+        int idDescuento = 1;
+        int idPoliticaV = 1;
+        String nombre = "  Perecedero  ";
+        BigDecimal valorCompra = new BigDecimal("3000");
+        BigDecimal porcentajeGanancia = new BigDecimal("100");
+        int stock = 25;
+        ContextoEvaluacion contextoEvaluacion = ContextoEvaluacion.crearNuevo(null);
+        LocalDate fechaVencimiento = LocalDate.now();
+        String mensajeEsperado = "Se Requiere la Fecha Actual para Fabricar el Producto";
+        //ACT AND ASSERT
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                ()-> fabricaProductos.fabricarProductoPerecedero(
+                        nombre, valorCompra, porcentajeGanancia, stock, idImpuesto, idDescuento, fechaVencimiento,
+                        idPoliticaV, contextoEvaluacion
+                )
+        );
+        assertEquals(mensajeEsperado, exception.getMessage());
+        verifyNoInteractions(servicioImpuestosFalso, servicioDescuentosFalso, servicioPoliticaVencimientoFalso);
+    }
+
+    @Test
     void deberiaLanzarExcepcionSiElProductoYaEstaVencidoAlFabricarProductoPerecedero(){
         //ARRANGE
         int idImpuesto = 1;
