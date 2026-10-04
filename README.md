@@ -27,21 +27,21 @@ The project began as a console-based exercise focused on mastering Object-Orient
 
 ## 🚧 Project status
 
-**Current Version:** 1.1.1
+**Current Version:** 1.1.2
 
-| Module           | Status             |
-|------------------|--------------------|
-| Store Management | ✅ Completed        |
-| Point of Sale    | ✅ Completed        |
-| User management  | ✅ Completed        |
-| Login            | ✅ Completed        |
-| Documentation    | 🚧 In Development  |
-| Testing          | 🚧 In Development  |
-| Version 1.1.1    | ✅ Completed        |
+| Module           | Status            |
+|------------------|-------------------|
+| Store Management | ✅ Completed       |
+| Point of Sale    | ✅ Completed       |
+| User management  | ✅ Completed       |
+| Login            | ✅ Completed       |
+| Documentation    | 🚧 In Development |
+| Testing          | ✅ Completed       |
+| Version 1.1.2    | ✅ Completed       |
 
 ### Next Goal
 
-Implement **automated testing** across the entire project.
+Improve the database-based inventory system.
 
 ---
 
@@ -204,7 +204,7 @@ Upon completion of a sale, the system automatically generates a receipt detailin
 ### 12. Login
 
 <p>
-    <img src="docs/images/spanish/screenshots/Login.png" alt="Login" width="740">
+    <img src="docs/images/spanish/screenshots/Login.png" alt="Login" width="740" height="747">
 </p>
 
 Application authentication screen. Allows users to log in using their email address and password, validating their credentials before granting access to the system. Includes options to display the password during login and logout.
@@ -386,11 +386,6 @@ RetailManagementSystem
 │
 ├── application
 │   ├── dto
-│   │   ├── commercial
-│   │   ├── queries
-│   │   ├── management
-│   │   ├── security
-│   │   └── sales
 │   ├── assemblers
 │   ├── factories
 │   ├── orchestrators
@@ -399,19 +394,10 @@ RetailManagementSystem
 │
 ├── domain
 │   ├── entities
-│   │   ├── commercial
-│   │   ├── management
-│   │   ├── security
-│   │   └── sales
 │   ├── enums
 │   ├── exceptions
-│   │   ├── authenticationAndSecurity
-│   │   ├── conflicts
-│   │   ├── resourceNotFound
-│   │   └── businessRules
+│   ├── financial
 │   └── ports
-│       ├── repositories
-│       └── transactions
 │
 ├── infrastructure
 │   ├── configuration
@@ -465,6 +451,45 @@ resources
 └── application.properties
 ```
 
+**Test**
+```text
+test/
+java/
+retailManagementSystem/
+│
+├── application
+│   ├── dto
+│   ├── assemblers
+│   ├── factories
+│   ├── orchestrators
+│   ├── ports
+│   └── services
+│
+├── domain
+│   ├── entities
+│   └── financial
+│
+├── infrastructure
+│   ├── configuration
+│   ├── persistence
+│   │   └── mysql
+│   │       ├── connections
+│   │       ├── strategies
+│   │       ├── mappers
+│   │       └── repositories
+│   └── security
+│
+└── view
+├── configuration
+├── controllers
+└── utilities
+
+
+test/
+resources/
+└── version
+```
+
 The project structure is organized following a layered architecture. Each package groups components with a specific responsibility, promoting separation of responsibilities and decoupling between the user interface, business logic, domain, and infrastructure.
 
 | Package          | Responsibility and Key Components                                                                                                                                                                                                                                                                                                                            |
@@ -480,12 +505,9 @@ The project structure is organized following a layered architecture. Each packag
 
 The following features are planned for future versions of the system:
 
-- 🔐 Implement automated testing.
-- 💻 Expand the system catalog with a new category of technology products.
+- 📚 Improve the database inventory system.
 - 🌐 Add support for multiple languages (Spanish and English).
-- 📄 Enable the export and printing of invoices and reports in PDF and Excel formats.
-- 📊 Incorporate indicators and statistics for the control panel.
-- ⚙️ Complete the system configuration module with advanced customization options.
+- 💻 Expand the system's catalog with a new category of technology products.
 
 ---
 
@@ -526,21 +548,21 @@ El proyecto nació como un ejercicio de consola enfocado en dominar la Programac
 
 ## 🚧 Estado del proyecto
 
-**Versión actual:** 1.1.1
+**Versión actual:** 1.1.2
 
-| Módulo               | Estado            |
-|----------------------|-------------------|
-| Gestión de la tienda | ✅ Finalizado      |
-| Punto de venta       | ✅ Finalizado      |
-| Gestion de usuarios  | ✅ Finalizado      |
-| Login                | ✅ Finalizado      |
-| Documentación        | 🚧 En desarrollo  |
-| Testing              | 🚧 En desarrollo  |
-| Versión 1.1.1        | ✅ Finalizado      |
+| Módulo               | Estado           |
+|----------------------|------------------|
+| Gestión de la tienda | ✅ Finalizado     |
+| Punto de venta       | ✅ Finalizado     |
+| Gestion de usuarios  | ✅ Finalizado     |
+| Login                | ✅ Finalizado     |
+| Documentación        | 🚧 En desarrollo |
+| Testing              | ✅ Finalizado     |
+| Versión 1.1.2        | ✅ Finalizado     |
 
 ### Proximo Objetivo
 
-Implementar **Testing Automatizado** en todo el proyecto.
+Mejorar el Sistema de Inventario en Base de Datos.
 
 ---
 
@@ -695,7 +717,7 @@ Ventana de generación de reportes de recaudo accesible desde el módulo Punto d
 ### 11. Factura
 
 <p>
-  <img src="docs/images/spanish/screenshots/Factura_Generada.png" alt="Factura Generada" width="1606">
+  <img src="docs/images/spanish/screenshots/Factura_Generada.png" alt="Factura Generada" width="1606" >
 </p>
 
 Al finalizar una venta, el sistema genera automáticamente un comprobante con el detalle de los productos y servicios vendidos, cantidades, precios, impuestos, subtotal y total de la transacción. Esta factura resume la operación realizada y permite confirmar el cierre exitoso de la venta.
@@ -703,7 +725,7 @@ Al finalizar una venta, el sistema genera automáticamente un comprobante con el
 ### 12. Login
 
 <p>
-  <img src="docs/images/spanish/screenshots/Login.png" alt="Login" width="740">
+  <img src="docs/images/spanish/screenshots/Login.png" alt="Login" width="740" height="747">
 </p>
 
 Pantalla de autenticación de la aplicación. Permite a los usuarios ingresar mediante su correo electrónico y contraseña, validando sus credenciales antes de proporcionar acceso al sistema. Incluye opciones para visualizar la contraseña durante su ingreso y salir de la aplicación.
@@ -886,11 +908,6 @@ RetailManagementSystem
 │
 ├── aplicacion 
 │   ├── dto
-│   │   ├── comercial
-│   │   ├── consultas
-│   │   ├── gestion
-│   │   ├── seguridad
-│   │   └── ventas
 │   ├── ensambladores
 │   ├── fabricas
 │   ├── orquestadores
@@ -899,19 +916,10 @@ RetailManagementSystem
 │
 ├── dominio
 │   ├── entidades
-│   │   ├── comercial
-│   │   ├── gestion
-│   │   ├── seguridad
-│   │   └── ventas
 │   ├── enums
 │   ├── excepciones
-│   │   ├── autenticacionYSeguridad
-│   │   ├── conflictos
-│   │   ├── recursosNoEncontrados
-│   │   └── reglasDeNegocio
+│   ├── financiero
 │   └── puertos
-│       ├── repositorios
-│       └── transacciones
 │
 ├── infraestructura
 │   ├── configuracion
@@ -963,7 +971,45 @@ resources
 │
 ├── application.example.properties
 └── application.properties
+```
 
+**Test**
+```text
+test/
+java/
+retailManagementSystem/
+│
+├── aplicacion 
+│   ├── dto
+│   ├── ensambladores
+│   ├── fabricas
+│   ├── orquestadores
+│   ├── puertos
+│   └── servicios
+│
+├── dominio
+│   ├── entidades
+│   └── financiero
+│
+├── infraestructura
+│   ├── configuracion
+│   ├── persistencia
+│   │   └── mysql
+│   │       ├── conexiones
+│   │       ├── estrategias
+│   │       ├── mappers
+│   │       └── repositorios
+│   └── seguridad
+│
+└── vista
+    ├── configuracion
+    ├── controladores
+    └── utilidades
+    
+    
+test/
+resources/
+└── version
 ```
 
 La estructura del proyecto está organizada siguiendo una arquitectura por capas. Cada paquete agrupa componentes con una responsabilidad específica, favoreciendo la separación de responsabilidades y el desacoplamiento entre la interfaz de usuario, la lógica de negocio, el dominio y la infraestructura.
@@ -981,12 +1027,9 @@ La estructura del proyecto está organizada siguiendo una arquitectura por capas
 
 Las siguientes funcionalidades están planificadas para futuras versiones del sistema:
 
-- 🔐 Implementar testing automatizado.
-- 💻 Ampliar el catálogo del sistema con una nueva categoría de productos tecnológicos.
+- 📚 Mejorar el sistema de inventarios en la base de datos.
 - 🌐 Agregar soporte para múltiples idiomas (Español e Inglés).
-- 📄 Permitir la exportación e impresión de facturas y reportes en formatos PDF y Excel.
-- 📊 Incorporar indicadores y estadísticas para el panel de control.
-- ⚙️ Completar el módulo de configuración del sistema con opciones avanzadas de personalización.
+- 💻 Ampliar el catálogo del sistema con una nueva categoría de productos tecnológicos.
 
 ---
 

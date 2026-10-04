@@ -9,7 +9,7 @@ public class InformacionAplicacionTest {
     @Test
     void deberiaCargarLaVersionCorrectamenteCuandoElArchivoYLaPropiedadSonValidos() {
         //ARRANGE
-        InformacionAplicacion infoApp = new InformacionAplicacion("valid-version.properties");
+        InformacionAplicacion infoApp = new InformacionAplicacion("version/valid-version.properties");
         //ACT
         String version = infoApp.obtenerVersion();
         //ASSERT
@@ -31,7 +31,7 @@ public class InformacionAplicacionTest {
         //ACT AND ASSERT
         IllegalStateException excepcion = assertThrows(
                 IllegalStateException.class,
-                () -> new InformacionAplicacion("sin-version.properties")
+                () -> new InformacionAplicacion("version/sin-version.properties")
         );
         assertTrue(excepcion.getMessage().contains("NO Contiene la Propiedad 'version'"));
     }
@@ -41,7 +41,7 @@ public class InformacionAplicacionTest {
         //ACT AND ASSERT
         IllegalStateException excepcion = assertThrows(
                 IllegalStateException.class,
-                () -> new InformacionAplicacion("version-vacia.properties")
+                () -> new InformacionAplicacion("version/version-vacia.properties")
         );
         assertTrue(excepcion.getMessage().contains("NO Contiene la Propiedad 'version'"));
     }
