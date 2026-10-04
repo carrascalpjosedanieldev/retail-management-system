@@ -18,16 +18,18 @@ public class InformacionAplicacion {
         Properties propiedades = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(rutaProperties)) {
             if (input == null) {
-                throw new IllegalStateException("NO se encontró el archivo " + rutaProperties + " en el classpath.");
+                throw new IllegalStateException("NO se Encontró el Archivo " + rutaProperties + " en el classpath.");
             }
             propiedades.load(input);
             String version = propiedades.getProperty("version");
             if (version == null || version.trim().isEmpty()) {
-                throw new IllegalStateException("El archivo " + rutaProperties + " no contiene la propiedad 'version'.");
+                throw new IllegalStateException(
+                        "El Archivo " + rutaProperties + " NO Contiene la Propiedad 'version'."
+                );
             }
             return version;
         } catch (IOException e) {
-            throw new RuntimeException("Error inesperado al intentar leer la versión del sistema.", e);
+            throw new RuntimeException("Error Inesperado al Intentar Leer la Versión del Sistema.", e);
         }
     }
 

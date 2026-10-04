@@ -7,6 +7,11 @@ public class ContextoAplicacion {
     private static InformacionAplicacion infoApp;
 
     public static void inicializar(String rutaProperties) {
+        if (infoApp != null) {
+            throw new IllegalStateException(
+                    "El Contexto de la Aplicación YA fue Inicializado."
+            );
+        }
         infoApp = new InformacionAplicacion(rutaProperties);
     }
 
